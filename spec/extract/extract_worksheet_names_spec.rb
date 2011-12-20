@@ -1,13 +1,13 @@
 require_relative '../spec_helper'
-require_relative '../../src/extract_shared_strings/extract_shared_strings'
+require_relative '../../src/extract/extract_worksheet_names'
 require 'stringio'
 
-describe ExtractSharedStrings do
+describe ExtractWorksheetNames do
   
-  it "should return a shared string when provided with an index" do
-    input = excel_fragment 'SharedStrings.xml'
+  it "should output the worksheet names from the workbook, together with ids" do
+    input = excel_fragment 'Workbook.xml'
     output = StringIO.new
-    ExtractSharedStrings.extract(input,output)
-    output.string.should == "This a second shared string\nThis is, hopefully, the first shared string\n"
+    ExtractWorksheetNames.extract(input,output)
+    output.string.should == "rId1\tOutputs\nrId2\tCalcs\nrId3\tInputs\n"
   end
 end

@@ -1,0 +1,43 @@
+# Workbook.xml
+
+This has two sections of interest:
+
+* sheets - lists the names of the worksheets in the workbook
+* definedNames - lists the named references in the workbook
+
+## Format
+
+	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+		<fileVersion appName="xl" lastEdited="5" lowestEdited="4" rupBuild="20910"/>
+		<workbookPr date1904="1" showInkAnnotation="0" autoCompressPictures="0"/>
+		<bookViews>
+			<workbookView xWindow="140" yWindow="0" windowWidth="33360" windowHeight="20300" tabRatio="500"/>
+		</bookViews>
+		<sheets>
+			<sheet name="Outputs" sheetId="1" r:id="rId1"/>
+			<sheet name="Calcs" sheetId="2" r:id="rId2"/>
+			<sheet name="Inputs" sheetId="3" r:id="rId3"/>
+		</sheets>
+		<definedNames>
+			<definedName name="In_result">Inputs!$A$3</definedName>
+		</definedNames>
+		<calcPr calcId="140001" calcMode="manual" concurrentCalc="0"/>
+		<extLst>
+			<ext xmlns:mx="http://schemas.microsoft.com/office/mac/excel/2008/main" uri="{7523E5D3-25F3-A5E0-1632-64F254C22452}">
+				<mx:ArchID Flags="2"/>
+			</ext>
+		</extLst>
+	</workbook>
+
+## Notes
+
+### Worksheet names
+
+The r:id element refers to the associated relationships xml, which translates that r:id into a filename pointing at the worksheet xml
+
+## Output
+
+### Worksheet names
+
+One worksheet per line. Relationship id then a tab then the worksheet name
