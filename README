@@ -1,1 +1,13 @@
 This allows some excel spreadsheets to be converted into some other programming languages.
+
+# Running excel2code
+
+Not yet possible
+
+# Testing excel2code
+
+1. Make sure you have ruby 1.9.2 or later installed
+2. gem install bundler # May need to use sudo
+3. bundle
+4. rspec spec/*
+
