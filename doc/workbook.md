@@ -40,4 +40,8 @@ The r:id element refers to the associated relationships xml, which translates th
 
 ### Worksheet names
 
-One worksheet per line. Relationship id then a tab then the worksheet name
+There are three steps to the extraction:
+
+1. extract_worksheet_names.rb takes the workbook.xml and produces one worksheet per line. Relationship id then a tab then the worksheet name.
+2. extract_relationships.rb operating on workbook.xml.rels produces one relationship per line. Relationship id then a tab then the filename.
+3. rewrite_worksheet_names.rb operates on the results of 1 and 2 to produce one worksheet per line. Worksheet name, then a tab, then its filename.
