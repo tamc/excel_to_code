@@ -31,3 +31,5 @@ Otherwise the attribute indicates:
 Produces value types in the format of referance\ttype\tvalue
 
 If the cell's type is a number, then the type will contain n. Otherwise it will contain type indicators based on the above.
+
+rewrite_values_to_include_shared_strings.rb can be used to turn value type 's' into value type 'str'
