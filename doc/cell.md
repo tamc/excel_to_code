@@ -51,6 +51,8 @@ If a formula doesn't have a ref attribute, then it will not contain any formula,
 
 It is a bit unclear why there is both an si attribute and a ref attribute.
 
+The shared formula always appears to be in the top left of the ref range. Is this guaranteed?
+
 ## array formulae
 
 An array formula will always have a ref attribute indicating the range of cells over which its answer will be spread. That range can be a single cell.
