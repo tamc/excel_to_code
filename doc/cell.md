@@ -49,6 +49,8 @@ If a formula has a ref attribute, then it will contain the actual formula, an th
 
 If a formula doesn't have a ref attribute, then it will not contain any formula, and will expect to use one provided by a formula with both a ref attribute and the same si attribute.
 
+It is a bit unclear why there is both an si attribute and a ref attribute.
+
 ## array formulae
 
 An array formula will always have a ref attribute indicating the range of cells over which its answer will be spread. That range can be a single cell.
