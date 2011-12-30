@@ -1,12 +1,12 @@
 require_relative '../spec_helper'
-require_relative '../../src/rewrite/formula_peg'
+require_relative '../../src/excel/formula_peg'
 require 'textpeg2rubypeg'
 
 describe Formula do
   
   before(:all) do
-    text_peg = File.join(File.dirname(__FILE__),'..','..','src','rewrite','formula_peg.txt')
-    ruby_peg = File.join(File.dirname(__FILE__),'..','..','src','rewrite','formula_peg.rb') 
+    text_peg = File.join(File.dirname(__FILE__),'..','..','src','excel','formula_peg.txt')
+    ruby_peg = File.join(File.dirname(__FILE__),'..','..','src','excel','formula_peg.rb') 
     ast = TextPeg.parse(IO.readlines(text_peg).join)
     builder = TextPeg2RubyPeg.new
     new_ruby = ast.visit(builder)

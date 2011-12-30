@@ -1,4 +1,4 @@
-require_relative 'formula_peg'
+require_relative '../excel/formula_peg'
 
 class RewriteFormulaeToAst
   
