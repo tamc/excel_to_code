@@ -1,6 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/extract/extract_relationships'
-require 'stringio'
 
 describe ExtractRelationships do
   

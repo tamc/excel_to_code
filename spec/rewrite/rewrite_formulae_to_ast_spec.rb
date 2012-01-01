@@ -1,6 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/rewrite/rewrite_formulae_to_ast'
-require 'stringio'
 
 describe RewriteFormulaeToAst do
   

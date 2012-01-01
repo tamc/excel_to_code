@@ -1,6 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/rewrite/rewrite_values_to_include_shared_strings'
-require 'stringio'
 
 describe RewriteValuesToIncludeSharedStrings do
   

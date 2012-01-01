@@ -1,5 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/excel/area'
 
 describe Area do
   it "should have a Area#for method that takes a reference string" do

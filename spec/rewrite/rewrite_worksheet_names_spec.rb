@@ -1,6 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/rewrite/rewrite_worksheet_names'
-require 'stringio'
 
 describe RewriteWorksheetNames do
   

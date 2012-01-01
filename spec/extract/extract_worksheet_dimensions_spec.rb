@@ -1,6 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/extract/extract_worksheet_dimensions'
-require 'stringio'
 
 describe ExtractWorksheetDimensions do
   

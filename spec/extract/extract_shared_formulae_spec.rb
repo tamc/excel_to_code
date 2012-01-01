@@ -1,6 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/extract/extract_shared_formulae'
-require 'stringio'
 
 describe ExtractSharedFormulae do
   

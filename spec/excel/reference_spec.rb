@@ -1,5 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../src/excel/reference'
 
 describe Reference do
   it "should have a Reference#for method that takes a reference string" do
