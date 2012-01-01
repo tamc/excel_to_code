@@ -31,17 +31,21 @@ class Reference < String
     letters
   end
   
+  attr_reader :excel_row_number, :excel_column_number
+  
   def calculate_excel_variables
     return if @excel_variables_calculated
     self =~ /(\$)?([A-Za-z]{1,3})(\$)?([0-9]+)/
     @excel_fixed_column, @excel_column, @excel_fixed_row, @excel_row = $1, $2, $3, $4
+    @excel_row_number = @excel_row.to_i
+    @excel_column_number = @@column_number_for_column[@excel_column]
     @excel_variables_calculated = true
   end
     
   def offset(rows,columns)
     calculate_excel_variables
-    new_column = @excel_fixed_column ? @excel_column : @@column_letters_for_column_number[@@column_number_for_column[@excel_column] + columns]
-    new_row = @excel_fixed_row ? @excel_row : @excel_row.to_i + rows
+    new_column = @excel_fixed_column ? @excel_column :  @@column_letters_for_column_number[@excel_column_number + columns]
+    new_row = @excel_fixed_row ? @excel_row : @excel_row_number + rows
     Reference.new([@excel_fixed_column,new_column,@excel_fixed_row,new_row].join)
   end
   

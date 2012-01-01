@@ -26,5 +26,9 @@ describe Area do
     Area.for("$A1:B10").offset(1,1).should == "$A2:C11"
     Area.for("A$1:B10").offset(1,1).should == "B$1:C11"
   end
+  
+  it "should be able to enumerate offsets of references, relative to starting point" do
+    Area.for("A1:B2").offsets.to_a == [[0,0],[1,0],[0,1],[1,1]]
+  end
 
 end

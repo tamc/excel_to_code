@@ -28,5 +28,21 @@ class Area < String
       @excel_finish.offset(row,column),
     ].join)
   end
+  
+  def offsets
+    calculate_excel_variables
+    @excel_start.calculate_excel_variables
+    @excel_finish.calculate_excel_variables
+    
+    columns = @excel_finish.excel_column_number -  @excel_start.excel_column_number
+    rows = @excel_finish.excel_row_number -  @excel_start.excel_row_number
+    Enumerator.new do |yielder|
+      0.upto(columns).each do |c|
+        0.upto(rows).each do |r|
+          yielder.yield([c,r])
+        end
+      end
+    end
+  end
 
 end
