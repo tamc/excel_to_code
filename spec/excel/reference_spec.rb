@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 require_relative '../../src/excel/reference'
 
 describe Reference do
-  it "should take have a Reference#for method that takes a reference string" do
+  it "should have a Reference#for method that takes a reference string" do
     Reference.for("A1").should == "A1"
     Reference.for("AAA$305").should == "AAA$305"
   end
