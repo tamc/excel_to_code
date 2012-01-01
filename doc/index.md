@@ -13,3 +13,11 @@ In brief:
 ** src/rewrite - contains code that takes the series of text files and converts them into different text files (for instance, to remove INDIRECT functions, or to turn the excel form of formulas into ast)
 ** src/excel - contains code that manipulates and processes excel formulae, such as the formula parsers and classes for manipulating references
 ** src/output - contians code that takes the rewritten text files and converts them into code (e.g., a ruby version of a spreadsheet)
+
+
+# TODO
+
+* Sort out parsing of unions and literal arrays
+* Sort out extraction of sheet dimensions
+* Sort out rewriting column and row references to bounded range references
+* Sort out knowing what functions want as arguments in order to do the appropriate casting

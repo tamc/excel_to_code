@@ -21,3 +21,5 @@ The tests are run by:
 
 * Whitespace handling in table references
 * Whitespace handling between arguments in a list
+* Doesn't do range unions (e.g., 10:10 C:C == C:10)
+* Doesn't do manually entered arrays {1,2,3;4,5,6}
