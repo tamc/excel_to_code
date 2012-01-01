@@ -20,4 +20,11 @@ describe Reference do
     Reference.for("A1").offset(1,1).should == "B2"
     Reference.for("Z1").offset(1,1).should == "AA2"
   end
+  
+  it "should respect fixed reference when offseting" do
+    Reference.for("$A$1").offset(1,1).should == "$A$1"
+    Reference.for("$A1").offset(1,1).should == "$A2"
+    Reference.for("A$1").offset(1,1).should == "B$1"
+  end
+  
 end

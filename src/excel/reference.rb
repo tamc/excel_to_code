@@ -40,8 +40,8 @@ class Reference < String
     
   def offset(rows,columns)
     calculate_excel_variables
-    new_column = @@column_letters_for_column_number[@@column_number_for_column[@excel_column] + columns]
-    new_row = @excel_row.to_i + rows
+    new_column = @excel_fixed_column ? @excel_column : @@column_letters_for_column_number[@@column_number_for_column[@excel_column] + columns]
+    new_row = @excel_fixed_row ? @excel_row : @excel_row.to_i + rows
     Reference.new([@excel_fixed_column,new_column,@excel_fixed_row,new_row].join)
   end
   
