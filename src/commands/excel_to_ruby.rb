@@ -15,6 +15,7 @@ class ExcelToRuby
   def sort_out_output_directories
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
+    FileUtils.mkdir(File.join(output_directory,'intermediate'))
   end
   
   def unzip_excel
@@ -51,11 +52,11 @@ class ExcelToRuby
   end
   
   def input(*args)
-    File.open(File.join(output_directory,*args),'r')
+    File.open(File.join(output_directory,'intermediate',*args),'r')
   end
   
   def output(*args)
-    File.open(File.join(output_directory,*args),'w')
+    File.open(File.join(output_directory,'intermediate',*args),'w')
   end
   
   def close(*args)
