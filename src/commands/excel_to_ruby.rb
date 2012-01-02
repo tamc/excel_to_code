@@ -37,22 +37,24 @@ class ExcelToRuby
   
   def initial_extract_from_worksheets
     worksheets do |name,xml_filename|
-      initial_extract_from_worksheet(name,xml_filename)
+      fork do
+        initial_extract_from_worksheet(name,xml_filename)
+      end
     end
+    Process.wait
   end
-  
   
   # Extracts:
   # Values
   # Formulae (simple, shared and array)
-  # Rewrites the formulae to ast
-  # Rewrites the values to replace shared strings with their values
+  # Rewrites:
+  # the formulae to ast
+  # the values to replace shared strings with their values
   def initial_extract_from_worksheet(name,xml_filename)
     worksheet_directory = File.join(output_directory,'intermediate',name)
     FileUtils.mkdir(worksheet_directory)
     worksheet_xml = File.open(xml_filename,'r')
-    {
-      ExtractValues => 'values', 
+    { ExtractValues => 'values', 
       ExtractSimpleFormulae => 'simple_formulae',
       ExtractSharedFormulae => 'shared_formulae',
       ExtractArrayFormulae => 'array_formulae'
@@ -63,8 +65,7 @@ class ExcelToRuby
         rewrite RewriteValuesToIncludeSharedStrings, File.join(name,output_filename), 'shared_strings', File.join(name,"#{output_filename}_no_shared_strings")
       else
         rewrite RewriteFormulaeToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
-      end
-        
+      end  
     end
     close(worksheet_xml)
   end
