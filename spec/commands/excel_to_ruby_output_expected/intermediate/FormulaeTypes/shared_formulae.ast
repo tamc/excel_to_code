@@ -1,0 +1,1 @@
+B3	B3:B4	[:formula, [:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]]
