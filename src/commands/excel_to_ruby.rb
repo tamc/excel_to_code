@@ -35,6 +35,8 @@ class ExcelToRuby
     rewrite RewriteWorksheetNames, 'worksheet_names_without_filenames', 'workbook_relationships', 'worksheet_names'
   end
   
+  # Extracts each worksheets values and formulas
+  # Extracts the dimensions of each worksheet and puts them in a single file
   def initial_extract_from_worksheets
     worksheets do |name,xml_filename|
       fork do
@@ -43,6 +45,13 @@ class ExcelToRuby
       end
     end
     Process.waitall
+    dimension_file = output('dimensions')
+    worksheets do |name,xml_filename|
+      dimension_file.write name
+      dimension_file.write "\t"
+      extract ExtractWorksheetDimensions, File.open(xml_filename,'r'), dimension_file 
+    end
+    dimension_file.close
   end
   
   # Extracts:
@@ -81,12 +90,14 @@ class ExcelToRuby
   
   def extract(_klass,xml_name,output_name)
     i = xml_name.is_a?(String) ? xml(xml_name) : xml_name
-    o = output(output_name)
+    o = output_name.is_a?(String) ? output(output_name) : output_name
     _klass.extract(i,o)
     if xml_name.is_a?(String)
       close(i)
     end
-    close(o)
+    if output_name.is_a?(String)
+      close(o)
+    end
   end
   
   def rewrite(_klass,*args)
