@@ -9,8 +9,8 @@ class RewriteValuesToIncludeSharedStrings
     shared_strings = shared_strings.readlines
     values.lines do |line|
       # Looks to match shared string lines of the form A1 s 0
-      if line =~ /^(.*?)\ts\t(.*)$/
-        output.puts "#{$1}\tstr\t#{shared_strings[$3.to_i]}"
+      if line =~ /^(.*?)\ts\t(.*)\n/
+        output.puts "#{$1}\tstr\t#{shared_strings[$2.to_i]}"
       else
         output.puts line
       end
