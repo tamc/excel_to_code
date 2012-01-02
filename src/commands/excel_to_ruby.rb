@@ -16,12 +16,12 @@ class ExcelToRuby
   def sort_out_output_directories
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
-    FileUtils.mkdir(File.join(output_directory,'intermediate'))
+    FileUtils.mkdir_p(File.join(output_directory,'intermediate'))
   end
   
   def unzip_excel
     self.xml_dir = File.join(output_directory,'xml')
-    puts `unzip -uo #{excel_file} -d #{xml_dir}`
+    puts `unzip -uo '#{excel_file}' -d '#{xml_dir}'`
   end
 
   # Extract the shared strings    
@@ -38,10 +38,11 @@ class ExcelToRuby
   def initial_extract_from_worksheets
     worksheets do |name,xml_filename|
       fork do
+        $0 = "ruby initial extract #{name}"
         initial_extract_from_worksheet(name,xml_filename)
       end
     end
-    Process.wait
+    Process.waitall
   end
   
   # Extracts:
@@ -52,7 +53,7 @@ class ExcelToRuby
   # the values to replace shared strings with their values
   def initial_extract_from_worksheet(name,xml_filename)
     worksheet_directory = File.join(output_directory,'intermediate',name)
-    FileUtils.mkdir(worksheet_directory)
+    FileUtils.mkdir_p(worksheet_directory)
     worksheet_xml = File.open(xml_filename,'r')
     { ExtractValues => 'values', 
       ExtractSimpleFormulae => 'simple_formulae',

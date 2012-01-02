@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require_relative '../src/commands/excel_to_ruby'
+command = ExcelToRuby.new
+command.excel_file = ARGV[0]
+command.output_directory = ARGV[1]
+command.go!
