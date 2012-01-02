@@ -8,3 +8,8 @@ Contains the following elements:
 4. sheetData - contains descriptions of each cell in the worksheet. See the cell.md document for more info.
 5. pageMargins - self explanatory
 6. extLst - ?
+
+## Outputs
+
+extract/extract_worksheet_dimensions.rb will extract the dimensions of a worksheet
+rewrite/rewrite_whole_row_column_references_to_areas.rb will use those dimensions to convert references of the form C:E and 12:15 into those of the form C1:E80 and A12:AA15

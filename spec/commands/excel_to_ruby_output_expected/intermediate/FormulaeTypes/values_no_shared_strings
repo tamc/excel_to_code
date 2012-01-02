@@ -1,16 +1,16 @@
-A1	str	Hello
+A1	str	Simple
 B1	n	2
-A2	str	Hello
+A2	str	Sharing
 B2	n	267.74676148374817
-A3	str	Hello
+A3	str	Shared
 B3	n	267.74676148374817
-A4	str	Hello
+A4	str	Shared
 B4	n	267.74676148374817
-A5	str	Hello
+A5	str	Array (single)
 B5	n	2
-A6	str	Hello
+A6	str	Arraying (multiple)
 B6	str	Not Eight
-A7	str	Hello
+A7	str	Arrayed (multiple)
 B7	str	Not Eight
-A8	str	Hello
+A8	str	Arrayed (multiple)
 B8	str	Not Eight

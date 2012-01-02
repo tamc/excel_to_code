@@ -1,0 +1,3 @@
+A1	[:formula, [:boolean_true]]
+A5	[:formula, [:named_reference, "sdFADSF"]]
+A6	[:formula, [:string, "Hello"]]

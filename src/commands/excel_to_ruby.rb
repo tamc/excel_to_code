@@ -10,7 +10,9 @@ class ExcelToRuby
     sort_out_output_directories
     unzip_excel
     process_workbook
-    initial_extract_from_worksheets
+    extract_values_and_formulas_from_worksheets
+    extract_dimensions_from_worksheets
+    rewrite_worksheets_to_merge_into_single_files
   end
   
   def sort_out_output_directories
@@ -36,8 +38,7 @@ class ExcelToRuby
   end
   
   # Extracts each worksheets values and formulas
-  # Extracts the dimensions of each worksheet and puts them in a single file
-  def initial_extract_from_worksheets
+  def extract_values_and_formulas_from_worksheets
     worksheets do |name,xml_filename|
       fork do
         $0 = "ruby initial extract #{name}"
@@ -45,6 +46,10 @@ class ExcelToRuby
       end
     end
     Process.waitall
+  end
+
+  # Extracts the dimensions of each worksheet and puts them in a single file  
+  def extract_dimensions_from_worksheets    
     dimension_file = output('dimensions')
     worksheets do |name,xml_filename|
       dimension_file.write name
@@ -52,6 +57,26 @@ class ExcelToRuby
       extract ExtractWorksheetDimensions, File.open(xml_filename,'r'), dimension_file 
     end
     dimension_file.close
+  end
+  
+  def rewrite_worksheets_to_merge_into_single_files
+    worksheets do |name,xml_filename|
+      fork do 
+        rewrite_row_and_column_references(name,xml_filename)
+      end
+    end
+  end
+  
+  def rewrite_row_and_column_references(name,xml_filename)
+    dimensions = input('dimensions')
+    %w{simple_formulae.ast shared_formulae.ast array_formulae.ast}.each do |file|
+      dimensions.rewind
+      i = File.open(File.join(output_directory,'intermediate',name,file),'r')
+      o = File.open(File.join(output_directory,'intermediate',name,"#{file}-nocols"),'w')
+      RewriteWholeRowColumnReferencesToAreas.rewrite(i,name, dimensions, o)
+      close(i,o)
+    end
+    dimensions.close
   end
   
   # Extracts:

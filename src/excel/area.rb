@@ -13,11 +13,15 @@ class Area < String
      @@areas_for_text[text]
   end
   
+  attr_reader :excel_start, :excel_finish
+  
   def calculate_excel_variables
     return if @excel_variables_calculated
     self =~ /([^:]+):(.*)/
     @excel_start = Reference.for($1)
     @excel_finish = Reference.for($2)
+    @excel_start.calculate_excel_variables
+    @excel_finish.calculate_excel_variables
   end
   
   def offset(row,column)
@@ -31,8 +35,6 @@ class Area < String
   
   def offsets
     calculate_excel_variables
-    @excel_start.calculate_excel_variables
-    @excel_finish.calculate_excel_variables
     
     columns = @excel_finish.excel_column_number -  @excel_start.excel_column_number
     rows = @excel_finish.excel_row_number -  @excel_start.excel_row_number

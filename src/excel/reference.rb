@@ -31,7 +31,7 @@ class Reference < String
     letters
   end
   
-  attr_reader :excel_row_number, :excel_column_number
+  attr_reader :excel_row_number, :excel_column_number, :excel_column, :excel_row
   
   def calculate_excel_variables
     return if @excel_variables_calculated
