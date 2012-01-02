@@ -1,6 +1,8 @@
 require 'rspec'
 require 'stringio'
+require 'tmpdir'
 
+require_relative '../src/commands'
 require_relative '../src/excel'
 require_relative '../src/extract'
 require_relative '../src/rewrite'
