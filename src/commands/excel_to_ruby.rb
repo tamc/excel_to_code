@@ -10,8 +10,8 @@ class ExcelToRuby
     sort_out_output_directories
     unzip_excel
     process_workbook
-    extract_values_and_formulas_from_worksheets
     extract_dimensions_from_worksheets
+    extract_values_and_formulas_from_worksheets
     rewrite_worksheets_to_merge_into_single_files
   end
   
@@ -63,6 +63,7 @@ class ExcelToRuby
     worksheets do |name,xml_filename|
       fork do 
         rewrite_row_and_column_references(name,xml_filename)
+        rewrite_shared_formulae(name,xml_filename)
       end
     end
   end
@@ -77,6 +78,13 @@ class ExcelToRuby
       close(i,o)
     end
     dimensions.close
+  end
+  
+  def rewrite_shared_formulae(name,xml_filename)
+    i = File.open(File.join(output_directory,'intermediate',name,'shared_formulae.ast-nocols'),'r')
+    o = File.open(File.join(output_directory,'intermediate',name,"formulae_combined.ast"),'w')
+    RewriteSharedFormulae.rewrite(i,o)
+    close(i,o)
   end
   
   # Extracts:
