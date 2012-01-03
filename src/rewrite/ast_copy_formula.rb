@@ -12,11 +12,11 @@ class AstCopyFormula
   
   def copy(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast.shift
+    operator = ast[0]
     if respond_to?(operator)
-      send(operator,*ast)
+      send(operator,*ast[1..-1])
     else
-      [operator,*ast.map {|a| copy(a) }]
+      [operator,*ast[1..-1].map {|a| copy(a) }]
     end
   end
   
