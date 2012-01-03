@@ -1,4 +1,5 @@
 require_relative '../excel'
+require_relative '../util/not_supported_exception'
 
 class AstCopyFormula
   attr_accessor :rows_to_move
@@ -29,4 +30,12 @@ class AstCopyFormula
     [:area,a.offset(rows_to_move,columns_to_move)]
   end
     
+  def column_range(reference)
+    raise NotSupportedException.new("Column ranges not suported in AstCopyFormula")
+  end
+
+  def row_range(reference)
+    raise NotSupportedException.new("Row ranges not suported in AstCopyFormula")
+  end  
+  
 end

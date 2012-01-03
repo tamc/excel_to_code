@@ -15,4 +15,11 @@ describe AstCopyFormula do
     copy.copy([:formula,[:sheet_reference,'sheet1',[:cell,'A1']]]).should == [:formula,[:sheet_reference,'sheet1',[:cell,'B2']]]
   end
   
+  it "should throw an exception if column or row ranges are in the AST" do
+    copy = AstCopyFormula.new
+    lambda { copy.copy([:formula,[:column_range,'C:F']])}.should raise_exception(NotSupportedException)
+    lambda { copy.copy([:formula,[:row_range,'10:12']])}.should raise_exception(NotSupportedException)
+
+  end
+  
 end
