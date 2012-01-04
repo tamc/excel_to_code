@@ -1,5 +1,7 @@
 This allows some excel spreadsheets to be converted into some other programming languages.
 
+It is a (currently incomplete) rewrite of http://github.com/tamc/rubyfromexcel
+
 # Running excel2code
 
 Not yet possible
