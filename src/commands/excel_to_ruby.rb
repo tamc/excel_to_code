@@ -82,7 +82,7 @@ class ExcelToRuby
   
   def rewrite_shared_formulae(name,xml_filename)
     i = File.open(File.join(output_directory,'intermediate',name,'shared_formulae.ast-nocols'),'r')
-    o = File.open(File.join(output_directory,'intermediate',name,"formulae_combined.ast"),'w')
+    o = File.open(File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast"),'w')
     RewriteSharedFormulae.rewrite(i,o)
     close(i,o)
   end
