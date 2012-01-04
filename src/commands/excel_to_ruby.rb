@@ -10,7 +10,6 @@ class ExcelToRuby
     sort_out_output_directories
     unzip_excel
     process_workbook
-    extract_dimensions_from_worksheets
     extract_worksheets
     rewrite_worksheets
     simplify_worksheets
@@ -33,9 +32,14 @@ class ExcelToRuby
   # Use these to create the sheet names and filenames
   def process_workbook    
     extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
+    
+    extract ExtractNamedReferences, 'workbook.xml', 'named_references'
+    rewrite RewriteFormulaeToAst, 'named_references', 'named_references.ast'
+    
     extract ExtractWorksheetNames, 'workbook.xml', 'worksheet_names_without_filenames'
     extract ExtractRelationships, File.join('_rels','workbook.xml.rels'), 'workbook_relationships'
     rewrite RewriteWorksheetNames, 'worksheet_names_without_filenames', 'workbook_relationships', 'worksheet_names'
+    extract_dimensions_from_worksheets
   end
   
   # Extracts each worksheets values and formulas
