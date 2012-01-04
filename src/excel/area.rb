@@ -41,7 +41,7 @@ class Area < String
     Enumerator.new do |yielder|
       0.upto(columns).each do |c|
         0.upto(rows).each do |r|
-          yielder.yield([c,r])
+          yielder.yield([r,c])
         end
       end
     end

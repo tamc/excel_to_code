@@ -8,8 +8,8 @@ describe RewriteSharedFormulae do
     RewriteSharedFormulae.rewrite(input,output)
     expected_output = <<END
 B3	[:formula, [:cell, "A1"]]
-C3	[:formula, [:cell, "B1"]]
 B4	[:formula, [:cell, "A2"]]
+C3	[:formula, [:cell, "B1"]]
 C4	[:formula, [:cell, "B2"]]
 END
     output.string.should == expected_output
