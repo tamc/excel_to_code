@@ -134,7 +134,7 @@ class ExcelToRuby
   end
   
   def simplify_worksheet(name,xml_filename)
-    rewrite RewriteValuesToIncludeSharedStrings, File.join(name,'values.ast'), 'shared_strings', File.join(name,"values_no_shared_strings.ast")
+    replace ReplaceSharedStrings, File.join(name,'values.ast'), 'shared_strings', File.join(name,"values_no_shared_strings.ast")
   end
   
   def worksheets
@@ -161,6 +161,13 @@ class ExcelToRuby
     o = output(args.pop)
     inputs = args.map { |name| input(name) }
     _klass.rewrite(*inputs,o)
+    close(*inputs,o)
+  end
+  
+  def replace(_klass,*args)
+    o = output(args.pop)
+    inputs = args.map { |name| input(name) }
+    _klass.replace(*inputs,o)
     close(*inputs,o)
   end
   

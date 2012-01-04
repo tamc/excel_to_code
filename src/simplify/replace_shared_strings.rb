@@ -1,4 +1,4 @@
-class RewriteSharedStringAst 
+class ReplaceSharedStringAst 
   
   attr_accessor :shared_strings
   
@@ -27,15 +27,15 @@ class RewriteSharedStringAst
 end
   
 
-class RewriteValuesToIncludeSharedStrings
+class ReplaceSharedStrings
   
-  def self.rewrite(values,shared_strings,output)
-    self.new.rewrite(values,shared_strings,output)
+  def self.replace(values,shared_strings,output)
+    self.new.replace(values,shared_strings,output)
   end
   
   # Rewrites ast with shared strings to strings
-  def rewrite(values,shared_strings,output)
-    rewriter = RewriteSharedStringAst.new(shared_strings.readlines)
+  def replace(values,shared_strings,output)
+    rewriter = ReplaceSharedStringAst.new(shared_strings.readlines)
     values.lines do |line|
       # Looks to match shared string lines
       if line =~ /\[:shared_string/

@@ -1,1 +1,1 @@
-require_relative "simplify/rewrite_values_to_include_shared_strings"
+require_relative "simplify/replace_shared_strings"
