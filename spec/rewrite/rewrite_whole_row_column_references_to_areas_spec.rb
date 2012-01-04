@@ -9,12 +9,12 @@ describe RewriteWholeRowColumnReferencesToAreas do
     output = StringIO.new
     RewriteWholeRowColumnReferencesToAreas.rewrite(input,default_worksheet_name,worksheet_dimensions,output)
     expected =<<END
-B2	[:formula, [:function, "SUM", [:area, "F4", "F6"]]]
-C2	[:formula, [:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A3", "A4"]]]]
-B3	[:formula, [:function, "SUM", [:area, "F1", "F6"]]]
-C3	[:formula, [:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A1", "A6"]]]]
-B4	[:formula, [:function, "SUM", [:area, "A5", "G5"]]]
-C4	[:formula, [:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A4", "A4"]]]]
+B2	[:function, "SUM", [:area, "F4", "F6"]]
+C2	[:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A3", "A4"]]]
+B3	[:function, "SUM", [:area, "F1", "F6"]]
+C3	[:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A1", "A6"]]]
+B4	[:function, "SUM", [:area, "A5", "G5"]]
+C4	[:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A4", "A4"]]]
 END
     output.string.should == expected
   end

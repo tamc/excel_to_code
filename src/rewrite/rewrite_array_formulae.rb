@@ -18,20 +18,17 @@ class RewriteArrayFormulae
       start_reference = array_range.excel_start
     
       # First we rewrite the master array formula
-      array_ast = [:formula,[:function,"ARRAYFORMULA",*array_ast[1..-1]]]
-      output.puts "#{start_reference}\t#{array_ast.inspect}"
+      output.puts "#{start_reference}\t#{[:function,"ARRAYFORMULA",array_ast].inspect}"
     
       # Then we rewrite each of the subsidiaries
       array_range.offsets.each do |row,column|
         next if row == 0 && column == 0
         ref = start_reference.offset(row,column)
-        ast = [:formula, [:function,"CONTINUE", [:cell, start_reference], row+1, column+1]]
-        output.puts "#{ref}\t#{ast.inspect}"
+        output.puts "#{ref}\t#{[:function,"CONTINUE", [:cell, start_reference], row+1, column+1].inspect}"
       end
     else
       # Single cell array formula
-      array_ast = [:formula,[:function,"ARRAYFORMULA",*array_ast[1..-1]]]
-      output.puts "#{array_range}\t#{array_ast.inspect}"
+      output.puts "#{array_range}\t#{[:function,"ARRAYFORMULA",array_ast].inspect}"
     end
   end
   

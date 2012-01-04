@@ -21,12 +21,13 @@ describe Formula do
     end  
   end
   
-  checks = test_data('formulae_to_ast.txt').lines.map.with_index { |line,i| [i,line] }.find_all { |line| line.last =~ /\[:formula/ }.map { |line| line.last =~ /(.*?)(\[:formula,.*)/; [line.first,$1,$2] }
+  checks = test_data('formulae_to_ast.txt').lines.map.with_index { |line,i| [i,line] }.find_all { |line| line.last =~ /\[:/ }.map { |line| line.last =~ /(.*?)(\[:.*)/; [line.first,$1,$2] }
   checks.each do |c|
     it "converts #{c[1].strip} into #{c[2].strip} (line #{c[0]+1} of formulae_to_ast.txt)" do
       desired = eval(c[2].strip)
-      actual = Formula.parse(c[1].strip)
-      actual.to_ast.to_s.should == desired.to_s
+      actual = Formula.parse(c[1].strip).to_ast
+      actual = actual[1]
+      actual.to_s.should == desired.to_s
     end
   end
 end

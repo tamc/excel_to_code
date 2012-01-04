@@ -1,2 +1,2 @@
-B1	[:formula, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]]
-B2	[:formula, [:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]]
+B1	[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]
+B2	[:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]

@@ -1,4 +1,4 @@
-B5	[:formula, [:function, "ARRAYFORMULA", [:area, "B1", "B4"]]]
-B6	[:formula, [:function, "ARRAYFORMULA", [:function, "IF", [:comparison, [:area, "B3", "B5"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]]]
-B7	[:formula, [:function, "CONTINUE", [:cell, "B6"], 2, 1]]
-B8	[:formula, [:function, "CONTINUE", [:cell, "B6"], 3, 1]]
+B5	[:function, "ARRAYFORMULA", [:area, "B1", "B4"]]
+B6	[:function, "ARRAYFORMULA", [:function, "IF", [:comparison, [:area, "B3", "B5"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]]
+B7	[:function, "CONTINUE", [:cell, "B6"], 2, 1]
+B8	[:function, "CONTINUE", [:cell, "B6"], 3, 1]

@@ -7,8 +7,8 @@ describe RewriteFormulaeToAst do
     output = StringIO.new
     RewriteFormulaeToAst.rewrite(input,output)
     expected_output = <<END
-B1\t[:formula, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]]
-B3\tB3:B4\t[:formula, [:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]]
+B1\t[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]
+B3\tB3:B4\t[:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]
 END
     output.string.should == expected_output
   end

@@ -6,19 +6,19 @@ describe AstCopyFormula do
     copy = AstCopyFormula.new
     copy.rows_to_move = 1
     copy.columns_to_move = 1
-    copy.copy([:formula,[:cell,'A1']]).should == [:formula,[:cell,'B2']]
-    copy.copy([:formula,[:cell,'$A1']]).should == [:formula,[:cell,'$A2']]
-    copy.copy([:formula,[:cell,'A$1']]).should == [:formula,[:cell,'B$1']]
-    copy.copy([:formula,[:cell,'$A$1']]).should == [:formula,[:cell,'$A$1']]
-    copy.copy([:formula,[:area,'A1:Z10']]).should == [:formula,[:area,'B2:AA11']]
-    copy.copy([:formula,[:area,'A1:Z10']]).should == [:formula,[:area,'B2:AA11']]
-    copy.copy([:formula,[:sheet_reference,'sheet1',[:cell,'A1']]]).should == [:formula,[:sheet_reference,'sheet1',[:cell,'B2']]]
+    copy.copy([:cell,'A1']).should == [:cell,'B2']
+    copy.copy([:cell,'$A1']).should == [:cell,'$A2']
+    copy.copy([:cell,'A$1']).should == [:cell,'B$1']
+    copy.copy([:cell,'$A$1']).should == [:cell,'$A$1']
+    copy.copy([:area,'A1:Z10']).should == [:area,'B2:AA11']
+    copy.copy([:area,'A1:Z10']).should == [:area,'B2:AA11']
+    copy.copy([:sheet_reference,'sheet1',[:cell,'A1']]).should == [:sheet_reference,'sheet1',[:cell,'B2']]
   end
   
   it "should throw an exception if column or row ranges are in the AST" do
     copy = AstCopyFormula.new
-    lambda { copy.copy([:formula,[:column_range,'C:F']])}.should raise_exception(NotSupportedException)
-    lambda { copy.copy([:formula,[:row_range,'10:12']])}.should raise_exception(NotSupportedException)
+    lambda { copy.copy([:column_range,'C:F'])}.should raise_exception(NotSupportedException)
+    lambda { copy.copy([:row_range,'10:12'])}.should raise_exception(NotSupportedException)
 
   end
   
