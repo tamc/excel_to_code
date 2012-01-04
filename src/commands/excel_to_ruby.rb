@@ -11,8 +11,9 @@ class ExcelToRuby
     unzip_excel
     process_workbook
     extract_dimensions_from_worksheets
-    extract_values_and_formulas_from_worksheets
-    rewrite_worksheets_to_merge_into_single_files
+    extract_worksheets
+    rewrite_worksheets
+    simplify_worksheets
   end
   
   def sort_out_output_directories
@@ -38,7 +39,7 @@ class ExcelToRuby
   end
   
   # Extracts each worksheets values and formulas
-  def extract_values_and_formulas_from_worksheets
+  def extract_worksheets
     worksheets do |name,xml_filename|
       fork do
         $0 = "ruby initial extract #{name}"
@@ -59,7 +60,7 @@ class ExcelToRuby
     dimension_file.close
   end
   
-  def rewrite_worksheets_to_merge_into_single_files
+  def rewrite_worksheets
     worksheets do |name,xml_filename|
       fork do 
         rewrite_row_and_column_references(name,xml_filename)
@@ -100,7 +101,6 @@ class ExcelToRuby
   # Formulae (simple, shared and array)
   # Rewrites:
   # the formulae to ast
-  # the values to replace shared strings with their values
   def initial_extract_from_worksheet(name,xml_filename)
     worksheet_directory = File.join(output_directory,'intermediate',name)
     FileUtils.mkdir_p(worksheet_directory)
@@ -113,12 +113,24 @@ class ExcelToRuby
       worksheet_xml.rewind
       extract _klass, worksheet_xml, File.join(name,output_filename)
       if _klass == ExtractValues
-        rewrite RewriteValuesToIncludeSharedStrings, File.join(name,output_filename), 'shared_strings', File.join(name,"#{output_filename}_no_shared_strings")
+        rewrite RewriteValuesToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
       else
         rewrite RewriteFormulaeToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
       end  
     end
     close(worksheet_xml)
+  end
+  
+  def simplify_worksheets
+    worksheets do |name,xml_filename|
+      fork do 
+        simplify_worksheet(name,xml_filename)
+      end
+    end
+  end
+  
+  def simplify_worksheet(name,xml_filename)
+    rewrite RewriteValuesToIncludeSharedStrings, File.join(name,'values.ast'), 'shared_strings', File.join(name,"values_no_shared_strings.ast")
   end
   
   def worksheets
