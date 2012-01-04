@@ -64,6 +64,7 @@ class ExcelToRuby
       fork do 
         rewrite_row_and_column_references(name,xml_filename)
         rewrite_shared_formulae(name,xml_filename)
+        rewrite_array_formulae(name,xml_filename)
       end
     end
   end
@@ -84,6 +85,13 @@ class ExcelToRuby
     i = File.open(File.join(output_directory,'intermediate',name,'shared_formulae.ast-nocols'),'r')
     o = File.open(File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast"),'w')
     RewriteSharedFormulae.rewrite(i,o)
+    close(i,o)
+  end
+  
+  def rewrite_array_formulae(name,xml_filename)
+    i = File.open(File.join(output_directory,'intermediate',name,'array_formulae.ast-nocols'),'r')
+    o = File.open(File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast"),'w')
+    RewriteArrayFormulae.rewrite(i,o)
     close(i,o)
   end
   
