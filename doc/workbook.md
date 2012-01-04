@@ -21,6 +21,7 @@ This has two sections of interest:
 		</sheets>
 		<definedNames>
 			<definedName name="In_result">Inputs!$A$3</definedName>
+			<definedName name="Local_named_reference" localSheetId="3">Inputs!$A$3</definedName>
 		</definedNames>
 		<calcPr calcId="140001" calcMode="manual" concurrentCalc="0"/>
 		<extLst>
@@ -35,6 +36,15 @@ This has two sections of interest:
 ### Worksheet names
 
 The r:id element refers to the associated relationships xml, which translates that r:id into a filename pointing at the worksheet xml
+
+
+### Named references
+
+These may have a 'localSheetId' attribute, whose value maps to the sheetId attribute of the sheet cells. In these cases, the named reference only applies within that worksheet. 
+
+Because of the existence of the localSheetId, names need not be unique.
+
+
 
 ## Output
 
