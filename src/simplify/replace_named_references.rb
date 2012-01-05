@@ -12,7 +12,11 @@ class NamedReferences
   end
   
   def reference_for(sheet,named_reference)
-    @named_references[sheet][named_reference] || @named_references[""][named_reference]
+    if @named_references.has_key?(sheet)
+      @named_references[sheet][named_reference] || @named_references[""][named_reference]
+    else
+      @named_references[""][named_reference]
+    end
   end
   
 end
