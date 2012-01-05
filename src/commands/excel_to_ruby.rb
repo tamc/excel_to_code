@@ -26,10 +26,6 @@ class ExcelToRuby
     puts `unzip -uo '#{excel_file}' -d '#{xml_dir}'`
   end
 
-  # Extract the shared strings    
-  # Extract the sheet names, initialy with relationship references
-  # Extract the workbook relationships
-  # Use these to create the sheet names and filenames
   def process_workbook    
     extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
     
@@ -121,6 +117,13 @@ class ExcelToRuby
       else
         rewrite RewriteFormulaeToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
       end  
+    end
+    worksheet_xml.rewind
+    extract ExtractWorksheetTableRelationships, worksheet_xml, File.join(name,'table_rids')
+    if File.exists?(File.join(xml_dir,'xl','worksheets','_rels',"#{File.basename(xml_filename)}.rels"))
+      extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), File.join(name,'relationships')
+    else
+      FileUtils.touch File.join(output_directory,'intermediate',name,'relationships')
     end
     close(worksheet_xml)
   end

@@ -1,0 +1,8 @@
+B2	[:shared_string, "13"]
+C2	[:shared_string, "14"]
+B3	[:number, "1"]
+C3	[:shared_string, "15"]
+B4	[:number, "2"]
+C4	[:shared_string, "16"]
+B5	[:shared_string, "17"]
+C5	[:number, "2"]

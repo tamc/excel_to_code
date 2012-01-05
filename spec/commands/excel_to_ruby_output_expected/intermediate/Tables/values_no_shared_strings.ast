@@ -1,0 +1,8 @@
+B2	[:string, "ColA"]
+C2	[:string, "ColB"]
+B3	[:number, "1"]
+C3	[:string, "A"]
+B4	[:number, "2"]
+C4	[:string, "B"]
+B5	[:string, "Total"]
+C5	[:number, "2"]
