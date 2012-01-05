@@ -7,7 +7,8 @@ Contains the following elements:
 3. sheetFormatPr - ?
 4. sheetData - contains descriptions of each cell in the worksheet. See the cell.md document for more info.
 5. pageMargins - self explanatory
-6. extLst - ?
+6. tableParts - references to the structured tables that are defined on this workshet (see table documentation)
+7. extLst - ?
 
 ## Outputs
 
