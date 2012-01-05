@@ -135,6 +135,9 @@ class ExcelToRuby
   
   def simplify_worksheet(name,xml_filename)
     replace ReplaceSharedStrings, File.join(name,'values.ast'), 'shared_strings', File.join(name,"values_no_shared_strings.ast")
+    replace ReplaceNamedReferences, File.join(name,'simple_formulae.ast'), name, 'named_references.ast', File.join(name,"simple_formulae_no_named_references.ast")
+    replace ReplaceNamedReferences, File.join(name,'shared_formulae-expanded.ast'),  name, 'named_references.ast', File.join(name,"simple_formulae_no_named_references.ast")
+    replace ReplaceNamedReferences, File.join(name,'array_formulae-expanded.ast'), name, 'named_references.ast', File.join(name,"simple_formulae_no_named_references.ast")
   end
   
   def worksheets
