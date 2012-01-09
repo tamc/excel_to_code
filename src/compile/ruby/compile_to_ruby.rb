@@ -26,7 +26,14 @@ class MapAstToRuby
   end
   
   def number(text)
-    text
+    case text
+    when /\./
+      text.to_f
+    when /e/i
+      text.to_f
+    else
+      text.to_i
+    end
   end
   
 end
