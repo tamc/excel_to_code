@@ -41,7 +41,7 @@ class CompileToRuby
     mapper = MapAstToRuby.new
     input.lines do |line|
       ref, formula = line.split("\t")
-      output.puts "def #{ref.downcase}; #{mapper.map(eval(formula))}; end"
+      output.puts "  def #{ref.downcase}; #{mapper.map(eval(formula))}; end"
     end
   end
   

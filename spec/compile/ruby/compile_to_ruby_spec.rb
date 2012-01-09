@@ -19,11 +19,11 @@ A5\t[:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]]
 END
 
 expected = <<END
-def a1; add(1,1); end
-def a2; subtract(1,1); end
-def a3; multiply(1,1); end
-def a4; divide(1,1); end
-def a5; power(1,1); end
+  def a1; add(1,1); end
+  def a2; subtract(1,1); end
+  def a3; multiply(1,1); end
+  def a4; divide(1,1); end
+  def a5; power(1,1); end
 END
 
 compile(input).should == expected

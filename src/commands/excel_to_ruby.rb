@@ -11,14 +11,20 @@ class ExcelToRuby
     unzip_excel
     process_workbook
     extract_worksheets
+    Process.waitall
     rewrite_worksheets
+    Process.waitall
     simplify_worksheets
+    Process.waitall
+    compile_worksheets
+    Process.waitall
   end
   
   def sort_out_output_directories
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
     FileUtils.mkdir_p(File.join(output_directory,'intermediate'))
+    FileUtils.mkdir_p(File.join(output_directory,'ruby'))
   end
   
   def unzip_excel
@@ -46,7 +52,6 @@ class ExcelToRuby
         initial_extract_from_worksheet(name,xml_filename)
       end
     end
-    Process.waitall
   end
 
   # Extracts the dimensions of each worksheet and puts them in a single file  
@@ -147,8 +152,27 @@ class ExcelToRuby
   def simplify_worksheet(name,xml_filename)
     replace ReplaceSharedStrings, File.join(name,'values.ast'), 'shared_strings', File.join(name,"values_no_shared_strings.ast")
     replace ReplaceNamedReferences, File.join(name,'simple_formulae.ast'), name, 'named_references.ast', File.join(name,"simple_formulae_no_named_references.ast")
-    replace ReplaceNamedReferences, File.join(name,'shared_formulae-expanded.ast'),  name, 'named_references.ast', File.join(name,"simple_formulae_no_named_references.ast")
-    replace ReplaceNamedReferences, File.join(name,'array_formulae-expanded.ast'), name, 'named_references.ast', File.join(name,"simple_formulae_no_named_references.ast")
+    replace ReplaceNamedReferences, File.join(name,'shared_formulae-expanded.ast'),  name, 'named_references.ast', File.join(name,"shared_formulae_no_named_references.ast")
+    replace ReplaceNamedReferences, File.join(name,'array_formulae-expanded.ast'), name, 'named_references.ast', File.join(name,"array_formulae_no_named_references.ast")
+  end
+  
+  def compile_worksheets
+    worksheets do |name,xml_filename|
+      fork do 
+        compile_worksheet(name,xml_filename)
+      end
+    end    
+  end
+  
+  def compile_worksheet(name,xml_filename)
+    i = input(name,"simple_formulae_no_named_references.ast")
+    o = ruby("#{name.downcase}.rb")
+    o.puts "# #{name}"
+    o.puts
+    o.puts "class #{name.capitalize}"
+    CompileToRuby.rewrite(i, o)
+    o.puts "end"
+    close(i,o)
   end
   
   def worksheets
@@ -195,6 +219,10 @@ class ExcelToRuby
   
   def output(*args)
     File.open(File.join(output_directory,'intermediate',*args),'w')
+  end
+  
+  def ruby(*args)
+    File.open(File.join(output_directory,'ruby',*args),'w')
   end
   
   def close(*args)
