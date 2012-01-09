@@ -8,6 +8,7 @@ require_relative '../src/excel'
 require_relative '../src/extract'
 require_relative '../src/rewrite'
 require_relative '../src/simplify'
+require_relative '../src/compile'
 
 def excel_fragment(name)
   File.open(File.join(File.dirname(__FILE__),'test_data',name))
