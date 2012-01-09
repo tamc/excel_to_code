@@ -122,8 +122,16 @@ class ExcelToRuby
     extract ExtractWorksheetTableRelationships, worksheet_xml, File.join(name,'table_rids')
     if File.exists?(File.join(xml_dir,'xl','worksheets','_rels',"#{File.basename(xml_filename)}.rels"))
       extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), File.join(name,'relationships')
+      rewrite RewriteRelationshipIdToFilename, File.join(name,'table_rids'), File.join(name,'relationships'), File.join(name,'table_filenames')
+      tables = output(name,'tables')
+      table_extractor = ExtractTable.new(name)
+      input(name,'table_filenames').lines.each do |line|
+        extract table_extractor, File.join('worksheets',line.strip), tables
+      end
     else
       FileUtils.touch File.join(output_directory,'intermediate',name,'relationships')
+      FileUtils.touch File.join(output_directory,'intermediate',name,'table_filenames')      
+      FileUtils.touch File.join(output_directory,'intermediate',name,'tables')      
     end
     close(worksheet_xml)
   end
