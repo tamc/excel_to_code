@@ -163,12 +163,13 @@ class ExcelToRuby
   def compile_worksheets
     worksheets do |name,xml_filename|
       fork do 
-        compile_worksheet(name,xml_filename)
+        compile_worksheet_code(name,xml_filename)
+        compile_worksheet_test(name,xml_filename)
       end
     end    
   end
   
-  def compile_worksheet(name,xml_filename)
+  def compile_worksheet_code(name,xml_filename)
     i = input(name,"simple_formulae_no_named_references.ast")
     o = ruby("#{name.downcase}.rb")
     o.puts "# #{name}"
@@ -178,6 +179,20 @@ class ExcelToRuby
     o.puts "end"
     close(i,o)
   end
+
+  def compile_worksheet_test(name,xml_filename)
+    i = input(name,"values_no_shared_strings.ast")
+    o = ruby("test_#{name.downcase}.rb")
+    o.puts "# Test for #{name}"
+    o.puts  "require 'test/unit'"
+    o.puts  "require_relative '../#{name.capitalize}"
+    o.puts
+    o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
+    CompileToRubyUnitTest.rewrite(i, o)
+    o.puts "end"
+    close(i,o)
+  end
+
   
   def worksheets
     IO.readlines(File.join(output_directory,'intermediate','worksheet_names')).each do |line|
