@@ -9,7 +9,7 @@ describe CompileToRuby do
     output.string
   end
   
-it "should compile simple arithmatic" do
+it "should compile simple arithmetic" do
 input = <<END
 A1\t[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]
 A2\t[:arithmetic, [:number, "1"], [:operator, "-"], [:number, "1"]]
