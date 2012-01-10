@@ -34,17 +34,23 @@ class Area < String
   end
   
   def offsets
-    calculate_excel_variables
-    
-    columns = @excel_finish.excel_column_number -  @excel_start.excel_column_number
-    rows = @excel_finish.excel_row_number -  @excel_start.excel_row_number
     Enumerator.new do |yielder|
-      0.upto(columns).each do |c|
-        0.upto(rows).each do |r|
+      0.upto(width).each do |c|
+        0.upto(height).each do |r|
           yielder.yield([r,c])
         end
       end
     end
+  end
+  
+  def height
+    calculate_excel_variables
+    @excel_finish.excel_row_number -  @excel_start.excel_row_number
+  end
+  
+  def width
+    calculate_excel_variables
+    @excel_finish.excel_column_number -  @excel_start.excel_column_number
   end
 
 end

@@ -29,5 +29,17 @@ describe Area do
   it "should be able to enumerate offsets of references, relative to starting point" do
     Area.for("A1:B2").offsets.to_a == [[0,0],[1,0],[0,1],[1,1]]
   end
+  
+  it "should be able to return the height of the area" do
+    Area.for("A1:B1").height.should == 0
+    Area.for("A1:B2").height.should == 1
+    Area.for("A1:A3").height.should == 2
+  end
+  
+  it "should be able to return the width of the area" do
+    Area.for("A1:A3").width.should == 0
+    Area.for("A1:B3").width.should == 1
+    Area.for("A3:C3").width.should == 2
+  end
 
 end

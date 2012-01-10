@@ -1,1 +1,16 @@
-C5	SUBTOTAL(103,FirstTable[ColB])
+G2	FirstTable[[#Headers],[ColB]:[Column1]]
+D3	FirstTable[[#This Row],[ColA]:[ColB]]
+D4	FirstTable[[#This Row],[ColA]:[ColB]]
+F4	FirstTable[[#This Row],[ColB]]
+G4	FirstTable[#This Row]
+H4	FirstTable[[#This Row],[ColB]:[Column1]]
+B5	SUM(FirstTable[ColA])
+C5	SUM(FirstTable[ColB])
+E6	FirstTable[#Headers]
+E7	FirstTable[#Totals]
+E8	FirstTable[#All]
+E9	SUM(FirstTable[#Data])
+C10	FirstTable[#Totals]
+E10	SUM(FirstTable[])
+C11	SUM(FirstTable[ColA])
+C12	FirstTable[[#Totals],[ColA]]
