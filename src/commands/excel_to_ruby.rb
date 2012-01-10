@@ -75,6 +75,7 @@ class ExcelToRuby
         rewrite_row_and_column_references(name,xml_filename)
         rewrite_shared_formulae(name,xml_filename)
         rewrite_array_formulae(name,xml_filename)
+        combine_formulae_files(name,xml_filename)
       end
     end
   end
@@ -103,6 +104,14 @@ class ExcelToRuby
     o = File.open(File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast"),'w')
     RewriteArrayFormulae.rewrite(i,o)
     close(i,o)
+  end
+  
+  def combine_formulae_files(name,xml_filename)
+    simple_formulae = File.join(output_directory,'intermediate',name,"simple_formulae.ast-nocols")
+    shared_formulae = File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast")
+    array_formulae = File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast")
+    combined_formulae = File.join(output_directory,'intermediate',name,"formulae.ast")
+    p `cat '#{simple_formulae}' '#{shared_formulae}' '#{array_formulae}' | sort > '#{combined_formulae}'`
   end
   
   # Extracts:
