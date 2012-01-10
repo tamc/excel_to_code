@@ -1,3 +1,0 @@
-# Ranges
-
-class Ranges

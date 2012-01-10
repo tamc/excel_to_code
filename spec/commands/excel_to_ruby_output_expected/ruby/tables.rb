@@ -1,3 +1,0 @@
-# Tables
-
-class Tables
