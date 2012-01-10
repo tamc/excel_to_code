@@ -4,7 +4,9 @@ It is a (currently incomplete) rewrite of http://github.com/tamc/rubyfromexcel
 
 # Running excel2code
 
-Not yet possible
+Doesn't work yet, but the story so far is delivered by running:
+
+    ./bin/excel_to_ruby <excelfile.xlsx> <outputdirectory>
 
 # Testing excel2code
 
