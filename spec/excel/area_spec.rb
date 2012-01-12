@@ -26,7 +26,7 @@ describe Area do
     Area.for("A$1:B10").offset(1,1).should == "B$1:C11"
   end
   
-  it "should be able to enumerate offsets of references, relative to starting point" do
+  it "should be able to enumerate [row,col] offsets of references, relative to starting point" do
     Area.for("A1:B2").offsets.to_a == [[0,0],[1,0],[0,1],[1,1]]
   end
   
@@ -40,6 +40,11 @@ describe Area do
     Area.for("A1:A3").width.should == 0
     Area.for("A1:B3").width.should == 1
     Area.for("A3:C3").width.should == 2
+  end
+  
+  it "should be able to return an equivalent array literal (e.g., {A1,B1;A2,B2})" do
+    Area.for("A1:A1").to_array_literal.should == [:array,[:row,[:cell,'A1']]]
+    Area.for("A1:A1").to_array_literal('worksheet').should == [:array,[:row,[:sheet_reference,'worksheet',[:cell,'A1']]]]
   end
 
 end

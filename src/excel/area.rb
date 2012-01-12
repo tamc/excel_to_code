@@ -52,5 +52,28 @@ class Area < String
     calculate_excel_variables
     @excel_finish.excel_column_number -  @excel_start.excel_column_number
   end
+  
+  def to_array_literal(sheet = nil)
+    [:array,
+      *(0.upto(height).map do |row|
+        [:row,
+          *(0.upto(width).map do |column|
+            if sheet
+              [:sheet_reference, 
+                sheet,
+                [:cell,
+                  @excel_start.offset(row,column)
+                ]
+              ]
+            else
+              [:cell,
+                @excel_start.offset(row,column)
+              ]
+            end
+          end)
+        ]
+      end)
+    ]
+  end
 
 end
