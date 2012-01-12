@@ -1,49 +1,63 @@
-# Simple references
+# parses numbers
+1	[:number, "1"]
+103.287	[:number, "103.287"]
+-1.0E-27	[:number, "-1.0E-27"]
+
+# parses booleans
+TRUE*FALSE	[:arithmetic, [:boolean_true], [:operator, "*"], [:boolean_false]]
+  
+# parses prefixes (+/-)
+-(3-1)"	[:prefix, "-", [:brackets, [:arithmetic, [:number, "3"], [:operator, "-"], [:number, "1"]]]]
+
+# parses percentages
+1%"	[:percentage, "1"]
+103.287%"	[:percentage, "103.287"]
+-1.0%"	[:percentage, "-1.0"]
+
+# parses strings
+"A handy string"	[:string, "A handy string"]
+"$A$1"	[:string, "$A$1"]
+"Double quotes "" do not end strings."	 [:string, "Double quotes \"\" do not end strings."]
+"A ""quote"""	 [:string, "A \"\"quote\"\""]
+
+# parses simple references
 $A$1	[:cell, "$A$1"]
 A1	[:cell, "A1"]
 $A1	[:cell, "$A1"]
 A$1	[:cell, "A$1"]
 AAA1123	[:cell, "AAA1123"]
 
-# Ranges
+# parses ranges
 $A$1:$Z$1	[:area, "$A$1", "$Z$1"]
 A1:$Z$1	[:area, "A1", "$Z$1"]
 $1:$1000	[:row_range, "$1", "$1000"]
 1000:1	[:row_range, "1000", "1"]
 $C:$AZ	[:column_range, "$C", "$AZ"]
-C:AZ	[:column_range, "C", "AZ"]    
+C:AZ	[:column_range, "C", "AZ"]
 
-# returns references to other sheets
+# parses references to other sheets
 sheet1!$A$1	[:sheet_reference, "sheet1", [:cell, "$A$1"]]
 sheet1!$A$1:$Z$1	[:sheet_reference, "sheet1", [:area, "$A$1", "$Z$1"]]
 sheet1!$1:$1000	[:sheet_reference, "sheet1", [:row_range, "$1", "$1000"]]
 sheet1!$C:$AZ	[:sheet_reference, "sheet1", [:column_range, "$C", "$AZ"]]
 Control!#REF!	[:sheet_reference, "Control", [:named_reference, "#REF!"]]
   
-# returns references to other sheets with extended names
+# parses references to other sheets with extended names
 'sheet 1'!$A$1"	[:quoted_sheet_reference, "sheet 1", [:cell, "$A$1"]]
 'sheet 1'!$A$1:$Z$1"	[:quoted_sheet_reference, "sheet 1", [:area, "$A$1", "$Z$1"]]
 'sheet 1'!$1:$1000"	[:quoted_sheet_reference, "sheet 1", [:row_range, "$1", "$1000"]]
 'sheet 1'!$C:$AZ"	[:quoted_sheet_reference, "sheet 1", [:column_range, "$C", "$AZ"]]
 '2007.0'!Year.Matrix"	[:quoted_sheet_reference, "2007.0", [:named_reference, "Year.Matrix"]]
-  
-# returns numbers
-1	[:number, "1"]
-103.287	[:number, "103.287"]
--1.0E-27	[:number, "-1.0E-27"]
 
-# returns percentages
-1%"	[:percentage, "1"]
-103.287%"	[:percentage, "103.287"]
--1.0%"	[:percentage, "-1.0"]
+# parses external references
+INDEX([1]!Modules[Module], MATCH($C5, [1]!Modules[Code], 0))	[:function, "INDEX", [:external_reference, "[1]!", [:table_reference, "Modules", "Module"]], [:function, "MATCH", [:cell, "$C5"], [:external_reference, "[1]!", [:table_reference, "Modules", "Code"]], [:number, "0"]]]
 
-# returns strings
-"A handy string"	[:string, "A handy string"]
-"$A$1"	[:string, "$A$1"]
-"Double quotes "" do not end strings."	 [:string, "Double quotes \"\" do not end strings."]
-"A ""quote"""	 [:string, "A \"\"quote\"\""]
+# parses named references
+EF.NaturalGas.N2O	[:named_reference, "EF.NaturalGas.N2O"]
+USD2009_	[:named_reference, "USD2009_"]
+(F47*(USD2009_/Unit.boe))*(Price2009)	[:arithmetic, [:brackets, [:arithmetic, [:cell, "F47"], [:operator, "*"], [:brackets, [:arithmetic, [:named_reference, "USD2009_"], [:operator, "/"], [:named_reference, "Unit.boe"]]]]], [:operator, "*"], [:brackets, [:named_reference, "Price2009"]]]
 
-# returns string joins
+# parses string joins
 "A handy string"&$A$1	[:string_join, [:string, "A handy string"], [:cell, "$A$1"]]
 $A$1&"A handy string"	[:string_join, [:cell, "$A$1"], [:string, "A handy string"]]
 $A$1&"A handy string"&$A$1	[:string_join, [:cell, "$A$1"], [:string, "A handy string"], [:cell, "$A$1"]]
@@ -53,19 +67,19 @@ $A$1&$A$1&$A$1	[:string_join, [:cell, "$A$1"], [:cell, "$A$1"], [:cell, "$A$1"]]
 "Approximate total "&$F$87/$F$87&" GW locations"	[:string_join, [:string, "Approximate total "], [:arithmetic, [:cell, "$F$87"], [:operator, "/"], [:cell, "$F$87"]], [:string, " GW locations"]]
 "Approximate total "&$F$87/Unit.GW&" GW locations"	[:string_join, [:string, "Approximate total "], [:arithmetic, [:cell, "$F$87"], [:operator, "/"], [:named_reference, "Unit.GW"]], [:string, " GW locations"]]
 
-# returns numeric operations
+# parses numeric operations
 $A$1+$A$2+1	[:arithmetic, [:cell, "$A$1"], [:operator, "+"], [:cell, "$A$2"], [:operator, "+"], [:number, "1"]]
 $A$1-$A$2-1	[:arithmetic, [:cell, "$A$1"], [:operator, "-"], [:cell, "$A$2"], [:operator, "-"], [:number, "1"]]
 $A$1*$A$2*1	[:arithmetic, [:cell, "$A$1"], [:operator, "*"], [:cell, "$A$2"], [:operator, "*"], [:number, "1"]]
 $A$1/$A$2/1	[:arithmetic, [:cell, "$A$1"], [:operator, "/"], [:cell, "$A$2"], [:operator, "/"], [:number, "1"]]
 $A$1^$A$2^1	[:arithmetic, [:cell, "$A$1"], [:operator, "^"], [:cell, "$A$2"], [:operator, "^"], [:number, "1"]]
 
-# returns expressions in brackets
+# parses expressions in brackets
 ($A$1+$A$2)	[:brackets, [:arithmetic, [:cell, "$A$1"], [:operator, "+"], [:cell, "$A$2"]]]
 ($A$1+$A$2)+2	[:arithmetic, [:brackets, [:arithmetic, [:cell, "$A$1"], [:operator, "+"], [:cell, "$A$2"]]], [:operator, "+"], [:number, "2"]]
 ($A$1+$A$2)+(2+(1*2))	[:arithmetic, [:brackets, [:arithmetic, [:cell, "$A$1"], [:operator, "+"], [:cell, "$A$2"]]], [:operator, "+"], [:brackets, [:arithmetic, [:number, "2"], [:operator, "+"], [:brackets, [:arithmetic, [:number, "1"], [:operator, "*"], [:number, "2"]]]]]]
 
-# returns comparisons
+# parses comparisons
 $A$1>$A$2"	[:comparison, [:cell, "$A$1"], [:comparator, ">"], [:cell, "$A$2"]]
 $A$1<$A$2"	[:comparison, [:cell, "$A$1"], [:comparator, "<"], [:cell, "$A$2"]]
 $A$1=$A$2"	[:comparison, [:cell, "$A$1"], [:comparator, "="], [:cell, "$A$2"]]
@@ -75,14 +89,14 @@ $A$1<>$A$2	[:comparison, [:cell, "$A$1"], [:comparator, "<>"], [:cell, "$A$2"]]
 IF(1+2>0, 1, 0)"	[:function, "IF", [:comparison, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "2"]], [:comparator, ">"], [:number, "0"]], [:number, "1"], [:number, "0"]]
 IF(G431-F431+F450>0, G431-F431+F450, 0)"	[:function, "IF", [:comparison, [:arithmetic, [:cell, "G431"], [:operator, "-"], [:cell, "F431"], [:operator, "+"], [:cell, "F450"]], [:comparator, ">"], [:number, "0"]], [:arithmetic, [:cell, "G431"], [:operator, "-"], [:cell, "F431"], [:operator, "+"], [:cell, "F450"]], [:number, "0"]]
   
-# returns functions
+# parses functions
 PI()	[:function, "PI"]
 ERR($A$1)	[:function, "ERR", [:cell, "$A$1"]]
 SUM($A$1, sheet1!$1:$1000, 1)"	[:function, "SUM", [:cell, "$A$1"], [:sheet_reference, "sheet1", [:row_range, "$1", "$1000"]], [:number, "1"]]
 IF(A2="Hello", "hello", sheet1!B4)	[:function, "IF", [:comparison, [:cell, "A2"], [:comparator, "="], [:string, "Hello"]], [:string, "hello"], [:sheet_reference, "sheet1", [:cell, "B4"]]]
 IF(a23>=(1.0+b38), 1.0, 2.0)	[:function, "IF", [:comparison, [:cell, "a23"], [:comparator, ">="], [:brackets, [:arithmetic, [:number, "1.0"], [:operator, "+"], [:cell, "b38"]]]], [:number, "1.0"], [:number, "2.0"]]
   
-# returns fully qualified structured references (i.e., Table[column])
+# parses fully qualified structured references (i.e., Table[column])
 DeptSales[Sale Amount]	[:table_reference, "DeptSales", "Sale Amount"]
 DeptSales[[#Totals],[ColA]]	[:table_reference, "DeptSales", "[#Totals],[ColA]"]
 IV.Outputs[Vector]	[:table_reference, "IV.Outputs", "Vector"]
@@ -92,39 +106,24 @@ MAX(-SUM(I.a.Inputs[2007])-F$80, 0)"	[:function, "MAX", [:arithmetic, [:prefix, 
 DeptSales_101[Sale Amount]"	[:table_reference, "DeptSales_101", "Sale Amount"]
 EF.I.a.PM10[2010]	[:table_reference, "EF.I.a.PM10", "2010"]
 
-# returns booleans
-TRUE*FALSE"	[:arithmetic, [:boolean_true], [:operator, "*"], [:boolean_false]]
-  
-# returns prefixes (+/-)
--(3-1)"	[:prefix, "-", [:brackets, [:arithmetic, [:number, "3"], [:operator, "-"], [:number, "1"]]]]
-  
-# returns local structured references (i.e., [column])
+# parses local structured references (i.e., [column])
 [Sale Amount]"	[:local_table_reference, "Sale Amount"]
-  
-# returns named references
-EF.NaturalGas.N2O	[:named_reference, "EF.NaturalGas.N2O"]
-USD2009_	[:named_reference, "USD2009_"]
-(F47*(USD2009_/Unit.boe))*(Price2009)	[:arithmetic, [:brackets, [:arithmetic, [:cell, "F47"], [:operator, "*"], [:brackets, [:arithmetic, [:named_reference, "USD2009_"], [:operator, "/"], [:named_reference, "Unit.boe"]]]]], [:operator, "*"], [:brackets, [:named_reference, "Price2009"]]]
-
-  
-# returns infix modifiers in edge cases
+   
+# parses infix modifiers in edge cases
 (-'DUKES 09 (2.5)'!$B$25)	[:brackets, [:prefix, "-", [:quoted_sheet_reference, "DUKES 09 (2.5)", [:cell, "$B$25"]]]]
 -(INDEX(INDIRECT(BI$19&"!Year.Matrix"), MATCH("Subtotal.Supply", INDIRECT(BI$19&"!Year.Modules"), 0), MATCH("V.04", INDIRECT(BI$19&"!Year.Vectors"), 0))+INDEX(INDIRECT(BI$19&"!Year.Matrix"),MATCH("Subtotal.Consumption",INDIRECT(BI$19&"!Year.Modules"), 0),MATCH("V.04",INDIRECT(BI$19&"!Year.Vectors"), 0)))	[:prefix, "-", [:brackets, [:arithmetic, [:function, "INDEX", [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Matrix"]]], [:function, "MATCH", [:string, "Subtotal.Supply"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Modules"]]], [:number, "0"]], [:function, "MATCH", [:string, "V.04"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Vectors"]]], [:number, "0"]]], [:operator, "+"], [:function, "INDEX", [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Matrix"]]], [:function, "MATCH", [:string, "Subtotal.Consumption"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Modules"]]], [:number, "0"]], [:function, "MATCH", [:string, "V.04"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Vectors"]]], [:number, "0"]]]]]]
 MAX(MIN(F121, -F22), 0)"	[:function, "MAX", [:function, "MIN", [:cell, "F121"], [:prefix, "-", [:cell, "F22"]]], [:number, "0"]]
 IFERROR(INDEX(INDIRECT($C102&".Outputs["&this.Year&"]"), MATCH(Z$5, INDIRECT($C102&".Outputs[Vector]"), 0)), 0)'	[:function, "IFERROR", [:function, "INDEX", [:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs["], [:named_reference, "this.Year"], [:string, "]"]]], [:function, "MATCH", [:cell, "Z$5"], [:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs[Vector]"]]], [:number, "0"]]], [:number, "0"]]
 INDIRECT($C102&".Outputs["&this.Year&"]")	[:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs["], [:named_reference, "this.Year"], [:string, "]"]]]
   
-# returns formulas with spaces
+# parses formulas with spaces
 (13.56 / 96935) * EF.IndustrialCoal.CO2 * GWP.CH4	[:arithmetic, [:brackets, [:arithmetic, [:number, "13.56"], [:operator, "/"], [:number, "96935"]]], [:operator, "*"], [:named_reference, "EF.IndustrialCoal.CO2"], [:operator, "*"], [:named_reference, "GWP.CH4"]]
 "per " & Preferences.EnergyUnits	[:string_join, [:string, "per "], [:named_reference, "Preferences.EnergyUnits"]]
  0.00403/$F$76	[:arithmetic, [:number, "0.00403"], [:operator, "/"], [:cell, "$F$76"]]
 SUMIFS(INDEX($G$62:$J$73, , MATCH($E$11, $G$61:$J$61, 0)), $C$62:$C$73, $C195, $D$62:$D$73, $D195)	[:function, "SUMIFS", [:function, "INDEX", [:area, "$G$62", "$J$73"], [:null], [:function, "MATCH", [:cell, "$E$11"], [:area, "$G$61", "$J$61"], [:number, "0"]]], [:area, "$C$62", "$C$73"], [:cell, "$C195"], [:area, "$D$62", "$D$73"], [:cell, "$D195"]]
   
-# returns formulas that use table range references
+# parses formulas that use table range references
 SUM(EF[[#This Row],[CO2]:[N2O]])	[:function, "SUM", [:table_reference, "EF", "[#This Row],[CO2]:[N2O]"]]
-
-# parses external references
-INDEX([1]!Modules[Module], MATCH($C5, [1]!Modules[Code], 0))	[:function, "INDEX", [:external_reference, "[1]!", [:table_reference, "Modules", "Module"]], [:function, "MATCH", [:cell, "$C5"], [:external_reference, "[1]!", [:table_reference, "Modules", "Code"]], [:number, "0"]]]
 
 # parses buggy references
 'Calcs'!a17	[:quoted_sheet_reference, "Calcs", [:cell, "a17"]]
@@ -132,3 +131,12 @@ INDEX([1]!Modules[Module], MATCH($C5, [1]!Modules[Code], 0))	[:function, "INDEX"
   
 # parses tricky indirect match table combos
 INDEX(INDIRECT("'"&XVI.a.Inputs[#Headers]&"'!Year.Matrix"), MATCH("Subtotal."&$A$2, INDIRECT("'"&XVI.a.Inputs[#Headers]&"'!Year.Modules"), 0), MATCH([Vector], INDIRECT("'"&XVI.a.Inputs[#Headers]&"'!Year.Vectors"), 0))	[:function, "INDEX", [:function, "INDIRECT", [:string_join, [:string, "'"], [:table_reference, "XVI.a.Inputs", "#Headers"], [:string, "'!Year.Matrix"]]], [:function, "MATCH", [:string_join, [:string, "Subtotal."], [:cell, "$A$2"]], [:function, "INDIRECT", [:string_join, [:string, "'"], [:table_reference, "XVI.a.Inputs", "#Headers"], [:string, "'!Year.Modules"]]], [:number, "0"]], [:function, "MATCH", [:local_table_reference, "Vector"], [:function, "INDIRECT", [:string_join, [:string, "'"], [:table_reference, "XVI.a.Inputs", "#Headers"], [:string, "'!Year.Vectors"]]], [:number, "0"]]]
+
+# Parses array literals
+{1}	[:array,[:row,[:number,"1"]]]
+{1,2,3}	[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]]]
+{1;2;3} [:array,[:row,[:number,"1"]],[:row,[:number,"2"]],[:row,[:number,"3"]]]
+{1,2,3;4,5,6}	[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]],[:row,[:number,"4"],[:number,"5"],[:number,"6"]]]
+{ 1 , 2 , 3 ; 4 , 5 , 6 }	[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]],[:row,[:number,"4"],[:number,"5"],[:number,"6"]]]
+SUM({1,2,3})	[:function,"SUM",[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]]]]
+{1,2,3}*{4,5,6}	[:arithmetic,[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]]],[:operator,"*"],[:array,[:row,[:number,"4"],[:number,"5"],[:number,"6"]]]]

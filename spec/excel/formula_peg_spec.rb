@@ -25,9 +25,17 @@ describe Formula do
   checks.each do |c|
     it "converts #{c[1].strip} into #{c[2].strip} (line #{c[0]+1} of formulae_to_ast.txt)" do
       desired = eval(c[2].strip)
-      actual = Formula.parse(c[1].strip).to_ast
-      actual = actual[1]
+      parser = Formula.new      
+      actual = parser.parse(c[1].strip)
+      if actual
+        actual = actual.to_ast[1]
+      else
+        actual = "Failed to parse"
+      end
       actual.to_s.should == desired.to_s
+      unless actual.to_s == desired.to_s
+        parser.pretty_print_cache(true)
+      end
     end
   end
 end

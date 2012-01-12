@@ -17,7 +17,7 @@ class Formula < RubyPeg
   end
   
   def thing
-    function || brackets || any_reference || string || percentage || number || boolean || prefix || named_reference
+    function || array || brackets || any_reference || string || percentage || number || boolean || prefix || named_reference
   end
   
   def argument
@@ -34,6 +34,22 @@ class Formula < RubyPeg
     node :brackets do
       ignore { terminal("(") } && space && one_or_more { expression } && space && ignore { terminal(")") }
     end
+  end
+  
+  def array
+    node :array do
+      ignore { terminal("{") } && space && row && any_number_of { (space && ignore { terminal(";") } && space && row) } && space && ignore { terminal("}") }
+    end
+  end
+  
+  def row
+    node :row do
+      basic_type && any_number_of { (space && ignore { terminal(",") } && space && basic_type) }
+    end
+  end
+  
+  def basic_type
+    string || percentage || number || boolean
   end
   
   def string_join
@@ -164,7 +180,7 @@ class Formula < RubyPeg
   
   def row_range
     node :row_range do
-      row && ignore { terminal(":") } && row
+      row_number && ignore { terminal(":") } && row_number
     end
   end
   
@@ -180,7 +196,7 @@ class Formula < RubyPeg
     end
   end
   
-  def row
+  def row_number
     terminal(/\$?\d+/)
   end
   
