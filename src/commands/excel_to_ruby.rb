@@ -166,6 +166,7 @@ class ExcelToRuby
     replace ReplaceSharedStrings, File.join(name,'formulae.ast'), 'shared_strings', File.join(name,"formulae_no_shared_strings.ast")
     replace ReplaceNamedReferences, File.join(name,'formulae_no_shared_strings.ast'), name, 'named_references.ast', File.join(name,"formulae_no_named_references.ast")
     replace ReplaceTableReferences, File.join(name,'formulae_no_named_references.ast'), name, File.join(name,'tables'), File.join(name,"formulae_no_table_references.ast")
+    replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast") 
   end
   
   def compile_worksheets
@@ -178,7 +179,7 @@ class ExcelToRuby
   end
   
   def compile_worksheet_code(name,xml_filename)
-    i = input(name,"simple_formulae_no_named_references.ast")
+    i = input(name,"formulae_no_ranges.ast")
     o = ruby("#{name.downcase}.rb")
     o.puts "# #{name}"
     o.puts

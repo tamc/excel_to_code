@@ -1,0 +1,8 @@
+B1	[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]
+B2	[:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]
+B3	[:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]
+B4	[:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]
+B5	[:function, "ARRAYFORMULA", [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]], [:row, [:cell, "B3"]], [:row, [:cell, "B4"]]]]
+B6	[:function, "ARRAYFORMULA", [:function, "IF", [:comparison, [:array, [:row, [:cell, "B3"]], [:row, [:cell, "B4"]], [:row, [:cell, "B5"]]], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]]
+B7	[:function, "CONTINUE", [:cell, "B6"], 2, 1]
+B8	[:function, "CONTINUE", [:cell, "B6"], 3, 1]
