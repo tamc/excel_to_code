@@ -4,9 +4,9 @@ class MapValuesToRuby
 
   def map(ast)
     if ast.is_a?(Array)
-      operator = ast.shift
+      operator = ast[0]
       if respond_to?(operator)
-        send(operator,*ast)
+        send(operator,*ast[1..-1])
       else
         raise NotSupportedException.new("#{operator} in #{ast.inspect} not supported")
       end
