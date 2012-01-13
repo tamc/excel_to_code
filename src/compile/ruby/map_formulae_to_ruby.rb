@@ -42,7 +42,6 @@ class MapFormulaeToRuby < MapValuesToRuby
   end
   
   def sheet_reference(sheet,reference)
-    puts "Looking for #{sheet.inspect} in #{sheet_names.inspect}"
     "#{sheet_names[sheet]}.#{map(reference)}"
   end
   
