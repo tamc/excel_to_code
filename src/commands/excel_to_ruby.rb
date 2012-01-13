@@ -45,6 +45,8 @@ class ExcelToRuby
     extract ExtractWorksheetNames, 'workbook.xml', 'worksheet_names_without_filenames'
     extract ExtractRelationships, File.join('_rels','workbook.xml.rels'), 'workbook_relationships'
     rewrite RewriteWorksheetNames, 'worksheet_names_without_filenames', 'workbook_relationships', 'worksheet_names'
+    rewrite MapSheetNamesToRubyNames, 'worksheet_names', 'worksheet_ruby_names'
+    
     extract_dimensions_from_worksheets
   end
   
@@ -180,11 +182,12 @@ class ExcelToRuby
   
   def compile_worksheet_code(name,xml_filename)
     i = input(name,"formulae_no_ranges.ast")
+    w = input("worksheet_ruby_names")
     o = ruby("#{name.downcase}.rb")
     o.puts "# #{name}"
     o.puts
     o.puts "class #{name.capitalize}"
-    CompileToRuby.rewrite(i, o)
+    CompileToRuby.rewrite(i,w,o)
     o.puts "end"
     close(i,o)
   end
