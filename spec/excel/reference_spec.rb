@@ -26,4 +26,11 @@ describe Reference do
     Reference.for("A$1").offset(1,1).should == "B$1"
   end
   
+  it "should be able to unfix a reference" do 
+    Reference.for("A1").unfix.should == "A1"
+    Reference.for("$A$1").unfix.should == "A1"
+    Reference.for("$A1").unfix.should == "A1"
+    Reference.for("A$1").unfix.should == "A1"
+  end
+  
 end

@@ -49,4 +49,8 @@ class Reference < String
     Reference.new([@excel_fixed_column,new_column,@excel_fixed_row,new_row].join)
   end
   
+  def unfix
+    gsub("$","")
+  end
+  
 end
