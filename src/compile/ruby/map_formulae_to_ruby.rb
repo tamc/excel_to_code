@@ -17,6 +17,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     '>=' => 'more_than_or_equal?',
     '<>' => 'not_equal?',
     'COSH' => 'cosh',
+    'IF' => 'excel_if',
     'PI' => 'pi',
     'SUM' => 'sum'
   }

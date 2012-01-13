@@ -27,11 +27,11 @@ class MapValuesToRuby
   end
   
   def string(text)
-    text
+    text.inspect
   end
   
   ERRORS = {
-    "#NAME?" => :name
+    "#NAME?" => ":name"
   }
   
   def error(text)

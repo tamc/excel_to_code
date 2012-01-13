@@ -5,10 +5,10 @@
 [:number, "-3.13e-12"]	-3.13e-12
 
 # Strings
-[:string, "Hello world"]	Hello world   
+[:string, "Hello world"]	"Hello world"
 
-# Error values (FIXME: symbols don't work in my test)
-# [:error, "#NAME?"]	:name
+# Error values
+[:error, "#NAME?"]	:name
 
 # Booleans
 [:boolean_true]	true
@@ -31,6 +31,7 @@
 
 # Functions
 [:function, "COSH", [:number, "1"]]	cosh(1)
+[:function, "IF",[:boolean_true],[:number, "1"],[:number, "8"]]	excel_if(true,1,8)
 [:function, "PI"]	pi()
 [:function, "SUM", [:number, "1"], [:number, "1"], [:number, "1"]]	sum(1,1,1)
 
