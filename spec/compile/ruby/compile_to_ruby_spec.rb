@@ -1,11 +1,13 @@
 require_relative '../../spec_helper'
 
 describe CompileToRuby do
+
   
-  def compile(text)
+  def compile(text, sheet_names = "")    
     input = StringIO.new(text)
+    sheet_names = StringIO.new(sheet_names)
     output = StringIO.new
-    CompileToRuby.rewrite(input,output)
+    CompileToRuby.rewrite(input,sheet_names,output)
     output.string
   end
   
@@ -30,6 +32,23 @@ END
 
 compile(input).should == expected
 end
+
+it "should compile references, mapping sheet references appropriately" do
+input = <<END
+A1\t[:sheet_reference, "A complicated sheet name",[:cell, "A2"]]
+END
+
+sheet_names = <<END
+A complicated sheet name\ta_complicated_sheet_name
+END
+
+expected = <<END
+  def a1; a_complicated_sheet_name.a2; end
+END
+
+compile(input,sheet_names).should == expected
+end
+
 end
 
 

@@ -4,6 +4,7 @@ describe MapFormulaeToRuby do
     
   before(:all) do 
     @mapper = MapFormulaeToRuby.new
+    @mapper.sheet_names = {'A complicated sheet name' => 'a_complicated_sheet_name'}
   end
   
   checks = test_data('formulae_to_ruby.txt').lines.map.with_index { |line,i| [i,line] }.find_all { |line| line[1].start_with?('[:') }.map { |line| [line[0],*line[1].split("\t")] }

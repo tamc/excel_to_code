@@ -2,6 +2,8 @@ require_relative 'map_values_to_ruby'
 
 class MapFormulaeToRuby < MapValuesToRuby
   
+  attr_accessor :sheet_names
+  
   FUNCTIONS = {
     '+' => 'add',
     '-' => 'subtract',
@@ -25,4 +27,15 @@ class MapFormulaeToRuby < MapValuesToRuby
     end
   end
   
+  def cell(reference)
+    reference.downcase
+  end
+  
+  def sheet_reference(sheet,reference)
+    puts "Looking for #{sheet.inspect} in #{sheet_names.inspect}"
+    "#{sheet_names[sheet]}.#{map(reference)}"
+  end
+  
+  alias :quoted_sheet_reference :sheet_reference
+
 end
