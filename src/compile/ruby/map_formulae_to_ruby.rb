@@ -46,6 +46,14 @@ class MapFormulaeToRuby < MapValuesToRuby
     "#{sheet_names[sheet]}.#{map(reference)}"
   end
   
+  def array(*rows)
+    "[#{rows.map {|r| map(r)}.join(",")}]"
+  end
+  
+  def row(*cells)
+    "[#{cells.map {|r| map(r)}.join(",")}]"
+  end
+  
   alias :quoted_sheet_reference :sheet_reference
 
 end

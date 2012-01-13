@@ -39,3 +39,9 @@
 [:cell,"A1"]	a1
 [:sheet_reference, "A complicated sheet name", [:cell,"AAA27"]]	a_complicated_sheet_name.aaa27
 [:quoted_sheet_reference, "A complicated sheet name", [:cell,"AAA27"]]	a_complicated_sheet_name.aaa27
+
+# Arrays
+[:array, [:row, [:cell, "F4"],[:cell, "G4"]]]	[[f4,g4]]
+[:array, [:row, [:cell, "F4"]],[:row, [:cell, "F5"]]]	[[f4],[f5]]
+[:array, [:row, [:cell, "F4"],[:cell, "G4"]], [:row, [:cell, "F5"], [:cell, "G5"]]]	[[f4,g4],[f5,g5]]
+
