@@ -13,9 +13,9 @@ class NamedReferences
   
   def reference_for(sheet,named_reference)
     if @named_references.has_key?(sheet)
-      @named_references[sheet][named_reference] || @named_references[""][named_reference]
+      @named_references[sheet][named_reference] || @named_references[""][named_reference] || [:error, "#NAME?"]
     else
-      @named_references[""][named_reference]
+      @named_references[""][named_reference] || [:error, "#NAME?"]
     end
   end
   

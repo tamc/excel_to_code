@@ -1,3 +1,3 @@
 A1	[:boolean_true]
-A5	nil
+A5	[:error, "#NAME?"]
 A6	[:string, "Hello"]
