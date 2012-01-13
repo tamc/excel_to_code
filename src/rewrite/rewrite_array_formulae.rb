@@ -25,7 +25,6 @@ class RewriteArrayFormulae
       mapper.row_offset = row
       mapper.column_offset = column
       ref = start_reference.offset(row,column)
-      p ref, row,column, array_ast
       output.puts "#{ref}\t#{mapper.map(array_ast).inspect}"
     end
   end
