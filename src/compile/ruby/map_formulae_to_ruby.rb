@@ -10,12 +10,22 @@ class MapFormulaeToRuby < MapValuesToRuby
     '*' => 'multiply',
     '/' => 'divide',
     '^' => 'power',
+    '=' => 'equal?',
+    '<' => 'less_than?',
+    '>' => 'more_than?',
+    '<=' => 'less_than_or_equal?',
+    '>=' => 'more_than_or_equal?',
+    '<>' => 'not_equal?',
     'COSH' => 'cosh',
     'PI' => 'pi',
     'SUM' => 'sum'
   }
   
   def arithmetic(left,operator,right)
+    "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
+  end
+  
+  def comparison(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
   
