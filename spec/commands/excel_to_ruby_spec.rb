@@ -10,6 +10,7 @@ describe ExcelToRuby do
     command = ExcelToRuby.new
     command.excel_file = excel
     command.output_directory = actual
+    command.compiled_module_name = "ExampleSpreadsheet"
     command.go!
     differences = `diff -r #{expected} #{actual}`
     unless differences == ""

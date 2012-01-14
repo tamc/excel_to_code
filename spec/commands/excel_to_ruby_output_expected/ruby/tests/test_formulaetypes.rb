@@ -2,6 +2,7 @@
 require 'test/unit'
 require_relative 'formulaetypes'
 
+module ExampleSpreadsheet
 class TestFormulaetypes < Test::Unit::TestCase
   def test_a1; assert_equal(worksheet.a1,"Simple"); end
   def test_b1; assert_equal(worksheet.b1,2); end
@@ -19,4 +20,5 @@ class TestFormulaetypes < Test::Unit::TestCase
   def test_b7; assert_equal(worksheet.b7,"Not Eight"); end
   def test_a8; assert_equal(worksheet.a8,"Arrayed (multiple)"); end
   def test_b8; assert_equal(worksheet.b8,"Not Eight"); end
+end
 end

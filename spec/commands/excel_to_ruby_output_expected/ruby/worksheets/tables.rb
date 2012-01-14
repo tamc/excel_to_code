@@ -1,5 +1,6 @@
 # Tables
 
+module ExampleSpreadsheet
 class Tables
   def b5; sum([[tables.b3],[tables.b4]]); end
   def c10; [[tables.b5,tables.c5,tables.d5]]; end
@@ -17,4 +18,5 @@ class Tables
   def g2; [[tables.c2,tables.d2]]; end
   def g4; [[tables.b4,tables.c4,tables.d4]]; end
   def h4; [[tables.c4,tables.d4]]; end
+end
 end

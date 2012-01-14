@@ -2,6 +2,7 @@
 require 'test/unit'
 require_relative 'tables'
 
+module ExampleSpreadsheet
 class TestTables < Test::Unit::TestCase
   def test_b2; assert_equal(worksheet.b2,"ColA"); end
   def test_c2; assert_equal(worksheet.c2,"ColB"); end
@@ -26,4 +27,5 @@ class TestTables < Test::Unit::TestCase
   def test_e10; assert_equal(worksheet.e10,:value); end
   def test_c11; assert_equal(worksheet.c11,3); end
   def test_c12; assert_equal(worksheet.c12,3); end
+end
 end

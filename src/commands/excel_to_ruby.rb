@@ -8,7 +8,7 @@ require_relative '../compile'
 
 class ExcelToRuby
   
-  attr_accessor :excel_file, :output_directory, :xml_dir
+  attr_accessor :excel_file, :output_directory, :xml_dir, :compiled_module_name
   
   def go!
     sort_out_output_directories
@@ -188,8 +188,10 @@ class ExcelToRuby
     o = ruby('worksheets',"#{name.downcase}.rb")
     o.puts "# #{name}"
     o.puts
+    o.puts "module #{compiled_module_name}"
     o.puts "class #{name.capitalize}"
     CompileToRuby.rewrite(i,w,o)
+    o.puts "end"
     o.puts "end"
     close(i,o)
   end
@@ -201,8 +203,10 @@ class ExcelToRuby
     o.puts  "require 'test/unit'"
     o.puts  "require_relative '#{name.downcase}'"
     o.puts
+    o.puts "module #{compiled_module_name}"
     o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
     CompileToRubyUnitTest.rewrite(i, o)
+    o.puts "end"
     o.puts "end"
     close(i,o)
   end

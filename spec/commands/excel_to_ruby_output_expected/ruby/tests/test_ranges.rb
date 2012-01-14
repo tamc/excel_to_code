@@ -2,6 +2,7 @@
 require 'test/unit'
 require_relative 'ranges'
 
+module ExampleSpreadsheet
 class TestRanges < Test::Unit::TestCase
   def test_b1; assert_equal(worksheet.b1,"This sheet"); end
   def test_c1; assert_equal(worksheet.c1,"Other sheet"); end
@@ -19,4 +20,5 @@ class TestRanges < Test::Unit::TestCase
   def test_f5; assert_equal(worksheet.f5,2); end
   def test_g5; assert_equal(worksheet.g5,3); end
   def test_f6; assert_equal(worksheet.f6,3); end
+end
 end
