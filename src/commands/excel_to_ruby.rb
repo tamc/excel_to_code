@@ -198,7 +198,7 @@ class ExcelToRuby
     o = ruby("test_#{name.downcase}.rb")
     o.puts "# Test for #{name}"
     o.puts  "require 'test/unit'"
-    o.puts  "require_relative '../#{name.capitalize}"
+    o.puts  "require_relative '#{name.downcase}'"
     o.puts
     o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
     CompileToRubyUnitTest.rewrite(i, o)
