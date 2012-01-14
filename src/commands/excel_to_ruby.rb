@@ -28,7 +28,8 @@ class ExcelToRuby
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
     FileUtils.mkdir_p(File.join(output_directory,'intermediate'))
-    FileUtils.mkdir_p(File.join(output_directory,'ruby'))
+    FileUtils.mkdir_p(File.join(output_directory,'ruby','worksheets'))
+    FileUtils.mkdir_p(File.join(output_directory,'ruby','tests'))
   end
   
   def unzip_excel
@@ -113,7 +114,7 @@ class ExcelToRuby
     shared_formulae = File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast")
     array_formulae = File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast")
     combined_formulae = File.join(output_directory,'intermediate',name,"formulae.ast")
-    p `cat '#{simple_formulae}' '#{shared_formulae}' '#{array_formulae}' | sort > '#{combined_formulae}'`
+    `cat '#{simple_formulae}' '#{shared_formulae}' '#{array_formulae}' | sort > '#{combined_formulae}'`
   end
   
   # Extracts:
@@ -184,7 +185,7 @@ class ExcelToRuby
   def compile_worksheet_code(name,xml_filename)
     i = input(name,"formulae_no_ranges.ast")
     w = input("worksheet_ruby_names")
-    o = ruby("#{name.downcase}.rb")
+    o = ruby('worksheets',"#{name.downcase}.rb")
     o.puts "# #{name}"
     o.puts
     o.puts "class #{name.capitalize}"
@@ -195,7 +196,7 @@ class ExcelToRuby
 
   def compile_worksheet_test(name,xml_filename)
     i = input(name,"values_no_shared_strings.ast")
-    o = ruby("test_#{name.downcase}.rb")
+    o = ruby('tests',"test_#{name.downcase}.rb")
     o.puts "# Test for #{name}"
     o.puts  "require 'test/unit'"
     o.puts  "require_relative '#{name.downcase}'"
