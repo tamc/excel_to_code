@@ -1,9 +1,10 @@
 # Test for ValueTypes
 require 'test/unit'
-require_relative 'valuetypes'
+require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestValuetypes < Test::Unit::TestCase
+  def worksheet; Valuetypes.new; end
   def test_a1; assert_equal(worksheet.a1,true); end
   def test_a2; assert_equal(worksheet.a2,"Hello"); end
   def test_a3; assert_equal(worksheet.a3,1); end

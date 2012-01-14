@@ -1,7 +1,9 @@
 # FormulaeTypes
 
+require_relative '../examplespreadsheet'
+
 module ExampleSpreadsheet
-class Formulaetypes
+class Formulaetypes < Spreadsheet
   def b1; add(1,1); end
   def b2; cosh(multiply(2,pi())); end
   def b3; cosh(multiply(2,pi())); end

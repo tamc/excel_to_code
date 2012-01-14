@@ -1,9 +1,10 @@
 # Test for FormulaeTypes
 require 'test/unit'
-require_relative 'formulaetypes'
+require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestFormulaetypes < Test::Unit::TestCase
+  def worksheet; Formulaetypes.new; end
   def test_a1; assert_equal(worksheet.a1,"Simple"); end
   def test_b1; assert_equal(worksheet.b1,2); end
   def test_a2; assert_equal(worksheet.a2,"Sharing"); end

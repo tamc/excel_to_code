@@ -20,6 +20,7 @@ class ExcelToRuby
     Process.waitall
     simplify_worksheets
     Process.waitall
+    compile_workbook
     compile_worksheets
     Process.waitall
   end
@@ -173,6 +174,23 @@ class ExcelToRuby
     replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast") 
   end
   
+  def compile_workbook
+    w = input("worksheet_ruby_names")
+    o = ruby("#{compiled_module_name.downcase}.rb")
+    o.puts "# Compiled version of #{excel_file}"
+    o.puts ""
+    o.puts "module #{compiled_module_name}"
+    o.puts "class Spreadsheet"
+    w.lines do |line|
+      name, ruby_name = line.strip.split("\t")
+      o.puts "def #{ruby_name}; @#{ruby_name} ||= #{name.capitalize}.new; end"
+    end
+    o.puts "end"
+    o.puts 'Dir[File.join(File.dirname(__FILE__),"worksheets/","*.rb")].each {|f| autoload(File.basename(f,".rb").capitalize,f)}'
+    o.puts "end"
+    close(w,o)
+  end
+  
   def compile_worksheets
     worksheets do |name,xml_filename|
       fork do 
@@ -188,8 +206,10 @@ class ExcelToRuby
     o = ruby('worksheets',"#{name.downcase}.rb")
     o.puts "# #{name}"
     o.puts
+    o.puts "require_relative '../#{compiled_module_name.downcase}'"
+    o.puts
     o.puts "module #{compiled_module_name}"
-    o.puts "class #{name.capitalize}"
+    o.puts "class #{name.capitalize} < Spreadsheet"
     CompileToRuby.rewrite(i,w,o)
     o.puts "end"
     o.puts "end"
@@ -201,16 +221,16 @@ class ExcelToRuby
     o = ruby('tests',"test_#{name.downcase}.rb")
     o.puts "# Test for #{name}"
     o.puts  "require 'test/unit'"
-    o.puts  "require_relative '#{name.downcase}'"
+    o.puts  "require_relative '../#{compiled_module_name.downcase}'"
     o.puts
     o.puts "module #{compiled_module_name}"
     o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
+    o.puts "  def worksheet; #{name.capitalize}.new; end"
     CompileToRubyUnitTest.rewrite(i, o)
     o.puts "end"
     o.puts "end"
     close(i,o)
   end
-
   
   def worksheets
     IO.readlines(File.join(output_directory,'intermediate','worksheet_names')).each do |line|

@@ -1,9 +1,10 @@
 # Test for Tables
 require 'test/unit'
-require_relative 'tables'
+require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestTables < Test::Unit::TestCase
+  def worksheet; Tables.new; end
   def test_b2; assert_equal(worksheet.b2,"ColA"); end
   def test_c2; assert_equal(worksheet.c2,"ColB"); end
   def test_d2; assert_equal(worksheet.d2,"Column1"); end

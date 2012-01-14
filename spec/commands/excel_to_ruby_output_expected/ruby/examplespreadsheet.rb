@@ -1,0 +1,12 @@
+# Compiled version of /Users/tamc/Documents/github/excel2code/spec/test_data/ExampleSpreadsheet.xlsx
+
+module ExampleSpreadsheet
+class Spreadsheet
+def valuetypes; @valuetypes ||= Valuetypes.new; end
+def formulaetypes; @formulaetypes ||= Formulaetypes.new; end
+def ranges; @ranges ||= Ranges.new; end
+def referencing; @referencing ||= Referencing.new; end
+def tables; @tables ||= Tables.new; end
+end
+Dir[File.join(File.dirname(__FILE__),"worksheets/","*.rb")].each {|f| autoload(File.basename(f,".rb").capitalize,f)}
+end

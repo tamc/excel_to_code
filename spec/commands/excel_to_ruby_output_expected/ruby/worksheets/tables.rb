@@ -1,7 +1,9 @@
 # Tables
 
+require_relative '../examplespreadsheet'
+
 module ExampleSpreadsheet
-class Tables
+class Tables < Spreadsheet
   def b5; sum([[tables.b3],[tables.b4]]); end
   def c10; [[tables.b5,tables.c5,tables.d5]]; end
   def c11; sum([[tables.b3],[tables.b4]]); end
