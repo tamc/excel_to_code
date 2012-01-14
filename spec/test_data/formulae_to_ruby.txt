@@ -9,6 +9,7 @@
 
 # Error values
 [:error, "#NAME?"]	:name
+[:error, "#VALUE!"]	:value
 
 # Booleans
 [:boolean_true]	true

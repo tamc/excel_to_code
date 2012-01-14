@@ -31,7 +31,8 @@ class MapValuesToRuby
   end
   
   ERRORS = {
-    "#NAME?" => ":name"
+    "#NAME?" => ":name",
+    "#VALUE!" => ":value"
   }
   
   def error(text)
