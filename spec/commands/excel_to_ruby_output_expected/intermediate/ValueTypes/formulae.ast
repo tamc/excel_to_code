@@ -1,3 +1,6 @@
 A1	[:boolean_true]
+A2	[:shared_string, "0"]
+A3	[:number, "1"]
+A4	[:number, "3.1415000000000002"]
 A5	[:named_reference, "sdFADSF"]
 A6	[:string, "Hello"]

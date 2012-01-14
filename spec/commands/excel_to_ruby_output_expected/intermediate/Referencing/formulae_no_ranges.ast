@@ -1,1 +1,2 @@
+A1	[:string, "Named reference"]
 A2	[:sheet_reference, "Referencing", [:cell, "$A$1"]]

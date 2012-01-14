@@ -1,3 +1,6 @@
 A1	[:boolean_true]
+A2	[:string, "Hello"]
+A3	[:number, "1"]
+A4	[:number, "3.1415000000000002"]
 A5	[:error, "#NAME?"]
 A6	[:string, "Hello"]

@@ -114,8 +114,9 @@ class ExcelToRuby
     simple_formulae = File.join(output_directory,'intermediate',name,"simple_formulae.ast-nocols")
     shared_formulae = File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast")
     array_formulae = File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast")
-    combined_formulae = File.join(output_directory,'intermediate',name,"formulae.ast")
+    combined_formulae = File.join(output_directory,'intermediate',name,"all_formulae.ast")
     `cat '#{simple_formulae}' '#{shared_formulae}' '#{array_formulae}' | sort > '#{combined_formulae}'`
+    rewrite RewriteMergeFormulaeAndValues, File.join(name,"all_formulae.ast"), File.join(name,'values.ast'), File.join(name,'formulae.ast')
   end
   
   # Extracts:
