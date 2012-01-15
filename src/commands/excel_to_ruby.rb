@@ -179,9 +179,11 @@ class ExcelToRuby
     w = input("worksheet_ruby_names")
     o = ruby("#{compiled_module_name.downcase}.rb")
     o.puts "# Compiled version of #{excel_file}"
+    o.puts "require '#{File.expand_path(File.join(File.dirname(__FILE__),'../excel/excel_functions'))}'"
     o.puts ""
     o.puts "module #{compiled_module_name}"
     o.puts "class Spreadsheet"
+    o.puts "  include ExcelFunctions"
     w.lines do |line|
       name, ruby_name = line.strip.split("\t")
       o.puts "def #{ruby_name}; @#{ruby_name} ||= #{name.capitalize}.new; end"
