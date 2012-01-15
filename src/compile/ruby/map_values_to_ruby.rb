@@ -14,6 +14,10 @@ class MapValuesToRuby
       raise NotSupportedException.new("#{ast} not supported")
     end
   end
+  
+  def blank
+    "nil"
+  end
     
   def number(text)
     case text

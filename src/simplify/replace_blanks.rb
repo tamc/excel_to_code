@@ -25,6 +25,7 @@ class ReplaceBlanksAst
   end
   
   def cell(reference)
+    p references, default_sheet_name unless references[default_sheet_name]
     if references[default_sheet_name].has_key?(reference.gsub('$',''))
       [:cell,reference]
     else
@@ -37,12 +38,14 @@ end
 
 class ReplaceBlanks
   
+  attr_accessor :references, :default_sheet_name
+  
   def self.replace(*args)
     self.new.replace(*args)
   end
   
-  def replace(input,references,sheet_name,output)
-    rewriter = ReplaceBlanksAst.new(references,sheet_name)
+  def replace(input,output)
+    rewriter = ReplaceBlanksAst.new(references,default_sheet_name)
     input.lines do |line|
       # Looks to match lines with references
       if line =~ /\[:cell/

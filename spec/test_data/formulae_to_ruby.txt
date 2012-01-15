@@ -1,3 +1,6 @@
+# Blanks
+[:blank]	nil
+
 # Numbers
 [:number, "1"]	1
 [:number, "3.1415000000000002"]	3.1415

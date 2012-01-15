@@ -20,6 +20,8 @@ class ExcelToRuby
     Process.waitall
     simplify_worksheets
     Process.waitall
+    replace_blanks
+    Process.waitall
     compile_workbook
     compile_worksheets
     Process.waitall
@@ -170,6 +172,26 @@ class ExcelToRuby
     replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast") 
   end
   
+  def replace_blanks
+    references = {}
+    worksheets do |name,xml_filename|
+      r = references[name] = {}
+      i = input(name,"formulae_no_ranges.ast")
+      i.lines do |line|
+        ref = line[/^(.*?)\t/,1]
+        r[ref] = true
+      end
+    end
+    worksheets do |name,xml_filename|
+      fork do 
+        r = ReplaceBlanks.new
+        r.references = references
+        r.default_sheet_name = name
+        replace r, File.join(name,"formulae_no_ranges.ast"),File.join(name,"formulae_no_blanks.ast")
+      end
+    end
+  end
+  
   def compile_workbook
     compile_workbook_code
     compile_workbook_test
@@ -205,7 +227,6 @@ class ExcelToRuby
     end
     close(w,o)
   end
-
   
   def compile_worksheets
     worksheets do |name,xml_filename|
@@ -217,7 +238,7 @@ class ExcelToRuby
   end
   
   def compile_worksheet_code(name,xml_filename)
-    i = input(name,"formulae_no_ranges.ast")
+    i = input(name,"formulae_no_blanks.ast")
     w = input("worksheet_ruby_names")
     o = ruby('worksheets',"#{name.downcase}.rb")
     o.puts "# #{name}"

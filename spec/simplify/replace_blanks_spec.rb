@@ -31,7 +31,10 @@ END
     
 input = StringIO.new(input)
 output = StringIO.new
-ReplaceBlanks.replace(input,references,'sheet1',output)
+r = ReplaceBlanks.new
+r.references = references
+r.default_sheet_name = 'sheet1'
+r.replace(input,output)
 output.string.should == expected_output
 end
 end
