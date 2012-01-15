@@ -119,11 +119,6 @@ class ExcelToRuby
     rewrite RewriteMergeFormulaeAndValues, File.join(name,"all_formulae.ast"), File.join(name,'values.ast'), File.join(name,'formulae.ast')
   end
   
-  # Extracts:
-  # Values
-  # Formulae (simple, shared and array)
-  # Rewrites:
-  # the formulae to ast
   def initial_extract_from_worksheet(name,xml_filename)
     worksheet_directory = File.join(output_directory,'intermediate',name)
     FileUtils.mkdir_p(worksheet_directory)
@@ -176,6 +171,11 @@ class ExcelToRuby
   end
   
   def compile_workbook
+    compile_workbook_code
+    compile_workbook_test
+  end
+  
+  def compile_workbook_code
     w = input("worksheet_ruby_names")
     o = ruby("#{compiled_module_name.downcase}.rb")
     o.puts "# Compiled version of #{excel_file}"
@@ -191,6 +191,19 @@ class ExcelToRuby
     o.puts "end"
     close(w,o)
   end
+
+  def compile_workbook_test
+    w = input("worksheet_ruby_names")
+    o = ruby("test_#{compiled_module_name.downcase}.rb")
+    o.puts "# All tests for #{excel_file}"
+    o.puts  "require 'test/unit'"
+    w.lines do |line|
+      name, ruby_name = line.strip.split("\t")
+      o.puts "require_relative 'tests/test_#{name.downcase}'"
+    end
+    close(w,o)
+  end
+
   
   def compile_worksheets
     worksheets do |name,xml_filename|
