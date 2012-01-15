@@ -39,7 +39,7 @@ class MapFormulaeToRuby < MapValuesToRuby
   end
   
   def cell(reference)
-    reference.downcase
+    reference.downcase.gsub('$','')
   end
   
   def sheet_reference(sheet,reference)

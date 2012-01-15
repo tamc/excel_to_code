@@ -38,6 +38,7 @@
 
 # References
 [:cell,"A1"]	a1
+[:cell,"$A$1"]	a1
 [:sheet_reference, "A complicated sheet name", [:cell,"AAA27"]]	a_complicated_sheet_name.aaa27
 [:quoted_sheet_reference, "A complicated sheet name", [:cell,"AAA27"]]	a_complicated_sheet_name.aaa27
 
