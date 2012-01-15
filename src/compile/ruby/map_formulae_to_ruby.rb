@@ -54,6 +54,4 @@ class MapFormulaeToRuby < MapValuesToRuby
     "[#{cells.map {|r| map(r)}.join(",")}]"
   end
   
-  alias :quoted_sheet_reference :sheet_reference
-
 end

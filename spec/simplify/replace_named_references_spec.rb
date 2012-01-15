@@ -8,7 +8,7 @@ input = <<END
 A1\t[:named_reference, "Global"]
 A2\t[:named_reference, "Local"]
 A3\t[:sheet_reference,"otherSheet",[:named_reference, "Local"]]
-A4\t[:quoted_sheet_reference,"otherSheet",[:named_reference, "Local"]]
+A4\t[:sheet_reference,"otherSheet",[:named_reference, "Local"]]
 A5\t[:named_reference, "missing"]
 END
 

@@ -23,15 +23,6 @@ class ReplaceRangesWithArrayLiteralsAst
     end
   end
   
-  def quoted_sheet_reference(sheet,reference)
-    if reference.first == :area
-      area = Area.for("#{reference[1]}:#{reference[2]}")
-      area.to_array_literal(sheet)
-    else
-      [:quoted_sheet_reference,sheet,reference]
-    end
-  end
-  
   def area(start,finish)
     area = Area.for("#{start}:#{finish}")
     area.to_array_literal

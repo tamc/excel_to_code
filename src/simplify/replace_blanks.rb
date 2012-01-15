@@ -16,14 +16,6 @@ class ReplaceBlanksAst
     end
   end
   
-  def quoted_sheet_reference(sheet,reference)
-    if references[sheet].has_key?(reference.last.gsub('$',''))
-      [:quoted_sheet_reference,sheet,reference]
-    else
-      [:blank]
-    end
-  end
-  
   def sheet_reference(sheet,reference)
     if references[sheet].has_key?(reference.last.gsub('$',''))
       [:sheet_reference,sheet,reference]

@@ -87,7 +87,7 @@ class Formula < RubyPeg
   end
   
   def any_internal_reference
-    table_reference || local_table_reference || quoted_sheet_reference || sheet_reference || sheetless_reference
+    table_reference || local_table_reference || sheet_reference || sheetless_reference
   end
   
   def percentage
@@ -152,15 +152,9 @@ class Formula < RubyPeg
     end
   end
   
-  def quoted_sheet_reference
-    node :quoted_sheet_reference do
-      single_quoted_string && ignore { terminal("!") } && (sheetless_reference || named_reference)
-    end
-  end
-  
   def sheet_reference
     node :sheet_reference do
-      terminal(/[a-zA-Z0-9][\w_.]+/) && ignore { terminal("!") } && (sheetless_reference || named_reference)
+      (single_quoted_string || terminal(/[a-zA-Z0-9][\w_.]+/)) && ignore { terminal("!") } && (sheetless_reference || named_reference)
     end
   end
   

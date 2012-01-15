@@ -42,14 +42,6 @@ class ReplaceNamedReferencesAst
     end
   end
   
-  def quoted_sheet_reference(sheet,reference)
-    if reference.first == :named_reference
-      named_references.reference_for(sheet,reference.last)
-    else
-      [:quoted_sheet_reference,sheet,reference]
-    end
-  end
-  
   def sheet_reference(sheet,reference)
     if reference.first == :named_reference
       named_references.reference_for(sheet,reference.last)
