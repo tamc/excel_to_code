@@ -10,7 +10,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     '*' => 'multiply',
     '/' => 'divide',
     '^' => 'power',
-    '=' => 'equal?',
+    '=' => 'excel_equal?',
     '<' => 'less_than?',
     '>' => 'more_than?',
     '<=' => 'less_than_or_equal?',

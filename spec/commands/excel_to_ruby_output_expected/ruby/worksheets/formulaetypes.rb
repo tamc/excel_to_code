@@ -15,10 +15,10 @@ class Formulaetypes < Spreadsheet
   def a5; "Array (single)"; end
   def b5; b1; end
   def a6; "Arraying (multiple)"; end
-  def b6; excel_if(equal?(b3,8),"Eight","Not Eight"); end
+  def b6; excel_if(excel_equal?(b3,8),"Eight","Not Eight"); end
   def a7; "Arrayed (multiple)"; end
-  def b7; excel_if(equal?(b4,8),"Eight","Not Eight"); end
+  def b7; excel_if(excel_equal?(b4,8),"Eight","Not Eight"); end
   def a8; "Arrayed (multiple)"; end
-  def b8; excel_if(equal?(b5,8),"Eight","Not Eight"); end
+  def b8; excel_if(excel_equal?(b5,8),"Eight","Not Eight"); end
 end
 end

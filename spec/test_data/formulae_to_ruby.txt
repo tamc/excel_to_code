@@ -23,7 +23,7 @@
 [:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]]	power(1,1)
 
 # Comparators
-[:comparison, [:number, "1"], [:comparator, "="], [:number, "8"]]	equal?(1,8)
+[:comparison, [:number, "1"], [:comparator, "="], [:number, "8"]]	excel_equal?(1,8)
 [:comparison, [:number, "1"], [:comparator, "<"], [:number, "8"]]	less_than?(1,8)
 [:comparison, [:number, "1"], [:comparator, ">"], [:number, "8"]]	more_than?(1,8)
 [:comparison, [:number, "1"], [:comparator, "<="], [:number, "8"]]	less_than_or_equal?(1,8)
