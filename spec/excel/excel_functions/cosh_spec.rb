@@ -6,5 +6,9 @@ describe "ExcelFunctions: COSH()" do
   it "should calculate COSH(number)" do
     cosh(1).should == Math.cosh(1)
   end
+    
+  it "should treat nil as zero" do
+    cosh(nil).should == Math.cosh(0)
+  end
   
 end
