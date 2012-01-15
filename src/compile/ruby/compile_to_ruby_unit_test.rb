@@ -10,7 +10,7 @@ class CompileToRubyUnitTest
     mapper = MapValuesToRuby.new
     input.lines do |line|
       ref, formula = line.split("\t")
-      output.puts "  def test_#{ref.downcase}; assert_equal(worksheet.#{ref.downcase},#{mapper.map(eval(formula))}); end"
+      output.puts "  def test_#{ref.downcase}; assert_equal(#{mapper.map(eval(formula))},worksheet.#{ref.downcase}); end"
     end
   end
   

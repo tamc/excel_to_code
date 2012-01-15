@@ -19,11 +19,11 @@ A5\t[:boolean_false]
 END
 
 expected = <<END
-  def test_a1; assert_equal(worksheet.a1,1); end
-  def test_a2; assert_equal(worksheet.a2,"Hello"); end
-  def test_a3; assert_equal(worksheet.a3,:name); end
-  def test_a4; assert_equal(worksheet.a4,true); end
-  def test_a5; assert_equal(worksheet.a5,false); end
+  def test_a1; assert_equal(1,worksheet.a1); end
+  def test_a2; assert_equal("Hello",worksheet.a2); end
+  def test_a3; assert_equal(:name,worksheet.a3); end
+  def test_a4; assert_equal(true,worksheet.a4); end
+  def test_a5; assert_equal(false,worksheet.a5); end
 END
 
 compile(input).should == expected

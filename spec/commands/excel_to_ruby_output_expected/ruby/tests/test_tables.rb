@@ -5,28 +5,28 @@ require_relative '../examplespreadsheet'
 module ExampleSpreadsheet
 class TestTables < Test::Unit::TestCase
   def worksheet; Tables.new; end
-  def test_b2; assert_equal(worksheet.b2,"ColA"); end
-  def test_c2; assert_equal(worksheet.c2,"ColB"); end
-  def test_d2; assert_equal(worksheet.d2,"Column1"); end
-  def test_g2; assert_equal(worksheet.g2,:value); end
-  def test_b3; assert_equal(worksheet.b3,1); end
-  def test_c3; assert_equal(worksheet.c3,"A"); end
-  def test_d3; assert_equal(worksheet.d3,:value); end
-  def test_b4; assert_equal(worksheet.b4,2); end
-  def test_c4; assert_equal(worksheet.c4,"B"); end
-  def test_d4; assert_equal(worksheet.d4,:value); end
-  def test_f4; assert_equal(worksheet.f4,"B"); end
-  def test_g4; assert_equal(worksheet.g4,:value); end
-  def test_h4; assert_equal(worksheet.h4,:value); end
-  def test_b5; assert_equal(worksheet.b5,3); end
-  def test_c5; assert_equal(worksheet.c5,0); end
-  def test_e6; assert_equal(worksheet.e6,:value); end
-  def test_e7; assert_equal(worksheet.e7,:value); end
-  def test_e8; assert_equal(worksheet.e8,:value); end
-  def test_e9; assert_equal(worksheet.e9,:value); end
-  def test_c10; assert_equal(worksheet.c10,0); end
-  def test_e10; assert_equal(worksheet.e10,:value); end
-  def test_c11; assert_equal(worksheet.c11,3); end
-  def test_c12; assert_equal(worksheet.c12,3); end
+  def test_b2; assert_equal("ColA",worksheet.b2); end
+  def test_c2; assert_equal("ColB",worksheet.c2); end
+  def test_d2; assert_equal("Column1",worksheet.d2); end
+  def test_g2; assert_equal(:value,worksheet.g2); end
+  def test_b3; assert_equal(1,worksheet.b3); end
+  def test_c3; assert_equal("A",worksheet.c3); end
+  def test_d3; assert_equal(:value,worksheet.d3); end
+  def test_b4; assert_equal(2,worksheet.b4); end
+  def test_c4; assert_equal("B",worksheet.c4); end
+  def test_d4; assert_equal(:value,worksheet.d4); end
+  def test_f4; assert_equal("B",worksheet.f4); end
+  def test_g4; assert_equal(:value,worksheet.g4); end
+  def test_h4; assert_equal(:value,worksheet.h4); end
+  def test_b5; assert_equal(3,worksheet.b5); end
+  def test_c5; assert_equal(0,worksheet.c5); end
+  def test_e6; assert_equal(:value,worksheet.e6); end
+  def test_e7; assert_equal(:value,worksheet.e7); end
+  def test_e8; assert_equal(:value,worksheet.e8); end
+  def test_e9; assert_equal(:value,worksheet.e9); end
+  def test_c10; assert_equal(0,worksheet.c10); end
+  def test_e10; assert_equal(:value,worksheet.e10); end
+  def test_c11; assert_equal(3,worksheet.c11); end
+  def test_c12; assert_equal(3,worksheet.c12); end
 end
 end
