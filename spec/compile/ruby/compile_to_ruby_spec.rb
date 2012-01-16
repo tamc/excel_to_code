@@ -3,11 +3,13 @@ require_relative '../../spec_helper'
 describe CompileToRuby do
 
   
-  def compile(text, sheet_names = "")    
+  def compile(text, sheet_names = "", settable = nil)    
     input = StringIO.new(text)
     sheet_names = StringIO.new(sheet_names)
     output = StringIO.new
-    CompileToRuby.rewrite(input,sheet_names,output)
+    c = CompileToRuby.new
+    c.settable = settable
+    c.rewrite(input,sheet_names,output)
     output.string
   end
   
@@ -47,6 +49,73 @@ expected = <<END
 END
 
 compile(input,sheet_names).should == expected
+end
+
+it "should compile references that are 'settable' as accessors" do
+input = <<END
+A1\t[:number,1]
+A2\t[:number,2]
+A3\t[:number,3]
+END
+
+sheet_names = <<END
+END
+
+settable = lambda do |reference|
+  if reference == 'A2'
+    true
+  else
+    false
+  end
+end
+
+expected = <<END
+  def a1; 1; end
+  attr_accessor :a2 # Default: 2
+  def a3; 3; end
+END
+
+compile(input,sheet_names,settable).should == expected
+end
+
+it "If has 'settable' accessors, and given a defaults file, should dump the default values to that file" do
+input = <<END
+A1\t[:number,1]
+A2\t[:number,2]
+A3\t[:number,3]
+END
+
+sheet_names = <<END
+END
+
+settable = lambda do |reference|
+  if reference == 'A2'
+    true
+  else
+    false
+  end
+end
+
+expected_main = <<END
+  def a1; 1; end
+  attr_accessor :a2 # Default: 2
+  def a3; 3; end
+END
+
+expected_defaults = <<END
+  @a2 = 2
+END
+
+i = StringIO.new(input)
+s = StringIO.new(sheet_names)
+o = StringIO.new
+d = StringIO.new
+c = CompileToRuby.new
+c.settable = settable
+c.rewrite(i,s,o,d)
+
+o.string.should == expected_main
+d.string.should == expected_defaults
 end
 
 end
