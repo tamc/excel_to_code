@@ -27,5 +27,6 @@ class Tables < Spreadsheet
   def e10; sum([[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]); end
   def c11; sum([[tables.b3],[tables.b4]]); end
   def c12; tables.b5; end
+
 end
 end

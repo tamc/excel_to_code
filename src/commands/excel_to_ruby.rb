@@ -8,7 +8,11 @@ require_relative '../compile'
 
 class ExcelToRuby
   
-  attr_accessor :excel_file, :output_directory, :xml_dir, :compiled_module_name
+  attr_accessor :excel_file, :output_directory, :xml_dir, :compiled_module_name, :values_that_can_be_set_at_runtime
+  
+  def initialize
+    @values_that_can_be_set_at_runtime ||= {}
+  end
   
   def go!
     sort_out_output_directories
@@ -238,16 +242,32 @@ class ExcelToRuby
   end
   
   def compile_worksheet_code(name,xml_filename)
+    settable_refs = @values_that_can_be_set_at_runtime[name]    
+    c = CompileToRuby.new
+    c.settable =lambda { |ref| settable_refs.include?(ref) } if settable_refs
     i = input(name,"formulae_no_blanks.ast")
     w = input("worksheet_ruby_names")
     o = ruby('worksheets',"#{name.downcase}.rb")
+    d = output(name,'defaults')
     o.puts "# #{name}"
     o.puts
     o.puts "require_relative '../#{compiled_module_name.downcase}'"
     o.puts
     o.puts "module #{compiled_module_name}"
     o.puts "class #{name.capitalize} < Spreadsheet"
-    CompileToRuby.rewrite(i,w,o)
+    c.rewrite(i,w,o,d)
+    o.puts ""
+    close(d)
+    if settable_refs
+      o.puts "  def initialize"
+      d = input(name,'defaults')
+      d.lines do |line|
+        o.puts line
+      end
+      o.puts "  end"
+      o.puts ""
+      close(d)
+    end
     o.puts "end"
     o.puts "end"
     close(i,o)

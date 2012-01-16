@@ -10,5 +10,6 @@ class Valuetypes < Spreadsheet
   def a4; 3.1415; end
   def a5; :name; end
   def a6; "Hello"; end
+
 end
 end

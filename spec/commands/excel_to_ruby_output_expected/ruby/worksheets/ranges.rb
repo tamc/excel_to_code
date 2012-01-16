@@ -20,5 +20,6 @@ class Ranges < Spreadsheet
   def f5; 2; end
   def g5; 3; end
   def f6; 3; end
+
 end
 end

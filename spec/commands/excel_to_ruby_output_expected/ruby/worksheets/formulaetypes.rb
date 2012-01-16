@@ -20,5 +20,6 @@ class Formulaetypes < Spreadsheet
   def b7; excel_if(excel_equal?(b4,8),"Eight","Not Eight"); end
   def a8; "Arrayed (multiple)"; end
   def b8; excel_if(excel_equal?(b5,8),"Eight","Not Eight"); end
+
 end
 end

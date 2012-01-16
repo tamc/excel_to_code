@@ -11,6 +11,9 @@ describe ExcelToRuby do
     command.excel_file = excel
     command.output_directory = actual
     command.compiled_module_name = "ExampleSpreadsheet"
+    command.values_that_can_be_set_at_runtime = {
+      'Referencing' => ['A4']
+    }
     command.go!
     differences = `diff -r #{expected} #{actual}`
     unless differences == ""

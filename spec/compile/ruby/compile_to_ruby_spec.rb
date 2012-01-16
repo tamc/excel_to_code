@@ -103,7 +103,7 @@ expected_main = <<END
 END
 
 expected_defaults = <<END
-  @a2 = 2
+    @a2 = 2
 END
 
 i = StringIO.new(input)
