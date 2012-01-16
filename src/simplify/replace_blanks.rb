@@ -25,7 +25,6 @@ class ReplaceBlanksAst
   end
   
   def cell(reference)
-    p references, default_sheet_name unless references[default_sheet_name]
     if references[default_sheet_name].has_key?(reference.gsub('$',''))
       [:cell,reference]
     else
