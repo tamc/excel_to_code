@@ -18,14 +18,9 @@ class InlineFormulaeAst
   
   # TODO: Optimize by replacing contents of references hash with the inlined version
   def sheet_reference(sheet,reference)
-    ast = references[sheet][reference.last.gsub('$','')]
-    if ast
-      current_sheet_name.push(sheet)
-      result = map(ast)
-      current_sheet_name.pop
-    else
-      result = [:sheet_reference,sheet,reference]
-    end
+    current_sheet_name.push(sheet)
+    result = map(reference)
+    current_sheet_name.pop
     result  
   end
   
