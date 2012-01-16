@@ -1,9 +1,10 @@
 class InlineFormulaeAst
   
-  attr_accessor :references, :current_sheet_name
+  attr_accessor :references, :current_sheet_name, :inline_ast
   
-  def initialize(references, current_sheet_name)
-    @references, @current_sheet_name = references, [current_sheet_name]
+  def initialize(references, current_sheet_name, inline_ast = nil)
+    @references, @current_sheet_name, @inline_ast = references, [current_sheet_name], inline_ast
+    @inline_ast ||= lambda { |sheet,reference,references| true }
   end
   
   def map(ast)
@@ -16,21 +17,37 @@ class InlineFormulaeAst
     end
   end
   
-  # TODO: Optimize by replacing contents of references hash with the inlined version
   def sheet_reference(sheet,reference)
-    current_sheet_name.push(sheet)
-    result = map(reference)
-    current_sheet_name.pop
-    result  
+    if inline_ast.call(sheet,reference,references)
+      ast = references[sheet][reference.last.gsub('$','')]
+      if ast
+        current_sheet_name.push(sheet)
+        result = map(ast)
+        current_sheet_name.pop
+      else
+        result = [:sheet_reference,sheet,reference]
+      end
+    else
+      result = [:sheet_reference,sheet,reference]
+    end
+    result
   end
   
   # TODO: Optimize by replacing contents of references hash with the inlined version
   def cell(reference)
-    ast = references[current_sheet_name.last][reference.gsub('$','')]
-    if ast
-      map(ast)
+    if inline_ast.call(current_sheet_name.last,reference,references)
+      ast = references[current_sheet_name.last][reference.gsub('$','')]
+      if ast
+        map(ast)
+      else
+        [:cell,reference]
+      end
     else
-      [:cell,reference]
+      if current_sheet_name.size > 1
+        [:sheet_reference,current_sheet_name.last,[:cell,reference]]
+      else
+        [:cell,reference]
+      end
     end
   end
     
@@ -39,14 +56,14 @@ end
 
 class InlineFormulae
   
-  attr_accessor :references, :default_sheet_name
+  attr_accessor :references, :default_sheet_name, :inline_ast
   
   def self.replace(*args)
     self.new.replace(*args)
   end
   
   def replace(input,output)
-    rewriter = InlineFormulaeAst.new(references,default_sheet_name)
+    rewriter = InlineFormulaeAst.new(references, default_sheet_name, inline_ast)
     input.lines do |line|
       # Looks to match lines with references
       if line =~ /\[:cell/

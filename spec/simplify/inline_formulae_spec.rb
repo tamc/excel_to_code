@@ -9,6 +9,7 @@ A1\t[:cell, "$A$2"]
 A2\t[:cell, "A3"]
 A3\t[:number, 1]
 A4\t[:sheet_reference,"sheet2",[:cell,"A1"]]
+A5\t[:sheet_reference,"sheet3",[:cell,"A5"]]
 END
 
 references = references = {
@@ -22,7 +23,8 @@ references = references = {
     'A2' => [:sheet_reference,'sheet3',[:cell,'A1']]
   },
   'sheet3' => {
-    'A1' => [:number, 5]
+    'A1' => [:number, 5],
+    'A5' => [:number, 10]    
   }
 }
 
@@ -31,6 +33,7 @@ A1\t[:number, 1]
 A2\t[:number, 1]
 A3\t[:number, 1]
 A4\t[:number, 5]
+A5\t[:number, 10]
 END
     
 input = StringIO.new(input)
@@ -41,4 +44,60 @@ r.default_sheet_name = 'sheet1'
 r.replace(input,output)
 output.string.should == expected_output
 end
+
+
+it "should accept a block, which can be used to decide whether to inline a particualr reference or not" do
+
+input = <<END
+A1\t[:cell, "$A$2"]
+A2\t[:cell, "A3"]
+A3\t[:number, 1]
+A4\t[:sheet_reference,"sheet2",[:cell,"A1"]]
+A5\t[:sheet_reference,"sheet3",[:cell,"A5"]]
+END
+
+references = references = {
+  'sheet1' => {
+    'A1' => [:cell, "$A$2"],
+    'A2' => [:cell, "A3"],
+    'A3' => [:number, 1]
+  },
+  'sheet2' => {
+    'A1' => [:cell, "A2"],
+    'A2' => [:sheet_reference,'sheet3',[:cell,'A1']]
+  },
+  'sheet3' => {
+    'A1' => [:number, 5],
+    'A5' => [:number, 10]
+  }
+}
+
+inline_ast_decision = lambda do |sheet,cell,references|
+  if sheet == "sheet2" && cell == "A2"
+    false
+  elsif sheet == 'sheet3'
+    false
+  else
+    true
+  end
+end
+
+expected_output = <<END
+A1\t[:number, 1]
+A2\t[:number, 1]
+A3\t[:number, 1]
+A4\t[:sheet_reference, "sheet2", [:cell, "A2"]]
+A5\t[:sheet_reference, "sheet3", [:cell, "A5"]]
+END
+  
+input = StringIO.new(input)
+output = StringIO.new
+r = InlineFormulae.new
+r.references = references
+r.default_sheet_name = 'sheet1'
+r.inline_ast = inline_ast_decision
+r.replace(input,output)
+output.string.should == expected_output
+end
+
 end
