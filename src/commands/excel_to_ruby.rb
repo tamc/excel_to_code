@@ -212,7 +212,7 @@ class ExcelToRuby
     o.puts "  include ExcelFunctions"
     w.lines do |line|
       name, ruby_name = line.strip.split("\t")
-      o.puts "def #{ruby_name}; @#{ruby_name} ||= #{name.capitalize}.new; end"
+      o.puts "  def #{ruby_name}; @#{ruby_name} ||= #{name.capitalize}.new; end"
     end
     o.puts "end"
     o.puts 'Dir[File.join(File.dirname(__FILE__),"worksheets/","*.rb")].each {|f| autoload(File.basename(f,".rb").capitalize,f)}'
