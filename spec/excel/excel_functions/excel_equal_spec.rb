@@ -19,5 +19,10 @@ describe "ExcelFunctions: = excel_equal?()" do
     excel_equal?("HELLO","hello").should == true
   end
 
+  it "should return error if either argument is an error" do
+    excel_equal?(:error,1).should == :error
+    excel_equal?(1,:error).should == :error
+    excel_equal?(:error,:error).should == :error
+  end
   
 end

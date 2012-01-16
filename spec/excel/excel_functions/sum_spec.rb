@@ -21,4 +21,8 @@ describe "ExcelFunctions: SUM()" do
     sum().should == 0
   end
   
+  it "should return an error if any arguments are errors" do
+    sum([[1]],[[[[1,:name]]]]).should == :name
+  end
+  
 end

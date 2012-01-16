@@ -15,4 +15,11 @@ describe "ExcelFunctions: IF() excel_if()" do
     excel_if(false,1).should == false
   end
   
+  it "should return an error if first argument is an error, but doesn't worry if unused argument is an error'" do
+    excel_if(:error,1,0).should == :error
+    excel_if(true,1,:error).should == 1
+    excel_if(false,:error,0).should == 0
+    excel_if(true,:error).should == :error
+  end
+  
 end

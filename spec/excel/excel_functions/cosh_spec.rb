@@ -11,4 +11,8 @@ describe "ExcelFunctions: COSH()" do
     cosh(nil).should == Math.cosh(0)
   end
   
+  it "should return error if argument is an error" do
+    cosh(:error).should == :error
+  end
+  
 end

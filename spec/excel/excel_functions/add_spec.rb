@@ -14,4 +14,10 @@ describe "ExcelFunctions: add(number,number)" do
     add(nil,1).should == 1
   end
   
+  it "should return an error if either argument is an error" do
+    add(:error,1).should == :error
+    add(1,:error).should == :error
+    add(:error1,:error2).should == :error1
+  end
+  
 end

@@ -14,5 +14,10 @@ describe "ExcelFunctions: multiply(number,number)" do
     multiply(nil,1).should == 0
   end
   
+  it "should return an error if either argument is an error" do
+    multiply(:error,1).should == :error
+    multiply(1,:error).should == :error
+    multiply(:error1,:error2).should == :error1
+  end
   
 end
