@@ -6,9 +6,13 @@ require_relative 'excel_functions/pi'
 
 # Comparators
 require_relative 'excel_functions/excel_equal'
+require_relative 'excel_functions/less_than'
+require_relative 'excel_functions/more_than'
+require_relative 'excel_functions/less_than_or_equal'
+require_relative 'excel_functions/more_than_or_equal'
+require_relative 'excel_functions/not_equal'
 
 require_relative 'excel_functions/excel_if'
-
 
 # Basic arithmetic
 require_relative 'excel_functions/add'
