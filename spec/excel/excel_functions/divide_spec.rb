@@ -9,12 +9,12 @@ describe "ExcelFunctions: divide(number,number)" do
   end
   
   it "should return a :div0! if a divide by zero occurs" do
-    divide(1,0).should == :div0!
+    divide(1,0).should == :div0
   end
     
   it "should treat nil as zero" do
-    divide(1,nil).should == :div0!
-    divide(nil,nil).should == :div0!
+    divide(1,nil).should == :div0
+    divide(nil,nil).should == :div0
     divide(nil,1).should == 0
   end
   

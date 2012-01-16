@@ -8,7 +8,7 @@ module ExcelFunctions
     
     a / b
   rescue ZeroDivisionError
-    :div0!
+    :div0
   end
   
 end

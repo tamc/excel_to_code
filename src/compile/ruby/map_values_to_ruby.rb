@@ -36,7 +36,8 @@ class MapValuesToRuby
   
   ERRORS = {
     "#NAME?" => ":name",
-    "#VALUE!" => ":value"
+    "#VALUE!" => ":value",
+    "#DIV/0!" => ":div0"
   }
   
   def error(text)
