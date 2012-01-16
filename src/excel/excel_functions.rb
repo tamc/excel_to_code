@@ -15,6 +15,7 @@ require_relative 'excel_functions/add'
 require_relative 'excel_functions/subtract'
 require_relative 'excel_functions/multiply'
 require_relative 'excel_functions/divide'
+require_relative 'excel_functions/power'
 
 # Array arithmetic
 require_relative 'excel_functions/sum'
