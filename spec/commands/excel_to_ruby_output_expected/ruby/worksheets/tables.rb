@@ -18,26 +18,26 @@ class Tables < Spreadsheet
   def h4; excel_match("B",[[tables.c4,tables.d4]]); end
   def b5; sum([[tables.b3],[tables.b4]]); end
   def c5; sum([[tables.c3],[tables.c4]]); end
-  def e6; [[tables.b2,tables.c2,tables.d2]]; end
-  def f6; [[tables.b2,tables.c2,tables.d2]]; end
-  def g6; [[tables.b2,tables.c2,tables.d2]]; end
-  def e7; [[tables.b5,tables.c5,nil]]; end
-  def f7; [[tables.b5,tables.c5,nil]]; end
-  def g7; [[tables.b5,tables.c5,nil]]; end
-  def e8; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def f8; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def g8; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def e9; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def f9; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def g9; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
+  def e6; tables.b2; end
+  def f6; tables.c2; end
+  def g6; tables.d2; end
+  def e7; tables.b5; end
+  def f7; tables.c5; end
+  def g7; nil; end
+  def e8; tables.b2; end
+  def f8; tables.c2; end
+  def g8; tables.d2; end
+  def e9; tables.b3; end
+  def f9; tables.c3; end
+  def g9; tables.d3; end
   def c10; sum([[tables.b5,tables.c5,nil]]); end
-  def e10; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def f10; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def g10; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
+  def e10; tables.b4; end
+  def f10; tables.c4; end
+  def g10; tables.d4; end
   def c11; sum([[tables.b3],[tables.b4]]); end
-  def e11; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def f11; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
-  def g11; [[tables.b2,tables.c2,tables.d2],[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4],[tables.b5,tables.c5,nil]]; end
+  def e11; tables.b5; end
+  def f11; tables.c5; end
+  def g11; nil; end
   def c12; tables.b5; end
   def c13; sum([[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4]]); end
   def c14; sum([[tables.b3,tables.c3,tables.d3],[tables.b4,tables.c4,tables.d4]]); end

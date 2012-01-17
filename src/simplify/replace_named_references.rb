@@ -67,8 +67,9 @@ class ReplaceNamedReferences
     values.lines do |line|
       # Looks to match shared string lines
       if line =~ /\[:named_reference/
-        ref, ast = line.split("\t")
-        output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
+        cols = line.split("\t")
+        ast = cols.pop
+        output.puts "#{cols.join("\t")}\t#{rewriter.map(eval(ast)).inspect}"
       else
         output.puts line
       end

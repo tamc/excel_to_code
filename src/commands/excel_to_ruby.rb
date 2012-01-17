@@ -110,10 +110,9 @@ class ExcelToRuby
   end
   
   def rewrite_array_formulae(name,xml_filename)
-    i = File.open(File.join(output_directory,'intermediate',name,'array_formulae.ast-nocols'),'r')
-    o = File.open(File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast"),'w')
-    RewriteArrayFormulae.rewrite(i,o)
-    close(i,o)
+    replace ReplaceNamedReferences, File.join(name,'array_formulae.ast-nocols'), name, 'named_references.ast', File.join(name,"array_formulae.ast-nocols-no-named-refs")
+    replace ReplaceTableReferences, File.join(name,'array_formulae.ast-nocols-no-named-refs'), name, File.join(name,'tables'), File.join(name,"array_formulae.ast-nocols-no-named-refs-notable-refs")
+    rewrite RewriteArrayFormulae, File.join(name,'array_formulae.ast-nocols-no-named-refs-notable-refs'), File.join(name,"array_formulae-expanded.ast")
   end
   
   def combine_formulae_files(name,xml_filename)

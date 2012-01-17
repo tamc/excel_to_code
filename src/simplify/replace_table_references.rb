@@ -41,9 +41,11 @@ class ReplaceTableReferences
     input.lines do |line|
       # Looks to match shared string lines
       if line =~ /\[:table_reference/
-        ref, ast = line.split("\t")
+        cols = line.split("\t")
+        ast = cols.pop
+        ref = cols.first
         rewriter.cell = ref
-        output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
+        output.puts "#{cols.join("\t")}\t#{rewriter.map(eval(ast)).inspect}"
       else
         output.puts line
       end
