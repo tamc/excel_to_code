@@ -14,7 +14,7 @@ class RewriteFormulaeToAst
       output.write $1
       ast =  Formula.parse($2)
       if ast
-        output.puts  Formula.parse($2).to_ast[1].to_s
+        output.puts ast.to_ast[1].to_s
       else
         $stderr.puts "Formula not parsed on line #{i+1}: #{line}"
         output.puts "[:parse_error,#{line.inspect}]"
