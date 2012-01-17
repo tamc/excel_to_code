@@ -44,7 +44,7 @@ class Table
       ast_for_area @area.excel_start.offset(0,0), @area.excel_start.offset(0,@area.width)
     when /#Totals/io
       ast_for_area @area.excel_start.offset(@area.height,0), @area.excel_start.offset(@area.height,@area.width)
-    when /#Data/io
+    when /#Data/io, ""
       ast_for_area @area.excel_start.offset(1,0), @area.excel_finish.offset(-@number_of_total_rows,0)
     when /#All/io, ""
       ast_for_area @area.excel_start, @area.excel_finish

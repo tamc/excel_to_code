@@ -21,10 +21,15 @@ describe Table do
   it 'should be able to return a reference for [:table_reference, "FirstTable", "#Data"]]' do
     @table.reference_for("FirstTable", "#Data","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B4", "D6"]]
   end
+
+  it 'should be able to return a reference for [:table_reference, "FirstTable", ""]] which should be the same as a reference to #Data' do
+    @table.reference_for("FirstTable","","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B4", "D6"]]
+    # @table.reference_for("FirstTable", "","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B3", "D7"]]
+  end
   
-  it 'should be able to return a reference for [:table_reference, "FirstTable", "#All"]] and  [:table_reference, "FirstTable", ""]]' do
+  it 'should be able to return a reference for [:table_reference, "FirstTable", "#All"]]' do
     @table.reference_for("FirstTable", "#All","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B3", "D7"]]
-    @table.reference_for("FirstTable", "","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B3", "D7"]]
+    
   end
 
   it 'should be able to return a reference for [:table_reference, "FirstTable", "#This Row"]]' do
