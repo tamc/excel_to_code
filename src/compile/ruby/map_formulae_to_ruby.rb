@@ -19,11 +19,16 @@ class MapFormulaeToRuby < MapValuesToRuby
     'COSH' => 'cosh',
     'IF' => 'excel_if',
     'PI' => 'pi',
-    'SUM' => 'sum'
+    'SUM' => 'sum',
+    'MATCH' => 'excel_match'
   }
   
   def arithmetic(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
+  end
+  
+  def string_join(*strings)
+    "string_join(#{strings.map {|a| map(a)}.join(',')})"
   end
   
   def comparison(left,operator,right)

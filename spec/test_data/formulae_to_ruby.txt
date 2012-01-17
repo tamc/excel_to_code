@@ -39,6 +39,10 @@
 [:function, "PI"]	pi()
 [:function, "SUM", [:number, "1"], [:number, "1"], [:number, "1"]]	sum(1,1,1)
 
+# String functions
+[:string_join,[:number,"1"],[:string,"Two"]]	string_join(1,"Two")
+[:function,"MATCH",[:number,"1"],[:array, [:row, [:cell, "F4"],[:cell, "G4"]]],[:boolean_true]]	excel_match(1,[[f4,g4]],true)
+
 # References
 [:cell,"A1"]	a1
 [:cell,"$A$1"]	a1
@@ -48,4 +52,5 @@
 [:array, [:row, [:cell, "F4"],[:cell, "G4"]]]	[[f4,g4]]
 [:array, [:row, [:cell, "F4"]],[:row, [:cell, "F5"]]]	[[f4],[f5]]
 [:array, [:row, [:cell, "F4"],[:cell, "G4"]], [:row, [:cell, "F5"], [:cell, "G5"]]]	[[f4,g4],[f5,g5]]
+
 

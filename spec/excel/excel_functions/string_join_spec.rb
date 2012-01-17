@@ -6,6 +6,10 @@ describe "ExcelFunctions: string_join(string,string)" do
   it "should return a string by combining its arguments" do
     string_join("Hello ","world").should == "Hello world"
   end
+  
+  it "should cope with an arbitrary number of arguments" do
+    string_join("Hello"," ","world","!").should == "Hello world!"
+  end
     
   it "should convert values to strings as it goes" do
     string_join("Top ",10).should == "Top 10"

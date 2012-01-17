@@ -1,12 +1,7 @@
 module ExcelFunctions
   
-  def string_join(a,b)
-    return a if a.is_a?(Symbol)
-    return b if b.is_a?(Symbol)
-    a ||= 0
-    b ||= 0
-    
-    a.to_s + b.to_s
+  def string_join(*strings)
+    strings.find {|s| s.is_a?(Symbol)} || strings.map { |s| s == nil ? "0" : s.to_s }.join('')
   end
   
 end
