@@ -26,3 +26,6 @@ require_relative 'excel_functions/sum'
 
 # Geometry functions
 require_relative 'excel_functions/cosh'
+
+# String functions
+require_relative 'excel_functions/string_join'
