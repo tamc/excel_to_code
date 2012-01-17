@@ -15,3 +15,8 @@ def excel_fragment(name)
 end
 
 alias :test_data :excel_fragment
+
+class FunctionTest
+  extend ExcelFunctions
+end
+  

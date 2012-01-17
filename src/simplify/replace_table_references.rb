@@ -7,15 +7,12 @@ class ReplaceTableReferenceAst
   end
   
   def map(ast)
-    if ast.is_a?(Array)
-      operator = ast.shift
-      if respond_to?(operator)
-        send(operator,*ast)
-      else
-        [operator,*ast.map {|a| map(a) }]
-      end
+    return ast unless ast.is_a?(Array)
+    operator = ast[0]
+    if respond_to?(operator)
+      send(operator,*ast[1..-1])
     else
-      return ast
+      [operator,*ast[1..-1].map {|a| map(a) }]
     end
   end
   
