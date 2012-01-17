@@ -1,0 +1,37 @@
+# Replaced with themselves
+[:blank]	[:blank]
+[:number, "1"]	[:number, "1"]
+[:string, "Hello world"]	[:string, "Hello world"]
+[:error, "#NAME?"]	[:error, "#NAME?"]
+[:boolean_true]	[:boolean_true]
+[:boolean_false]	[:boolean_false]
+
+# Replacement should only happen if all the arguments can be replaced with values
+[:arithmetic, [:function, "TODAY"], [:operator, "+"], [:number, "1"]]	[:arithmetic, [:function, "TODAY"], [:operator, "+"], [:number, "1"]]
+[:function, "SUM", [:function, "TODAY"], [:number, "1"], [:number, "1"]]	[:function, "SUM", [:function, "TODAY"], [:number, "1"], [:number, "1"]]
+
+# Arithmetic
+[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]	[:number, "2"]
+[:arithmetic, [:number, "1"], [:operator, "-"], [:number, "1"]]	[:number, "0"]
+[:arithmetic, [:number, "1"], [:operator, "*"], [:number, "1"]]	[:number, "1"]
+[:arithmetic, [:number, "1"], [:operator, "/"], [:number, "1"]]	[:number, "1"]
+[:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]]	[:number, "1"]
+
+# Comparators
+[:comparison, [:number, "1"], [:comparator, "="], [:number, "8"]]	[:boolean_false]
+[:comparison, [:number, "1"], [:comparator, "<"], [:number, "8"]]	[:boolean_true]
+[:comparison, [:number, "1"], [:comparator, ">"], [:number, "8"]]	[:boolean_false]
+[:comparison, [:number, "1"], [:comparator, "<="], [:number, "8"]]	[:boolean_true]
+[:comparison, [:number, "1"], [:comparator, ">="], [:number, "8"]]	[:boolean_false]
+[:comparison, [:number, "1"], [:comparator, "<>"], [:number, "8"]]	[:boolean_true]
+
+# Functions whose value changes at runtime
+[:function, "TODAY"]	[:function, "TODAY"]
+[:function, "RAND"]	[:function, "RAND"]
+[:function, "RANDBETWEEN"]	[:function, "RANDBETWEEN"]
+
+# Functions
+[:function, "PI"]	[:number, "3.141592653589793"]
+[:function, "COSH", [:number, "1"]]	[:number, "1.5430806348152437"]
+[:function, "IF",[:boolean_true],[:number, "1"],[:number, "8"]]	[:number, "1"]
+[:function, "SUM", [:number, "1"], [:number, "1"], [:number, "1"]]	[:number, "3"]
