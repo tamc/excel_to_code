@@ -23,8 +23,8 @@ class MapFormulaeToValues
   end
   
   def arithmetic(left,operator,right)
-    l = value(left)
-    r = value(right)
+    l = value(map(left))
+    r = value(map(right))
     if l && r
       formula_value(operator.last,l,r)
     else

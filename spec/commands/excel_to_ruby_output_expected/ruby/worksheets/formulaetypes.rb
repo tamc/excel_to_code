@@ -5,7 +5,7 @@ require_relative '../examplespreadsheet'
 module ExampleSpreadsheet
 class Formulaetypes < Spreadsheet
   def a1; "Simple"; end
-  def b1; add(1,1); end
+  def b1; 2; end
   def a2; "Sharing"; end
   def b2; cosh(multiply(2,pi())); end
   def a3; "Shared"; end

@@ -27,6 +27,8 @@ class ExcelToRuby
     Process.waitall
     replace_indirects
     Process.waitall
+    optimise
+    Process.waitall
     replace_blanks
     Process.waitall
     compile_workbook
@@ -184,7 +186,8 @@ class ExcelToRuby
   end
   
   def simplify_worksheet(name,xml_filename)
-    replace ReplaceSharedStrings, File.join(name,'formulae.ast'), 'shared_strings', File.join(name,"formulae_no_shared_strings.ast")
+    replace SimplifyArithmetic, File.join(name,'formulae.ast'), File.join(name,'formulae_simple_arithmetic.ast')
+    replace ReplaceSharedStrings, File.join(name,'formulae_simple_arithmetic.ast'), 'shared_strings', File.join(name,"formulae_no_shared_strings.ast")
     replace ReplaceSharedStrings, File.join(name,'values.ast'), 'shared_strings', File.join(name,"values_no_shared_strings.ast")
     r = ReplaceNamedReferences.new
     r.sheet_name = name
@@ -193,14 +196,14 @@ class ExcelToRuby
     r = ReplaceTableReferences.new
     r.sheet_name = name    
     replace r, File.join(name,'formulae_no_named_references.ast'), 'all_tables', File.join(name,"formulae_no_table_references.ast")
-    replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast") 
+    replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast")
   end
   
   def replace_blanks
     references = {}
     worksheets do |name,xml_filename|
       r = references[name] = {}
-      i = input(name,"formulae_no_indirects.ast")
+      i = input(name,"formulae_no_indirects_optimised.ast")
       i.lines do |line|
         ref = line[/^(.*?)\t/,1]
         r[ref] = true
@@ -211,7 +214,7 @@ class ExcelToRuby
         r = ReplaceBlanks.new
         r.references = references
         r.default_sheet_name = name
-        replace r, File.join(name,"formulae_no_indirects.ast"),File.join(name,"formulae_no_blanks.ast")
+        replace r, File.join(name,"formulae_no_indirects_optimised.ast"),File.join(name,"formulae_no_blanks.ast")
       end
     end
   end
@@ -240,6 +243,12 @@ class ExcelToRuby
       i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
       o = File.join(output_directory,'intermediate',name,"formulae_no_indirects.ast")
       `cp #{i} #{o}`
+    end
+  end
+  
+  def optimise
+    worksheets do |name,xml_filename|
+      replace ReplaceFormulaeWithCalculatedValues, File.join(name,'formulae_no_indirects.ast'), File.join(name,'formulae_no_indirects_optimised.ast')
     end
   end
   
