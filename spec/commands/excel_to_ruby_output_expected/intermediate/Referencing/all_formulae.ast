@@ -1,4 +1,5 @@
 A2	[:named_reference, "Named_reference"]
 B4	[:arithmetic, [:cell, "A4"], [:operator, "+"], [:number, "1"]]
 B8	[:function, "INDIRECT", [:string, "naMed_reFerence"]]
+B9	[:function, "SUM", [:function, "INDIRECT", [:string, "firsttable[#Totals]"]]]
 C4	[:arithmetic, [:cell, "B4"], [:operator, "+"], [:number, "1"]]

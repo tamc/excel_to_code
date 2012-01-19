@@ -20,13 +20,14 @@ class ExcelToRuby
     process_workbook
     extract_worksheets
     Process.waitall
+    merge_table_files
     rewrite_worksheets
     Process.waitall
     simplify_worksheets
     Process.waitall
-    replace_blanks
-    Process.waitall
     replace_indirects
+    Process.waitall
+    replace_blanks
     Process.waitall
     compile_workbook
     compile_worksheets
@@ -115,7 +116,10 @@ class ExcelToRuby
     r = ReplaceNamedReferences.new
     r.sheet_name = name
     replace r, File.join(name,'array_formulae.ast-nocols'), 'named_references.ast', File.join(name,"array_formulae.ast-nocols-no-named-refs")
-    replace ReplaceTableReferences, File.join(name,'array_formulae.ast-nocols-no-named-refs'), name, File.join(name,'tables'), File.join(name,"array_formulae.ast-nocols-no-named-refs-notable-refs")
+
+    r = ReplaceTableReferences.new
+    r.sheet_name = name    
+    replace r, File.join(name,'array_formulae.ast-nocols-no-named-refs'), 'all_tables', File.join(name,"array_formulae.ast-nocols-no-named-refs-notable-refs")
     rewrite RewriteArrayFormulae, File.join(name,'array_formulae.ast-nocols-no-named-refs-notable-refs'), File.join(name,"array_formulae-expanded.ast")
   end
   
@@ -124,7 +128,7 @@ class ExcelToRuby
     shared_formulae = File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast")
     array_formulae = File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast")
     combined_formulae = File.join(output_directory,'intermediate',name,"all_formulae.ast")
-    `cat '#{simple_formulae}' '#{shared_formulae}' '#{array_formulae}' | sort > '#{combined_formulae}'`
+    `sort '#{simple_formulae}' '#{shared_formulae}' '#{array_formulae}' > '#{combined_formulae}'`
     rewrite RewriteMergeFormulaeAndValues, File.join(name,"all_formulae.ast"), File.join(name,'values.ast'), File.join(name,'formulae.ast')
   end
   
@@ -163,6 +167,14 @@ class ExcelToRuby
     close(worksheet_xml)
   end
   
+  def merge_table_files
+    tables = []
+    worksheets do |name,xml_filename|
+      tables << File.join(output_directory,'intermediate',name,'tables')
+    end
+    `sort #{tables.map { |t| " '#{t}' "}.join} > #{File.join(output_directory,'intermediate','all_tables')}`
+  end
+  
   def simplify_worksheets
     worksheets do |name,xml_filename|
 #      fork do 
@@ -177,7 +189,10 @@ class ExcelToRuby
     r = ReplaceNamedReferences.new
     r.sheet_name = name
     replace r, File.join(name,'formulae_no_shared_strings.ast'), 'named_references.ast', File.join(name,"formulae_no_named_references.ast")
-    replace ReplaceTableReferences, File.join(name,'formulae_no_named_references.ast'), name, File.join(name,'tables'), File.join(name,"formulae_no_table_references.ast")
+
+    r = ReplaceTableReferences.new
+    r.sheet_name = name    
+    replace r, File.join(name,'formulae_no_named_references.ast'), 'all_tables', File.join(name,"formulae_no_table_references.ast")
     replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast") 
   end
   
@@ -185,7 +200,7 @@ class ExcelToRuby
     references = {}
     worksheets do |name,xml_filename|
       r = references[name] = {}
-      i = input(name,"formulae_no_ranges.ast")
+      i = input(name,"formulae_no_indirects.ast")
       i.lines do |line|
         ref = line[/^(.*?)\t/,1]
         r[ref] = true
@@ -196,20 +211,29 @@ class ExcelToRuby
         r = ReplaceBlanks.new
         r.references = references
         r.default_sheet_name = name
-        replace r, File.join(name,"formulae_no_ranges.ast"),File.join(name,"formulae_no_blanks.ast")
+        replace r, File.join(name,"formulae_no_indirects.ast"),File.join(name,"formulae_no_blanks.ast")
       end
     end
   end
   
   def replace_indirects
     basename = 'formulae_indirect_working'
-    counter = 1
     worksheets do |name,xml_filename|
-      replace ReplaceIndirectsWithReferences, File.join(name,"formulae_no_blanks.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      counter = 1
+      replace ReplaceIndirectsWithReferences, File.join(name,"formulae_no_ranges.ast"), File.join(name,"#{basename}#{counter+1}.ast")
       counter += 1
+
       r = ReplaceNamedReferences.new
       r.sheet_name = name
       replace r, File.join(name,"#{basename}#{counter}.ast"), 'named_references.ast', File.join(name,"#{basename}#{counter+1}.ast")
+      counter += 1
+      
+      r = ReplaceTableReferences.new
+      r.sheet_name = name
+      replace r, File.join(name,"#{basename}#{counter}.ast"), 'all_tables', File.join(name,"#{basename}#{counter+1}.ast")
+      counter += 1
+      
+      replace ReplaceRangesWithArrayLiterals, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
       counter += 1
       
       # Finally, create the output directory
@@ -268,7 +292,7 @@ class ExcelToRuby
     settable_refs = @values_that_can_be_set_at_runtime[name]    
     c = CompileToRuby.new
     c.settable =lambda { |ref| settable_refs.include?(ref) } if settable_refs
-    i = input(name,"formulae_no_indirects.ast")
+    i = input(name,"formulae_no_blanks.ast")
     w = input("worksheet_ruby_names")
     o = ruby('worksheets',"#{name.downcase}.rb")
     d = output(name,'defaults')

@@ -25,11 +25,13 @@ end
 
 class ReplaceTableReferences
   
+  attr_accessor :sheet_name
+  
   def self.replace(*args)
     self.new.replace(*args)
   end
   
-  def replace(input,sheet_name,table_data,output)
+  def replace(input,table_data,output)
     tables = {}
     table_data.each do |line|
       table = Table.new(*line.strip.split("\t"))

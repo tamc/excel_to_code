@@ -21,7 +21,9 @@ END
 input = StringIO.new(input)
 tables = StringIO.new(tables)
 output = StringIO.new
-ReplaceTableReferences.replace(input,"Tables",tables,output)
+r = ReplaceTableReferences.new
+r.sheet_name = "Tables"
+r.replace(input,tables,output)
 output.string.should == expected_output
 end # /it
 
@@ -44,7 +46,9 @@ END
 input = StringIO.new(input)
 tables = StringIO.new(tables)
 output = StringIO.new
-ReplaceTableReferences.replace(input,"Tables",tables,output)
+r = ReplaceTableReferences.new
+r.sheet_name = "Tables"
+r.replace(input,tables,output)
 output.string.should == expected_output
 end # /it
 
