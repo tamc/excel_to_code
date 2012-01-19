@@ -6,12 +6,14 @@ class NamedReferences
     @named_references = {}
     refs.each do |line|
       sheet, name, reference = line.split("\t")
-      @named_references[sheet] ||= {}
-      @named_references[sheet][name] = eval(reference)
+      @named_references[sheet.downcase] ||= {}
+      @named_references[sheet.downcase][name.downcase] = eval(reference)
     end
   end
   
   def reference_for(sheet,named_reference)
+    sheet.downcase!
+    named_reference.downcase!
     if @named_references.has_key?(sheet)
       @named_references[sheet][named_reference] || @named_references[""][named_reference] || [:error, "#NAME?"]
     else

@@ -37,7 +37,7 @@ end
 it "should work even if no local references" do
 
 input = <<END
-A1\t[:named_reference, "Global"]
+A1\t[:named_reference, "gLOBal"]
 END
 
 named_references = <<END
