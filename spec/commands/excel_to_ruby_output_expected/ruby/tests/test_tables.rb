@@ -18,13 +18,13 @@ class TestTables < Test::Unit::TestCase
   def test_g4; assert_equal(3,worksheet.g4); end
   def test_h4; assert_equal(1,worksheet.h4); end
   def test_b5; assert_equal(3,worksheet.b5); end
-  def test_c5; assert_equal(0,worksheet.c5); end
+  def test_c5; assert_equal(0,worksheet.c5 || 0); end
   def test_e6; assert_equal("ColA",worksheet.e6); end
   def test_f6; assert_equal("ColB",worksheet.f6); end
   def test_g6; assert_equal("Column1",worksheet.g6); end
   def test_e7; assert_equal(3,worksheet.e7); end
-  def test_f7; assert_equal(0,worksheet.f7); end
-  def test_g7; assert_equal(0,worksheet.g7); end
+  def test_f7; assert_equal(0,worksheet.f7 || 0); end
+  def test_g7; assert_equal(0,worksheet.g7 || 0); end
   def test_e8; assert_equal("ColA",worksheet.e8); end
   def test_f8; assert_equal("ColB",worksheet.f8); end
   def test_g8; assert_equal("Column1",worksheet.g8); end
@@ -37,8 +37,8 @@ class TestTables < Test::Unit::TestCase
   def test_g10; assert_equal("2B",worksheet.g10); end
   def test_c11; assert_equal(3,worksheet.c11); end
   def test_e11; assert_equal(3,worksheet.e11); end
-  def test_f11; assert_equal(0,worksheet.f11); end
-  def test_g11; assert_equal(0,worksheet.g11); end
+  def test_f11; assert_equal(0,worksheet.f11 || 0); end
+  def test_g11; assert_equal(0,worksheet.g11 || 0); end
   def test_c12; assert_equal(3,worksheet.c12); end
   def test_c13; assert_equal(3,worksheet.c13); end
   def test_c14; assert_equal(3,worksheet.c14); end

@@ -10,7 +10,13 @@ class CompileToRubyUnitTest
     mapper = MapValuesToRuby.new
     input.lines do |line|
       ref, formula = line.split("\t")
-      output.puts "  def test_#{ref.downcase}; assert_equal(#{mapper.map(eval(formula))},worksheet.#{ref.downcase}); end"
+      value = mapper.map(eval(formula))
+      full_reference = "worksheet.#{ref.downcase}"
+      if value == 0 # Need to do a slightly different test, because needs to pass if nil returned, as well as zero
+        output.puts "  def test_#{ref.downcase}; assert_equal(#{value},#{full_reference} || 0); end"      
+      else
+        output.puts "  def test_#{ref.downcase}; assert_equal(#{value},#{full_reference}); end"
+      end
     end
   end
   

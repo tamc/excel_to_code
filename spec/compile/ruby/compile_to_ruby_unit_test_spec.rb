@@ -10,12 +10,15 @@ describe CompileToRubyUnitTest do
   end
   
 it "should compile basic values" do
+  
+# Note test A6: Excel treats empty cells as having a value of zero
 input = <<END
 A1\t[:number, "1"]
 A2\t[:string, "Hello"]
 A3\t[:error, "#NAME?"]
 A4\t[:boolean_true]
 A5\t[:boolean_false]
+A6\t[:number, "0"]
 END
 
 expected = <<END
@@ -24,6 +27,7 @@ expected = <<END
   def test_a3; assert_equal(:name,worksheet.a3); end
   def test_a4; assert_equal(true,worksheet.a4); end
   def test_a5; assert_equal(false,worksheet.a5); end
+  def test_a6; assert_equal(0,worksheet.a6 || 0); end
 END
 
 compile(input).should == expected
