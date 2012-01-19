@@ -30,7 +30,9 @@ END
 input = StringIO.new(input)
 named_references = StringIO.new(named_references)
 output = StringIO.new
-ReplaceNamedReferences.replace(input,"thisSheet",named_references,output)
+r = ReplaceNamedReferences.new
+r.sheet_name = "thisSheet"
+r.replace(input,named_references,output)
 output.string.should == expected_output
 end
 
@@ -51,7 +53,9 @@ END
 input = StringIO.new(input)
 named_references = StringIO.new(named_references)
 output = StringIO.new
-ReplaceNamedReferences.replace(input,"thisSheet",named_references,output)
+r = ReplaceNamedReferences.new
+r.sheet_name = "thisSheet"
+r.replace(input,named_references,output)
 output.string.should == expected_output
 end
 
@@ -72,7 +76,9 @@ END
 input = StringIO.new(input)
 named_references = StringIO.new(named_references)
 output = StringIO.new
-ReplaceNamedReferences.replace(input,"thisSheet",named_references,output)
+r = ReplaceNamedReferences.new
+r.sheet_name = "thisSheet"
+r.replace(input,named_references,output)
 output.string.should == expected_output
 end
 

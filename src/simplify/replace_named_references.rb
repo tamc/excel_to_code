@@ -58,12 +58,14 @@ end
 
 class ReplaceNamedReferences
   
+  attr_accessor :sheet_name
+  
   def self.replace(values,sheet_name,named_references,output)
     self.new.replace(values,sheet_name,named_references,output)
   end
   
   # Rewrites ast with named references
-  def replace(values,sheet_name,named_references,output)
+  def replace(values,named_references,output)
     named_references = NamedReferences.new(named_references.readlines)
     rewriter = ReplaceNamedReferencesAst.new(named_references,sheet_name)
     values.lines do |line|

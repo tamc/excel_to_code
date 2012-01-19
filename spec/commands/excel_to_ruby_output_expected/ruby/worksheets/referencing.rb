@@ -9,6 +9,7 @@ class Referencing < Spreadsheet
   attr_accessor :a4 # Default: 10
   def b4; add(a4,1); end
   def c4; add(b4,1); end
+  def b8; referencing.a1; end
 
   def initialize
     @a4 = 10
