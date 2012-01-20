@@ -1,3 +1,4 @@
+A1	[:sheet_reference, "Referencing", [:cell, "D11"]]
 B2	[:string, "ColA"]
 C2	[:string, "ColB"]
 D2	[:string, "Column1"]

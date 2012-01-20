@@ -1,3 +1,4 @@
+A1	[:cell, "C4"]
 A2	[:named_reference, "Named_reference"]
 B4	[:arithmetic, [:cell, "A4"], [:operator, "+"], [:number, "1"]]
 C4	[:arithmetic, [:cell, "B4"], [:operator, "+"], [:number, "1"]]

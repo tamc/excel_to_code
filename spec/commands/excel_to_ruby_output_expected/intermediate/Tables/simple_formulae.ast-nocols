@@ -1,3 +1,4 @@
+A1	[:sheet_reference, "Referencing", [:cell, "D11"]]
 D3	[:string_join, [:table_reference, "FirstTable", "[#This Row],[ColA]"], [:table_reference, "FirstTable", "[#This Row],[ColB]"]]
 D4	[:string_join, [:table_reference, "FirstTable", "[#This Row],[ColA]"], [:table_reference, "FirstTable", "[#This Row],[ColB]"]]
 F4	[:table_reference, "FirstTable", "[#This Row],[ColB]"]

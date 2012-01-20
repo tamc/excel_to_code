@@ -1,11 +1,12 @@
-B2	s	13
-C2	s	14
-D2	s	17
+A1	n	12
+B2	s	12
+C2	s	13
+D2	s	16
 B3	n	1
-C3	s	15
+C3	s	14
 D3	str	1A
 B4	n	2
-C4	s	16
+C4	s	15
 D4	str	2B
 F4	str	B
 G4	n	3

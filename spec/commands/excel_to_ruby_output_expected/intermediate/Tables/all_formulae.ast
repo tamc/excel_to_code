@@ -1,3 +1,4 @@
+A1	[:sheet_reference, "Referencing", [:cell, "D11"]]
 B5	[:function, "SUM", [:table_reference, "FirstTable", "ColA"]]
 C10	[:function, "SUM", [:table_reference, "FirstTable", "#Totals"]]
 C11	[:function, "SUM", [:table_reference, "FirstTable", "ColA"]]

@@ -1,11 +1,11 @@
-A1	s	12
-A2	str	Named reference
+A1	n	12
+A2	n	12
 A4	n	10
 B4	n	11
 C4	n	12
 A5	n	3
-B8	str	Named reference
+B8	n	12
 B9	n	3
-B11	s	18
-C11	s	19
-D11	str	Named reference
+B11	s	17
+C11	s	18
+D11	n	12
