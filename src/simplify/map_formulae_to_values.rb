@@ -38,9 +38,9 @@ class MapFormulaeToValues
   
   def function(name,*args)
     if FUNCTIONS_THAT_CHANGE_AT_RUNTIME.include?(name)
-      [:function,name,*args]
+      [:function,name,*args.map { |a| map(a) }]
     else
-      values = args.map { |a| value(a) }
+      values = args.map { |a| value(map(a)) }
       if values.any? { |a| a.nil? }
         [:function,name,*args]
       else
