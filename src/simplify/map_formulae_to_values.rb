@@ -34,15 +34,24 @@ class MapFormulaeToValues
   
   alias :comparison :arithmetic
   
-  FUNCTIONS_THAT_CHANGE_AT_RUNTIME = %w{TODAY RAND RANDBETWEEN}
+  def string_join(*args)
+    values = args.map { |a| value(map(a)) } # FIXME: These eval statements are really bugging me. Must find a better solution
+    if values.any? { |a| a.nil? }
+      [:string_join,*args.map { |a| map(a) }]
+    else
+      ast_for_value(@calculator.string_join(*values))
+    end
+  end
+  
+  FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED = %w{TODAY RAND RANDBETWEEN INDIRECT}
   
   def function(name,*args)
-    if FUNCTIONS_THAT_CHANGE_AT_RUNTIME.include?(name)
+    if FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED.include?(name)
       [:function,name,*args.map { |a| map(a) }]
     else
       values = args.map { |a| value(map(a)) }
       if values.any? { |a| a.nil? }
-        [:function,name,*args]
+        [:function,name,*args.map { |a| map(a) }]
       else
         formula_value(name,*values)
       end
@@ -51,7 +60,7 @@ class MapFormulaeToValues
   
   def value(ast)
     return nil unless @value_for_ast.respond_to?(ast.first)
-    @value_for_ast.send(*ast)
+    eval(@value_for_ast.send(*ast))
   end
   
   def formula_value(ast_name,*arguments)
@@ -64,8 +73,9 @@ class MapFormulaeToValues
     when true; [:boolean_true]
     when false; [:boolean_false]
     when Symbol; [:error,value.to_s]
-    when String; [:string,eval(value)] # FIXME: Need a better solution to string quoting and unquoting than this eval statement!
-    else value
+    when String; [:string,value]
+    else
+      raise Error.new("Ast for #{value.inspect} of class #{value.class} not recognised")
     end
   end
   

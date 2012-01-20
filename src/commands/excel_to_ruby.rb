@@ -25,9 +25,7 @@ class ExcelToRuby
     Process.waitall
     simplify_worksheets
     Process.waitall
-    replace_indirects
-    Process.waitall
-    optimise
+    optimise_and_replace_indirect_loop
     Process.waitall
     replace_blanks
     Process.waitall
@@ -219,11 +217,21 @@ class ExcelToRuby
     end
   end
   
-  def replace_indirects
-    basename = 'formulae_indirect_working'
+  def optimise_and_replace_indirect_loop
+    number_of_loops = 3
+    1.upto(number_of_loops) do |pass|
+      puts "Optimise and replace indirects pass #{pass}"
+      start = pass == 1 ? "formulae_no_ranges.ast" : "optimse-output-#{pass-1}.ast"
+      finish = pass == number_of_loops ? "formulae_no_indirects_optimised.ast" : "optimse-output-#{pass}.ast"
+      replace_indirects(start,"replace-indirect-output-#{pass}.ast","replace-indirect-working-#{pass}-")
+      optimise_sheets("replace-indirect-output-#{pass}.ast",finish,"optimse-working-#{pass}-")
+    end
+  end
+  
+  def replace_indirects(start_filename,finish_filename,basename)
     worksheets do |name,xml_filename|
       counter = 1
-      replace ReplaceIndirectsWithReferences, File.join(name,"formulae_no_ranges.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      replace ReplaceIndirectsWithReferences, File.join(name,start_filename), File.join(name,"#{basename}#{counter+1}.ast")
       counter += 1
 
       r = ReplaceNamedReferences.new
@@ -241,62 +249,58 @@ class ExcelToRuby
       
       # Finally, create the output directory
       i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
-      o = File.join(output_directory,'intermediate',name,"formulae_no_indirects.ast")
+      o = File.join(output_directory,'intermediate',name,finish_filename)
       `cp #{i} #{o}`
     end
   end
   
-  def optimise
-    basename = "optimise"
+  def optimise_sheets(start_filename,finish_filename,basename)
     counter = 1
     
     # Setup start
     worksheets do |name|
-      i = File.join(output_directory,'intermediate',name,"formulae_no_indirects.ast")
+      i = File.join(output_directory,'intermediate',name,start_filename)
       o = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
       `cp #{i} #{o}`
     end
     
-    3.times do |pass|
-      puts "Optimisation pass #{pass}"
-      worksheets do |name,xml_filename|
-        replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
-      end
-      counter += 1
+    worksheets do |name,xml_filename|
+      replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+    end
+    counter += 1
       
-      references = all_formulae("#{basename}#{counter}.ast")
-      inline_ast_decision = lambda do |sheet,cell,references|
-        references_to_keep = @values_that_can_be_set_at_runtime[sheet]
-        if references_to_keep && references_to_keep.include?(cell)
-          false
-        else
-          ast = references[sheet][cell]
-          if ast
-            if [:number,:string,:blank,:error,:boolean_true,:boolean_false,:sheet_reference,:cell].include?(ast.first)
-              #   puts "Inlining #{sheet}.#{cell}: #{ast.inspect}"
-              true
-            else
-              false
-            end
+    references = all_formulae("#{basename}#{counter}.ast")
+    inline_ast_decision = lambda do |sheet,cell,references|
+      references_to_keep = @values_that_can_be_set_at_runtime[sheet]
+      if references_to_keep && references_to_keep.include?(cell)
+        false
+      else
+        ast = references[sheet][cell]
+        if ast
+          if [:number,:string,:blank,:error,:boolean_true,:boolean_false,:sheet_reference,:cell].include?(ast.first)
+            #   puts "Inlining #{sheet}.#{cell}: #{ast.inspect}"
+            true
           else
             false
           end
+        else
+          false
         end
       end
-      r = InlineFormulae.new
-      r.references = references
-      r.inline_ast = inline_ast_decision
-    
-      worksheets do |name,xml_filename|
-        r.default_sheet_name = name
-        replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
-      end
-      counter += 1
     end
+    r = InlineFormulae.new
+    r.references = references
+    r.inline_ast = inline_ast_decision
+    
+    worksheets do |name,xml_filename|
+      r.default_sheet_name = name
+      replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+    end
+    counter += 1
     
     # Finish
     worksheets do |name|
-      o = File.join(output_directory,'intermediate',name,"formulae_no_indirects_optimised.ast")
+      o = File.join(output_directory,'intermediate',name,finish_filename)
       i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
       `cp #{i} #{o}`
     end

@@ -38,3 +38,5 @@
 [:function, "SUM", [:number, "1"], [:number, "1"], [:number, "1"]]	[:number, "3"]
 [:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]	[:number, "267.7467614837482"]
 [:function, "IF",[:boolean_true], [:string,"Hello"]]	[:string, "Hello"]
+[:string_join, [:string, "Named"], [:string, "_"], [:string, "Reference"]]	 [:string, "Named_Reference"]
+[:function, "INDIRECT", [:string_join, [:string, "Named"], [:string, "_"], [:string, "Reference"]]]	[:function, "INDIRECT", [:string, "Named_Reference"]]

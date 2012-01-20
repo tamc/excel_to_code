@@ -1,8 +1,0 @@
-A1	[:string, "Named reference"]
-A2	[:sheet_reference, "Referencing", [:cell, "$A$1"]]
-A4	[:number, "10"]
-B4	[:arithmetic, [:cell, "A4"], [:operator, "+"], [:number, "1"]]
-C4	[:arithmetic, [:cell, "B4"], [:operator, "+"], [:number, "1"]]
-A5	[:arithmetic, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]], [:operator, "+"], [:number, "1"]]
-B8	[:sheet_reference, "Referencing", [:cell, "$A$1"]]
-B9	[:function, "SUM", [:sheet_reference, "Tables", [:area, "B5", "D5"]]]

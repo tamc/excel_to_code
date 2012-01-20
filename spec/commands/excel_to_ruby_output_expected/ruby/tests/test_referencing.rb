@@ -13,5 +13,8 @@ class TestReferencing < Test::Unit::TestCase
   def test_a5; assert_equal(3,worksheet.a5); end
   def test_b8; assert_equal("Named reference",worksheet.b8); end
   def test_b9; assert_equal(3,worksheet.b9); end
+  def test_b11; assert_equal("Named",worksheet.b11); end
+  def test_c11; assert_equal("Reference",worksheet.c11); end
+  def test_d11; assert_equal("Named reference",worksheet.d11); end
 end
 end

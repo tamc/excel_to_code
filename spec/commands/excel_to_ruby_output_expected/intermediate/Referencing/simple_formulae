@@ -4,3 +4,4 @@ C4	B4+1
 A5	1+1+1
 B8	INDIRECT("naMed_reFerence")
 B9	SUM(INDIRECT("firsttable[#Totals]"))
+D11	INDIRECT(B11&"_"&C11)

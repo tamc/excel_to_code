@@ -11,7 +11,7 @@ describe MapFormulaeToValues do
     it "converts #{c[1].strip} into #{c[2].strip} (line #{c[0]+1} of formulae_to_calculated_values.txt)" do
       desired = c[2].strip
       actual = @mapper.map(eval(c[1]))
-      actual.to_s.should == desired.to_s
+      actual.to_s.should == desired
     end
   end
 end

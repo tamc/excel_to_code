@@ -22,11 +22,11 @@ class MapValuesToRuby
   def number(text)
     case text
     when /\./
-      text.to_f
+      text.to_f.to_s
     when /e/i
-      text.to_f
+      text.to_f.to_s
     else
-      text.to_i
+      text.to_i.to_s
     end
   end
   
@@ -45,11 +45,11 @@ class MapValuesToRuby
   end
   
   def boolean_true
-    true
+    "true"
   end
   
   def boolean_false
-    false
+    "false"
   end
   
 end
