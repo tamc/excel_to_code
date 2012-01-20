@@ -8,7 +8,7 @@ require_relative '../compile'
 
 class ExcelToRuby
   
-  attr_accessor :excel_file, :output_directory, :xml_dir, :compiled_module_name, :values_that_can_be_set_at_runtime
+  attr_accessor :excel_file, :output_directory, :xml_dir, :compiled_module_name, :values_that_can_be_set_at_runtime, :outputs_to_keep
   
   def initialize
     @values_that_can_be_set_at_runtime ||= {}
@@ -28,6 +28,8 @@ class ExcelToRuby
     optimise_and_replace_indirect_loop
     Process.waitall
     replace_blanks
+    Process.waitall
+    remove_any_cells_not_needed_for_outputs
     Process.waitall
     compile_workbook
     compile_worksheets
@@ -306,6 +308,37 @@ class ExcelToRuby
     end
   end
   
+  def remove_any_cells_not_needed_for_outputs
+    if outputs_to_keep && !outputs_to_keep.empty?
+      identifier = IdentifyDependencies.new
+      identifier.references = all_formulae("formulae_no_blanks.ast")
+      outputs_to_keep.each do |sheet_to_keep,cells_to_keep|
+        if cells_to_keep == :all
+          identifier.add_depedencies_for(sheet_to_keep)
+        elsif cells_to_keep.is_a?(Array)
+          cells_to_keep.each do |cell|
+            identifier.add_depedencies_for(sheet_to_keep,cell)
+          end
+        end
+      end
+      r = RemoveCells.new
+      worksheets do |name,xml_filename|
+        r.cells_to_keep = identifier.dependencies[name]
+        rewrite r, File.join(name,'formulae_no_blanks.ast'), File.join(name,'formulae_pruned.ast')
+        rewrite r, File.join(name,'values_no_shared_strings.ast'), File.join(name,'values_pruned.ast')
+      end
+    else
+      worksheets do |name,xml_filename|
+        i = File.join(output_directory,'intermediate',name,"formulae_no_blanks.ast")
+        o = File.join(output_directory,'intermediate',name,"formulae_pruned.ast")
+        `cp #{i} #{o}`
+        i = File.join(output_directory,'intermediate',name,"values_no_shared_strings.ast")
+        o = File.join(output_directory,'intermediate',name,"values_pruned.ast")
+        `cp #{i} #{o}`
+      end
+    end
+  end
+  
   def all_formulae(filename)
     references = {}
     worksheets do |name,xml_filename|
@@ -369,7 +402,7 @@ class ExcelToRuby
     settable_refs = @values_that_can_be_set_at_runtime[name]    
     c = CompileToRuby.new
     c.settable =lambda { |ref| settable_refs.include?(ref) } if settable_refs
-    i = input(name,"formulae_no_blanks.ast")
+    i = input(name,"formulae_pruned.ast")
     w = input("worksheet_ruby_names")
     o = ruby('worksheets',"#{name.downcase}.rb")
     d = output(name,'defaults')
@@ -398,7 +431,7 @@ class ExcelToRuby
   end
 
   def compile_worksheet_test(name,xml_filename)
-    i = input(name,"values_no_shared_strings.ast")
+    i = input(name,"values_pruned.ast")
     o = ruby('tests',"test_#{name.downcase}.rb")
     o.puts "# Test for #{name}"
     o.puts  "require 'test/unit'"

@@ -14,6 +14,7 @@ describe ExcelToRuby do
     command.values_that_can_be_set_at_runtime = {
       'Referencing' => ['A4']
     }
+    command.outputs_to_keep = {'Tables' => ['A1']}
     command.go!
     differences = `diff -r #{expected} #{actual}`
     unless differences == ""
