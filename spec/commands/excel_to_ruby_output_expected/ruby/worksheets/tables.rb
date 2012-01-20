@@ -30,7 +30,7 @@ class Tables < Spreadsheet
   def e9; 1; end
   def f9; "A"; end
   def g9; "1A"; end
-  def c10; sum([[3,0,nil]]); end
+  def c10; 3; end
   def e10; 2; end
   def f10; "B"; end
   def g10; "2B"; end

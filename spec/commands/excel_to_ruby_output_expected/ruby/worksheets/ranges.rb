@@ -10,10 +10,10 @@ class Ranges < Spreadsheet
   def b2; 6; end
   def c2; 4.141500000000001; end
   def a3; "Column"; end
-  def b3; sum([[nil],[nil],[nil],[1],[2],[3]]); end
+  def b3; 6; end
   def c3; :name; end
   def a4; "Row"; end
-  def b4; sum([[nil,nil,nil,nil,1,2,3]]); end
+  def b4; 6; end
   def c4; 3.1415; end
   def f4; 1; end
   def e5; 1; end

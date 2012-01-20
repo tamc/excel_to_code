@@ -284,7 +284,7 @@ class ExcelToRuby
             false
           end
         else
-          false
+          true # Always inline blanks
         end
       end
     end

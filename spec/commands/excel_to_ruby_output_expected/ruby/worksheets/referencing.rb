@@ -11,7 +11,7 @@ class Referencing < Spreadsheet
   def c4; add(b4,1); end
   def a5; 3; end
   def b8; "Named reference"; end
-  def b9; sum([[3,0,nil]]); end
+  def b9; 3; end
   def b11; "Named"; end
   def c11; "Reference"; end
   def d11; "Named reference"; end
