@@ -19,7 +19,7 @@ class Formulaetypes < Spreadsheet
   def a7; "Arrayed (multiple)"; end
   def b7; excel_if(excel_equal?(267.7467614837482,8),"Eight","Not Eight"); end
   def a8; "Arrayed (multiple)"; end
-  def b8; excel_if(excel_equal?(b5,8),"Eight","Not Eight"); end
+  def b8; excel_if(excel_equal?(2,8),"Eight","Not Eight"); end
 
 end
 end

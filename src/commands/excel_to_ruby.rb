@@ -258,7 +258,7 @@ class ExcelToRuby
       else
         ast = references[sheet][cell]
         if ast
-          if [:number,:string,:blank,:error,:boolean_true,:boolean_false].include?(ast.first)
+          if [:number,:string,:blank,:error,:boolean_true,:boolean_false,:sheet_reference,:cell].include?(ast.first)
             #   puts "Inlining #{sheet}.#{cell}: #{ast.inspect}"
             true
           else

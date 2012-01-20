@@ -13,4 +13,4 @@ B6	[:function, "IF", [:comparison, [:number, "267.7467614837482"], [:comparator,
 A7	[:string, "Arrayed (multiple)"]
 B7	[:function, "IF", [:comparison, [:number, "267.7467614837482"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]
 A8	[:string, "Arrayed (multiple)"]
-B8	[:function, "IF", [:comparison, [:cell, "B5"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]
+B8	[:function, "IF", [:comparison, [:number, "2"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]
