@@ -13,11 +13,22 @@ class IdentifyDependencies
     @current_sheet = []
   end
   
-  def add_depedencies_for(sheet,cell)
+  def add_depedencies_for(sheet,cell = :all)
+    if cell == :all
+      return unless references.has_key?(sheet)
+      references[sheet].each do |ref,ast|
+        recursively_add_dependencies_for(sheet,ref)
+      end
+    else
+      recursively_add_dependencies_for(sheet,cell)
+    end
+  end
+    
+  def recursively_add_dependencies_for(sheet,cell)
     return if dependencies[sheet].has_key?(cell)
     dependencies[sheet][cell] = true
-    return unless @references.has_key?(sheet)
-    ast = @references[sheet][cell]
+    return unless references.has_key?(sheet)
+    ast = references[sheet][cell]
     return unless ast
     current_sheet.push(sheet)
     map(ast)
@@ -35,11 +46,11 @@ class IdentifyDependencies
   end
   
   def sheet_reference(sheet,reference)
-    add_depedencies_for(sheet,reference.last.gsub('$',''))
+    recursively_add_dependencies_for(sheet,reference.last.gsub('$',''))
   end
   
   def cell(reference)
-    add_depedencies_for(current_sheet.last,reference.gsub('$',''))
+    recursively_add_dependencies_for(current_sheet.last,reference.gsub('$',''))
   end
    
 end
