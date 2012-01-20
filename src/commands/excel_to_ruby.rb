@@ -251,7 +251,6 @@ class ExcelToRuby
       replace ReplaceFormulaeWithCalculatedValues, File.join(name,'formulae_no_indirects.ast'), File.join(name,'formulae_no_indirects_replaced.ast')
     end
     references = all_formulae("formulae_no_indirects_replaced.ast")
-    p @values_that_can_be_set_at_runtime
     inline_ast_decision = lambda do |sheet,cell,references|
       references_to_keep = @values_that_can_be_set_at_runtime[sheet]
       if references_to_keep && references_to_keep.include?(cell)
@@ -260,7 +259,7 @@ class ExcelToRuby
         ast = references[sheet][cell]
         if ast
           if [:number,:string,:blank,:error,:boolean_true,:boolean_false].include?(ast.first)
-            puts "Inlining #{sheet}.#{cell}: #{ast.inspect}"
+            #   puts "Inlining #{sheet}.#{cell}: #{ast.inspect}"
             true
           else
             false
