@@ -248,8 +248,51 @@ class ExcelToRuby
   
   def optimise
     worksheets do |name,xml_filename|
-      replace ReplaceFormulaeWithCalculatedValues, File.join(name,'formulae_no_indirects.ast'), File.join(name,'formulae_no_indirects_optimised.ast')
+      replace ReplaceFormulaeWithCalculatedValues, File.join(name,'formulae_no_indirects.ast'), File.join(name,'formulae_no_indirects_replaced.ast')
     end
+    references = all_formulae("formulae_no_indirects_replaced.ast")
+    p @values_that_can_be_set_at_runtime
+    inline_ast_decision = lambda do |sheet,cell,references|
+      references_to_keep = @values_that_can_be_set_at_runtime[sheet]
+      if references_to_keep && references_to_keep.include?(cell)
+        false
+      else
+        ast = references[sheet][cell]
+        if ast
+          if [:number,:string,:blank,:error,:boolean_true,:boolean_false].include?(ast.first)
+            puts "Inlining #{sheet}.#{cell}: #{ast.inspect}"
+            true
+          else
+            false
+          end
+        else
+          false
+        end
+      end
+    end
+
+    r = InlineFormulae.new
+    r.references = references
+    r.inline_ast = inline_ast_decision
+    
+    worksheets do |name,xml_filename|
+      r.default_sheet_name = name
+      replace r, File.join(name,'formulae_no_indirects_replaced.ast'), File.join(name,'formulae_no_indirects_optimised.ast') 
+    end
+  end
+  
+  def all_formulae(filename)
+    references = {}
+    worksheets do |name,xml_filename|
+      r = references[name] = {}
+      i = input(name,filename)
+      i.lines do |line|
+        line =~ /^(.*?)\t(.*)$/
+        ref, ast = $1, $2
+        r[$1] = eval($2)
+      end
+    end 
+    references
   end
   
   def compile_workbook
