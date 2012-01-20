@@ -40,3 +40,5 @@
 [:function, "IF",[:boolean_true], [:string,"Hello"]]	[:string, "Hello"]
 [:string_join, [:string, "Named"], [:string, "_"], [:string, "Reference"]]	 [:string, "Named_Reference"]
 [:function, "INDIRECT", [:string_join, [:string, "Named"], [:string, "_"], [:string, "Reference"]]]	[:function, "INDIRECT", [:string, "Named_Reference"]]
+[:function, "SUM", [:array, [:row, [:boolean_true]], [:row, [:string, "Hello"]], [:row, [:number, "1"]], [:row, [:number, "3.1415000000000002"]], [:row, [:string, "Hello"]]]]	[:number, "4.141500000000001"]
+[:function, "SUM", [:error, "#NAME?"]]	[:error, "#NAME?"]

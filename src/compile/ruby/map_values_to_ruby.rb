@@ -40,6 +40,8 @@ class MapValuesToRuby
     "#DIV/0!" => ":div0"
   }
   
+  REVERSE_ERRORS = ERRORS.invert
+  
   def error(text)
     ERRORS[text] || (raise NotSupportedException.new("#{text} error not recognised"))
   end

@@ -25,7 +25,7 @@ class MapFormulaeToValues
   def arithmetic(left,operator,right)
     l = value(map(left))
     r = value(map(right))
-    if l && r
+    if (l != :not_a_value) && (r != :not_a_value)
       formula_value(operator.last,l,r)
     else
       [:arithmetic,left,operator,right]
@@ -36,7 +36,7 @@ class MapFormulaeToValues
   
   def string_join(*args)
     values = args.map { |a| value(map(a)) } # FIXME: These eval statements are really bugging me. Must find a better solution
-    if values.any? { |a| a.nil? }
+    if values.any? { |a| a == :not_a_value }
       [:string_join,*args.map { |a| map(a) }]
     else
       ast_for_value(@calculator.string_join(*values))
@@ -50,17 +50,28 @@ class MapFormulaeToValues
       [:function,name,*args.map { |a| map(a) }]
     else
       values = args.map { |a| value(map(a)) }
-      if values.any? { |a| a.nil? }
+      if values.any? { |a| a == :not_a_value }
         [:function,name,*args.map { |a| map(a) }]
       else
         formula_value(name,*values)
       end
     end
   end
-  
+    
   def value(ast)
-    return nil unless @value_for_ast.respond_to?(ast.first)
+    return extract_values_from_array(ast) if ast.first == :array
+    return :not_a_value unless @value_for_ast.respond_to?(ast.first)
     eval(@value_for_ast.send(*ast))
+  end
+  
+  def extract_values_from_array(ast)
+    ast[1..-1].map do |row|
+      row[1..-1].map do |cell|
+        v = value(cell)
+        return :not_a_value if v == :not_a_value
+        v
+      end
+    end 
   end
   
   def formula_value(ast_name,*arguments)
@@ -69,10 +80,10 @@ class MapFormulaeToValues
   
   def ast_for_value(value)
     case value
-    when Numeric; [:number,value.to_s]
+    when Numeric; [:number,value.inspect]
     when true; [:boolean_true]
     when false; [:boolean_false]
-    when Symbol; [:error,value.to_s]
+    when Symbol; [:error,MapFormulaeToRuby::REVERSE_ERRORS[value.inspect]]
     when String; [:string,value]
     else
       raise Error.new("Ast for #{value.inspect} of class #{value.class} not recognised")
