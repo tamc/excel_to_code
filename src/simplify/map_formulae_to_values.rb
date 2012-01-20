@@ -64,7 +64,7 @@ class MapFormulaeToValues
     when true; [:boolean_true]
     when false; [:boolean_false]
     when Symbol; [:error,value.to_s]
-    when String; [:string,value]
+    when String; [:string,eval(value)] # FIXME: Need a better solution to string quoting and unquoting than this eval statement!
     else value
     end
   end
