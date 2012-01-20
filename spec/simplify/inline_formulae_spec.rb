@@ -54,6 +54,8 @@ A2\t[:cell, "A3"]
 A3\t[:number, 1]
 A4\t[:sheet_reference,"sheet2",[:cell,"A1"]]
 A5\t[:sheet_reference,"sheet3",[:cell,"A5"]]
+A6\t[:sheet_reference,"sheet1",[:cell, "$A$2"]]
+A7\t[:sheet_reference,"sheet2",[:cell, "$A$2"]]
 END
 
 references = references = {
@@ -88,6 +90,8 @@ A2\t[:number, 1]
 A3\t[:number, 1]
 A4\t[:sheet_reference, "sheet2", [:cell, "A2"]]
 A5\t[:sheet_reference, "sheet3", [:cell, "A5"]]
+A6\t[:number, 1]
+A7\t[:sheet_reference, "sheet2", [:cell, "$A$2"]]
 END
   
 input = StringIO.new(input)
