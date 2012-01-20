@@ -1,0 +1,45 @@
+class IdentifyDependencies
+  
+  attr_accessor :references
+  attr_accessor :dependencies
+  attr_accessor :current_sheet
+  
+  def initialize(references = {}, dependencies = {})
+    @references = references
+    @dependencies = dependencies
+    dependencies.default_proc = lambda do |hash,key|
+      hash[key] = {}
+    end
+    @current_sheet = []
+  end
+  
+  def add_depedencies_for(sheet,cell)
+    return if dependencies[sheet].has_key?(cell)
+    dependencies[sheet][cell] = true
+    return unless @references.has_key?(sheet)
+    ast = @references[sheet][cell]
+    return unless ast
+    current_sheet.push(sheet)
+    map(ast)
+    current_sheet.pop
+  end
+  
+  def map(ast)
+    return ast unless ast.is_a?(Array)
+    operator = ast[0]
+    if respond_to?(operator)
+      send(operator,*ast[1..-1])
+    else
+      [operator,*ast[1..-1].map {|a| map(a) }]
+    end
+  end
+  
+  def sheet_reference(sheet,reference)
+    add_depedencies_for(sheet,reference.last.gsub('$',''))
+  end
+  
+  def cell(reference)
+    add_depedencies_for(current_sheet.last,reference.gsub('$',''))
+  end
+   
+end
