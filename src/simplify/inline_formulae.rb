@@ -25,7 +25,7 @@ class InlineFormulaeAst
         result = map(ast)
         current_sheet_name.pop
       else
-        result = [:sheet_reference,sheet,reference]
+        result = [:blank]
       end
     else
       result = [:sheet_reference,sheet,reference]
@@ -40,7 +40,7 @@ class InlineFormulaeAst
       if ast
         map(ast)
       else
-        [:cell,reference]
+        [:blank]
       end
     else
       if current_sheet_name.size > 1
