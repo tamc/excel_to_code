@@ -6,7 +6,7 @@ It is a (currently incomplete) rewrite of http://github.com/tamc/rubyfromexcel
 
 Doesn't work yet, but the story so far is delivered by running:
 
-    ./bin/excel_to_ruby <excelfile.xlsx> <outputdirectory>
+    ./bin/excel_to_ruby <excelfile.xlsx> <outputdirectory> <name of sheet with inputs> <name of sheet with outputs>
 
 # Testing excel2code
 
