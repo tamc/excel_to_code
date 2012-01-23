@@ -11,7 +11,7 @@ class ExtractTable < SimpleExtractFromXML
   
   def start_element(name,attributes)
     if name == "table"
-      output.write "#{attributes.assoc('displayName').last}\t#{@worksheet_name}\t#{attributes.assoc('ref').last}\t#{attributes.assoc('totalsRowCount').last}"
+      output.write "#{attributes.assoc('displayName').last}\t#{@worksheet_name}\t#{attributes.assoc('ref').last}\t#{attributes.assoc('totalsRowCount').try(:last) || 0}"
     elsif name == "tableColumn"
       output.write "\t#{attributes.assoc('name').last}"
     end

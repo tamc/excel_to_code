@@ -66,10 +66,10 @@ class ExcelToRuby
   # Extracts each worksheets values and formulas
   def extract_worksheets
     worksheets do |name,xml_filename|
-      fork do
+      # fork do
         $0 = "ruby initial extract #{name}"
         initial_extract_from_worksheet(name,xml_filename)
-      end
+      # end
     end
   end
 
@@ -86,12 +86,12 @@ class ExcelToRuby
   
   def rewrite_worksheets
     worksheets do |name,xml_filename|
-      fork do 
+      #fork do 
         rewrite_row_and_column_references(name,xml_filename)
         rewrite_shared_formulae(name,xml_filename)
         rewrite_array_formulae(name,xml_filename)
         combine_formulae_files(name,xml_filename)
-      end
+      #end
     end
   end
   
@@ -212,12 +212,12 @@ class ExcelToRuby
       end
     end
     worksheets do |name,xml_filename|
-      fork do 
+      #fork do 
         r = ReplaceBlanks.new
         r.references = references
         r.default_sheet_name = name
         replace r, File.join(name,"formulae_no_indirects_optimised.ast"),File.join(name,"formulae_no_blanks.ast")
-      end
+        #end
     end
   end
   
@@ -393,10 +393,10 @@ class ExcelToRuby
   
   def compile_worksheets
     worksheets do |name,xml_filename|
-      fork do 
+      # fork do 
         compile_worksheet_code(name,xml_filename)
         compile_worksheet_test(name,xml_filename)
-      end
+      # end
     end    
   end
   
