@@ -274,7 +274,7 @@ class ExcelToRuby
     references = all_formulae("#{basename}#{counter}.ast")
     inline_ast_decision = lambda do |sheet,cell,references|
       references_to_keep = @values_that_can_be_set_at_runtime[sheet]
-      if references_to_keep && references_to_keep.include?(cell)
+      if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
         false
       else
         ast = references[sheet][cell]
