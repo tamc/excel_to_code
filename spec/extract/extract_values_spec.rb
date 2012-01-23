@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe ExtractValues do
   
-  it "should create a flat file with one string per cell, in the format: reference\ttype\tvalue" do
+  it "should create a flat file with one string per cell, in the format: reference\ttype\tvalue (skipping blank cells)" do
     input = excel_fragment 'ValueTypes.xml'
     output = StringIO.new
     ExtractValues.extract(input,output)

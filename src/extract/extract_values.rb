@@ -1,19 +1,18 @@
 require_relative 'simple_extract_from_xml'
 
 class ExtractValues < SimpleExtractFromXML
-
+  
+  attr_accessor :ref, :type
+  
   def start_element(name,attributes)
-    self.parsing = true if name == "v"
-    return unless name == "c"
-    output.write attributes.assoc('r').last
-    output.write "\t"
-    type = attributes.assoc('t')
-    if type
-      output.write type.last
-    else
-      output.write "n"
+    if name == "v"
+      self.parsing = true 
+      output.write "#{@ref}\t#{@type}\t"
+    elsif name == "c"
+      @ref = attributes.assoc('r').last
+      type = attributes.assoc('t')
+      @type = type ? type.last : "n"
     end
-    output.write "\t"
   end
   
   def end_element(name)
