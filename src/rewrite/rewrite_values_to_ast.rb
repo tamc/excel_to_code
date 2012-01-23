@@ -19,7 +19,7 @@ class RewriteValuesToAst
       when 'e'; [:error,value]
       when 'str'; [:string,value]
       else
-        $stderr.puts "Type #{type} not known"
+        $stderr.puts "Type #{type} not known in #{line}"
         [:parse_error,line.inspect]
       end
       output.puts "#{ref}\t#{ast}"
