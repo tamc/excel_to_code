@@ -158,9 +158,11 @@ class ExcelToRuby
       rewrite RewriteRelationshipIdToFilename, File.join(name,'table_rids'), File.join(name,'relationships'), File.join(name,'table_filenames')
       tables = output(name,'tables')
       table_extractor = ExtractTable.new(name)
-      input(name,'table_filenames').lines.each do |line|
+      table_filenames = input(name,'table_filenames')
+      table_filenames.lines.each do |line|
         extract table_extractor, File.join('worksheets',line.strip), tables
       end
+      close(tables,table_filenames)
     else
       FileUtils.touch File.join(output_directory,'intermediate',name,'relationships')
       FileUtils.touch File.join(output_directory,'intermediate',name,'table_filenames')      
