@@ -6,6 +6,14 @@ describe Area do
     Area.for("AAA$305:$BBB1035").should == "AAA$305:$BBB1035"
   end
   
+  it "should cope with single cell areas (e.g., A1 is treated as A1:A1)" do
+    Area.for("A1").should == "A1"
+    Area.for("A1").width.should == 0
+    Area.for("A1").height.should == 0
+    Area.for("A1").to_array_literal.should == [:array,[:row,[:cell,'A1']]]
+    
+  end
+  
   it "should be a subclass of String" do
     Area.for("A1:B10").should be_kind_of(String)
   end

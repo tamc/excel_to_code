@@ -13,6 +13,7 @@ class RewriteSharedFormulae
   end
   
   def share_formula(formula,copy_range,output)
+    p copy_range
     shared_ast = eval(formula)
     copier = AstCopyFormula.new
     copy_range = Area.for(copy_range)

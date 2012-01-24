@@ -17,9 +17,12 @@ class Area < String
   
   def calculate_excel_variables
     return if @excel_variables_calculated
-    self =~ /([^:]+):(.*)/
-    @excel_start = Reference.for($1)
-    @excel_finish = Reference.for($2)
+    if self =~ /([^:]+):(.*)/
+      @excel_start = Reference.for($1)
+      @excel_finish = Reference.for($2)
+    else
+      @excel_start = @excel_finish = Reference.for(self)
+    end      
     @excel_start.calculate_excel_variables
     @excel_finish.calculate_excel_variables
   end

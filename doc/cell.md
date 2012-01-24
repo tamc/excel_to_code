@@ -23,6 +23,8 @@ Value types are given by the optional 't' attibute of the <c> tag:
 * str - normal string, with the value being that string
 * e - error. The value will be the error that you see in excel as a string (.e.g., #NAME?)
 
+Note that the value of a cell is given in a <v></v> tag. If the <v> tag is self closing (e.g., <v/>) then the cell is blank.
+
 ### Format of value types in output
 
 Produces value types in the format of referance\ttype\tvalue
@@ -35,7 +37,7 @@ rewrite_values_to_include_shared_strings.rb can be used to turn value type 's' i
 
 If present, the <f></f> tag will indicate a formula. It may have a 't' attribute to indicate the type of formula. Depending on the type of the formula it may have other attributes. The content is, in most cases, the formula as the user has entered it.
 
-Note that the <f> tag may be self closing (<f/>), particularly in the cases where this is a shared formula
+Note that the <f> tag may be self closing (<f/>). This means it doesn't specify a formula of its own. This is possible for shared and array formulae.
 
 * No attribute - a straightforward formula
 * shared - the same formula is shared amongst multiple cells
@@ -46,6 +48,8 @@ Note that the <f> tag may be self closing (<f/>), particularly in the cases wher
 A formula of type shared will always have an si attribute. This will contain an integer. All formula in a worksheet of type shared and that have the same integer will have the same formula, although the references will need to be adjusted for their relative position on the worksheet.
 
 If a formula has a ref attribute, then it will contain the actual formula, an the ref attribute will indicate the range of cells that use it.
+
+The ref attribute can refer to a single cell (e.g., A1) implying that the formula is not really shared.
 
 If a formula doesn't have a ref attribute, then it will not contain any formula, and will expect to use one provided by a formula with both a ref attribute and the same si attribute.
 
