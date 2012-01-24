@@ -15,6 +15,7 @@ A7\t[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "2"], [:operator, 
 A8\t[:arithmetic, [:number, "1"], [:operator, "-"], [:number, "2"], [:operator, "*"], [:number, "3"]]
 A9\t[:arithmetic, [:number, "1"], [:operator, "-"], [:number, "2"], [:operator, "/"], [:number, "3"]]
 A10\t[:arithmetic, [:number, "1"], [:operator, "-"], [:number, "2"], [:operator, "/"], [:number, "3"],  [:operator, "+"], [:number, "4"]]
+A11\t[:arithmetic, [:brackets, [:arithmetic, [:number, "1"], [:operator, "+"], [:cell, "$A$1"], [:operator, "*"], [:number, "2"]]], [:operator, "^"], [:cell, "$A$2"], [:operator, "^"], [:number, "1"]]
 END
 
 expected_output = <<END
@@ -28,6 +29,7 @@ A7\t[:arithmetic, [:number, "1"], [:operator, "+"], [:arithmetic, [:number, "2"]
 A8\t[:arithmetic, [:number, "1"], [:operator, "-"], [:arithmetic, [:number, "2"], [:operator, "*"], [:number, "3"]]]
 A9\t[:arithmetic, [:number, "1"], [:operator, "-"], [:arithmetic, [:number, "2"], [:operator, "/"], [:number, "3"]]]
 A10\t[:arithmetic, [:arithmetic, [:number, "1"], [:operator, "-"], [:arithmetic, [:number, "2"], [:operator, "/"], [:number, "3"]]], [:operator, "+"], [:number, "4"]]
+A11\t[:arithmetic, [:arithmetic, [:arithmetic, [:number, "1"], [:operator, "+"], [:arithmetic, [:cell, "$A$1"], [:operator, "*"], [:number, "2"]]], [:operator, "^"], [:cell, "$A$2"]], [:operator, "^"], [:number, "1"]]
 END
     
 input = StringIO.new(input)

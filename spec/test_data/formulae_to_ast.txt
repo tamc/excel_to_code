@@ -73,6 +73,7 @@ $A$1-$A$2-1	[:arithmetic, [:cell, "$A$1"], [:operator, "-"], [:cell, "$A$2"], [:
 $A$1*$A$2*1	[:arithmetic, [:cell, "$A$1"], [:operator, "*"], [:cell, "$A$2"], [:operator, "*"], [:number, "1"]]
 $A$1/$A$2/1	[:arithmetic, [:cell, "$A$1"], [:operator, "/"], [:cell, "$A$2"], [:operator, "/"], [:number, "1"]]
 $A$1^$A$2^1	[:arithmetic, [:cell, "$A$1"], [:operator, "^"], [:cell, "$A$2"], [:operator, "^"], [:number, "1"]]
+(1+$A$1*2)^$A$2^1	[:arithmetic, [:brackets, [:arithmetic, [:number, "1"], [:operator, "+"], [:cell, "$A$1"], [:operator, "*"], [:number, "2"]]], [:operator, "^"], [:cell, "$A$2"], [:operator, "^"], [:number, "1"]]
 
 # parses expressions in brackets
 ($A$1+$A$2)	[:brackets, [:arithmetic, [:cell, "$A$1"], [:operator, "+"], [:cell, "$A$2"]]]
