@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe ExtractSimpleFormulae do
   
-  it "should create a flat file with one string per formula, in the format: reference\tformula" do
+  it "should create a flat file with one string per formula, in the format: reference\tformula; it should skip blank formulae" do
     input = excel_fragment 'FormulaeTypes.xml'
     output = StringIO.new
     ExtractSimpleFormulae.extract(input,output)

@@ -75,6 +75,7 @@
 		</row>
 		<row r="8" spans="1:2">
 			<c r="A8" t="s">
+				<f ci="8" />
 				<v>6</v>
 			</c>
 			<c r="B8" t="str">
