@@ -1,9 +1,9 @@
 class ReplaceTableReferenceAst
   
-  attr_accessor :tables, :worksheet, :cell
+  attr_accessor :tables, :worksheet, :referring_cell
   
-  def initialize(tables, worksheet = nil, cell = nil)
-    @tables, @worksheet, @cell = tables, worksheet, cell
+  def initialize(tables, worksheet = nil, referring_cell = nil)
+    @tables, @worksheet, @referring_cell = tables, worksheet, referring_cell
   end
   
   def map(ast)
@@ -17,7 +17,7 @@ class ReplaceTableReferenceAst
   end
   
   def table_reference(table_name,table_reference)
-    tables[table_name.downcase].reference_for(table_name,table_reference,worksheet,cell)
+    tables[table_name.downcase].reference_for(table_name,table_reference,worksheet,referring_cell)
   end
   
 end
@@ -46,7 +46,7 @@ class ReplaceTableReferences
         cols = line.split("\t")
         ast = cols.pop
         ref = cols.first
-        rewriter.cell = ref
+        rewriter.referring_cell = ref
         output.puts "#{cols.join("\t")}\t#{rewriter.map(eval(ast)).inspect}"
       else
         output.puts line
