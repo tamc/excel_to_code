@@ -10,8 +10,8 @@ describe AstCopyFormula do
     copy.copy([:cell,'$A1']).should == [:cell,'$A2']
     copy.copy([:cell,'A$1']).should == [:cell,'B$1']
     copy.copy([:cell,'$A$1']).should == [:cell,'$A$1']
-    copy.copy([:area,'A1:Z10']).should == [:area,'B2:AA11']
-    copy.copy([:area,'A1:Z10']).should == [:area,'B2:AA11']
+    copy.copy([:area,'A1','Z10']).should == [:area,'B2','AA11']
+    copy.copy([:area,'$A$1','Z$10']).should == [:area,'$A$1','AA$10']
     copy.copy([:sheet_reference,'sheet1',[:cell,'A1']]).should == [:sheet_reference,'sheet1',[:cell,'B2']]
   end
   
@@ -19,7 +19,6 @@ describe AstCopyFormula do
     copy = AstCopyFormula.new
     lambda { copy.copy([:column_range,'C:F'])}.should raise_exception(NotSupportedException)
     lambda { copy.copy([:row_range,'10:12'])}.should raise_exception(NotSupportedException)
-
   end
   
 end

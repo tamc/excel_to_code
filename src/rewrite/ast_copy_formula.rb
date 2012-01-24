@@ -25,9 +25,10 @@ class AstCopyFormula
     [:cell,r.offset(rows_to_move,columns_to_move)]
   end
   
-  def area(reference)
-    a = Area.for(reference)
-    [:area,a.offset(rows_to_move,columns_to_move)]
+  def area(start,finish)
+    s = Reference.for(start).offset(rows_to_move,columns_to_move)
+    f = Reference.for(finish).offset(rows_to_move,columns_to_move)
+    [:area,s,f]
   end
     
   def column_range(reference)
