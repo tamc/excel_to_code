@@ -23,6 +23,7 @@ require_relative 'excel_functions/power'
 
 # Array arithmetic
 require_relative 'excel_functions/sum'
+require_relative 'excel_functions/average'
 
 # Geometry functions
 require_relative 'excel_functions/cosh'

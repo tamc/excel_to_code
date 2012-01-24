@@ -1,5 +1,6 @@
 require_relative '../compile'
 require_relative '../excel/excel_functions'
+require_relative '../util'
 
 class FormulaeCalculator
   include ExcelFunctions
@@ -75,6 +76,7 @@ class MapFormulaeToValues
   end
   
   def formula_value(ast_name,*arguments)
+    raise NotSupportedException.new("#{ast_name.inspect} function not recognised in #{MapFormulaeToRuby::FUNCTIONS.inspect}") unless MapFormulaeToRuby::FUNCTIONS.has_key?(ast_name)
     ast_for_value(@calculator.send(MapFormulaeToRuby::FUNCTIONS[ast_name],*arguments))
   end
   
