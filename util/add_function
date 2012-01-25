@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+name = ARGV[0]
+`cp src/excel/excel_functions/add.rb src/excel/excel_functions/#{name}.rb`
+`cp spec/excel/excel_functions/add_spec.rb  spec/excel/excel_functions/#{name}_spec.rb`
+`echo "require_relative 'excel_functions/#{name}'" >> src/excel/excel_functions.rb`
