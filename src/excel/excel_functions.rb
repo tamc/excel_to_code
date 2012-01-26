@@ -34,3 +34,5 @@ require_relative 'excel_functions/excel_match'
 
 # Other functions
 require_relative 'excel_functions/abs'
+
+require_relative 'excel_functions/and'

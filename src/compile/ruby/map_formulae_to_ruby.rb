@@ -5,23 +5,25 @@ class MapFormulaeToRuby < MapValuesToRuby
   attr_accessor :sheet_names
   
   FUNCTIONS = {
+    '*' => 'multiply',
     '+' => 'add',
     '-' => 'subtract',
-    '*' => 'multiply',
     '/' => 'divide',
-    '^' => 'power',
-    '=' => 'excel_equal?',
     '<' => 'less_than?',
-    '>' => 'more_than?',
     '<=' => 'less_than_or_equal?',
-    '>=' => 'more_than_or_equal?',
     '<>' => 'not_equal?',
+    '=' => 'excel_equal?',
+    '>' => 'more_than?',
+    '>=' => 'more_than_or_equal?',
+    'ABS' => 'abs',
+    'AND' => 'and',
+    'AVERAGE' => 'average',
     'COSH' => 'cosh',
     'IF' => 'excel_if',
+    'MATCH' => 'excel_match',
     'PI' => 'pi',
     'SUM' => 'sum',
-    'AVERAGE' => 'average',
-    'MATCH' => 'excel_match'
+    '^' => 'power'
   }
   
   def arithmetic(left,operator,right)
