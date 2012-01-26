@@ -31,3 +31,6 @@ require_relative 'excel_functions/cosh'
 # String functions
 require_relative 'excel_functions/string_join'
 require_relative 'excel_functions/excel_match'
+
+# Other functions
+require_relative 'excel_functions/abs'
