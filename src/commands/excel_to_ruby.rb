@@ -15,14 +15,18 @@ class ExcelToRuby
   end
   
   def go!
-    sort_out_output_directories
-    unzip_excel
-    process_workbook
-    extract_worksheets
-    Process.waitall
-    merge_table_files
-    rewrite_worksheets
-    Process.waitall
+    self.excel_file = File.expand_path(excel_file)
+    self.output_directory = File.expand_path(output_directory)
+    self.xml_dir = File.join(output_directory,'xml')
+    
+    #sort_out_output_directories
+    #unzip_excel
+    #process_workbook
+    #extract_worksheets
+    #Process.waitall
+    #merge_table_files
+    #rewrite_worksheets
+    #Process.waitall
     simplify_worksheets
     Process.waitall
     optimise_and_replace_indirect_loop
@@ -36,16 +40,13 @@ class ExcelToRuby
     Process.waitall
   end
   
-  def sort_out_output_directories
-    self.excel_file = File.expand_path(excel_file)
-    self.output_directory = File.expand_path(output_directory)
+  def sort_out_output_directories    
     FileUtils.mkdir_p(File.join(output_directory,'intermediate'))
     FileUtils.mkdir_p(File.join(output_directory,'ruby','worksheets'))
     FileUtils.mkdir_p(File.join(output_directory,'ruby','tests'))
   end
   
   def unzip_excel
-    self.xml_dir = File.join(output_directory,'xml')
     puts `unzip -uo '#{excel_file}' -d '#{xml_dir}'`
   end
 
@@ -65,18 +66,18 @@ class ExcelToRuby
   
   # Extracts each worksheets values and formulas
   def extract_worksheets
-    worksheets do |name,xml_filename|
-      # fork do
+    worksheets("Initial data extract") do |name,xml_filename|
+      fork do
         $0 = "ruby initial extract #{name}"
         initial_extract_from_worksheet(name,xml_filename)
-      # end
+      end
     end
   end
 
   # Extracts the dimensions of each worksheet and puts them in a single file  
   def extract_dimensions_from_worksheets    
     dimension_file = output('dimensions')
-    worksheets do |name,xml_filename|
+    worksheets("Extracting dimensions") do |name,xml_filename|
       dimension_file.write name
       dimension_file.write "\t"
       extract ExtractWorksheetDimensions, File.open(xml_filename,'r'), dimension_file 
@@ -85,13 +86,13 @@ class ExcelToRuby
   end
   
   def rewrite_worksheets
-    worksheets do |name,xml_filename|
-      #fork do 
+    worksheets("Initial rewrite of references and formulae") do |name,xml_filename|
+      fork do 
         rewrite_row_and_column_references(name,xml_filename)
         rewrite_shared_formulae(name,xml_filename)
         rewrite_array_formulae(name,xml_filename)
         combine_formulae_files(name,xml_filename)
-      #end
+      end
     end
   end
   
@@ -173,18 +174,27 @@ class ExcelToRuby
   
   def merge_table_files
     tables = []
-    worksheets do |name,xml_filename|
+    worksheets("Merging table files") do |name,xml_filename|
       tables << File.join(output_directory,'intermediate',name,'tables')
     end
     `sort #{tables.map { |t| " '#{t}' "}.join} > #{File.join(output_directory,'intermediate','all_tables')}`
   end
   
   def simplify_worksheets
-    worksheets do |name,xml_filename|
-#      fork do 
+    worksheets("Simplifying") do |name,xml_filename|
+      fork do
+        # i = input( File.join(name,'formulae.ast'))
+        # o = output(File.join(name,'missing_functions'))
+        # CheckForUnknownFunctions.new.check(i,o)
+        # close(i,o)
         simplify_worksheet(name,xml_filename)
- #     end
+      end
     end
+    # missing_function_files = []
+    # worksheets("Consolidating any missing functions") do |name,xml_filename|
+    #   missing_function_files << File.join(output_directory,'intermediate',name,'missing_functions')
+    # end
+    # `sort -u #{missing_function_files.map { |t| " '#{t}' "}.join} > #{File.join(output_directory,'intermediate','all_missing_functions')}`
   end
   
   def simplify_worksheet(name,xml_filename)
@@ -203,7 +213,7 @@ class ExcelToRuby
   
   def replace_blanks
     references = {}
-    worksheets do |name,xml_filename|
+    worksheets("Loading formulae") do |name,xml_filename|
       r = references[name] = {}
       i = input(name,"formulae_no_indirects_optimised.ast")
       i.lines do |line|
@@ -211,7 +221,7 @@ class ExcelToRuby
         r[ref] = true
       end
     end
-    worksheets do |name,xml_filename|
+    worksheets("Replacing blanks") do |name,xml_filename|
       #fork do 
         r = ReplaceBlanks.new
         r.references = references
@@ -233,7 +243,7 @@ class ExcelToRuby
   end
   
   def replace_indirects(start_filename,finish_filename,basename)
-    worksheets do |name,xml_filename|
+    worksheets("Replacing indirects") do |name,xml_filename|
       counter = 1
       replace ReplaceIndirectsWithReferences, File.join(name,start_filename), File.join(name,"#{basename}#{counter+1}.ast")
       counter += 1
@@ -254,7 +264,7 @@ class ExcelToRuby
       # Finally, create the output directory
       i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
       o = File.join(output_directory,'intermediate',name,finish_filename)
-      `cp #{i} #{o}`
+      `cp '#{i}' '#{o}'`
     end
   end
   
@@ -262,13 +272,13 @@ class ExcelToRuby
     counter = 1
     
     # Setup start
-    worksheets do |name|
+    worksheets("Setting up for optimise") do |name|
       i = File.join(output_directory,'intermediate',name,start_filename)
       o = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
-      `cp #{i} #{o}`
+      `cp '#{i}' '#{o}'`
     end
     
-    worksheets do |name,xml_filename|
+    worksheets("Replacing with calculated values") do |name,xml_filename|
       replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
     end
     counter += 1
@@ -296,17 +306,17 @@ class ExcelToRuby
     r.references = references
     r.inline_ast = inline_ast_decision
     
-    worksheets do |name,xml_filename|
+    worksheets("Inlining formulae") do |name,xml_filename|
       r.default_sheet_name = name
       replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
     end
     counter += 1
     
     # Finish
-    worksheets do |name|
+    worksheets("Moving sheets") do |name|
       o = File.join(output_directory,'intermediate',name,finish_filename)
       i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
-      `cp #{i} #{o}`
+      `cp '#{i}' '#{o}'`
     end
   end
   
@@ -324,7 +334,7 @@ class ExcelToRuby
         end
       end
       r = RemoveCells.new
-      worksheets do |name,xml_filename|
+      worksheets("Removing cells") do |name,xml_filename|
         r.cells_to_keep = identifier.dependencies[name]
         rewrite r, File.join(name,'formulae_no_blanks.ast'), File.join(name,'formulae_pruned.ast')
         rewrite r, File.join(name,'values_no_shared_strings.ast'), File.join(name,'values_pruned.ast')
@@ -333,10 +343,10 @@ class ExcelToRuby
       worksheets do |name,xml_filename|
         i = File.join(output_directory,'intermediate',name,"formulae_no_blanks.ast")
         o = File.join(output_directory,'intermediate',name,"formulae_pruned.ast")
-        `cp #{i} #{o}`
+        `cp '#{i}' '#{o}'`
         i = File.join(output_directory,'intermediate',name,"values_no_shared_strings.ast")
         o = File.join(output_directory,'intermediate',name,"values_pruned.ast")
-        `cp #{i} #{o}`
+        `cp '#{i}' '#{o}'`
       end
     end
   end
@@ -392,7 +402,7 @@ class ExcelToRuby
   end
   
   def compile_worksheets
-    worksheets do |name,xml_filename|
+    worksheets("Compiling worksheet") do |name,xml_filename|
       # fork do 
         compile_worksheet_code(name,xml_filename)
         compile_worksheet_test(name,xml_filename)
@@ -448,14 +458,15 @@ class ExcelToRuby
     close(i,o)
   end
   
-  def worksheets
+  def worksheets(message = "Processing",&block)
     IO.readlines(File.join(output_directory,'intermediate','worksheet_names')).each do |line|
       name, filename = *line.split("\t")
       filename = File.expand_path(File.join(xml_dir,'xl',filename.strip))
-      yield name, filename
+      puts "#{message} #{name}"
+      block.call(name, filename)
     end
   end
-  
+    
   def extract(_klass,xml_name,output_name)
     i = xml_name.is_a?(String) ? xml(xml_name) : xml_name
     o = output_name.is_a?(String) ? output(output_name) : output_name

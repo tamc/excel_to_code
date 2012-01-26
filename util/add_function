@@ -1,5 +1,87 @@
 #!/usr/bin/env ruby
-name = ARGV[0]
-`cp src/excel/excel_functions/add.rb src/excel/excel_functions/#{name}.rb`
-`cp spec/excel/excel_functions/add_spec.rb  spec/excel/excel_functions/#{name}_spec.rb`
-`echo "require_relative 'excel_functions/#{name}'" >> src/excel/excel_functions.rb`
+# Setup the name
+name = ARGV[0].downcase
+uppercase_name = name.upcase
+
+src_filename = "src/excel/excel_functions/#{name}.rb"
+spec_filename = "spec/excel/excel_functions/#{name}_spec.rb"
+
+spec_file = <<EOF
+require_relative '../../spec_helper.rb'
+
+describe "ExcelFunctions: #{uppercase_name}" do
+  
+  it "should return something when given appropriate arguments" do
+    FunctionTest.#{name}(1).should == 1
+  end
+
+  it "should return an error when given inappropriate arguments" do
+    FunctionTest.#{name}("Asdasddf").should == :value
+  end
+    
+  it "should treat nil as zero" do
+    FunctionTest.#{name}(nil).should == 0
+  end
+  
+  it "should return an error if an argument is an error" do
+    FunctionTest.#{name}(:error).should == :error
+  end
+  
+  it "should be in the list of functions that can be mapped to ruby" do
+    MapFormulaeToRuby::FUNCTIONS['#{uppercase_name}'].should == '#{name}'
+  end
+  
+end
+EOF
+
+src_file = <<EOF
+module ExcelFunctions
+  
+  def #{name}(a)
+    raise NotSupportedException.new("#{name}() function has not been implemented fully. Edit #{src_filename}")
+    # return a if a.is_a?(Symbol)
+    # a ||= 0
+    # implement function
+    # return result
+  end
+  
+end
+EOF
+
+
+# Create the new files
+File.open(src_filename,"w") do |f|
+  f.puts src_file
+end
+
+File.open(spec_filename,"w") do |f|
+  f.puts spec_file
+end
+
+# Add to the excel_functions.rb require list
+excel_functions = IO.readlines("src/excel/excel_functions.rb").join
+unless excel_functions =~ /require_relative 'excel_functions\/#{name}'/
+  excel_functions << "\nrequire_relative 'excel_functions/#{name}'\n"
+end
+
+File.open("src/excel/excel_functions.rb","w") do |f|
+  f.puts excel_functions
+end
+
+# Add to the MapFormulaeToRuby::FUNCTIONS
+map_formulae_to_ruby = IO.readlines('src/compile/ruby/map_formulae_to_ruby.rb').join
+map_formulae_to_ruby.gsub!(/FUNCTIONS = {\n([^}]*?)\n\s*}/m) do |match|
+  functions = $1.split(",\n") << "    '#{uppercase_name}' => '#{name}'"
+  "FUNCTIONS = {\n#{functions.sort.uniq.join(",\n")}\n  }"
+end
+
+File.open('src/compile/ruby/map_formulae_to_ruby.rb','w') do |f|
+  f.puts map_formulae_to_ruby
+end
+
+
+# Add to git
+`git add  src/excel/excel_functions.rb src/compile/ruby/map_formulae_to_ruby.rb #{src_filename} #{spec_filename}`
+
+
+

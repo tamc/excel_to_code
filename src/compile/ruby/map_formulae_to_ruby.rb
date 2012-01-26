@@ -16,7 +16,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     '>' => 'more_than?',
     '>=' => 'more_than_or_equal?',
     'ABS' => 'abs',
-    'AND' => 'and',
+    'AND' => 'excel_and',
     'AVERAGE' => 'average',
     'COSH' => 'cosh',
     'IF' => 'excel_if',

@@ -19,4 +19,8 @@ describe "ExcelFunctions: add(number,number)" do
     FunctionTest.add(:error1,:error2).should == :error1
   end
   
+  it "should be in the list of functions that can be mapped to ruby" do
+    MapFormulaeToRuby::FUNCTIONS['+'].should == 'add'
+  end
+  
 end
