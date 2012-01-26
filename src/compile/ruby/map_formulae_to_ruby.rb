@@ -20,6 +20,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'AVERAGE' => 'average',
     'CHOOSE' => 'choose',
     'COSH' => 'cosh',
+    'FIND' => 'find',
     'IF' => 'excel_if',
     'MATCH' => 'excel_match',
     'PI' => 'pi',

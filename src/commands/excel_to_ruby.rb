@@ -19,14 +19,14 @@ class ExcelToRuby
     self.output_directory = File.expand_path(output_directory)
     self.xml_dir = File.join(output_directory,'xml')
     
-    #sort_out_output_directories
-    #unzip_excel
-    #process_workbook
-    #extract_worksheets
-    #Process.waitall
-    #merge_table_files
-    #rewrite_worksheets
-    #Process.waitall
+    sort_out_output_directories
+    unzip_excel
+    process_workbook
+    extract_worksheets
+    Process.waitall
+    merge_table_files
+    rewrite_worksheets
+    Process.waitall
     simplify_worksheets
     Process.waitall
     optimise_and_replace_indirect_loop
