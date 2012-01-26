@@ -22,6 +22,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'COSH' => 'cosh',
     'FIND' => 'find',
     'IF' => 'excel_if',
+    'IFERROR' => 'iferror',
     'MATCH' => 'excel_match',
     'PI' => 'pi',
     'SUM' => 'sum',
