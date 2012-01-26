@@ -36,3 +36,5 @@ require_relative 'excel_functions/excel_match'
 require_relative 'excel_functions/abs'
 
 require_relative 'excel_functions/and'
+
+require_relative 'excel_functions/choose'
