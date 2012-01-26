@@ -15,7 +15,7 @@ describe "ExcelFunctions: MAX" do
   end
   
   it "should return zero if no arguments" do
-    FunctionTest.max(nil)
+    FunctionTest.max(nil).should == 0
   end
   
   it "should return an error if an argument is an error" do

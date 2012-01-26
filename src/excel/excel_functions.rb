@@ -44,3 +44,5 @@ require_relative 'excel_functions/find'
 require_relative 'excel_functions/iferror'
 
 require_relative 'excel_functions/max'
+
+require_relative 'excel_functions/min'
