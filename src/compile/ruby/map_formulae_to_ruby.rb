@@ -29,6 +29,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MOD' => 'mod',
     'PI' => 'pi',
     'PMT' => 'pmt',
+    'ROUND' => 'round',
     'SUM' => 'sum',
     '^' => 'power'
   }
