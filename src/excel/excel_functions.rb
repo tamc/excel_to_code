@@ -1,6 +1,9 @@
 module ExcelFunctions
 end
 
+# Support functions
+require_relative 'excel_functions/number_argument'
+
 # Constants
 require_relative 'excel_functions/pi'
 
@@ -13,6 +16,7 @@ require_relative 'excel_functions/more_than_or_equal'
 require_relative 'excel_functions/not_equal'
 
 require_relative 'excel_functions/excel_if'
+require_relative 'excel_functions/iferror'
 
 # Basic arithmetic
 require_relative 'excel_functions/add'
@@ -21,9 +25,19 @@ require_relative 'excel_functions/multiply'
 require_relative 'excel_functions/divide'
 require_relative 'excel_functions/power'
 
+# More advanced arithmetic
+require_relative 'excel_functions/abs'
+require_relative 'excel_functions/and'
+require_relative 'excel_functions/mod'
+
 # Array arithmetic
 require_relative 'excel_functions/sum'
 require_relative 'excel_functions/average'
+require_relative 'excel_functions/max'
+require_relative 'excel_functions/min'
+
+# Financial functions
+require_relative 'excel_functions/pmt'
 
 # Geometry functions
 require_relative 'excel_functions/cosh'
@@ -31,20 +45,14 @@ require_relative 'excel_functions/cosh'
 # String functions
 require_relative 'excel_functions/string_join'
 require_relative 'excel_functions/excel_match'
-
-# Other functions
-require_relative 'excel_functions/abs'
-
-require_relative 'excel_functions/and'
-
-require_relative 'excel_functions/choose'
-
 require_relative 'excel_functions/find'
 
-require_relative 'excel_functions/iferror'
+# Search functions
+require_relative 'excel_functions/choose'
 
-require_relative 'excel_functions/max'
+# Other functions
 
-require_relative 'excel_functions/min'
 
-require_relative 'excel_functions/mod'
+
+
+
