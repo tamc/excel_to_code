@@ -26,6 +26,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MATCH' => 'excel_match',
     'MAX' => 'max',
     'MIN' => 'min',
+    'MOD' => 'mod',
     'PI' => 'pi',
     'SUM' => 'sum',
     '^' => 'power'
