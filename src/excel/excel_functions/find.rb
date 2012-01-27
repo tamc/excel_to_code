@@ -13,17 +13,19 @@ module ExcelFunctions
     case start_number
     when nil; return :value
     when String; 
-      if start_number.to_f
-        start_number = start_number.to_f
-      else
+      begin
+        start_number = Float(start_number)
+      rescue ArgumentError
         return :value
       end
     when true; start_number = 1
     when false; return :value
+    when Numeric; # ok
+    else; return :value
     end
     
     # edge case
-    return 1 if find_text == "" && within_text == "" && start_number = 1
+    return 1 if find_text == "" && within_text == "" && start_number == 1
     
     # length check
     return :value if start_number < 1
