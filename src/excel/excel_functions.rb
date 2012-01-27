@@ -58,3 +58,5 @@ require_relative 'excel_functions/choose'
 
 
 require_relative 'excel_functions/round'
+
+require_relative 'excel_functions/subtotal'
