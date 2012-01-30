@@ -37,13 +37,15 @@ class MapValuesToRuby
   ERRORS = {
     "#NAME?" => ":name",
     "#VALUE!" => ":value",
-    "#DIV/0!" => ":div0"
+    "#DIV/0!" => ":div0",
+    "#REF!" => ":ref",
+    "#N/A" => ":na"
   }
   
   REVERSE_ERRORS = ERRORS.invert
   
   def error(text)
-    ERRORS[text] || (raise NotSupportedException.new("#{text} error not recognised"))
+    ERRORS[text] || (raise NotSupportedException.new("#{text.inspect} error not recognised"))
   end
   
   def boolean_true
