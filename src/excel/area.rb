@@ -78,5 +78,14 @@ class Area < String
       end)
     ]
   end
-
+  
+  def includes?(reference)
+    calculate_excel_variables
+    r = Reference.for(reference)
+    r.calculate_excel_variables
+    return false if r.excel_row_number < @excel_start.excel_row_number || r.excel_row_number > @excel_finish.excel_row_number
+    return false if r.excel_column_number < @excel_start.excel_column_number || r.excel_column_number > @excel_finish.excel_column_number
+    true
+  end
+  
 end

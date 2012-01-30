@@ -54,5 +54,14 @@ describe Area do
     Area.for("A1:A1").to_array_literal.should == [:array,[:row,[:cell,'A1']]]
     Area.for("A1:A1").to_array_literal('worksheet').should == [:array,[:row,[:sheet_reference,'worksheet',[:cell,'A1']]]]
   end
+  
+  it "should be able to say whether a particular reference falls within the area" do
+    Area.for("C2:E4").includes?("D3").should == true
+    Area.for("C2:E4").includes?("C2").should == true
+    Area.for("C2:E4").includes?("A2").should == false
+    Area.for("C2:E4").includes?("F2").should == false
+    Area.for("C2:E4").includes?("D1").should == false
+    Area.for("C2:E4").includes?("D5").should == false
+  end
 
 end
