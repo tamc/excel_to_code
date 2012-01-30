@@ -25,6 +25,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'FIND' => 'find',
     'IF' => 'excel_if',
     'IFERROR' => 'iferror',
+    'INDEX' => 'index',
     'MATCH' => 'excel_match',
     'MAX' => 'max',
     'MIN' => 'min',
