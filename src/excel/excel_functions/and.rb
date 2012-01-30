@@ -2,7 +2,7 @@ module ExcelFunctions
   
   def excel_and(*args)
     # Flatten arrays
-    args.flatten!
+    args = args.flatten
     
     # If an argument is an error, return that
     error = args.find {|a| a.is_a?(Symbol)}

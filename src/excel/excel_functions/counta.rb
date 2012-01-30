@@ -1,8 +1,7 @@
 module ExcelFunctions
   
   def counta(*args)
-    args.flatten!
-    args.compact!
+    args = args.flatten.compact
     args.size
   end
   

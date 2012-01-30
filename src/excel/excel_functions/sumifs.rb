@@ -8,12 +8,12 @@ module ExcelFunctions
     
     # Sort out the sum range
     sum_range = [sum_range] unless sum_range.is_a?(Array)
-    sum_range.flatten!
+    sum_range = sum_range.flatten
     
     # Sort out the criteria
     0.step(criteria.length-1,2).each do |i|
       if criteria[i].is_a?(Array)
-        criteria[i].flatten!
+        criteria[i] = criteria[i].flatten
       else
         criteria[i] = [criteria[i]]
       end

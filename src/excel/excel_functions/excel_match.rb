@@ -9,7 +9,7 @@ module ExcelFunctions
     lookup_array ||= [0]
     match_type ||= 0
     lookup_array = [lookup_array] unless lookup_array.is_a?(Array)
-    lookup_array.flatten!
+    lookup_array = lookup_array.flatten
     
     lookup_value = lookup_value.downcase if lookup_value.respond_to?(:downcase)
     case match_type      
