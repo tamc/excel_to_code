@@ -34,6 +34,8 @@ class MapFormulaeToRuby < MapValuesToRuby
     'ROUND' => 'round',
     'SUBTOTAL' => 'subtotal',
     'SUM' => 'sum',
+    'SUMIF' => 'sumif',
+    'SUMIFS' => 'sumifs',
     '^' => 'power'
   }
   

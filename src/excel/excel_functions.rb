@@ -64,3 +64,7 @@ require_relative 'excel_functions/subtotal'
 require_relative 'excel_functions/count'
 
 require_relative 'excel_functions/counta'
+
+require_relative 'excel_functions/sumif'
+
+require_relative 'excel_functions/sumifs'
