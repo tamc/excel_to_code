@@ -9,8 +9,13 @@ class ReplaceFormulaeWithCalculatedValues
   def replace(input,output)
     rewriter = MapFormulaeToValues.new
     input.lines do |line|
-      ref, ast = line.split("\t")
-      output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
+      begin
+        ref, ast = line.split("\t")
+        output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
+      rescue Exception => e
+        puts "Exception at line #{line}"
+        raise
+      end
     end
   end
 end
