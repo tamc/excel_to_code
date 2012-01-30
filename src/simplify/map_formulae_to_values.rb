@@ -87,8 +87,9 @@ class MapFormulaeToValues
     when false; [:boolean_false]
     when Symbol; [:error,MapFormulaeToRuby::REVERSE_ERRORS[value.inspect]]
     when String; [:string,value]
+    when nil; [:blank]
     else
-      raise Error.new("Ast for #{value.inspect} of class #{value.class} not recognised")
+      raise NotSupportedException.new("Ast for #{value.inspect} of class #{value.class} not recognised")
     end
   end
   
