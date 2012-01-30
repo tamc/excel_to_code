@@ -68,3 +68,5 @@ require_relative 'excel_functions/counta'
 require_relative 'excel_functions/sumif'
 
 require_relative 'excel_functions/sumifs'
+
+require_relative 'excel_functions/sumproduct'
