@@ -74,3 +74,5 @@ require_relative 'excel_functions/sumproduct'
 require_relative 'excel_functions/vlookup'
 
 require_relative 'excel_functions/index'
+
+require_relative 'excel_functions/left'
