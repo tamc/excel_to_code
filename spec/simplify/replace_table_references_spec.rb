@@ -8,6 +8,7 @@ input = <<END
 A3\t[:table_reference, "FirstTable", "[#This Row],[ColA]:[ColB]"]
 A4\t[:string_join, [:table_reference, "FirstTable", "[#This Row],[ColA]"], [:table_reference, "FirstTable", "[#This Row],[ColB]"]]
 A5\t[:function,"SUM",[:cell,"A1"],[:table_reference, "FirstTable", "[#This Row],[ColA]:[ColB]"]]
+C2\t[:table_reference, "FirstTable", "ColA"]
 END
 
 tables = <<END
@@ -18,6 +19,7 @@ expected_output = <<END
 A3\t[:sheet_reference, "Tables", [:area, "B3", "C3"]]
 A4\t[:string_join, [:sheet_reference, "Tables", [:cell, "B4"]], [:sheet_reference, "Tables", [:cell, "C4"]]]
 A5\t[:function, "SUM", [:cell, "A1"], [:sheet_reference, "Tables", [:area, "B5", "C5"]]]
+C2\t[:sheet_reference, "Tables", [:cell, "B2"]]
 END
     
 input = StringIO.new(input)
