@@ -12,6 +12,10 @@ describe "ExcelFunctions: multiply(number,number)" do
     FunctionTest.multiply(nil,nil).should == 0
     FunctionTest.multiply(nil,1).should == 0
   end
+    
+  it "should work if numbers are given as strings" do
+    FunctionTest.multiply("3","4").should == 12
+  end
   
   it "should return an error if either argument is an error" do
     FunctionTest.multiply(:error,1).should == :error

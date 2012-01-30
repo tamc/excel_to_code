@@ -12,6 +12,10 @@ describe "ExcelFunctions: subtract(number,number)" do
     FunctionTest.subtract(nil,nil).should == 0
     FunctionTest.subtract(nil,1).should == -1
   end
+    
+  it "should work if numbers are given as strings" do
+    FunctionTest.subtract("2","1").should == 1
+  end
   
   it "should return an error if either argument is an error" do
     FunctionTest.subtract(:error,1).should == :error

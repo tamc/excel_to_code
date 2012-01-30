@@ -12,6 +12,10 @@ describe "ExcelFunctions: power(number,number)" do
     FunctionTest.power(nil,nil).should == 1
     FunctionTest.power(nil,1).should == 0
   end
+    
+  it "should work if numbers are given as strings" do
+    FunctionTest.power("2","3").should == 8
+  end
   
   it "should return an error if either argument is an error" do
     FunctionTest.power(:error,1).should == :error

@@ -13,6 +13,10 @@ describe "ExcelFunctions: add(number,number)" do
     FunctionTest.add(nil,1).should == 1
   end
   
+  it "should work if numbers are given as strings" do
+    FunctionTest.add("1","1.0").should == 2.0
+  end
+  
   it "should return an error if either argument is an error" do
     FunctionTest.add(:error,1).should == :error
     FunctionTest.add(1,:error).should == :error

@@ -16,6 +16,10 @@ describe "ExcelFunctions: divide(number,number)" do
     FunctionTest.divide(nil,nil).should == :div0
     FunctionTest.divide(nil,1).should == 0
   end
+    
+  it "should work if numbers are given as strings" do
+    FunctionTest.divide("4","2").should == 2
+  end  
   
   it "should return an error if either argument is an error" do
     FunctionTest.divide(:error,1).should == :error
