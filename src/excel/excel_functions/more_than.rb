@@ -4,6 +4,9 @@ module ExcelFunctions
     return a if a.is_a?(Symbol)
     return b if b.is_a?(Symbol)
     
+    a = 0 if a == nil
+    b = 0 if b == nil
+    
     case a
     when String
       a.downcase > b.downcase

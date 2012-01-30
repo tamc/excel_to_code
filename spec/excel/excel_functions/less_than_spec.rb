@@ -21,6 +21,13 @@ describe "ExcelFunctions: = less_than?()" do
     FunctionTest.less_than?("HELLO","hello").should == false
   end
 
+  it "should treat nil values as zero" do
+    FunctionTest.less_than?(nil,1).should == true
+    FunctionTest.less_than?(nil,-1).should == false
+    FunctionTest.less_than?(1,nil).should == false
+    FunctionTest.less_than?(-1,nil).should == true
+  end
+
   it "should return error if either argument is an error" do
     FunctionTest.less_than?(:error,1).should == :error
     FunctionTest.less_than?(1,:error).should == :error

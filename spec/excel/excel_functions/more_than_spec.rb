@@ -20,6 +20,13 @@ describe "ExcelFunctions: = more_than?()" do
     FunctionTest.more_than?("HELLO","world").should == false
     FunctionTest.more_than?("HELLO","hello").should == false
   end
+  
+  it "should treat nil values as zero" do
+    FunctionTest.more_than?(nil,1).should == false
+    FunctionTest.more_than?(nil,-1).should == true
+    FunctionTest.more_than?(1,nil).should == true
+    FunctionTest.more_than?(-1,nil).should == false
+  end
 
   it "should return error if either argument is an error" do
     FunctionTest.more_than?(:error,1).should == :error

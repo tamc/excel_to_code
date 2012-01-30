@@ -20,7 +20,15 @@ describe "ExcelFunctions: = less_than_or_equal?()" do
     FunctionTest.less_than_or_equal?("HELLO","world").should == true
     FunctionTest.less_than_or_equal?("HELLO","hello").should == true
   end
-
+  
+  it "should treat nil values as zero" do
+    FunctionTest.less_than_or_equal?(nil,0).should == true
+    FunctionTest.less_than_or_equal?(nil,1).should == true
+    FunctionTest.less_than_or_equal?(nil,-1).should == false
+    FunctionTest.less_than_or_equal?(1,nil).should == false
+    FunctionTest.less_than_or_equal?(-1,nil).should == true
+  end
+  
   it "should return error if either argument is an error" do
     FunctionTest.less_than_or_equal?(:error,1).should == :error
     FunctionTest.less_than_or_equal?(1,:error).should == :error
