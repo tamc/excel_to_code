@@ -16,10 +16,12 @@ class Table
     when /\[#Headers\],\[(.*?)\]:\[(.*?)\]/io
       column_number_start = @column_name_array.find_index($1.downcase)
       column_number_finish = @column_name_array.find_index($2.downcase)
+      return ref_error unless column_number_start && column_number_finish
       ast_for_area @area.excel_start.offset(0,column_number_start), @area.excel_start.offset(0,column_number_finish)
     when /\[#Totals\],\[(.*?)\]:\[(.*?)\]/io
       column_number_start = @column_name_array.find_index($1.downcase)
       column_number_finish = @column_name_array.find_index($2.downcase)
+      return ref_error unless column_number_start && column_number_finish
       ast_for_area @area.excel_start.offset(@area.height,column_number_start), @area.excel_start.offset(@area.height,column_number_finish)
     when /\[#This Row\],\[(.*?)\]:\[(.*?)\]/io
       r = Reference.for(calling_cell)
@@ -27,18 +29,22 @@ class Table
       row = r.excel_row_number
       column_number_start = @column_name_array.find_index($1.downcase)
       column_number_finish = @column_name_array.find_index($2.downcase)
+      return ref_error unless column_number_start && column_number_finish
       ast_for_area @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number_start), @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number_finish)      
     when /\[#Headers\],\[(.*?)\]/io
       column_number = @column_name_array.find_index($1.downcase)
+      return ref_error unless column_number      
       ast_for_cell @area.excel_start.offset(0,column_number)
     when /\[#Totals\],\[(.*?)\]/io
       column_number = @column_name_array.find_index($1.downcase)
+      return ref_error unless column_number
       ast_for_cell @area.excel_start.offset(@area.height,column_number)
     when /\[#This Row\],\[(.*?)\]/io
       r = Reference.for(calling_cell)
       r.calculate_excel_variables
       row = r.excel_row_number
       column_number = @column_name_array.find_index($1.downcase)
+      return ref_error unless column_number
       ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)      
     when /#Headers/io
       ast_for_area @area.excel_start.offset(0,0), @area.excel_start.offset(0,@area.width)
@@ -59,9 +65,11 @@ class Table
         r.calculate_excel_variables
         row = r.excel_row_number
         column_number = @column_name_array.find_index(structured_reference.downcase)
+        return ref_error unless column_number
         ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)      
       else        
         column_number = @column_name_array.find_index(structured_reference.downcase)
+        return ref_error unless column_number
         ast_for_area @area.excel_start.offset(1,column_number), @area.excel_start.offset(@area.height - @number_of_total_rows,column_number)
       end
     end
@@ -74,5 +82,8 @@ class Table
   def ast_for_cell(ref)
     [:sheet_reference,@worksheet,[:cell,ref]]
   end
-
+  
+  def ref_error
+    [:error,"#REF!"]
+  end
 end

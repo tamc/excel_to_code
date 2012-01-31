@@ -42,15 +42,20 @@ class ReplaceTableReferences
   
     input.lines do |line|
       # Looks to match shared string lines
-      if line =~ /\[:table_reference/
-        cols = line.split("\t")
-        ast = cols.pop
-        ref = cols.first
-        rewriter.referring_cell = ref
-        output.puts "#{cols.join("\t")}\t#{rewriter.map(eval(ast)).inspect}"
-      else
-        output.puts line
-      end
+      begin
+        if line =~ /\[:table_reference/
+          cols = line.split("\t")
+          ast = cols.pop
+          ref = cols.first
+          rewriter.referring_cell = ref
+          output.puts "#{cols.join("\t")}\t#{rewriter.map(eval(ast)).inspect}"
+        else
+          output.puts line
+        end
+      rescue Exception => e
+        puts "Exception at line #{line}"
+        raise
+      end      
     end
   end
   

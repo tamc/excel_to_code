@@ -10,6 +10,14 @@ describe Table do
     @table.reference_for("FirstTable", "ColA","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B4", "B6"]]
   end
 
+  it 'should return a :ref error if table column does not exist' do
+    @table.reference_for("FirstTable", "NotAColumn","sheet1","A1").should == [:error,"#REF!"]
+    @table.reference_for("FirstTable", "[ColA]:[NotAColumn]","sheet1","A1").should == [:error,"#REF!"]
+    @table.reference_for("FirstTable", "[#Headers],[NotAColumn]","sheet1","F5").should == [:error,"#REF!"]
+    @table.reference_for("FirstTable", "[#Totals],[NotAColumn]","sheet1","F5").should == [:error,"#REF!"]
+    @table.reference_for("FirstTable", "[#This Row],[NotAColumn]","sheet1","F5").should == [:error,"#REF!"]
+  end
+
   it 'should be able to return a reference for [:table_reference, "FirstTable", "ColA"]] from a cell within the table' do
     @table.reference_for("FirstTable", "ColA","sheet1","C5").should == [:sheet_reference, "sheet1", [:cell, "B5"]]
   end
