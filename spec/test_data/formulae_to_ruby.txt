@@ -7,6 +7,8 @@
 [:number, "3e12"]	3000000000000.0
 [:number, "-3.13e-12"]	-3.13e-12
 
+[:prefix, "-", [:number, "3"]]	-3
+
 # Strings
 [:string, "Hello world"]	"Hello world"
 
