@@ -14,7 +14,7 @@
 [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]	[:number, "2"]
 [:arithmetic, [:number, "1"], [:operator, "-"], [:number, "1"]]	[:number, "0"]
 [:arithmetic, [:number, "1"], [:operator, "*"], [:number, "1"]]	[:number, "1"]
-[:arithmetic, [:number, "1"], [:operator, "/"], [:number, "1"]]	[:number, "1"]
+[:arithmetic, [:number, "1"], [:operator, "/"], [:number, "1"]]	[:number, "1.0"]
 [:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]]	[:number, "1"]
 [:arithmetic, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]], [:operator, "+"], [:number, "1"]]	[:number, "3"]
 [:arithmetic, [:function, "AVERAGE", [:number, "775"], [:number, "840"]], [:operator, "/"], [:number, "1000"]]	[:number, "0.8075"]
