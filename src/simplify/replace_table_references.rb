@@ -17,6 +17,7 @@ class ReplaceTableReferenceAst
   end
   
   def table_reference(table_name,table_reference)
+    return [:error,"#REF!"] unless tables.has_key?(table_name.downcase)
     tables[table_name.downcase].reference_for(table_name,table_reference,worksheet,referring_cell)
   end
   
