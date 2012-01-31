@@ -413,7 +413,7 @@ class ExcelToRuby
   def compile_worksheet_code(name,xml_filename)
     settable_refs = @values_that_can_be_set_at_runtime[name]    
     c = CompileToRuby.new
-    c.settable =lambda { |ref| settable_refs.include?(ref) } if settable_refs
+    c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
     i = input(name,"formulae_pruned.ast")
     w = input("worksheet_ruby_names")
     o = ruby('worksheets',"#{name.downcase}.rb")
