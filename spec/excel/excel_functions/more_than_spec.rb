@@ -28,6 +28,12 @@ describe "ExcelFunctions: = more_than?()" do
     FunctionTest.more_than?(-1,nil).should == false
   end
 
+  it "should be able to check arrays" do
+    FunctionTest.more_than?([[1,2],[3,4]],2).should == [[false,false],[true,true]]
+    FunctionTest.more_than?(2,[[1,2],[3,4]]).should == [[true,false],[false,false]]
+    FunctionTest.more_than?([[1,2],[3,4]],[[1,2],[3,4]]).should == [[false,false],[false,false]]
+  end
+
   it "should return error if either argument is an error" do
     FunctionTest.more_than?(:error,1).should == :error
     FunctionTest.more_than?(1,:error).should == :error

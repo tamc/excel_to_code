@@ -28,6 +28,12 @@ describe "ExcelFunctions: = less_than?()" do
     FunctionTest.less_than?(-1,nil).should == true
   end
 
+  it "should be able to check arrays" do
+    FunctionTest.less_than?([[1,2],[3,4]],2).should == [[true,false],[false,false]]
+    FunctionTest.less_than?(2,[[1,2],[3,4]]).should == [[false,false],[true,true]]
+    FunctionTest.less_than?([[1,2],[3,4]],[[1,2],[3,4]]).should == [[false,false],[false,false]]
+  end
+
   it "should return error if either argument is an error" do
     FunctionTest.less_than?(:error,1).should == :error
     FunctionTest.less_than?(1,:error).should == :error
