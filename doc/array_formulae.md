@@ -21,3 +21,22 @@ So, my planned implementation would be to ensure that all functions can take arr
 2. Createa a new result array of that size
 3. Populate that result array by iterating for each point of the array, applying the function to the values of the argument arrays at the same point
 
+
+## Notes on how array formulae work
+
+The default is that all operators can take an array. Therefore A1:A2+B1:B2 maps to {A1+B1;A2+B2}, althogugh the later isn't legal in excel formulae
+
+The same is true of functions that expect single values. Therefore COSH(A1:A2) maps to {COSH(A1);COSH(A2)}
+
+Some functions have arguments that are expected to be arrays, therefore they are left alone: SUM(A1:A2) maps to SUM(A1:A2)
+
+Some functions have mixture of arguments, some are expected to be single values, others ranges. In this case, a mixture of things happen:
+
+  INDEX(A1:A2,B1:B2) maps to {INDEX(A1,B1:B2); INDEX(B1,B1:B2)}
+  
+The tricky bit occurs when functions are nested:
+
+  SUM(A1:A2+B1:B2) maps to SUM({A1+B1;A2+B2}) # Ok
+  SUM(COSH(A1:A2)) maps to SUM({COSH(A1);COSH(A2)}) # Ok
+  SUM(INDEX(A1:A2,B1:B2)) maps to  {SUM(INDEX(A1,B1:B2)); SUM(INDEX(B1,B1:B2))} # wtf?
+  SUM(COUNTIF(A1:A2,B1:B2)) maps to SUM({COUNTIF(A1:A2,B1);COUNTIF(A1:A2,B1)}) # Ok

@@ -1,0 +1,12 @@
+# This suite of tests is in the form of <arrayformula> <offsetrow> <offsetcol> <resultingformula>
+
+# The default case is to map each cell in the area into the formula in turn as an array
+[:arithmetic, [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]], [:operator, "*"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]	1	0	[:array, [:row, [:arithmetic, [:cell, "A1"], [:operator, "*"], [:cell, "B1"]]], [:row, [:arithmetic, [:cell, "A2"], [:operator, "*"], [:cell, "B2"]]]]
+
+[:comparison, [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]], [:operator, ">="], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]	1	0	[:array, [:row, [:comparison, [:cell, "A1"], [:operator, ">="], [:cell, "B1"]]], [:row, [:comparison, [:cell, "A2"], [:operator, ">="], [:cell, "B2"]]]]
+
+# If a function accepts arrays as arguments, then leave the argument be
+[:function, "SUM", [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]]]	1	0	[:function, "SUM", [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]]]
+
+# If the function doesn't accept an array as argument, then map the function to an array
+[:function, "COSH", [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]]]	1	0	[:array, [:row, [:function, "COSH", [:cell, "A1"]]], [:row, [:function, "COSH", [:cell, "A2"]]]]

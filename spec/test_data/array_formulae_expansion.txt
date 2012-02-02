@@ -1,8 +1,12 @@
 # This suite of tests is in the form of <arrayformula> <offsetrow> <offsetcol> <resultingformula>
 
 # The default case is to map each cell in the area into the formula in turn
-[:arithmetic, [:area, "B3", "B5"], [:operator, "+"], [:area, "C3", "C5"]]	1	0	[:arithmetic, [:cell, "B4"], [:operator, "+"], [:cell, "C4"]]
+[:arithmetic, [:area, "B3", "B5"], [:operator, "*"], [:area, "C3", "C5"]]	1	0	[:arithmetic, [:cell, "B4"], [:operator, "*"], [:cell, "C4"]]
 
 # However, this isn't done for arguments that are expected to be areas
 [:function, "SUM", [:area, "B3", "B4"]]	1	0	[:function, "SUM", [:area, "B3", "B4"]]
+
+# And gets a bit annoying when the two are chained together
+# [:function, "SUM", [:arithmetic, [:area, "B3", "B4"], [:operator, "*"], [:area, "C3", "C4"]]]	1	0	[:function, "SUM", [:array, [:row, [:arithmetic, [:cell, "B3"], [:operator, "*"], [:cell, "C3"]]], [:row, [:arithmetic, [:cell, "B4"], [:operator, "*"], [:cell, "C4"]]]]]
+
 
