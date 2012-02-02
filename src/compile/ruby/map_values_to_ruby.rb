@@ -18,11 +18,7 @@ class MapValuesToRuby
   def blank
     "nil"
   end
-  
-  def prefix(symbol,*ast)
-    "#{symbol}#{ast.map {|a| map(a)}.join(',')}"
-  end
-  
+    
   def number(text)
     case text
     when /\./

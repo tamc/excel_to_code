@@ -43,6 +43,10 @@ class MapFormulaeToRuby < MapValuesToRuby
     '^' => 'power'
   }
   
+  def prefix(symbol,ast)
+    "#{symbol}#{map(ast)}"
+  end
+  
   def arithmetic(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
