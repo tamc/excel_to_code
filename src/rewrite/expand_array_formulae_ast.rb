@@ -86,7 +86,34 @@ class ExpandArrayFormulaeAst
       [:function, name, *arrayed_arguments]
     end
   end
-    
+  
+  def map_index(array,*other_arguments)
+    other_arguments = other_arguments.map { |s| map(s) }
+    array = map(array)
+    return [:function, "INDEX", array, *other_arguments] unless array?(*other_arguments)
+    map_arrays(other_arguments) do |arrayed_arguments|
+      [:function, "INDEX", array, *arrayed_arguments]
+    end
+  end
+  
+  def map_match(not_array,array,optional_array = nil)
+    not_array = map(not_array)
+    array = map(array)
+    if optional_array
+      optional_array = map(optional_array)
+      return [:function, "MATCH", not_array, array, optional_array] unless array?(not_array,optional_array)
+      map_arrays([not_array,optional_array]) do |arrayed_arguments|
+        [:function, "MATCH", arrayed_arguments[0], array, arrayed_arguments[1]]
+      end
+    else
+      return [:function, "MATCH", not_array, array, optional_array] unless array?(not_array)
+      map_arrays([not_array]) do |arrayed_arguments|
+        [:function, "MATCH", arrayed_arguments[0], array]
+      end
+    end
+  end
+  
+  
   private
   
   def array?(*args)
