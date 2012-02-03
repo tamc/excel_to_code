@@ -17,20 +17,9 @@ class ExpandArrayFormulaeAst
     right = map(right)
     return [:arithmetic, left, operator, right] unless array?(left,right)
     
-    a = array_ast_to_ruby_array(left)
-    b = array_ast_to_ruby_array(right)
-    
-    a = Array.new(b.length,Array.new(b.first.length,a)) unless a.is_a?(Array)
-    b = Array.new(a.length,Array.new(a.first.length,b)) unless b.is_a?(Array)
-    
-    return [:error, "#VALUE!"] unless b.length == a.length
-    return [:error, "#VALUE!"] unless b.first.length == a.first.length
-    
-    [:array, *a.map.with_index do |row,i|
-      [:row, *row.map.with_index do |cell,j|
-        [:arithmetic, cell, operator, b[i][j]]
-      end ]      
-    end]
+    map_arrays([left,right]) do |arrayed|
+      [:arithmetic,arrayed[0],operator,arrayed[1]]
+    end
   end
 
   def comparison(left,operator,right)
@@ -38,20 +27,9 @@ class ExpandArrayFormulaeAst
     right = map(right)
     return [:comparison, left, operator, right] unless array?(left,right)
     
-    a = array_ast_to_ruby_array(left)
-    b = array_ast_to_ruby_array(right)
-    
-    a = Array.new(b.length,Array.new(b.first.length,a)) unless a.is_a?(Array)
-    b = Array.new(a.length,Array.new(a.first.length,b)) unless b.is_a?(Array)
-    
-    return [:error, "#VALUE!"] unless b.length == a.length
-    return [:error, "#VALUE!"] unless b.first.length == a.first.length
-    
-    [:array, *a.map.with_index do |row,i|
-      [:row, *row.map.with_index do |cell,j|
-        [:comparison, cell, operator, b[i][j]]
-      end ]      
-    end]
+    map_arrays([left,right]) do |arrayed|
+      [:comparison,arrayed[0],operator,arrayed[1]]
+    end
   end
   
   def string_join(*strings)
