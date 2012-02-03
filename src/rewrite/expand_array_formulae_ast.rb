@@ -54,29 +54,61 @@ class ExpandArrayFormulaeAst
     end]
   end
   
-  def function(name,*arguments)
-    if respond_to?("map_#{name.downcase}")
-      send("map_#{name.downcase}",*arguments)
-    else
-      [:function,name,*arguments.map { |a| map(a)}]
+  def string_join(*strings)
+    strings = strings.map { |s| map(s) }
+    return [:string_join, *strings] unless array?(*strings)
+    map_arrays(strings) do |arrayed_strings|
+      [:string_join, *arrayed_strings]
     end
   end
   
-  def map_sum(*arguments)
-    [:function,"SUM",*arguments.map { |a| map(a)}]
+  def map_arrays(arrays, &block)
+    # Turn them into ruby arrays
+    arrays = arrays.map { |a| array_ast_to_ruby_array(a) }
+    
+    # Find the largest one
+    max_rows = arrays.max { |a| a.is_a?(Array) ? a.length : 0 }.length
+    max_columns = arrays.min { |a| a.is_a?(Array) && a.first.is_a?(Array) ? a.first.length : 0 }.first.length
+    
+    # Convert any single values into an array of the right size
+    arrays = arrays.map { |a| a.is_a?(Array) ? a : Array.new(max_rows, Array.new(max_columns,a)) }
+    
+    # Convert any single rows into an array of the right size
+    arrays = arrays.map { |a| a.length == 1 ? Array.new(max_rows,a.first) : a }
+    
+    # Convert any single columns into an array of the right size
+    arrays = arrays.map { |a| a.first.length == 1 ? Array.new(max_columns,a.flatten(1)).transpose : a }
+    
+    # Now iterate through
+    return [:array, *max_rows.times.map do |row|
+      [:row, *max_columns.times.map do |column| 
+        block.call(arrays.map do |a|
+          a[row][column] || [:error, "#N/A"]
+        end)
+      end]
+    end]
   end
   
-  def map_cosh(argument)
-    a = map(argument)
-    return [:function, "COSH", a] unless array?(a)
-    [:array, *array_ast_to_ruby_array(a).map do |row|
-      [:row, *row.map do |cell|
-        [:function, "COSH", cell]
-      end ]
-    end ]
+  FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS = %w{AVERAGE COUNT COUNTA MAX MIN SUM SUMPRODUCT}
+  
+  def function(name,*arguments)
+    if FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS.include?(name)
+      [:function, name, *arguments.map { |a| map(a) }]
+    elsif respond_to?("map_#{name.downcase}")
+      send("map_#{name.downcase}",*arguments)
+    else
+      function_that_does_not_accept_ranges(name,arguments)
+    end
   end
   
-  
+  def function_that_does_not_accept_ranges(name,arguments)
+    arguments = arguments.map { |s| map(s) }
+    return [:function, name, *arguments] unless array?(*arguments)
+    map_arrays(arguments) do |arrayed_arguments|
+      [:function, name, *arrayed_arguments]
+    end
+  end
+    
   private
   
   def array?(*args)
