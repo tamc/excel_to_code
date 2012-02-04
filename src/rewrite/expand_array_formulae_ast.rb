@@ -113,6 +113,14 @@ class ExpandArrayFormulaeAst
     end
   end
   
+  def map_subtotal(not_array,*arrays)
+    not_array = map(not_array)
+    arrays = arrays.map { |a| map(a) }
+    return [:function, "SUBTOTAL", not_array, *arrays] unless array?(not_array)
+    map_arrays([not_array]) do |arrayed_arguments|
+      [:function, "SUBTOTAL", arrayed_arguments[0], *arrays]
+    end
+  end
   
   private
   

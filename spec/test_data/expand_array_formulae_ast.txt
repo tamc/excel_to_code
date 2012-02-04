@@ -40,7 +40,11 @@
 [:function, "MATCH", [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]	1	0	[:array, [:row, [:function, "MATCH", [:cell, "A1"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]], [:row, [:function, "MATCH", [:cell, "A2"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]]]
 [:function, "MATCH", [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]], [:array, [:row, [:cell, "C1"]], [:row, [:cell, "C2"]]]]	1	0	[:array, [:row, [:function, "MATCH", [:cell, "A1"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]], [:cell, "C1"]]], [:row, [:function, "MATCH", [:cell, "A2"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]], [:cell, "C2"]]]]
 
-# SUBTOTAL
+# SUBTOTAL(not_array,*arrays)
+[:function, "SUBTOTAL", [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]	1	0	[:array, [:row, [:function, "SUBTOTAL", [:cell, "A1"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]], [:row, [:function, "SUBTOTAL", [:cell, "A2"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]]]]]
+[:function, "SUBTOTAL", [:array, [:row, [:cell, "A1"]], [:row, [:cell, "A2"]]], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]], [:array, [:row, [:cell, "C1"]], [:row, [:cell, "C2"]]]]	1	0	[:array, [:row, [:function, "SUBTOTAL", [:cell, "A1"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]], [:array, [:row, [:cell, "C1"]], [:row, [:cell, "C2"]]]]], [:row, [:function, "SUBTOTAL", [:cell, "A2"], [:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]]], [:array, [:row, [:cell, "C1"]], [:row, [:cell, "C2"]]]]]]
+
+
 # SUMIF
 # SUMIFS
 # VLOOKUP
