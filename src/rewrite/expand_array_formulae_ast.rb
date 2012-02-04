@@ -143,6 +143,10 @@ class ExpandArrayFormulaeAst
     end
   end
   
+  def map_vlookup(*args)
+    array_map args, "VLOOKUP", false, true, false, false
+  end
+  
   def array_map(args,function,*ok_to_be_an_array)
     args = args.map { |a| map(a) }
     return [:function, function, *args ] if ok_to_be_an_array.find.with_index { |accepts_array,i| !(accepts_array || !args[i] || args[i].first == :array) }
