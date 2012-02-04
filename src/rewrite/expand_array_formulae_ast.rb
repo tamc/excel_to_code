@@ -122,6 +122,60 @@ class ExpandArrayFormulaeAst
     end
   end
   
+  def map_index(array,*other_arguments)
+    other_arguments = other_arguments.map { |s| map(s) }
+    array = map(array)
+    return [:function, "INDEX", array, *other_arguments] unless array?(*other_arguments)
+    map_arrays(other_arguments) do |arrayed_arguments|
+      [:function, "INDEX", array, *arrayed_arguments]
+    end
+  end
+  
+  def map_sumif(*args)
+    array_map args, 'SUMIF', true, false, true
+  end
+  
+  def array_map(args,function,*ok_to_be_an_array)
+    args = args.map { |a| map(a) }
+    return [:function, function, *args ] if ok_to_be_an_array.find.with_index { |accepts_array,i| !(accepts_array || args[i].first == :array) }
+
+    # Turn the relevant arguments into ruby arrays and store the dimensions
+    max_rows = 1
+    max_columns = 1
+    args = args.map.with_index do |a,i| 
+      unless ok_to_be_an_array[i]
+        a = array_ast_to_ruby_array(a)
+        r = a.length
+        c = a.first.length
+        max_rows = r if r > max_rows
+        max_columns = c if c > max_columns
+      end
+      a
+    end
+        
+    # Convert any single values into an array of the right size
+    args = args.map.with_index { |a,i| (a.is_a?(Array) || ok_to_be_an_array[i]) ? a : Array.new(max_rows, Array.new(max_columns,a)) }
+    
+    # Convert any single rows into an array of the right size
+    args = args.map.with_index { |a,i| (!ok_to_be_an_array[i] && a.length == 1) ? Array.new(max_rows,a.first) : a }
+    
+    # Convert any single columns into an array of the right size
+    args = args.map.with_index { |a,i| (!ok_to_be_an_array[i] && a.first.length == 1) ? Array.new(max_columns,a.flatten(1)).transpose : a }
+    
+    # Now iterate through
+    return [:array, *max_rows.times.map do |row|
+      [:row, *max_columns.times.map do |column| 
+        [:function, function, *args.map.with_index do |a,i|
+          if ok_to_be_an_array[i]
+            a
+          else
+            a[row][column] || [:error, "#N/A"]
+          end
+        end]
+      end]
+    end]
+  end
+  
   private
   
   def array?(*args)
