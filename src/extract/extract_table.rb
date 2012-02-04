@@ -5,7 +5,7 @@ class ExtractTable < SimpleExtractFromXML
   attr_accessor :worksheet_name
   
   def initialize(worksheet_name = nil)
-    super
+    super()
     @worksheet_name = worksheet_name
   end
   
