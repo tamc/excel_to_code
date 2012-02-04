@@ -80,55 +80,20 @@ class ExpandArrayFormulaeAst
   end
   
   def function_that_does_not_accept_ranges(name,arguments)
-    arguments = arguments.map { |s| map(s) }
-    return [:function, name, *arguments] unless array?(*arguments)
-    map_arrays(arguments) do |arrayed_arguments|
-      [:function, name, *arrayed_arguments]
-    end
+    return [:function, name] if arguments.empty?
+    array_map arguments, name, *Array.new(arguments.length,false)
   end
   
-  def map_index(array,*other_arguments)
-    other_arguments = other_arguments.map { |s| map(s) }
-    array = map(array)
-    return [:function, "INDEX", array, *other_arguments] unless array?(*other_arguments)
-    map_arrays(other_arguments) do |arrayed_arguments|
-      [:function, "INDEX", array, *arrayed_arguments]
-    end
+  def map_match(*args)
+    array_map args, 'MATCH', false, true, false
   end
   
-  def map_match(not_array,array,optional_array = nil)
-    not_array = map(not_array)
-    array = map(array)
-    if optional_array
-      optional_array = map(optional_array)
-      return [:function, "MATCH", not_array, array, optional_array] unless array?(not_array,optional_array)
-      map_arrays([not_array,optional_array]) do |arrayed_arguments|
-        [:function, "MATCH", arrayed_arguments[0], array, arrayed_arguments[1]]
-      end
-    else
-      return [:function, "MATCH", not_array, array, optional_array] unless array?(not_array)
-      map_arrays([not_array]) do |arrayed_arguments|
-        [:function, "MATCH", arrayed_arguments[0], array]
-      end
-    end
+  def map_subtotal(*args)
+    array_map args, 'SUBTOTAL', false, *Array.new(args.length-1,true)
   end
   
-  def map_subtotal(not_array,*arrays)
-    not_array = map(not_array)
-    arrays = arrays.map { |a| map(a) }
-    return [:function, "SUBTOTAL", not_array, *arrays] unless array?(not_array)
-    map_arrays([not_array]) do |arrayed_arguments|
-      [:function, "SUBTOTAL", arrayed_arguments[0], *arrays]
-    end
-  end
-  
-  def map_index(array,*other_arguments)
-    other_arguments = other_arguments.map { |s| map(s) }
-    array = map(array)
-    return [:function, "INDEX", array, *other_arguments] unless array?(*other_arguments)
-    map_arrays(other_arguments) do |arrayed_arguments|
-      [:function, "INDEX", array, *arrayed_arguments]
-    end
+  def map_index(*args)
+    array_map args, 'INDEX', true, false, false
   end
   
   def map_sumif(*args)
@@ -146,6 +111,8 @@ class ExpandArrayFormulaeAst
   def map_vlookup(*args)
     array_map args, "VLOOKUP", false, true, false, false
   end
+  
+  private
   
   def array_map(args,function,*ok_to_be_an_array)
     args = args.map { |a| map(a) }
@@ -188,8 +155,6 @@ class ExpandArrayFormulaeAst
       end]
     end]
   end
-  
-  private
   
   def array?(*args)
     args.any? { |a| a.first == :array }
