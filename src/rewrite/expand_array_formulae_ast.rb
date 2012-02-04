@@ -135,11 +135,20 @@ class ExpandArrayFormulaeAst
     array_map args, 'SUMIF', true, false, true
   end
   
+  def map_sumifs(*args)
+    if args.length > 3
+      array_map args, 'SUMIFS', true, true, false, *([true,false]*((args.length-3)/2))
+    else
+      array_map args, 'SUMIFS', true, true, false
+    end
+  end
+  
   def array_map(args,function,*ok_to_be_an_array)
     args = args.map { |a| map(a) }
-    return [:function, function, *args ] if ok_to_be_an_array.find.with_index { |accepts_array,i| !(accepts_array || args[i].first == :array) }
+    return [:function, function, *args ] if ok_to_be_an_array.find.with_index { |accepts_array,i| !(accepts_array || !args[i] || args[i].first == :array) }
 
     # Turn the relevant arguments into ruby arrays and store the dimensions
+    # Enumerable#max and Enumerable#min don't return Enumerators, so can't do it using those methods
     max_rows = 1
     max_columns = 1
     args = args.map.with_index do |a,i| 
