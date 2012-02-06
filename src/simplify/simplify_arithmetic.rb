@@ -43,8 +43,9 @@ class SimplifyArithmetic
     input.lines do |line|
       # Looks to match lines with references
       if line =~ /:arithmetic/
-        ref, ast = line.split("\t")
-        output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
+        content = line.split("\t")
+        ast = eval(content.pop)
+        output.puts "#{content.join("\t")}\t#{rewriter.map(ast).inspect}"
       else
         output.puts line
       end

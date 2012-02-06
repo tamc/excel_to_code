@@ -1,6 +1,6 @@
 require_relative '../excel'
 
-class ExpandArrayFormulaeAst
+class AstExpandArrayFormulae
     
   def map(ast)
     return ast unless ast.is_a?(Array)
@@ -26,7 +26,7 @@ class ExpandArrayFormulaeAst
     left = map(left)
     right = map(right)
     return [:comparison, left, operator, right] unless array?(left,right)
-    
+
     map_arrays([left,right]) do |arrayed|
       [:comparison,arrayed[0],operator,arrayed[1]]
     end
@@ -43,13 +43,10 @@ class ExpandArrayFormulaeAst
   def map_arrays(arrays, &block)
     # Turn them into ruby arrays
     arrays = arrays.map { |a| array_ast_to_ruby_array(a) }
-    
+
     # Find the largest one
-    max_rows = arrays.max { |a| a.is_a?(Array) ? a.length : 0 }.length
-    max_columns = arrays.min { |a| a.is_a?(Array) && a.first.is_a?(Array) ? a.first.length : 0 }.first.length
-    
-    # Convert any single values into an array of the right size
-    arrays = arrays.map { |a| a.is_a?(Array) ? a : Array.new(max_rows, Array.new(max_columns,a)) }
+    max_rows = arrays.max { |a,b| a.length <=> b.length }.length
+    max_columns = arrays.max { |a,b| a.first.length <=> b.first.length }.first.length
     
     # Convert any single rows into an array of the right size
     arrays = arrays.map { |a| a.length == 1 ? Array.new(max_rows,a.first) : a }
@@ -133,9 +130,6 @@ class ExpandArrayFormulaeAst
       a
     end
         
-    # Convert any single values into an array of the right size
-    args = args.map.with_index { |a,i| (a.is_a?(Array) || ok_to_be_an_array[i]) ? a : Array.new(max_rows, Array.new(max_columns,a)) }
-    
     # Convert any single rows into an array of the right size
     args = args.map.with_index { |a,i| (!ok_to_be_an_array[i] && a.length == 1) ? Array.new(max_rows,a.first) : a }
     
@@ -161,7 +155,7 @@ class ExpandArrayFormulaeAst
   end
   
   def array_ast_to_ruby_array(array_ast)
-    return array_ast unless array_ast.first == :array
+    return [[array_ast]] unless array_ast.first == :array
     array_ast[1..-1].map do |row_ast|
       row_ast[1..-1].map do |cell|
         cell

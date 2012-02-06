@@ -18,7 +18,7 @@ class ExcelToRuby
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
     self.xml_dir = File.join(output_directory,'xml')
-    
+  
     sort_out_output_directories
     unzip_excel
     process_workbook
@@ -118,12 +118,15 @@ class ExcelToRuby
   def rewrite_array_formulae(name,xml_filename)
     r = ReplaceNamedReferences.new
     r.sheet_name = name
-    replace r, File.join(name,'array_formulae.ast-nocols'), 'named_references.ast', File.join(name,"array_formulae.ast-nocols-no-named-refs")
+    replace r, File.join(name,'array_formulae.ast-nocols'), 'named_references.ast', File.join(name,"array_formulae1.ast")
 
     r = ReplaceTableReferences.new
     r.sheet_name = name    
-    replace r, File.join(name,'array_formulae.ast-nocols-no-named-refs'), 'all_tables', File.join(name,"array_formulae.ast-nocols-no-named-refs-notable-refs")
-    rewrite RewriteArrayFormulae, File.join(name,'array_formulae.ast-nocols-no-named-refs-notable-refs'), File.join(name,"array_formulae-expanded.ast")
+    replace r, File.join(name,'array_formulae1.ast'), 'all_tables', File.join(name,"array_formulae2.ast")
+    replace SimplifyArithmetic, File.join(name,'array_formulae2.ast'), File.join(name,'array_formulae3.ast')
+    replace ReplaceRangesWithArrayLiterals, File.join(name,"array_formulae3.ast"), File.join(name,"array_formulae4.ast")
+    rewrite RewriteArrayFormulaeToArrays, File.join(name,"array_formulae4.ast"), File.join(name,"array_formulae5.ast")
+    rewrite RewriteArrayFormulae, File.join(name,'array_formulae5.ast'), File.join(name,"array_formulae-expanded.ast")
   end
   
   def combine_formulae_files(name,xml_filename)
@@ -222,12 +225,12 @@ class ExcelToRuby
       end
     end
     worksheets("Replacing blanks") do |name,xml_filename|
-      #fork do 
+      fork do 
         r = ReplaceBlanks.new
         r.references = references
         r.default_sheet_name = name
         replace r, File.join(name,"formulae_no_indirects_optimised.ast"),File.join(name,"formulae_no_blanks.ast")
-        #end
+      end
     end
   end
   
@@ -279,9 +282,12 @@ class ExcelToRuby
     end
     
     worksheets("Replacing with calculated values") do |name,xml_filename|
-      replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      fork do
+        replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      end
     end
     counter += 1
+    Process.waitall
       
     references = all_formulae("#{basename}#{counter}.ast")
     inline_ast_decision = lambda do |sheet,cell,references|
@@ -307,10 +313,13 @@ class ExcelToRuby
     r.inline_ast = inline_ast_decision
     
     worksheets("Inlining formulae") do |name,xml_filename|
-      r.default_sheet_name = name
-      replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      fork do
+        r.default_sheet_name = name
+        replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      end
     end
     counter += 1
+    Process.waitall
     
     # Finish
     worksheets("Moving sheets") do |name|
@@ -335,10 +344,13 @@ class ExcelToRuby
       end
       r = RemoveCells.new
       worksheets("Removing cells") do |name,xml_filename|
-        r.cells_to_keep = identifier.dependencies[name]
-        rewrite r, File.join(name,'formulae_no_blanks.ast'), File.join(name,'formulae_pruned.ast')
-        rewrite r, File.join(name,'values_no_shared_strings.ast'), File.join(name,'values_pruned.ast')
+        fork do
+          r.cells_to_keep = identifier.dependencies[name]
+          rewrite r, File.join(name,'formulae_no_blanks.ast'), File.join(name,'formulae_pruned.ast')
+          rewrite r, File.join(name,'values_no_shared_strings.ast'), File.join(name,'values_pruned.ast')
+        end
       end
+      Process.waitall
     else
       worksheets do |name,xml_filename|
         i = File.join(output_directory,'intermediate',name,"formulae_no_blanks.ast")
@@ -403,10 +415,10 @@ class ExcelToRuby
   
   def compile_worksheets
     worksheets("Compiling worksheet") do |name,xml_filename|
-      # fork do 
+      fork do 
         compile_worksheet_code(name,xml_filename)
         compile_worksheet_test(name,xml_filename)
-      # end
+      end
     end    
   end
   

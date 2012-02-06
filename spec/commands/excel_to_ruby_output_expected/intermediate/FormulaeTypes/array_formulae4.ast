@@ -1,0 +1,2 @@
+B5	B5	[:array, [:row, [:cell, "B1"]], [:row, [:cell, "B2"]], [:row, [:cell, "B3"]], [:row, [:cell, "B4"]]]
+B6	B6:B8	[:function, "IF", [:comparison, [:array, [:row, [:cell, "B3"]], [:row, [:cell, "B4"]], [:row, [:cell, "B5"]]], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]
