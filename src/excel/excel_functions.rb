@@ -76,3 +76,7 @@ require_relative 'excel_functions/vlookup'
 require_relative 'excel_functions/index'
 
 require_relative 'excel_functions/left'
+
+require_relative 'excel_functions/roundup'
+
+require_relative 'excel_functions/rounddown'

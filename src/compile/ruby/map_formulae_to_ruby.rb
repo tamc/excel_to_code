@@ -34,6 +34,8 @@ class MapFormulaeToRuby < MapValuesToRuby
     'PI' => 'pi',
     'PMT' => 'pmt',
     'ROUND' => 'round',
+    'ROUNDDOWN' => 'rounddown',
+    'ROUNDUP' => 'roundup',
     'SUBTOTAL' => 'subtotal',
     'SUM' => 'sum',
     'SUMIF' => 'sumif',
