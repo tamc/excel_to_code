@@ -1,9 +1,11 @@
-# FormulaeTypes
+# Tables
 
 require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
-class Formulaetypes < Spreadsheet
+class Tables
+ < Spreadsheet
+  def a1; referencing.c4; end
 
 end
 end

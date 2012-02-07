@@ -11,6 +11,7 @@ A (clashing) name	file4
 A [clashing] name	file5
 a [clashing]  name	file6
 2010	file5
+(Not appropriate!)	file7
 END
 
 expected_output = <<END
@@ -20,7 +21,8 @@ A clashing name	a_clashing_name
 A (clashing) name	a_clashing_name2
 A [clashing] name	a_clashing_name3
 a [clashing]  name	a_clashing_name4
-2010	_2010
+2010	s2010
+(Not appropriate!)	s_not_appropriate_
 END
 
 output = StringIO.new

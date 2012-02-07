@@ -67,10 +67,10 @@ class ExcelToRuby
   # Extracts each worksheets values and formulas
   def extract_worksheets
     worksheets("Initial data extract") do |name,xml_filename|
-      fork do
+      #fork do
         $0 = "ruby initial extract #{name}"
         initial_extract_from_worksheet(name,xml_filename)
-      end
+      #end
     end
   end
 
@@ -87,12 +87,12 @@ class ExcelToRuby
   
   def rewrite_worksheets
     worksheets("Initial rewrite of references and formulae") do |name,xml_filename|
-      fork do 
+      #fork do 
         rewrite_row_and_column_references(name,xml_filename)
         rewrite_shared_formulae(name,xml_filename)
         rewrite_array_formulae(name,xml_filename)
         combine_formulae_files(name,xml_filename)
-      end
+      #end
     end
   end
   
@@ -185,13 +185,13 @@ class ExcelToRuby
   
   def simplify_worksheets
     worksheets("Simplifying") do |name,xml_filename|
-      fork do
+      #fork do
         # i = input( File.join(name,'formulae.ast'))
         # o = output(File.join(name,'missing_functions'))
         # CheckForUnknownFunctions.new.check(i,o)
         # close(i,o)
         simplify_worksheet(name,xml_filename)
-      end
+      #end
     end
     # missing_function_files = []
     # worksheets("Consolidating any missing functions") do |name,xml_filename|
@@ -225,12 +225,12 @@ class ExcelToRuby
       end
     end
     worksheets("Replacing blanks") do |name,xml_filename|
-      fork do 
+      #fork do 
         r = ReplaceBlanks.new
         r.references = references
         r.default_sheet_name = name
         replace r, File.join(name,"formulae_no_indirects_optimised.ast"),File.join(name,"formulae_no_blanks.ast")
-      end
+      #end
     end
   end
   
@@ -282,9 +282,9 @@ class ExcelToRuby
     end
     
     worksheets("Replacing with calculated values") do |name,xml_filename|
-      fork do
+      #fork do
         replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
-      end
+      #end
     end
     counter += 1
     Process.waitall
@@ -313,10 +313,10 @@ class ExcelToRuby
     r.inline_ast = inline_ast_decision
     
     worksheets("Inlining formulae") do |name,xml_filename|
-      fork do
+      #fork do
         r.default_sheet_name = name
         replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
-      end
+      #end
     end
     counter += 1
     Process.waitall
@@ -344,11 +344,11 @@ class ExcelToRuby
       end
       r = RemoveCells.new
       worksheets("Removing cells") do |name,xml_filename|
-        fork do
+        #fork do
           r.cells_to_keep = identifier.dependencies[name]
           rewrite r, File.join(name,'formulae_no_blanks.ast'), File.join(name,'formulae_pruned.ast')
           rewrite r, File.join(name,'values_no_shared_strings.ast'), File.join(name,'values_pruned.ast')
-        end
+        #end
       end
       Process.waitall
     else
@@ -393,7 +393,7 @@ class ExcelToRuby
     o.puts "  include ExcelFunctions"
     w.lines do |line|
       name, ruby_name = line.strip.split("\t")
-      o.puts "  def #{ruby_name}; @#{ruby_name} ||= #{name.capitalize}.new; end"
+      o.puts "  def #{ruby_name}; @#{ruby_name} ||= #{ruby_name.capitalize}.new; end"
     end
     o.puts "end"
     o.puts 'Dir[File.join(File.dirname(__FILE__),"worksheets/","*.rb")].each {|f| autoload(File.basename(f,".rb").capitalize,f)}'
@@ -408,17 +408,17 @@ class ExcelToRuby
     o.puts  "require 'test/unit'"
     w.lines do |line|
       name, ruby_name = line.strip.split("\t")
-      o.puts "require_relative 'tests/test_#{name.downcase}'"
+      o.puts "require_relative 'tests/test_#{ruby_name.downcase}'"
     end
     close(w,o)
   end
   
   def compile_worksheets
     worksheets("Compiling worksheet") do |name,xml_filename|
-      fork do 
+      #fork do 
         compile_worksheet_code(name,xml_filename)
         compile_worksheet_test(name,xml_filename)
-      end
+      #end
     end    
   end
   
@@ -428,14 +428,15 @@ class ExcelToRuby
     c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
     i = input(name,"formulae_pruned.ast")
     w = input("worksheet_ruby_names")
-    o = ruby('worksheets',"#{name.downcase}.rb")
+    ruby_name = ruby_name(name)
+    o = ruby('worksheets',"#{ruby_name.downcase}.rb")
     d = output(name,'defaults')
     o.puts "# #{name}"
     o.puts
     o.puts "require_relative '../#{compiled_module_name.downcase}'"
     o.puts
     o.puts "module #{compiled_module_name}"
-    o.puts "class #{name.capitalize} < Spreadsheet"
+    o.puts "class #{ruby_name.capitalize} < Spreadsheet"
     c.rewrite(i,w,o,d)
     o.puts ""
     close(d)
@@ -456,20 +457,30 @@ class ExcelToRuby
 
   def compile_worksheet_test(name,xml_filename)
     i = input(name,"values_pruned.ast")
-    o = ruby('tests',"test_#{name.downcase}.rb")
+    ruby_name = ruby_name(name)
+    o = ruby('tests',"test_#{ruby_name.downcase}.rb")
     o.puts "# Test for #{name}"
     o.puts  "require 'test/unit'"
     o.puts  "require_relative '../#{compiled_module_name.downcase}'"
     o.puts
     o.puts "module #{compiled_module_name}"
-    o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
-    o.puts "  def worksheet; #{name.capitalize}.new; end"
+    o.puts "class Test#{ruby_name.capitalize} < Test::Unit::TestCase"
+    o.puts "  def worksheet; #{ruby_name.capitalize}.new; end"
     CompileToRubyUnitTest.rewrite(i, o)
     o.puts "end"
     o.puts "end"
     close(i,o)
   end
   
+  def ruby_name(name)
+    unless @worksheet_names
+      w = input("worksheet_ruby_names")
+      @worksheet_names = Hash[w.readlines.map { |line| line.split("\t")}]
+      close(w)
+    end
+    @worksheet_names[name]
+  end
+    
   def worksheets(message = "Processing",&block)
     IO.readlines(File.join(output_directory,'intermediate','worksheet_names')).each do |line|
       name, filename = *line.split("\t")

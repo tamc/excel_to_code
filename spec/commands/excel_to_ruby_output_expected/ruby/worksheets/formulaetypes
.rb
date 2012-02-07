@@ -1,9 +1,10 @@
-# Ranges
+# FormulaeTypes
 
 require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
-class Ranges < Spreadsheet
+class Formulaetypes
+ < Spreadsheet
 
 end
 end

@@ -1,9 +1,10 @@
-# ValueTypes
+# Ranges
 
 require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
-class Valuetypes < Spreadsheet
+class Ranges
+ < Spreadsheet
 
 end
 end

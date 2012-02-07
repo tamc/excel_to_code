@@ -3,7 +3,8 @@
 require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
-class Referencing < Spreadsheet
+class Referencing
+ < Spreadsheet
   attr_accessor :a4 # Default: 10
   def b4; add(a4,1); end
   def c4; add(b4,1); end

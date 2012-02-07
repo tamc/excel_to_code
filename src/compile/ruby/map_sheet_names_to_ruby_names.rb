@@ -9,7 +9,7 @@ class MapSheetNamesToRubyNames
     input.lines do |line|
       excel_worksheet_name = line.split("\t").first
       ruby_name = excel_worksheet_name.downcase.gsub(/[^a-z0-9]+/,'_')
-      ruby_name = "_"+ruby_name if ruby_name[0] =~ /[0-9]/
+      ruby_name = "s"+ruby_name if ruby_name[0] !~ /[a-z]/
       ruby_name = ruby_name + "2" if ruby_names_assigned.has_key?(ruby_name)
       ruby_name.succ! while ruby_names_assigned.has_key?(ruby_name)
       output.puts "#{excel_worksheet_name}\t#{ruby_name}"
