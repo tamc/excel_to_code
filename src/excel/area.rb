@@ -57,6 +57,8 @@ class Area < String
   end
   
   def to_array_literal(sheet = nil)
+    calculate_excel_variables
+    unfixed_start = @excel_start.unfix
     [:array,
       *(0.upto(height).map do |row|
         [:row,
@@ -65,12 +67,12 @@ class Area < String
               [:sheet_reference, 
                 sheet,
                 [:cell,
-                  @excel_start.offset(row,column)
+                  unfixed_start.offset(row,column)
                 ]
               ]
             else
               [:cell,
-                @excel_start.offset(row,column)
+                unfixed_start.offset(row,column)
               ]
             end
           end)
