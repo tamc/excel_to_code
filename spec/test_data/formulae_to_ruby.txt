@@ -1,5 +1,6 @@
 # Blanks
 [:blank]	nil
+[:null]	nil
 
 # Numbers
 [:number, "1"]	1
@@ -7,7 +8,12 @@
 [:number, "3e12"]	3000000000000.0
 [:number, "-3.13e-12"]	-3.13e-12
 
+[:percentage, "36"]	0.36
+
 [:prefix, "-", [:number, "3"]]	-3
+
+[:brackets]	()
+[:brackets, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]]	(add(1,1))
 
 # Strings
 [:string, "Hello world"]	"Hello world"

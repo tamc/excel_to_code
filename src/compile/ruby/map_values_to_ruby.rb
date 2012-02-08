@@ -18,6 +18,8 @@ class MapValuesToRuby
   def blank
     "nil"
   end
+  
+  alias :null :blank
     
   def number(text)
     case text
@@ -28,6 +30,10 @@ class MapValuesToRuby
     else
       text.to_i.to_s
     end
+  end
+  
+  def percentage(text)
+    (text.to_f / 100.0).to_s
   end
   
   def string(text)

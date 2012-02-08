@@ -49,6 +49,10 @@ class MapFormulaeToRuby < MapValuesToRuby
     "#{symbol}#{map(ast)}"
   end
   
+  def brackets(*contents)
+    "(#{contents.map { |a| map(a) }.join(',')})"
+  end
+  
   def arithmetic(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end

@@ -235,7 +235,7 @@ class ExcelToRuby
   end
   
   def optimise_and_replace_indirect_loop
-    number_of_loops = 3
+    number_of_loops = 4
     1.upto(number_of_loops) do |pass|
       puts "Optimise and replace indirects pass #{pass}"
       start = pass == 1 ? "formulae_no_ranges.ast" : "optimse-output-#{pass-1}.ast"
@@ -428,7 +428,7 @@ class ExcelToRuby
     c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
     i = input(name,"formulae_pruned.ast")
     w = input("worksheet_ruby_names")
-    ruby_name = ruby_name(name)
+    ruby_name = ruby_name_for_worksheet_name(name)
     o = ruby('worksheets',"#{ruby_name.downcase}.rb")
     d = output(name,'defaults')
     o.puts "# #{name}"
@@ -457,7 +457,7 @@ class ExcelToRuby
 
   def compile_worksheet_test(name,xml_filename)
     i = input(name,"values_pruned.ast")
-    ruby_name = ruby_name(name)
+    ruby_name = ruby_name_for_worksheet_name(name)
     o = ruby('tests',"test_#{ruby_name.downcase}.rb")
     o.puts "# Test for #{name}"
     o.puts  "require 'test/unit'"
@@ -472,10 +472,10 @@ class ExcelToRuby
     close(i,o)
   end
   
-  def ruby_name(name)
+  def ruby_name_for_worksheet_name(name)
     unless @worksheet_names
       w = input("worksheet_ruby_names")
-      @worksheet_names = Hash[w.readlines.map { |line| line.split("\t")}]
+      @worksheet_names = Hash[w.readlines.map { |line| line.split("\t").map { |a| a.strip }}]
       close(w)
     end
     @worksheet_names[name]

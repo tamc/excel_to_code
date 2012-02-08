@@ -23,17 +23,28 @@ class MapFormulaeToValues
     end
   end
   
+  def prefix(operator,argument)
+    argument_value = value(map(argument))
+    return [:prefix, operator, map(argument)] if argument_value == :not_a_value
+    return ast_for_value(argument_value || 0) if operator == "+"
+    ast_for_value((argument_value || 0) * -1)
+  end
+  
   def arithmetic(left,operator,right)
     l = value(map(left))
     r = value(map(right))
     if (l != :not_a_value) && (r != :not_a_value)
       formula_value(operator.last,l,r)
     else
-      [:arithmetic,left,operator,right]
+      [:arithmetic,map(left),operator,map(right)]
     end
   end
   
   alias :comparison :arithmetic
+  
+  def percentage(number)
+    ast_for_value(value([:percentage, number]))
+  end
   
   def string_join(*args)
     values = args.map { |a| value(map(a)) } # FIXME: These eval statements are really bugging me. Must find a better solution
