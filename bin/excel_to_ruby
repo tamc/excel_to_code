@@ -4,6 +4,6 @@ command = ExcelToRuby.new
 command.excel_file = ARGV[0]
 command.compiled_module_name = "ExcelSpreadsheet"
 command.output_directory = ARGV[1]
-command.values_that_can_be_set_at_runtime = { ARGV[2] => :all }
-command.outputs_to_keep = { ARGV[3] => :all }
+command.values_that_can_be_set_at_runtime = { ARGV[2] => :all } if ARGV[2]
+command.outputs_to_keep = { ARGV[3] => :all } if ARGV[3]
 command.go!
