@@ -59,4 +59,8 @@
 [:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:cell, "A2"]]	[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:cell, "A2"]]
 # But we can still index if the array is not a number
 [:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 2]]	[:cell, "A2"]
+[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 20]]	[:error, "#REF!"]
 [:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 1], [:number, 2]]	[:cell, "A2"]
+[:function, "INDEX", [:function, "INDIRECT", "area_reference"], [:number, 1], [:number, 2]]	[:function, "INDEX", [:function, "INDIRECT", "area_reference"], [:number, 1], [:number, 2]]
+[:function, "INDEX", [:cell, "A1"], [:number, 1]]	[:cell, "A1"]
+[:function, "INDEX", [:sheet_reference, "A complicated sheet name", [:cell,"AAA27"]], [:number, 1]]	[:sheet_reference, "A complicated sheet name", [:cell, "AAA27"]]

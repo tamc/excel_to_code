@@ -85,11 +85,22 @@ class MapFormulaeToValues
         return [:function, "INDEX", array_mapped, map(row_number)]
       end
     end
-    array_as_values = array_mapped[1..-1].map do |row|
-      row[1..-1].map do |cell|
-        cell
+    case array_mapped.first
+    when :array
+      array_as_values = array_mapped[1..-1].map do |row|
+        row[1..-1].map do |cell|
+          cell
+        end
+      end 
+    when :cell, :sheet_reference, :blank, :number, :percentage, :string, :error, :boolean_true, :boolean_false
+      array_as_values = [[array_mapped]]
+    else
+      if column_number
+        return  [:function, "INDEX", array_mapped, map(row_number), map(column_number)]
+      else
+        return  [:function, "INDEX", array_mapped, map(row_number)]
       end
-    end 
+    end
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
     result = ast_for_value(result) unless result.is_a?(Array)
     result
