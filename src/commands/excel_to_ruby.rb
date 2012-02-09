@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require 'fileutils'
 require_relative '../util'
 require_relative '../excel'
@@ -431,6 +433,7 @@ class ExcelToRuby
     ruby_name = ruby_name_for_worksheet_name(name)
     o = ruby('worksheets',"#{ruby_name.downcase}.rb")
     d = output(name,'defaults')
+    o.puts "# coding: utf-8"
     o.puts "# #{name}"
     o.puts
     o.puts "require_relative '../#{compiled_module_name.downcase}'"
@@ -459,6 +462,7 @@ class ExcelToRuby
     i = input(name,"values_pruned.ast")
     ruby_name = ruby_name_for_worksheet_name(name)
     o = ruby('tests',"test_#{ruby_name.downcase}.rb")
+    o.puts "# coding: utf-8"
     o.puts "# Test for #{name}"
     o.puts  "require 'test/unit'"
     o.puts  "require_relative '../#{compiled_module_name.downcase}'"
