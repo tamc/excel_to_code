@@ -77,7 +77,7 @@ class MapFormulaeToValues
     row_as_number = value(map(row_number))
     column_as_number = (value(map(column_number)) || nil) if column_number
     if column_number
-      if row_as_number == :not_a_value || column_number == :not_a_value
+      if row_as_number == :not_a_value || column_as_number == :not_a_value
         return [:function, "INDEX", array_mapped, map(row_number), map(column_number)]
       end
     else
@@ -121,7 +121,9 @@ class MapFormulaeToValues
     when Numeric; [:number,value.inspect]
     when true; [:boolean_true]
     when false; [:boolean_false]
-    when Symbol; [:error,MapFormulaeToRuby::REVERSE_ERRORS[value.inspect]]
+    when Symbol; 
+      raise NotSupportedException.new("Error #{value.inspect} not recognised") unless MapFormulaeToRuby::REVERSE_ERRORS[value.inspect]
+      [:error,MapFormulaeToRuby::REVERSE_ERRORS[value.inspect]]
     when String; [:string,value]
     when Array; [:array,*value.map { |row| [:row, *row.map { |c| ast_for_value(c) }]}]
     when nil; [:blank]
