@@ -26,8 +26,16 @@ describe Table do
     @table.reference_for("FirstTable", "#Totals","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B7", "D7"]]
   end
 
+  it 'should be able to return a reference for [:table_reference, "FirstTable", "#Totals"]] from a cell within the table' do
+    @table.reference_for("FirstTable", "#Totals","sheet1","C5").should == [:sheet_reference, "sheet1", [:cell, "C7"]]
+  end
+
   it 'should be able to return a reference for [:table_reference, "FirstTable", "#Headers"]]' do
     @table.reference_for("FirstTable", "#Headers","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B3", "D3"]]
+  end
+
+  it 'should be able to return a reference for [:table_reference, "FirstTable", "#Headers"]] from a cell within the table' do
+    @table.reference_for("FirstTable", "#Headers","sheet1","C5").should == [:sheet_reference, "sheet1", [:cell, "C3"]]
   end
 
   it 'should be able to return a reference for [:table_reference, "FirstTable", "#Data"]]' do

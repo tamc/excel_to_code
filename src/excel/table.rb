@@ -47,9 +47,21 @@ class Table
       return ref_error unless column_number
       ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)      
     when /#Headers/io
-      ast_for_area @area.excel_start.offset(0,0), @area.excel_start.offset(0,@area.width)
+      if calling_worksheet == @worksheet && @area.includes?(calling_cell)
+        r = Reference.for(calling_cell)
+        r.calculate_excel_variables
+        ast_for_cell "#{r.excel_column}#{@area.excel_start.excel_row_number}"
+      else
+        ast_for_area @area.excel_start.offset(0,0), @area.excel_start.offset(0,@area.width)
+      end
     when /#Totals/io
-      ast_for_area @area.excel_start.offset(@area.height,0), @area.excel_start.offset(@area.height,@area.width)
+      if calling_worksheet == @worksheet && @area.includes?(calling_cell)
+        r = Reference.for(calling_cell)
+        r.calculate_excel_variables
+        ast_for_cell "#{r.excel_column}#{@area.excel_finish.excel_row_number}"
+      else
+        ast_for_area @area.excel_start.offset(@area.height,0), @area.excel_start.offset(@area.height,@area.width)
+      end
     when /#Data/io, ""
       ast_for_area @area.excel_start.offset(1,0), @area.excel_finish.offset(-@number_of_total_rows,0)
     when /#All/io, ""
