@@ -17,11 +17,11 @@ describe "ExcelFunctions: subtract(number,number)" do
     FunctionTest.subtract("2","1").should == 1
   end
   
-  it "should be able to subtract arrays" do
-    FunctionTest.subtract([[1,2],[3,4]],1).should == [[0,1],[2,3]]
-    FunctionTest.subtract(1,[[1,2],[3,4]]).should == [[0,-1],[-2,-3]]
-    FunctionTest.subtract([[1,2],[3,4]],[[1,2],[3,4]]).should == [[0,0],[0,0]]
-  end
+  # it "should be able to subtract arrays" do
+  #   FunctionTest.subtract([[1,2],[3,4]],1).should == [[0,1],[2,3]]
+  #   FunctionTest.subtract(1,[[1,2],[3,4]]).should == [[0,-1],[-2,-3]]
+  #   FunctionTest.subtract([[1,2],[3,4]],[[1,2],[3,4]]).should == [[0,0],[0,0]]
+  # end
   
   it "should return an error if either argument is an error" do
     FunctionTest.subtract(:error,1).should == :error

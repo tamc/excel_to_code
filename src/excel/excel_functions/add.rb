@@ -4,7 +4,7 @@ require_relative 'apply_to_range'
 module ExcelFunctions
   
   def add(a,b)
-    return apply_to_range(a,b) { |a,b| add(a,b) } if a.is_a?(Array) || b.is_a?(Array)
+    # return apply_to_range(a,b) { |a,b| add(a,b) } if a.is_a?(Array) || b.is_a?(Array)
 
     a = number_argument(a)
     b = number_argument(b)

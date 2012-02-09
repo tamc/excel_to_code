@@ -17,11 +17,11 @@ describe "ExcelFunctions: add(number,number)" do
     FunctionTest.add("1","1.0").should == 2.0
   end
   
-  it "should be able to add arrays" do
-    FunctionTest.add([[1,2],[3,4]],1).should == [[2,3],[4,5]]
-    FunctionTest.add(1,[[1,2],[3,4]]).should == [[2,3],[4,5]]
-    FunctionTest.add([[1,2],[3,4]],[[1,2],[3,4]]).should == [[2,4],[6,8]]
-  end
+  # it "should be able to add arrays" do
+  #   FunctionTest.add([[1,2],[3,4]],1).should == [[2,3],[4,5]]
+  #   FunctionTest.add(1,[[1,2],[3,4]]).should == [[2,3],[4,5]]
+  #   FunctionTest.add([[1,2],[3,4]],[[1,2],[3,4]]).should == [[2,4],[6,8]]
+  # end
   
   it "should return an error if either argument is an error" do
     FunctionTest.add(:error,1).should == :error
