@@ -60,6 +60,8 @@ class MapFormulaeToValues
   def function(name,*args)
     if FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED.include?(name)
       [:function,name,*args.map { |a| map(a) }]
+    elsif respond_to?("map_#{name.downcase}")
+      send("map_#{name.downcase}",*args)
     else
       values = args.map { |a| value(map(a)) }
       if values.any? { |a| a == :not_a_value }
@@ -68,6 +70,29 @@ class MapFormulaeToValues
         formula_value(name,*values)
       end
     end
+  end
+  
+  def map_index(array,row_number,column_number = nil)
+    array_mapped = map(array)
+    row_as_number = value(map(row_number))
+    column_as_number = (value(map(column_number)) || nil) if column_number
+    if column_number
+      if row_as_number == :not_a_value || column_number == :not_a_value
+        return [:function, "INDEX", array_mapped, map(row_number), map(column_number)]
+      end
+    else
+      if row_as_number == :not_a_value
+        return [:function, "INDEX", array_mapped, map(row_number)]
+      end
+    end
+    array_as_values = array_mapped[1..-1].map do |row|
+      row[1..-1].map do |cell|
+        cell
+      end
+    end 
+    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
+    result = ast_for_value(result) unless result.is_a?(Array)
+    result
   end
     
   def value(ast)
