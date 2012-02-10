@@ -14,6 +14,12 @@ describe "ExcelFunctions: string_join(string,string)" do
     FunctionTest.string_join("Top ",10).should == "Top 10"
   end
   
+  it "should convert integer values into strings without decimal points" do
+    FunctionTest.string_join("Top ",10.0).should == "Top 10"
+    FunctionTest.string_join("Top ",10.5).should == "Top 10.5"
+  end
+  
+  
   it "should return an error if an argument is an error" do
     FunctionTest.string_join(:error,1).should == :error
     FunctionTest.string_join(1,:error).should == :error
