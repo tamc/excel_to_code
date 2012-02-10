@@ -18,11 +18,11 @@ describe "ExcelFunctions: = not_equal?()" do
     FunctionTest.not_equal?("HELLO","hello").should == false
   end
 
-  it "should be able to check arrays" do
-    FunctionTest.not_equal?([[1,2],[3,4]],2).should == [[true,false],[true,true]]
-    FunctionTest.not_equal?(2,[[1,2],[3,4]]).should == [[true,false],[true,true]]
-    FunctionTest.not_equal?([[1,2],[3,4]],[[1,2],[3,4]]).should == [[false,false],[false,false]]
-  end
+  # it "should be able to check arrays" do
+  #   FunctionTest.not_equal?([[1,2],[3,4]],2).should == [[true,false],[true,true]]
+  #   FunctionTest.not_equal?(2,[[1,2],[3,4]]).should == [[true,false],[true,true]]
+  #   FunctionTest.not_equal?([[1,2],[3,4]],[[1,2],[3,4]]).should == [[false,false],[false,false]]
+  # end
 
   it "should return error if either argument is an error" do
     FunctionTest.not_equal?(:error,1).should == :error
