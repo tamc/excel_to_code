@@ -20,6 +20,7 @@ describe "ExcelFunctions: MAX" do
   
   it "should return an error if an argument is an error" do
     FunctionTest.max(:error).should == :error
+    FunctionTest.max([[:na,:na]]).should == :na
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
