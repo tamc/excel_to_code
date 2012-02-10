@@ -10,7 +10,8 @@
 
 [:percentage, "36"]	0.36
 
-[:prefix, "-", [:number, "3"]]	-3
+[:prefix, "-", [:number, "3"]]	negative(3)
+[:prefix, "+", [:number, "3"]]	3
 
 [:brackets]	()
 [:brackets, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]]	(add(1,1))

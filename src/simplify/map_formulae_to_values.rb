@@ -27,7 +27,7 @@ class MapFormulaeToValues
     argument_value = value(map(argument))
     return [:prefix, operator, map(argument)] if argument_value == :not_a_value
     return ast_for_value(argument_value || 0) if operator == "+"
-    ast_for_value((argument_value || 0) * -1)
+    ast_for_value(@calculator.negative(argument_value))
   end
   
   def arithmetic(left,operator,right)

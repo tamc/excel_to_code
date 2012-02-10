@@ -46,7 +46,8 @@ class MapFormulaeToRuby < MapValuesToRuby
   }
   
   def prefix(symbol,ast)
-    "#{symbol}#{map(ast)}"
+    return map(ast) if symbol == "+"
+    return "negative(#{map(ast)})"
   end
   
   def brackets(*contents)

@@ -80,3 +80,5 @@ require_relative 'excel_functions/left'
 require_relative 'excel_functions/roundup'
 
 require_relative 'excel_functions/rounddown'
+
+require_relative 'excel_functions/negative'
