@@ -19,7 +19,7 @@ class CompileToRuby
           output.puts "  attr_accessor :#{ref.downcase} # Default: #{mapper.map(eval(formula))}"
           defaults.puts "    @#{ref.downcase} = #{mapper.map(eval(formula))}" if defaults
         else
-          output.puts "  def #{ref.downcase}; #{mapper.map(eval(formula))}; end"
+          output.puts "  def #{ref.downcase}; @#{ref.downcase} ||= #{mapper.map(eval(formula))}; end"
         end
       rescue Exception => e
         puts "Exception at line #{line}"

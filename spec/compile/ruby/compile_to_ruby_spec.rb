@@ -24,12 +24,12 @@ A6\t[:arithmetic, [:number, "1.1"], [:operator, "+"], [:number, "-1E12"]]
 END
 
 expected = <<END
-  def a1; add(1,1); end
-  def a2; subtract(1,1); end
-  def a3; multiply(1,1); end
-  def a4; divide(1,1); end
-  def a5; power(1,1); end
-  def a6; add(1.1,-1000000000000.0); end
+  def a1; @a1 ||= add(1,1); end
+  def a2; @a2 ||= subtract(1,1); end
+  def a3; @a3 ||= multiply(1,1); end
+  def a4; @a4 ||= divide(1,1); end
+  def a5; @a5 ||= power(1,1); end
+  def a6; @a6 ||= add(1.1,-1000000000000.0); end
 END
 
 compile(input).should == expected
@@ -45,7 +45,7 @@ A complicated sheet name\ta_complicated_sheet_name
 END
 
 expected = <<END
-  def a1; a_complicated_sheet_name.a2; end
+  def a1; @a1 ||= a_complicated_sheet_name.a2; end
 END
 
 compile(input,sheet_names).should == expected
@@ -70,9 +70,9 @@ settable = lambda do |reference|
 end
 
 expected = <<END
-  def a1; 1; end
+  def a1; @a1 ||= 1; end
   attr_accessor :a2 # Default: 2
-  def a3; 3; end
+  def a3; @a3 ||= 3; end
 END
 
 compile(input,sheet_names,settable).should == expected
@@ -97,9 +97,9 @@ settable = lambda do |reference|
 end
 
 expected_main = <<END
-  def a1; 1; end
+  def a1; @a1 ||= 1; end
   attr_accessor :a2 # Default: 2
-  def a3; 3; end
+  def a3; @a3 ||= 3; end
 END
 
 expected_defaults = <<END
