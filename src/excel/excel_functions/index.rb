@@ -37,12 +37,12 @@ module ExcelFunctions
   def index_for_whole_row(array,row_number)
     return :ref if row_number < 1
     return :ref if row_number > array.length
-    array[row_number-1]
+    [array[row_number-1]]
   end
   
   def index_for_whole_column(array,column_number)
     return :ref if column_number < 1
     return :ref if column_number > array[0].length
-    array.map { |row| row[column_number-1] }
+    array.map { |row| [row[column_number-1]]}
   end
 end

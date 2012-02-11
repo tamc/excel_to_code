@@ -15,8 +15,8 @@ describe "ExcelFunctions: INDEX(array,row_number,[column_number])" do
   end
 
   it "should return the whole row or column if given a zero row or column number" do 
-    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],1.0,0.0).should == [10.0,"pear"]
-    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],0.0,2.0).should == ["pear","bear","apple"]  
+    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],1.0,0.0).should == [[10.0,"pear"]]
+    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],0.0,2.0).should == [["pear"],["bear"],["apple"]]
   end
 
   it "should return a :ref error when given arguments outside array range" do
@@ -25,8 +25,8 @@ describe "ExcelFunctions: INDEX(array,row_number,[column_number])" do
   end
     
   it "should treat nil as zero if given as a required row or column number" do
-    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],1.0,nil).should == [10.0,"pear"]
-    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],nil,2.0).should == ["pear","bear","apple"]  
+    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],1.0,nil).should == [[10.0,"pear"]]
+    FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],nil,2.0).should == [["pear"],["bear"],["apple"]]
   end
   
   it "should return an error if an argument is an error" do
