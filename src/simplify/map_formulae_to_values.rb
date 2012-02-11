@@ -72,39 +72,50 @@ class MapFormulaeToValues
     end
   end
   
-  def map_index(array,row_number,column_number = nil)
+  def map_index(array,row_number,column_number = :not_specified)
+    return map_index_with_only_two_arguments(array,row_number) if column_number == :not_specified
+
     array_mapped = map(array)
     row_as_number = value(map(row_number))
-    column_as_number = (value(map(column_number)) || nil) if column_number
-    if column_number
-      if row_as_number == :not_a_value || column_as_number == :not_a_value
-        return [:function, "INDEX", array_mapped, map(row_number), map(column_number)]
-      end
-    else
-      if row_as_number == :not_a_value
-        return [:function, "INDEX", array_mapped, map(row_number)]
-      end
-    end
+    column_as_number = value(map(column_number))
+
+    return [:function, "INDEX", array_mapped, map(row_number), map(column_number)] if row_as_number == :not_a_value || column_as_number == :not_a_value
+
+    array_as_values = array_as_values(array)
+    return  [:function, "INDEX", array_mapped, map(row_number), map(column_number)] unless array_as_values
+
+    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
+    result = ast_for_value(result) unless result.is_a?(Array)
+    result    
+  end
+  
+  def map_index_with_only_two_arguments(array,row_number)
+    array_mapped = map(array)
+    row_as_number = value(map(row_number))
+    return [:function, "INDEX", array_mapped, map(row_number)] if row_as_number == :not_a_value
+    array_as_values = array_as_values(array)
+    return  [:function, "INDEX", array_mapped, map(row_number)] unless array_as_values
+    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number)
+    result = ast_for_value(result) unless result.is_a?(Array)
+    result
+  end
+  
+  def array_as_values(array_mapped)
     case array_mapped.first
     when :array
-      array_as_values = array_mapped[1..-1].map do |row|
+      array_mapped[1..-1].map do |row|
         row[1..-1].map do |cell|
           cell
         end
       end 
     when :cell, :sheet_reference, :blank, :number, :percentage, :string, :error, :boolean_true, :boolean_false
-      array_as_values = [[array_mapped]]
+      [[array_mapped]]
     else
-      if column_number
-        return  [:function, "INDEX", array_mapped, map(row_number), map(column_number)]
-      else
-        return  [:function, "INDEX", array_mapped, map(row_number)]
-      end
+      nil
     end
-    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
-    result = ast_for_value(result) unless result.is_a?(Array)
-    result
   end
+  
+
     
   def value(ast)
     return extract_values_from_array(ast) if ast.first == :array
