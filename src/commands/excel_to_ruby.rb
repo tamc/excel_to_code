@@ -132,12 +132,12 @@ class ExcelToRuby
   end
   
   def combine_formulae_files(name,xml_filename)
-    simple_formulae = File.join(output_directory,'intermediate',name,"simple_formulae.ast-nocols")
-    shared_formulae = File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast")
-    array_formulae = File.join(output_directory,'intermediate',name,"array_formulae-expanded.ast")
-    combined_formulae = File.join(output_directory,'intermediate',name,"all_formulae.ast")
-    `sort '#{simple_formulae}' '#{shared_formulae}' '#{array_formulae}' > '#{combined_formulae}'`
-    rewrite RewriteMergeFormulaeAndValues, File.join(name,"all_formulae.ast"), File.join(name,'values.ast'), File.join(name,'formulae.ast')
+    values = File.join(name,'values.ast')
+    shared_formulae = File.join(name,"shared_formulae-expanded.ast")
+    array_formulae = File.join(name,"array_formulae-expanded.ast")
+    simple_formulae = File.join(name,"simple_formulae.ast-nocols")
+    output = File.join(name,'formulae.ast')
+    rewrite RewriteMergeFormulaeAndValues, values, shared_formulae, array_formulae, simple_formulae, output
   end
   
   def initial_extract_from_worksheet(name,xml_filename)
