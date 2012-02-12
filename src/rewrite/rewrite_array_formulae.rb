@@ -3,8 +3,14 @@ class ExtractArrayFormulaForCell
   attr_accessor :row_offset, :column_offset
   
   def map(ast)
-    return ast unless ast.first == :array
-
+    case ast.first
+    when :array; map_array(ast)
+    when :function; map_function(ast)
+    else return ast
+    end
+  end
+  
+  def map_array(ast)
     if (@row_offset + 1) >= ast.length 
       if ast.length == 2
         @row_offset = 0
@@ -22,6 +28,13 @@ class ExtractArrayFormulaForCell
     end
     
     ast[@row_offset+1][@column_offset+1] # plus ones to skip tthe [:array,[:row,"cell"]] symbols
+  end
+  
+  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = %w{INDEX}
+  
+  def map_function(ast)
+    return ast unless FUNCTIONS_THAT_CAN_RETURN_ARRAYS.include?(ast[1])
+    [:function, "INDEX", ast, [:number, (@row_offset+1).to_s], [:number, (column_offset+1).to_s]]
   end
   
 end

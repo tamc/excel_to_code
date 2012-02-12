@@ -83,8 +83,6 @@ END
     output.string.should == expected_output
 end
 
-  
-  
 it "should deal with repetition of array formula that only produce a single answer" do
     input = StringIO.new(%Q|B6\tB6:B8\t[:function, "SUM", [:array, [:row, [:arithmetic, [:cell, "B3"], [:operator, "+"], [:cell, "C3"]]], [:row, [:arithmetic, [:cell, "B4"], [:operator, "+"], [:cell, "C4"]]], [:row, [:arithmetic, [:cell, "B5"], [:operator, "+"], [:cell, "C5"]]]]]\n|)
     output = StringIO.new
@@ -95,7 +93,24 @@ B7	[:function, "SUM", [:array, [:row, [:arithmetic, [:cell, "B3"], [:operator, "
 B8	[:function, "SUM", [:array, [:row, [:arithmetic, [:cell, "B3"], [:operator, "+"], [:cell, "C3"]]], [:row, [:arithmetic, [:cell, "B4"], [:operator, "+"], [:cell, "C4"]]], [:row, [:arithmetic, [:cell, "B5"], [:operator, "+"], [:cell, "C5"]]]]]
 END
     output.string.should == expected_output
-  end
+end
 
+it "should deal with functions that may potentially return arrays" do
+
+input_text = <<END
+B6	B6:B8	[:function, "INDEX", [:array, [:row, [:number, "1"]], [:row, [:number, "2"]], [[:row, [:number, "3"]]]], [:null], [:number, "1"]]
+END
+
+input = StringIO.new(input_text)
+output = StringIO.new
+RewriteArrayFormulae.rewrite(input,output)
+expected_output = <<END
+B6	[:function, "INDEX", [:function, "INDEX", [:array, [:row, [:number, "1"]], [:row, [:number, "2"]], [[:row, [:number, "3"]]]], [:null], [:number, "1"]], [:number, "1"], [:number, "1"]]
+B7	[:function, "INDEX", [:function, "INDEX", [:array, [:row, [:number, "1"]], [:row, [:number, "2"]], [[:row, [:number, "3"]]]], [:null], [:number, "1"]], [:number, "2"], [:number, "1"]]
+B8	[:function, "INDEX", [:function, "INDEX", [:array, [:row, [:number, "1"]], [:row, [:number, "2"]], [[:row, [:number, "3"]]]], [:null], [:number, "1"]], [:number, "3"], [:number, "1"]]
+END
+output.string.should == expected_output
+  
+end
 
 end
