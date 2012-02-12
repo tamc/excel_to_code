@@ -20,6 +20,8 @@ module ExcelFunctions
       return 0
     when Numeric
       return a
+    when Array
+      return a[0][0]
     else
       return :value
     end
