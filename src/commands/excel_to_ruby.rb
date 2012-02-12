@@ -37,6 +37,8 @@ class ExcelToRuby
     Process.waitall
     remove_any_cells_not_needed_for_outputs
     Process.waitall
+    inline_formulae_that_are_only_used_once
+    Process.waitall
     compile_workbook
     compile_worksheets
     Process.waitall
@@ -331,10 +333,10 @@ class ExcelToRuby
     end
   end
   
-  def remove_any_cells_not_needed_for_outputs
+  def remove_any_cells_not_needed_for_outputs(formula_in = "formulae_no_blanks.ast", formula_out = "formulae_pruned.ast", values_in = "values_no_shared_strings.ast", values_out = "values_pruned.ast")
     if outputs_to_keep && !outputs_to_keep.empty?
       identifier = IdentifyDependencies.new
-      identifier.references = all_formulae("formulae_no_blanks.ast")
+      identifier.references = all_formulae(formula_in)
       outputs_to_keep.each do |sheet_to_keep,cells_to_keep|
         if cells_to_keep == :all
           identifier.add_depedencies_for(sheet_to_keep)
@@ -348,21 +350,50 @@ class ExcelToRuby
       worksheets("Removing cells") do |name,xml_filename|
         #fork do
           r.cells_to_keep = identifier.dependencies[name]
-          rewrite r, File.join(name,'formulae_no_blanks.ast'), File.join(name,'formulae_pruned.ast')
-          rewrite r, File.join(name,'values_no_shared_strings.ast'), File.join(name,'values_pruned.ast')
+          rewrite r, File.join(name, formula_in), File.join(name, formula_out)
+          rewrite r, File.join(name, values_in), File.join(name, values_out)
         #end
       end
       Process.waitall
     else
       worksheets do |name,xml_filename|
-        i = File.join(output_directory,'intermediate',name,"formulae_no_blanks.ast")
-        o = File.join(output_directory,'intermediate',name,"formulae_pruned.ast")
+        i = File.join(output_directory,'intermediate',name, formula_in)
+        o = File.join(output_directory,'intermediate',name, formula_out)
         `cp '#{i}' '#{o}'`
-        i = File.join(output_directory,'intermediate',name,"values_no_shared_strings.ast")
-        o = File.join(output_directory,'intermediate',name,"values_pruned.ast")
+        i = File.join(output_directory,'intermediate',name, values_in)
+        o = File.join(output_directory,'intermediate',name, values_out)
         `cp '#{i}' '#{o}'`
       end
     end
+  end
+  
+  def inline_formulae_that_are_only_used_once
+    references = all_formulae("formulae_pruned.ast")
+    counter = CountFormulaReferences.new
+    count = counter.count(references)
+    
+    inline_ast_decision = lambda do |sheet,cell,references|
+      references_to_keep = @values_that_can_be_set_at_runtime[sheet]
+      if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
+        false
+      else
+        count[sheet][cell] == 1
+      end
+    end
+    
+    r = InlineFormulae.new
+    r.references = references
+    r.inline_ast = inline_ast_decision
+    
+    worksheets("Inlining formulae") do |name,xml_filename|
+      #fork do
+        r.default_sheet_name = name
+        replace r, File.join(name,"formulae_pruned.ast"), File.join(name,"formulae_inlined.ast")
+      #end
+    end
+    
+    remove_any_cells_not_needed_for_outputs("formulae_inlined.ast", "formulae_inlined_pruned.ast", "values_pruned.ast", "values_pruned2.ast")
+    
   end
   
   def all_formulae(filename)
@@ -428,7 +459,7 @@ class ExcelToRuby
     settable_refs = @values_that_can_be_set_at_runtime[name]    
     c = CompileToRuby.new
     c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
-    i = input(name,"formulae_pruned.ast")
+    i = input(name,"formulae_inlined_pruned.ast")
     w = input("worksheet_ruby_names")
     ruby_name = ruby_name_for_worksheet_name(name)
     o = ruby('worksheets',"#{ruby_name.downcase}.rb")
@@ -459,7 +490,7 @@ class ExcelToRuby
   end
 
   def compile_worksheet_test(name,xml_filename)
-    i = input(name,"values_pruned.ast")
+    i = input(name,"values_pruned2.ast")
     ruby_name = ruby_name_for_worksheet_name(name)
     o = ruby('tests',"test_#{ruby_name.downcase}.rb")
     o.puts "# coding: utf-8"
