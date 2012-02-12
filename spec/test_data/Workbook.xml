@@ -12,7 +12,7 @@
 	</sheets>
 	<definedNames>
 		<definedName name="In_result">Inputs!$A$3</definedName>
-		<definedName name="Local_named_reference" localSheetId="3	">Inputs!$A$3</definedName>		
+		<definedName name="Local_named_reference" localSheetId="2">Inputs!$A$3</definedName>		
 	</definedNames>
 	<calcPr calcId="140001" calcMode="manual" concurrentCalc="0"/>
 	<extLst>

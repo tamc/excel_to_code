@@ -6,17 +6,17 @@ class ExtractNamedReferences < SimpleExtractFromXML
   
   def initialize
     super
-    @sheet_names = {}
+    @sheet_names = []
   end
   
   def start_element(name,attributes)
     if name == "sheet"
-      sheet_names[attributes.assoc('sheetId').last.strip] = attributes.assoc('name').last
+      sheet_names << attributes.assoc('name').last
     elsif name == "definedName"
       @parsing = true    
       sheet = attributes.assoc('localSheetId')
       if sheet
-        output.write sheet_names[sheet.last.strip]
+        output.write sheet_names[sheet.last.to_i]
       end
       output.write "\t"
       output.write attributes.assoc('name').last
