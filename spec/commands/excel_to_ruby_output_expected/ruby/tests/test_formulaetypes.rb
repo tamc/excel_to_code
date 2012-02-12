@@ -1,3 +1,4 @@
+# coding: utf-8
 # Test for FormulaeTypes
 require 'test/unit'
 require_relative '../examplespreadsheet'

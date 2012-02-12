@@ -1,3 +1,4 @@
+# coding: utf-8
 # (innapropriate) sheet name!
 
 require_relative '../examplespreadsheet'

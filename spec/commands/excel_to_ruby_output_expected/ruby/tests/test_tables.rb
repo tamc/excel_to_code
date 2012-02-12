@@ -1,3 +1,4 @@
+# coding: utf-8
 # Test for Tables
 require 'test/unit'
 require_relative '../examplespreadsheet'

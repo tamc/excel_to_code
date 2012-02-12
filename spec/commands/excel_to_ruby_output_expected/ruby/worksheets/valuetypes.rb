@@ -1,3 +1,4 @@
+# coding: utf-8
 # ValueTypes
 
 require_relative '../examplespreadsheet'

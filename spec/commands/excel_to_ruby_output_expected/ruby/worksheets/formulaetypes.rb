@@ -1,3 +1,4 @@
+# coding: utf-8
 # FormulaeTypes
 
 require_relative '../examplespreadsheet'

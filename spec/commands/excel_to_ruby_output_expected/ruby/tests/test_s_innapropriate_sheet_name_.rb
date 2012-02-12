@@ -1,3 +1,4 @@
+# coding: utf-8
 # Test for (innapropriate) sheet name!
 require 'test/unit'
 require_relative '../examplespreadsheet'
