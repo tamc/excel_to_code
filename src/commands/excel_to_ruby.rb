@@ -39,6 +39,8 @@ class ExcelToRuby
     Process.waitall
     inline_formulae_that_are_only_used_once
     Process.waitall
+    separate_formulae_elements
+    Process.waitall
     compile_workbook
     compile_worksheets
     Process.waitall
@@ -301,7 +303,7 @@ class ExcelToRuby
       else
         ast = references[sheet][cell]
         if ast
-          if [:number,:string,:blank,:error,:boolean_true,:boolean_false,:sheet_reference,:cell].include?(ast.first)
+          if [:number,:string,:blank,:null,:error,:boolean_true,:boolean_false,:sheet_reference,:cell].include?(ast.first)
             #   puts "Inlining #{sheet}.#{cell}: #{ast.inspect}"
             true
           else
@@ -394,6 +396,38 @@ class ExcelToRuby
     
     remove_any_cells_not_needed_for_outputs("formulae_inlined.ast", "formulae_inlined_pruned.ast", "values_pruned.ast", "values_pruned2.ast")
     
+    # worksheets("Skipping inlining") do |name,xml_filename|
+    #   i = File.join(output_directory,'intermediate',name, "formulae_pruned.ast")
+    #   o = File.join(output_directory,'intermediate',name, "formulae_inlined_pruned.ast")
+    #   `cp '#{i}' '#{o}'`
+    #   i = File.join(output_directory,'intermediate',name, "values_pruned.ast")
+    #   o = File.join(output_directory,'intermediate',name, "values_pruned2.ast")
+    #   `cp '#{i}' '#{o}'`
+    # end
+
+  end
+  
+  def separate_formulae_elements
+    references = all_formulae("formulae_inlined_pruned.ast")
+    identifier = IdentifyRepeatedFormulaElements.new
+    repeated_elements = identifier.count(references)
+    repeated_elements.each do |sheet,elements|
+      elements.delete_if do |element,count|
+        count < 2
+      end
+    end
+    worksheets("Writing repeated elements") do |name,xml_filename|
+      o = output(name,'common.ast')
+      i = 0
+      elements = repeated_elements[name]
+      elements.each do |element,count|
+        o.puts "common#{i}\t#{element}"
+      end
+      close(o)
+    end
+    worksheets("Replacing repeated elements") do |name,xml_filename|
+      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned.ast"), File.join(name,"common.ast"), File.join(name,"formulae_inlined_pruned_replaced.ast")
+    end
   end
   
   def all_formulae(filename)
@@ -459,7 +493,7 @@ class ExcelToRuby
     settable_refs = @values_that_can_be_set_at_runtime[name]    
     c = CompileToRuby.new
     c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
-    i = input(name,"formulae_inlined_pruned.ast")
+    i = input(name,"formulae_inlined_pruned_replaced.ast")
     w = input("worksheet_ruby_names")
     ruby_name = ruby_name_for_worksheet_name(name)
     o = ruby('worksheets',"#{ruby_name.downcase}.rb")
