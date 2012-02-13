@@ -22,6 +22,10 @@ describe Table do
     @table.reference_for("FirstTable", "ColA","sheet1","C5").should == [:sheet_reference, "sheet1", [:cell, "B5"]]
   end
 
+  it 'should be able to return a reference for [:table_reference, "FirstTable", "ColA"]] from a cell within the total row' do
+    @table.reference_for("FirstTable", "ColA","sheet1","B7").should == [:sheet_reference, "sheet1", [:area, "B4", "B6"]]
+  end  
+
   it 'should be able to return a reference for [:table_reference, "FirstTable", "#Totals"]]' do
     @table.reference_for("FirstTable", "#Totals","sheet1","A1").should == [:sheet_reference, "sheet1", [:area, "B7", "D7"]]
   end
