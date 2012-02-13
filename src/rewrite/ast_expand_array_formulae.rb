@@ -82,7 +82,10 @@ class AstExpandArrayFormulae
   end
   
   def map_match(*args)
-    array_map args, 'MATCH', false, true, false
+    $DEBUGN = true
+    a = array_map args, 'MATCH', false, true, false
+    $DEBUGN = false
+    a
   end
   
   def map_subtotal(*args)
@@ -111,9 +114,20 @@ class AstExpandArrayFormulae
   
   private
   
+  def no_need_to_array?(args,ok_to_be_an_array)
+    ok_to_be_an_array.each_with_index do |array_ok,i|
+      unless array_ok
+        if args[i].first == :array
+          return false
+        end
+      end
+    end
+    true
+  end
+  
   def array_map(args,function,*ok_to_be_an_array)
     args = args.map { |a| map(a) }
-    return [:function, function, *args ] if ok_to_be_an_array.find.with_index { |accepts_array,i| !(accepts_array || !args[i] || args[i].first == :array) }
+    return [:function, function, *args ] if no_need_to_array?(args,ok_to_be_an_array)
 
     # Turn the relevant arguments into ruby arrays and store the dimensions
     # Enumerable#max and Enumerable#min don't return Enumerators, so can't do it using those methods
