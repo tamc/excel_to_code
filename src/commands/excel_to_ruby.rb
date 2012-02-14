@@ -422,6 +422,7 @@ class ExcelToRuby
       elements = repeated_elements[name]
       elements.each do |element,count|
         o.puts "common#{i}\t#{element}"
+        i = i + 1
       end
       close(o)
     end
