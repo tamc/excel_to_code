@@ -3,6 +3,7 @@ require_relative 'map_formulae_to_ruby'
 class CompileToRuby
   
   attr_accessor :settable
+  attr_accessor :worksheet
   
   def self.rewrite(*args)
     self.new.rewrite(*args)
@@ -11,6 +12,7 @@ class CompileToRuby
   def rewrite(input,sheet_names_file,output,defaults = nil)
     self.settable ||= lambda { |ref| false }
     mapper = MapFormulaeToRuby.new
+    mapper.worksheet = worksheet
     mapper.sheet_names = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}]
     input.lines do |line|
       begin

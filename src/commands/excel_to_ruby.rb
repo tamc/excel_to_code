@@ -494,6 +494,7 @@ class ExcelToRuby
     settable_refs = @values_that_can_be_set_at_runtime[name]    
     c = CompileToRuby.new
     c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
+    c.worksheet = name
     i = input(name,"formulae_inlined_pruned_replaced.ast")
     w = input("worksheet_ruby_names")
     ruby_name = ruby_name_for_worksheet_name(name)
