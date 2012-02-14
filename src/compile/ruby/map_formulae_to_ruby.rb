@@ -3,6 +3,7 @@ require_relative 'map_values_to_ruby'
 class MapFormulaeToRuby < MapValuesToRuby
   
   attr_accessor :sheet_names
+  attr_accessor :worksheet
   
   FUNCTIONS = {
     '*' => 'multiply',
@@ -79,6 +80,7 @@ class MapFormulaeToRuby < MapValuesToRuby
   end
   
   def sheet_reference(sheet,reference)
+    return map(reference) if worksheet && worksheet == sheet
     "#{sheet_names[sheet]}.#{map(reference)}"
   end
   

@@ -15,4 +15,10 @@ describe MapFormulaeToRuby do
       actual.to_s.should == desired.to_s
     end
   end
+  
+  it "converts [:sheet_references] into local references if it is the current sheet that is being referred to" do
+    @mapper.worksheet = "test"
+    @mapper.map([:sheet_reference, 'test', [:cell, 'A1']]).should == "a1"
+    @mapper.map([:sheet_reference, 'A complicated sheet name', [:cell, 'A1']]).should == "a_complicated_sheet_name.a1"
+  end
 end
