@@ -536,7 +536,8 @@ class ExcelToRuby
     o.puts
     o.puts "module #{compiled_module_name}"
     o.puts "class Test#{ruby_name.capitalize} < Test::Unit::TestCase"
-    o.puts "  def worksheet; #{ruby_name.capitalize}.new; end"
+    o.puts "  def spreadsheet; $spreadsheet ||= Spreadsheet.new; end"
+    o.puts "  def worksheet; @worksheet ||= spreadsheet.#{ruby_name}; end"
     CompileToRubyUnitTest.rewrite(i, o)
     o.puts "end"
     o.puts "end"
