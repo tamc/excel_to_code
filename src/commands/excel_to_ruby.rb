@@ -408,26 +408,29 @@ class ExcelToRuby
   end
   
   def separate_formulae_elements
-    references = all_formulae("formulae_inlined_pruned.ast")
+    # First we add the sheet to all references, so that we can then look for common elements accross worksheets
+    r = RewriteCellReferencesToIncludeSheet.new
+    worksheets("Adding the sheet to all references") do |name,xml_filename|
+      r.worksheet = name
+      rewrite r, File.join(name,"formulae_inlined_pruned.ast"), File.join(name,"formulae_inlined_pruned_with_sheets.ast") 
+    end
+    
+    references = all_formulae("formulae_inlined_pruned_with_sheets.ast")
     identifier = IdentifyRepeatedFormulaElements.new
     repeated_elements = identifier.count(references)
-    repeated_elements.each do |sheet,elements|
-      elements.delete_if do |element,count|
-        count < 2
-      end
+    repeated_elements.delete_if do |element,count|
+      count < 2
     end
-    worksheets("Writing repeated elements") do |name,xml_filename|
-      o = output(name,'common.ast')
-      i = 0
-      elements = repeated_elements[name]
-      elements.each do |element,count|
-        o.puts "common#{i}\t#{element}"
-        i = i + 1
-      end
-      close(o)
+    o = output('common-elements.ast')
+    i = 0
+    repeated_elements.each do |element,count|
+      o.puts "common#{i}\t#{element}"
+      i = i + 1
     end
+    close(o)
+    
     worksheets("Replacing repeated elements") do |name,xml_filename|
-      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned.ast"), File.join(name,"common.ast"), File.join(name,"formulae_inlined_pruned_replaced.ast")
+      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned_with_sheets.ast"), "common-elements.ast", File.join(name,"formulae_inlined_pruned_replaced.ast")
     end
   end
   
@@ -463,10 +466,16 @@ class ExcelToRuby
       name, ruby_name = line.strip.split("\t")
       o.puts "  def #{ruby_name}; @#{ruby_name} ||= #{ruby_name.capitalize}.new; end"
     end
+    
+    c = CompileToRuby.new
+    i = input("common-elements.ast")
+    w.rewind
+    c.rewrite(i,w,o)
+          
     o.puts "end"
     o.puts 'Dir[File.join(File.dirname(__FILE__),"worksheets/","*.rb")].each {|f| autoload(File.basename(f,".rb").capitalize,f)}'
     o.puts "end"
-    close(w,o)
+    close(i,w,o)
   end
 
   def compile_workbook_test

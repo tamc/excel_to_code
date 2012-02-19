@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'rubypeg'
 
 class Formula < RubyPeg

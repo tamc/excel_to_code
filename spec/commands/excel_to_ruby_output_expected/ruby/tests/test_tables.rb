@@ -5,7 +5,8 @@ require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestTables < Test::Unit::TestCase
-  def worksheet; Tables.new; end
+  def spreadsheet; $spreadsheet ||= Spreadsheet.new; end
+  def worksheet; @worksheet ||= spreadsheet.tables; end
   def test_a1; assert_in_epsilon(12,worksheet.a1); end
   def test_b2; assert_equal("ColA",worksheet.b2); end
   def test_c2; assert_equal("ColB",worksheet.c2); end

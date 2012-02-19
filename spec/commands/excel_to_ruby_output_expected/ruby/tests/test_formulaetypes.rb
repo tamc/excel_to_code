@@ -5,7 +5,8 @@ require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestFormulaetypes < Test::Unit::TestCase
-  def worksheet; Formulaetypes.new; end
+  def spreadsheet; $spreadsheet ||= Spreadsheet.new; end
+  def worksheet; @worksheet ||= spreadsheet.formulaetypes; end
   def test_a1; assert_equal("Simple",worksheet.a1); end
   def test_b1; assert_in_epsilon(2,worksheet.b1); end
   def test_a2; assert_equal("Sharing",worksheet.a2); end

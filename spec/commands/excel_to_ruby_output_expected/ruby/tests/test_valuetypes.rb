@@ -5,7 +5,8 @@ require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestValuetypes < Test::Unit::TestCase
-  def worksheet; Valuetypes.new; end
+  def spreadsheet; $spreadsheet ||= Spreadsheet.new; end
+  def worksheet; @worksheet ||= spreadsheet.valuetypes; end
   def test_a1; assert_equal(true,worksheet.a1); end
   def test_a2; assert_equal("Hello",worksheet.a2); end
   def test_a3; assert_in_epsilon(1,worksheet.a3); end

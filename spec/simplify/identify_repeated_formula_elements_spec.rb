@@ -20,16 +20,10 @@ formulae = {
 }
 
 count = {
-  'sheet1' => {
-    '[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 2]]' => 1,
-    '[:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]]' => 3,
+    '[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 2]]' => 2,
+    '[:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]]' => 4,
     '[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 20]]' => 1,
-    '[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 1], [:number, 2]]' => 1
-  },
-  'sheet2' => {
-     '[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 2]]' => 1,
-     '[:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]]' => 1
-  }
+    '[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 1], [:number, 2]]' => 1,
 }
 
 

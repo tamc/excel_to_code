@@ -5,7 +5,8 @@ require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestRanges < Test::Unit::TestCase
-  def worksheet; Ranges.new; end
+  def spreadsheet; $spreadsheet ||= Spreadsheet.new; end
+  def worksheet; @worksheet ||= spreadsheet.ranges; end
   def test_b1; assert_equal("This sheet",worksheet.b1); end
   def test_c1; assert_equal("Other sheet",worksheet.c1); end
   def test_a2; assert_equal("Standard",worksheet.a2); end

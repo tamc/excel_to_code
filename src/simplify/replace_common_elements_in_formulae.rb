@@ -15,8 +15,5 @@ class ReplaceCommonElementsInFormulae
       end
       output.puts line
     end
-    common.each do |element,cell,ref|
-      output.puts "#{ref}\t#{element}"
-    end
   end
 end

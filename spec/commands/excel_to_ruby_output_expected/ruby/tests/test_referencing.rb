@@ -5,7 +5,8 @@ require_relative '../examplespreadsheet'
 
 module ExampleSpreadsheet
 class TestReferencing < Test::Unit::TestCase
-  def worksheet; Referencing.new; end
+  def spreadsheet; $spreadsheet ||= Spreadsheet.new; end
+  def worksheet; @worksheet ||= spreadsheet.referencing; end
   def test_a1; assert_in_epsilon(12,worksheet.a1); end
   def test_a2; assert_in_epsilon(12,worksheet.a2); end
   def test_a4; assert_in_epsilon(10,worksheet.a4); end

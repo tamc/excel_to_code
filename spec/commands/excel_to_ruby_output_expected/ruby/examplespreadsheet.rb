@@ -10,6 +10,7 @@ class Spreadsheet
   def referencing; @referencing ||= Referencing.new; end
   def tables; @tables ||= Tables.new; end
   def s_innapropriate_sheet_name_; @s_innapropriate_sheet_name_ ||= S_innapropriate_sheet_name_.new; end
+  def common0; @common0 ||= add(referencing.a4,1); end
 end
 Dir[File.join(File.dirname(__FILE__),"worksheets/","*.rb")].each {|f| autoload(File.basename(f,".rb").capitalize,f)}
 end

@@ -14,7 +14,6 @@ END
 
 expected_output = <<END
 A1\t[:function, "INDEX", [:cell, "common0"], [:number, 2]]
-common0\t[:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]]
 END
     
 input = StringIO.new(input)
