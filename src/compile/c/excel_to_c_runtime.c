@@ -221,17 +221,6 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 	return new_excel_number(total);
 }
 
-ExcelValue a1() { return new_excel_string("Hello world"); }
-ExcelValue a2() { return new_excel_number(12); }
-ExcelValue a3() { return add(a2(),a2()); }
-ExcelValue a4() { return new_excel_string("3.5"); }
-ExcelValue a5() { return add(a4(),a4()); }
-ExcelValue a6() { return add(a2(),a1()); }
-ExcelValue a7() { 
-	ExcelValue array1[3] = { a1(), a2(), a3() };// [3] = [[a1(),a2(),a3()]]; 
-	return new_excel_range(array1,1,3);
-}
-
 int main()
 {
 	// Test abs
