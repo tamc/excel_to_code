@@ -49,6 +49,12 @@ class ExcelToRuby
 
   def process_workbook    
     extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
+  def process_workbook
+    if File.exists?(File.join(xml_dir,'xl','sharedStrings.xml'))
+      extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
+    else
+      FileUtils.touch(File.join(output_directory,'intermediate','shared_strings'))
+    end
     
     extract ExtractNamedReferences, 'workbook.xml', 'named_references'
     rewrite RewriteFormulaeToAst, 'named_references', 'named_references.ast'
