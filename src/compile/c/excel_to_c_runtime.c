@@ -52,7 +52,6 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 	return cells[cell_counter];
 };
 
-
 // Constants
 ExcelValue BLANK = {.type = ExcelEmpty };
 
@@ -110,6 +109,76 @@ ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	if(conversion_error) {
 		conversion_error = 0;
 		return VALUE;
+	}
+
+	return new_excel_number(a + b);
+}
+
+ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
+	double a, b;
+
+	if(a_v.type == ExcelError) {
+		return a_v;
+	}
+
+	if(b_v.type == ExcelError) {
+		return b_v;
+	}
+
+	a = number_from(a_v);
+	b = number_from(b_v);
+
+	if(conversion_error) {
+		conversion_error = 0;
+		return VALUE;
+	}
+
+	return new_excel_number(a - b);
+}
+
+ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
+	double a, b;
+
+	if(a_v.type == ExcelError) {
+		return a_v;
+	}
+
+	if(b_v.type == ExcelError) {
+		return b_v;
+	}
+
+	a = number_from(a_v);
+	b = number_from(b_v);
+
+	if(conversion_error) {
+		conversion_error = 0;
+		return VALUE;
+	}
+
+	return new_excel_number(a * b);
+}
+
+ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
+	double a, b;
+
+	if(a_v.type == ExcelError) {
+		return a_v;
+	}
+
+	if(b_v.type == ExcelError) {
+		return b_v;
+	}
+
+	a = number_from(a_v);
+	b = number_from(b_v);
+
+	if(conversion_error) {
+		conversion_error = 0;
+		return VALUE;
+	}
+	
+	if(b == 0) {
+		return DIV0;
 	}
 
 	return new_excel_number(a + b);
