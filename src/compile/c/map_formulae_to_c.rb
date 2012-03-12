@@ -57,7 +57,7 @@ class MapFormulaeToC < MapValuesToC
     '^' => 'power'
   }
   
-  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM}
+  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM AND}
   
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"

@@ -130,6 +130,46 @@ ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(a + b);
 }
 
+ExcelValue excel_and(int array_size, ExcelValue *array) {
+	int i;
+	ExcelValue current_excel_value, array_result;
+	
+	for(i=0;i<array_size;i++) {
+		current_excel_value = array[i];
+		switch (current_excel_value.type) {
+	  	  case ExcelNumber: 
+			  if(current_excel_value.number == 0) {
+				  return FALSE;
+			  }
+			  break;
+		  case ExcelBoolean: 
+			  if(current_excel_value.number == 0) {
+				  return FALSE;
+			  }
+			  break;
+		  case ExcelRange: 
+		  	array_result = excel_and( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
+			if(array_result.type == ExcelError) {
+				return array_result;
+			}
+			if(array_result.type == ExcelBoolean) {
+				if(array_result.number == 0) {
+					return FALSE;
+				}
+			}
+			break;
+		  case ExcelString:
+			 break;
+		  case ExcelEmpty:
+			 break;
+		  case ExcelError:
+			 return current_excel_value;
+			 break;
+		 }
+	 }
+	 return TRUE;
+}
+	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	double a, b;
 
@@ -227,6 +267,20 @@ int main()
 	assert(excel_abs(new_excel_number(1)).number == 1);
 	assert(excel_abs(new_excel_number(-1)).number == 1);
 	assert(excel_abs(VALUE).type == ExcelError);
+	
+	// Test AND
+	ExcelValue true_array1[] = { TRUE, new_excel_number(10)};
+	ExcelValue true_array2[] = { new_excel_number(1) };
+	ExcelValue false_array1[] = { FALSE, new_excel_number(10)};
+	ExcelValue false_array2[] = { TRUE, new_excel_number(0)};
+	// ExcelValue error_array1[] = { new_excel_number(10)}; // Not implemented
+	ExcelValue error_array2[] = { TRUE, NA};
+	assert(excel_and(2,true_array1).number == 1);
+	assert(excel_and(1,true_array2).number == 1);
+	assert(excel_and(2,false_array1).number == 0);
+	assert(excel_and(2,false_array2).number == 0);
+	// assert(excel_and(1,error_array1).type == ExcelError); // Not implemented
+	assert(excel_and(2,error_array2).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
