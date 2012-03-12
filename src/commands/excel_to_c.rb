@@ -47,8 +47,6 @@ class ExcelToRuby
     puts `unzip -uo '#{excel_file}' -d '#{xml_dir}'`
   end
 
-  def process_workbook    
-    extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
   def process_workbook
     if File.exists?(File.join(xml_dir,'xl','sharedStrings.xml'))
       extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
