@@ -540,7 +540,10 @@ END
     o.puts code
     o.puts "  # use this function to set all cells to the values they had when the sheet was compiled"
     o.puts "  attach_function 'set_to_default_values', [], :void"
-    
+    o.puts
+    o.puts "  # use this function to reset all cell values"
+    o.puts "  attach_function 'reset', [], :void"
+
     worksheets("Adding references to ruby shim for") do |name,xml_filename|
       o.puts
       o.puts "  # start of #{name}"  

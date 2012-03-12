@@ -20,9 +20,14 @@ struct excel_value {
 
 typedef struct excel_value ExcelValue;
 
-ExcelValue cells[100];
+ExcelValue cells[100000];
 int cell_counter = 0;
 int conversion_error = 0;
+
+void reset() {
+	cell_counter = 0;
+	conversion_error = 0;
+}
 
 ExcelValue new_excel_number(double number) {
 	cell_counter++;
