@@ -118,7 +118,7 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 	for(i=0;i<array_size;i++) {
 		current_excel_value = array[i];
 		if(current_excel_value.type == ExcelRange) {
-			number = number_from(sum( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ))
+			number = number_from(sum( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ));
 		} else {
 			number = number_from(current_excel_value);					
 		}

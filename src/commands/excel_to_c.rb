@@ -34,6 +34,8 @@ class ExcelToRuby
     inline_formulae_that_are_only_used_once
     separate_formulae_elements
     compile_workbook
+    compile_build_script
+    compile_ruby_ffi_interface
   end
   
   def sort_out_output_directories    
@@ -484,9 +486,100 @@ class ExcelToRuby
     o.puts "}"
     o.puts
     
-    # Output a main function (not really needed at the moment)
-    o.puts "int main() { return 0; }"
     close(w,o,d)
+  end
+  
+  def compile_build_script
+    o = ruby("Makefile")
+    name = compiled_module_name.downcase
+    
+    # Target for shared library
+    o.puts "lib#{name}.dylib: #{name}.o"
+    o.puts "\tgcc -shared -o lib#{name}.dylib #{name}.o"
+    o.puts
+    
+    # Target for compiled version
+    o.puts "#{name}.o:"
+    o.puts "\tgcc -Wall -fPIC -c #{name}.c"
+    o.puts
+    
+    # Target for cleaning
+    o.puts "clean:"
+    o.puts "\trm #{name}.o"
+    o.puts "\trm lib#{name}.dylib"
+    
+    close(o)
+  end
+  
+  def compile_ruby_ffi_interface
+    all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
+    name = compiled_module_name.downcase
+    o = ruby("#{name}.rb")
+    code = <<END
+require 'ffi'
+
+module #{name.capitalize}
+  extend FFI::Library
+  ffi_lib '#{name}'
+  ExcelType = enum :ExcelEmpty, :ExcelNumber, :ExcelString, :ExcelBoolean, :ExcelError, :ExcelRange
+                
+  class ExcelValue < FFI::Struct
+    layout :type, ExcelType,
+  	       :number, :double,
+  	       :string, :string,
+         	 :array, :pointer,
+           :rows, :int,
+           :columns, :int             
+  end
+  
+END
+    o.puts code
+    o.puts "  # use this function to set all cells to the values they had when the sheet was compiled"
+    o.puts "  attach_function 'set_to_default_values', [], :void"
+    
+    worksheets("Adding references to ruby shim for") do |name,xml_filename|
+      o.puts
+      o.puts "  # start of #{name}"  
+      c_name = c_name_for_worksheet_name(name)
+
+      # Put in place the setters, if any
+      settable_refs = @values_that_can_be_set_at_runtime[name]
+      if settable_refs
+        settable_refs = all_formulae[name].keys if settable_refs == :all
+        settable_refs.each do |ref|
+          setter = "set_#{c_name}_#{ref.downcase}"
+          type = case all_formulae[name][ref.upcase].first
+          when :number, :percentage
+            ':double'
+          when :error
+            ":int"
+          when :string
+            ":string"
+          when :boolean_true, :boolean_false
+            ":int"
+          else
+            raise NotSupportedException.new("#{all_formulae[name][ref.downcase]} can't be settable")
+          end
+          o.puts "  attach_function '#{setter}', [#{type}], :void"
+        end
+      end
+
+      if !outputs_to_keep || outputs_to_keep.empty? || outputs_to_keep[name] == :all
+        getable_refs = all_formulae[name].keys
+      elsif !outputs_to_keep[name] && settable_refs
+        getable_refs = settable_refs
+      else
+        getable_refs = outputs_to_keep[name] || []
+      end
+        
+      getable_refs.each do |ref|
+        o.puts "  attach_function '#{c_name}_#{ref.downcase}', [], ExcelValue.by_value"
+      end
+        
+      o.puts "  # end of #{name}"
+    end
+    o.puts "end"  
+    close(o)
   end
   
   def c_name_for_worksheet_name(name)
