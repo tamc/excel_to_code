@@ -44,6 +44,7 @@ class ExcelToRuby
   end
   
   def unzip_excel
+    puts `rm -fr '#{xml_dir}'`
     puts `unzip -uo '#{excel_file}' -d '#{xml_dir}'`
   end
 
