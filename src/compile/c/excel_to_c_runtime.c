@@ -110,8 +110,25 @@ ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(a + b);
 }
 
-ExcelValue sum() {
-	return new_excel_number(0);
+ExcelValue sum(int array_size, ExcelValue *array) {
+	double total = 0;
+	int i;
+	double number;
+	ExcelValue current_excel_value;
+	for(i=0;i<array_size;i++) {
+		current_excel_value = array[i];
+		if(current_excel_value.type == ExcelRange) {
+			number = number_from(sum( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ))
+		} else {
+			number = number_from(current_excel_value);					
+		}
+		if(conversion_error) {
+			conversion_error = 0;
+			return VALUE;
+		}
+		total += number;
+	}
+	return new_excel_number(total);
 }
 
 ExcelValue a1() { return new_excel_string("Hello world"); }

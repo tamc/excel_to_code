@@ -57,6 +57,8 @@ class MapFormulaeToC < MapValuesToC
     '^' => 'power'
   }
   
+  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM}
+  
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"
     return "negative(#{map(ast)})"
@@ -79,11 +81,34 @@ class MapFormulaeToC < MapValuesToC
   end
   
   def function(function_name,*arguments)
-    if FUNCTIONS.has_key?(function_name)
+    # Some arguments can take any number of arguments, which we need to treat separately
+    if FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS.include?(function_name)
+      any_number_of_argument_function(function_name,arguments)
+
+    # Check for whether this function has variants based on the number of arguments
+    elsif FUNCTIONS.has_key?("function_name#{arguments.size}")
+      "#{FUNCTIONS["function_name#{arguments.size}"]}(#{arguments.map { |a| map(a) }.join(",")})"
+
+    # Then check for whether it is just a standard type
+    elsif FUNCTIONS.has_key?(function_name)
       "#{FUNCTIONS[function_name]}(#{arguments.map { |a| map(a) }.join(",")})"
+
     else
-      raise NotSupportedException.new("Function #{function_name} not supported")
+      raise NotSupportedException.new("Function #{function_name} with #{arguments.size} arguments not supported")
     end
+  end
+  
+  def any_number_of_argument_function(function_name,arguments)    
+    # First we have to create an excel array
+    array_name = "array#{@counter}"
+    @counter +=1
+    arguments_size = arguments.size
+    arguments = arguments.map { |a| map(a) }.join(',')
+    initializers << "ExcelValue #{array_name}[] = {#{arguments}};"
+
+    
+    # Then we need to use it in the function call
+    "#{FUNCTIONS[function_name]}(#{arguments_size},#{array_name})"
   end
   
   def cell(reference)
@@ -102,6 +127,7 @@ class MapFormulaeToC < MapValuesToC
     
     # First we have to create an excel array
     array_name = "array#{@counter}"
+    @counter +=1
 
     cells = rows.map do |r|
       r.shift if r.first == :row
@@ -113,10 +139,10 @@ class MapFormulaeToC < MapValuesToC
     initializers << "ExcelValue #{array_name}[] = {#{cells}};"
     
     # Then we need to assign it to an excel value
-    range_name = "range#{@counter}"
+    range_name = array_name+"_ev"
     initializers << "ExcelValue #{range_name} = new_excel_range(#{array_name},#{number_of_rows},#{number_of_columns});"
 
-    @counter +=1
+
 
     range_name
   end
