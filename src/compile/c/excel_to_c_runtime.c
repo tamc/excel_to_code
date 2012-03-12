@@ -92,6 +92,22 @@ double number_from(ExcelValue v) {
   return 0;
 }
 
+ExcelValue excel_abs(ExcelValue a_v) {
+	double a;
+	
+	if(a_v.type == ExcelError) {
+		return a_v;
+	}
+	
+	a = number_from(a_v);
+	
+	if(a >= 0.0 ) {
+		return a_v;
+	} else {
+		return new_excel_number(-a);
+	}
+}
+
 ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	double a, b;
 
@@ -216,33 +232,38 @@ ExcelValue a7() {
 	return new_excel_range(array1,1,3);
 }
 
-// int main()
-// {
-// 	// Test number handling
-// 	ExcelValue one = new_excel_number(38.8);
-// 	assert(one.number == 38.8);
-// 	assert(one.type == ExcelNumber);
-// 	
-// 	// Test string handling
-// 	char *string = "Hello world";
-// 	ExcelValue two = new_excel_string("Hello world");
-// 	ExcelValue three = new_excel_string("Bye");
-// 	assert(strcmp(two.string,string) == 0);
-// 	assert(strcmp(a1().string,string) == 0);
-// 	assert(strcmp(three.string,"Bye") == 0);
-// 	
-// 	//printf("a3: %f",a3().number);
-// 	assert(a3().number == 24);
-// 	assert(a5().number == 7);
-// 	assert(a6().type == ExcelError);
-// 	
-// 	assert(a7().type == ExcelRange);
-// 	assert(a7().rows == 1);
-// 	assert(a7().columns == 3);
-// 	ExcelValue temp = a7();
-// 	ExcelValue *p = temp.array;
-// 	assert(p[0].type == ExcelString);
-// 	assert(p[1].type == ExcelNumber);
-// 	
-// 	return 0;
-// }
+int main()
+{
+	// Test abs
+	assert(excel_abs(new_excel_number(1)).number == 1);
+	assert(excel_abs(new_excel_number(-1)).number == 1);
+	assert(excel_abs(VALUE).type == ExcelError);
+	
+	// // Test number handling
+	// ExcelValue one = new_excel_number(38.8);
+	// assert(one.number == 38.8);
+	// assert(one.type == ExcelNumber);
+	// 
+	// // Test string handling
+	// char *string = "Hello world";
+	// ExcelValue two = new_excel_string("Hello world");
+	// ExcelValue three = new_excel_string("Bye");
+	// assert(strcmp(two.string,string) == 0);
+	// assert(strcmp(a1().string,string) == 0);
+	// assert(strcmp(three.string,"Bye") == 0);
+	// 
+	// //printf("a3: %f",a3().number);
+	// assert(a3().number == 24);
+	// assert(a5().number == 7);
+	// assert(a6().type == ExcelError);
+	// 
+	// assert(a7().type == ExcelRange);
+	// assert(a7().rows == 1);
+	// assert(a7().columns == 3);
+	// ExcelValue temp = a7();
+	// ExcelValue *p = temp.array;
+	// assert(p[0].type == ExcelString);
+	// assert(p[1].type == ExcelNumber);
+	
+	return 0;
+}

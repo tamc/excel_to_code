@@ -27,7 +27,7 @@ class MapFormulaeToC < MapValuesToC
     '=' => 'excel_equal?',
     '>' => 'more_than?',
     '>=' => 'more_than_or_equal?',
-    'ABS' => 'abs',
+    'ABS' => 'excel_abs',
     'AND' => 'excel_and',
     'AVERAGE' => 'average',
     'CHOOSE' => 'choose',
