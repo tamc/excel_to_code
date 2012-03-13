@@ -110,27 +110,17 @@ double number_from(ExcelValue v) {
 		conversion_error = 1;
 		return 0;
 	  case ExcelError:
-		conversion_error = 1;
 	  	return 0;
   }
   return 0;
 }
 
-
-
+#define NUMBER(value_name, name) double name; if(value_name.type == ExcelError) { return value_name; }; name = number_from(value_name);
+#define CHECK_FOR_CONVERSION_ERROR 	if(conversion_error) { conversion_error = 0; return VALUE; };
+	
 ExcelValue excel_abs(ExcelValue a_v) {
-	double a;
-	
-	if(a_v.type == ExcelError) {
-		return a_v;
-	}
-	
-	a = number_from(a_v);
-	
-	if(conversion_error) {
-		conversion_error = 0;
-		return VALUE;
-	}
+	NUMBER(a_v, a)
+	CHECK_FOR_CONVERSION_ERROR
 	
 	if(a >= 0.0 ) {
 		return a_v;
@@ -140,24 +130,9 @@ ExcelValue excel_abs(ExcelValue a_v) {
 }
 
 ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
-	double a, b;
-
-	if(a_v.type == ExcelError) {
-		return a_v;
-	}
-
-	if(b_v.type == ExcelError) {
-		return b_v;
-	}
-
-	a = number_from(a_v);
-	b = number_from(b_v);
-
-	if(conversion_error) {
-		conversion_error = 0;
-		return VALUE;
-	}
-
+	NUMBER(a_v, a)
+	NUMBER(b_v, b)
+	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(a + b);
 }
 
@@ -169,28 +144,15 @@ ExcelValue excel_and(int array_size, ExcelValue *array) {
 		current_excel_value = array[i];
 		switch (current_excel_value.type) {
 	  	  case ExcelNumber: 
-			  if(current_excel_value.number == false) {
-				  return FALSE;
-			  }
-			  break;
 		  case ExcelBoolean: 
-			  if(current_excel_value.number == false) {
-				  return FALSE;
-			  }
+			  if(current_excel_value.number == false) return FALSE;
 			  break;
 		  case ExcelRange: 
 		  	array_result = excel_and( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
-			if(array_result.type == ExcelError) {
-				return array_result;
-			}
-			if(array_result.type == ExcelBoolean) {
-				if(array_result.number == false) {
-					return FALSE;
-				}
-			}
+			if(array_result.type == ExcelError) return array_result;
+			if(array_result.type == ExcelBoolean && array_result.number == false) return FALSE;
 			break;
 		  case ExcelString:
-			 break;
 		  case ExcelEmpty:
 			 break;
 		  case ExcelError:
@@ -202,72 +164,24 @@ ExcelValue excel_and(int array_size, ExcelValue *array) {
 }
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
-	double a, b;
-
-	if(a_v.type == ExcelError) {
-		return a_v;
-	}
-
-	if(b_v.type == ExcelError) {
-		return b_v;
-	}
-
-	a = number_from(a_v);
-	b = number_from(b_v);
-
-	if(conversion_error) {
-		conversion_error = 0;
-		return VALUE;
-	}
-
+	NUMBER(a_v, a)
+	NUMBER(b_v, b)
+	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(a - b);
 }
 
 ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
-	double a, b;
-
-	if(a_v.type == ExcelError) {
-		return a_v;
-	}
-
-	if(b_v.type == ExcelError) {
-		return b_v;
-	}
-
-	a = number_from(a_v);
-	b = number_from(b_v);
-
-	if(conversion_error) {
-		conversion_error = 0;
-		return VALUE;
-	}
-
+	NUMBER(a_v, a)
+	NUMBER(b_v, b)
+	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(a * b);
 }
 
 ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
-	double a, b;
-
-	if(a_v.type == ExcelError) {
-		return a_v;
-	}
-
-	if(b_v.type == ExcelError) {
-		return b_v;
-	}
-
-	a = number_from(a_v);
-	b = number_from(b_v);
-
-	if(conversion_error) {
-		conversion_error = 0;
-		return VALUE;
-	}
-	
-	if(b == 0) {
-		return DIV0;
-	}
-
+	NUMBER(a_v, a)
+	NUMBER(b_v, b)
+	CHECK_FOR_CONVERSION_ERROR
+	if(b == 0) return DIV0;
 	return new_excel_number(a + b);
 }
 
@@ -283,10 +197,7 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 		} else {
 			number = number_from(current_excel_value);					
 		}
-		if(conversion_error) {
-			conversion_error = 0;
-			return VALUE;
-		}
+		CHECK_FOR_CONVERSION_ERROR
 		total += number;
 	}
 	return new_excel_number(total);
@@ -294,10 +205,14 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 
 int main()
 {
-	// Test abs
+	// Test ABS
 	assert(excel_abs(new_excel_number(1)).number == 1);
 	assert(excel_abs(new_excel_number(-1)).number == 1);
 	assert(excel_abs(VALUE).type == ExcelError);
+	
+	// Test ADD
+	assert(add(new_excel_number(1),new_excel_number(-2.5)).number == -1.5);
+	assert(add(new_excel_number(1),VALUE).type == ExcelError);
 	
 	// Test AND
 	ExcelValue true_array1[] = { TRUE, new_excel_number(10)};
