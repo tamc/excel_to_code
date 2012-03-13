@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+// I predefine an array of ExcelValues to store calculations
+// Probably bad practice. At the very least, I should make it
+// link to the cell reference in some way.
+#define MAX_EXCEL_VALUE_HEAP_SIZE 100000
+
+// These are the various types of excel cell, plus ExcelRange which allows the passing of arrays of cells
 typedef enum {ExcelEmpty, ExcelNumber, ExcelString, ExcelBoolean, ExcelError, ExcelRange} ExcelType;
 
 struct excel_value {
@@ -20,53 +26,62 @@ struct excel_value {
 
 typedef struct excel_value ExcelValue;
 
-ExcelValue cells[100000];
+// My little heap
+ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
 int cell_counter = 0;
-int conversion_error = 0;
 
+// Clears the heap
 void reset() {
 	cell_counter = 0;
-	conversion_error = 0;
 }
 
+// The object initializer
 ExcelValue new_excel_number(double number) {
 	cell_counter++;
-	cells[cell_counter].type = ExcelNumber;
-	cells[cell_counter].number = number;
-	return cells[cell_counter];
+	ExcelValue new_cell = 	cells[cell_counter];
+	new_cell.type = ExcelNumber;
+	new_cell.number = number;
+	return new_cell;
 };
 
 ExcelValue new_excel_string(char *string) {
 	cell_counter++;
-	cells[cell_counter].type = ExcelString;
-	cells[cell_counter].string = string;
-	return cells[cell_counter];
+	ExcelValue new_cell = 	cells[cell_counter];
+	new_cell.type = ExcelString;
+	new_cell.string = string;
+	return new_cell;
 };
 
 ExcelValue new_excel_range(void *array, int rows, int columns) {
 	cell_counter++;
-	cells[cell_counter].type = ExcelRange;
-	cells[cell_counter].array =array;
-	cells[cell_counter].rows = rows;
-	cells[cell_counter].columns = columns;
-	return cells[cell_counter];
+	ExcelValue new_cell = cells[cell_counter];
+	new_cell.type = ExcelRange;
+	new_cell.array =array;
+	new_cell.rows = rows;
+	new_cell.columns = columns;
+	return new_cell;
 };
 
 // Constants
 ExcelValue BLANK = {.type = ExcelEmpty };
 
+// Booleans
 ExcelValue TRUE = {.type = ExcelBoolean, .number = 1 };
 ExcelValue FALSE = {.type = ExcelBoolean, .number = 0 };
 
+// Errors
 ExcelValue VALUE = {.type = ExcelError, .number = 0};
 ExcelValue NAME = {.type = ExcelError, .number = 1};
 ExcelValue DIV0 = {.type = ExcelError, .number = 2};
 ExcelValue REF = {.type = ExcelError, .number = 3};
 ExcelValue NA = {.type = ExcelError, .number = 4};
 
+// This is the error flag
+int conversion_error = 0;
+
 double number_from(ExcelValue v) {
 	char *s;
-	char * p;
+	char *p;
 	double n;
 	ExcelValue *array;
 	switch (v.type) {
