@@ -112,7 +112,11 @@ class MapFormulaeToC < MapValuesToC
   end
   
   def cell(reference)
-    reference.downcase.gsub('$','')
+    if reference =~ /common\d+/
+      "_#{reference}"
+    else
+      reference.downcase.gsub('$','')
+    end
   end
   
   def sheet_reference(sheet,reference)

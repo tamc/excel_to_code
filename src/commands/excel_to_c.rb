@@ -458,10 +458,13 @@ class ExcelToRuby
     o.puts
     
     # output the common elements
+    o.puts "// starting common elements"
     c = CompileToC.new
     i = input("common-elements.ast")
     c.rewrite(i,w,o)
     close(i)
+    o.puts "// ending common elements"
+    o.puts
 
     # Output the elements from each worksheet in turn
     d = output('defaults')
