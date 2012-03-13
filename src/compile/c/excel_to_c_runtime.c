@@ -9,6 +9,9 @@
 // link to the cell reference in some way.
 #define MAX_EXCEL_VALUE_HEAP_SIZE 100000
 
+#define true 1
+#define false 0
+
 // These are the various types of excel cell, plus ExcelRange which allows the passing of arrays of cells
 typedef enum {ExcelEmpty, ExcelNumber, ExcelString, ExcelBoolean, ExcelError, ExcelRange} ExcelType;
 
@@ -66,8 +69,8 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 ExcelValue BLANK = {.type = ExcelEmpty };
 
 // Booleans
-ExcelValue TRUE = {.type = ExcelBoolean, .number = 1 };
-ExcelValue FALSE = {.type = ExcelBoolean, .number = 0 };
+ExcelValue TRUE = {.type = ExcelBoolean, .number = true };
+ExcelValue FALSE = {.type = ExcelBoolean, .number = false };
 
 // Errors
 ExcelValue VALUE = {.type = ExcelError, .number = 0};
@@ -106,6 +109,8 @@ double number_from(ExcelValue v) {
   }
   return 0;
 }
+
+
 
 ExcelValue excel_abs(ExcelValue a_v) {
 	double a;
@@ -158,12 +163,12 @@ ExcelValue excel_and(int array_size, ExcelValue *array) {
 		current_excel_value = array[i];
 		switch (current_excel_value.type) {
 	  	  case ExcelNumber: 
-			  if(current_excel_value.number == 0) {
+			  if(current_excel_value.number == false) {
 				  return FALSE;
 			  }
 			  break;
 		  case ExcelBoolean: 
-			  if(current_excel_value.number == 0) {
+			  if(current_excel_value.number == false) {
 				  return FALSE;
 			  }
 			  break;
@@ -173,7 +178,7 @@ ExcelValue excel_and(int array_size, ExcelValue *array) {
 				return array_result;
 			}
 			if(array_result.type == ExcelBoolean) {
-				if(array_result.number == 0) {
+				if(array_result.number == false) {
 					return FALSE;
 				}
 			}
