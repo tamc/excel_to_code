@@ -38,7 +38,7 @@ void reset() {
 	cell_counter = 0;
 }
 
-// The object initializer
+// The object initializers
 ExcelValue new_excel_number(double number) {
 	cell_counter++;
 	ExcelValue new_cell = 	cells[cell_counter];
@@ -82,15 +82,19 @@ ExcelValue NA = {.type = ExcelError, .number = 4};
 // This is the error flag
 int conversion_error = 0;
 
+// Extracts numbers from ExcelValues
+// Excel treats empty cells as zero
 double number_from(ExcelValue v) {
 	char *s;
 	char *p;
 	double n;
 	ExcelValue *array;
 	switch (v.type) {
-  	  case ExcelNumber: return v.number;
-	  case ExcelEmpty: return 0;
-	  case ExcelBoolean: return v.number;
+  	  case ExcelNumber:
+	  case ExcelBoolean: 
+	  	return v.number;
+	  case ExcelEmpty: 
+	  	return 0;
 	  case ExcelRange: 
 		 array = v.array;
 	     return number_from(array[0]);
@@ -105,7 +109,9 @@ double number_from(ExcelValue v) {
 		}
 		conversion_error = 1;
 		return 0;
-	  case ExcelError: return 0;
+	  case ExcelError:
+		conversion_error = 1;
+	  	return 0;
   }
   return 0;
 }
