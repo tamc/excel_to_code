@@ -222,7 +222,31 @@ ExcelValue choose(int index, int array_size, ExcelValue *array) {
 	if(index > array_size) return VALUE;
 	return array[index-1];
 }	
+
+ExcelValue count(int array_size, ExcelValue *array) {
+	int i;
+	int n = 0;
+	ExcelValue current_excel_value;
 	
+	for(i=0;i<array_size;i++) {
+		current_excel_value = array[i];
+		switch (current_excel_value.type) {
+	  	  case ExcelNumber:
+		  	n++;
+			break;
+		  case ExcelRange: 
+		  	n += count( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ).number;
+			break;
+  		  case ExcelBoolean: 			
+		  case ExcelString:
+		  case ExcelEmpty:
+		  case ExcelError:
+			 break;
+		 }
+	 }
+	 return new_excel_number(n);
+}
+
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -304,6 +328,11 @@ int main()
 	assert(choose(0,4,array1).type == ExcelError);
 	assert(choose(5,4,array1).type == ExcelError);
 	assert(choose(1,4,array3).type == ExcelError);	
+	
+	// Test COUNT
+	assert(count(4,array1).number == 2);
+	assert(count(3,array2).number == 3);
+	assert(count(4,array3).number == 3);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
