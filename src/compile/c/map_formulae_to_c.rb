@@ -57,7 +57,6 @@ class MapFormulaeToC < MapValuesToC
     '^' => 'power'
   }
   
-  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM AND AVERAGE}
   
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"
@@ -81,8 +80,11 @@ class MapFormulaeToC < MapValuesToC
   end
   
   def function(function_name,*arguments)
+    # Some functions are special cases
+    if self.respond_to?("function_#{function_name.downcase}")
+      send("function_#{function_name.downcase}",*arguments)
     # Some arguments can take any number of arguments, which we need to treat separately
-    if FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS.include?(function_name)
+    elsif FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS.include?(function_name)
       any_number_of_argument_function(function_name,arguments)
 
     # Check for whether this function has variants based on the number of arguments
@@ -98,17 +100,24 @@ class MapFormulaeToC < MapValuesToC
     end
   end
   
+  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM AND AVERAGE}
+  
+  def function_choose(index,*arguments)
+    "#{FUNCTIONS["CHOOSE"]}(#{map(index)}, #{map_arguments_to_array(arguments)})"
+  end
+  
   def any_number_of_argument_function(function_name,arguments)    
+    "#{FUNCTIONS[function_name]}(#{map_arguments_to_array(arguments)})"
+  end
+  
+  def map_arguments_to_array(arguments)
     # First we have to create an excel array
     array_name = "array#{@counter}"
     @counter +=1
     arguments_size = arguments.size
     arguments = arguments.map { |a| map(a) }.join(',')
     initializers << "ExcelValue #{array_name}[] = {#{arguments}};"
-
-    
-    # Then we need to use it in the function call
-    "#{FUNCTIONS[function_name]}(#{arguments_size},#{array_name})"
+    "#{arguments_size}, #{array_name}"
   end
   
   def cell(reference)

@@ -212,6 +212,17 @@ ExcelValue average(int array_size, ExcelValue *array) {
 	if(r.count == 0) return DIV0;
 	return new_excel_number(r.sum/r.count);
 }
+
+ExcelValue choose(int index, int array_size, ExcelValue *array) {
+	int i;
+	for(i=0;i<array_size;i++) {
+		if(array[i].type == ExcelError) return array[i];
+	}
+	if(index < 1) return VALUE;
+	if(index > array_size) return VALUE;
+	return array[index-1];
+}	
+	
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -286,6 +297,13 @@ int main()
 	assert(average(4, array1).number == 7.5);
 	assert(average(3, array2).number == 8);
 	assert(average(4, array3).type == ExcelError);
+	
+	// Test CHOOSE
+	assert(choose(1,4,array1).number == 10);
+	assert(choose(4,4,array1).type == ExcelBoolean);
+	assert(choose(0,4,array1).type == ExcelError);
+	assert(choose(5,4,array1).type == ExcelError);
+	assert(choose(1,4,array3).type == ExcelError);	
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
