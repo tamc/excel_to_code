@@ -162,6 +162,56 @@ ExcelValue excel_and(int array_size, ExcelValue *array) {
 	 }
 	 return TRUE;
 }
+
+struct average_result {
+	double sum;
+	double count;
+	int has_error;
+	ExcelValue error;
+};
+	
+struct average_result calculate_average(int array_size, ExcelValue *array) {
+	double sum = 0;
+	double count = 0;
+	int i;
+	ExcelValue current_excel_value;
+	struct average_result array_result, r;
+		 
+	for(i=0;i<array_size;i++) {
+		current_excel_value = array[i];
+		switch (current_excel_value.type) {
+	  	  case ExcelNumber:
+			  sum += current_excel_value.number;
+			  count++;
+			  break;
+		  case ExcelRange: 
+		  	array_result = calculate_average( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
+			if(array_result.has_error == true) return array_result;
+			sum += array_result.sum;
+			count += array_result.count;
+			break;
+		  case ExcelBoolean: 
+		  case ExcelString:
+		  case ExcelEmpty:
+			 break;
+		  case ExcelError:
+			 r.has_error = true;
+			 r.error = current_excel_value;
+			 return r;
+			 break;
+		 }
+	}
+	r.count = count;
+	r.sum = sum;
+	return r;
+}
+
+ExcelValue average(int array_size, ExcelValue *array) {
+	struct average_result r = calculate_average(array_size, array);
+	if(r.has_error == true) return r.error;
+	if(r.count == 0) return DIV0;
+	return new_excel_number(r.sum/r.count);
+}
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -227,6 +277,15 @@ int main()
 	assert(excel_and(2,false_array2).number == 0);
 	// assert(excel_and(1,error_array1).type == ExcelError); // Not implemented
 	assert(excel_and(2,error_array2).type == ExcelError);
+	
+	// Test AVERAGE
+	ExcelValue array1[] = { new_excel_number(10), new_excel_number(5), TRUE, FALSE};
+	ExcelValue array1_v = new_excel_range(array1,2,2);
+	ExcelValue array2[] = { array1_v, new_excel_number(9), new_excel_string("Hello")};
+	ExcelValue array3[] = { array1_v, new_excel_number(9), new_excel_string("Hello"), VALUE};
+	assert(average(4, array1).number == 7.5);
+	assert(average(3, array2).number == 8);
+	assert(average(4, array3).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
