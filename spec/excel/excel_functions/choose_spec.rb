@@ -2,7 +2,7 @@ require_relative '../../spec_helper.rb'
 
 describe "ExcelFunctions: CHOOSE(index,arg1,arg2,arg3)" do
   
-  it "should return index-th numbered argument, where 1 is the first argument" do
+  it "should return index-th numbered argument, where index is the first argument" do
     FunctionTest.choose(1,10,20,30).should == 10
     FunctionTest.choose(2,10,20,30).should == 20
     FunctionTest.choose(1,[10,20,30],40,50).should == [10,20,30]
