@@ -101,6 +101,11 @@ ExcelValue excel_abs(ExcelValue a_v) {
 	
 	a = number_from(a_v);
 	
+	if(conversion_error) {
+		conversion_error = 0;
+		return VALUE;
+	}
+	
 	if(a >= 0.0 ) {
 		return a_v;
 	} else {
