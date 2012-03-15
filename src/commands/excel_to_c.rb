@@ -449,13 +449,33 @@ class ExcelToRuby
     # Probably a better way of getting the runtime file to be compiled with the created file
     puts `cp #{File.join(File.dirname(__FILE__),'..','compile','c','excel_to_c_runtime.c')} #{File.join(output_directory,'c','excel_to_c_runtime.c')}`
     
-    
     # Output the workbook preamble
     w = input("worksheet_c_names")
     o = ruby("#{compiled_module_name.downcase}.c")
     o.puts "// Compiled version of #{excel_file}"
     o.puts '#include "excel_to_c_runtime.c"'
     o.puts
+    
+    # Now we have to put all the initial definitions out
+    o.puts "// definitions"
+
+    i = input("common-elements.ast")
+    c = CompileToCHeader.new
+    c.rewrite(i,w,o)
+    close(i)
+
+    worksheets("Compiling definitions") do |name,xml_filename|
+      w.rewind
+      c = CompileToCHeader.new
+      c.worksheet = name
+      i = input(name,"formulae_inlined_pruned_replaced.ast")
+      c.rewrite(i,w,o)
+      close(i)
+    end
+    
+    o.puts "// end of definitions"
+    o.puts
+    
     
     # output the common elements
     o.puts "// starting common elements"
