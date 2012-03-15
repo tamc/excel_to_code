@@ -57,7 +57,6 @@ class MapFormulaeToC < MapValuesToC
     '^' => 'power'
   }
   
-  
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"
     return "negative(#{map(ast)})"
@@ -121,15 +120,15 @@ class MapFormulaeToC < MapValuesToC
   end
   
   def cell(reference)
+    # FIXME: What a cludge.
     if reference =~ /common\d+/
-      "_#{reference}"
+      "_#{reference}()"
     else
       reference.downcase.gsub('$','')
     end
   end
   
   def sheet_reference(sheet,reference)
-    return map(reference) if worksheet && worksheet == sheet
     "#{sheet_names[sheet]}_#{map(reference).downcase}()"
   end
 
@@ -154,8 +153,6 @@ class MapFormulaeToC < MapValuesToC
     # Then we need to assign it to an excel value
     range_name = array_name+"_ev"
     initializers << "ExcelValue #{range_name} = new_excel_range(#{array_name},#{number_of_rows},#{number_of_columns});"
-
-
 
     range_name
   end
