@@ -213,7 +213,10 @@ ExcelValue average(int array_size, ExcelValue *array) {
 	return new_excel_number(r.sum/r.count);
 }
 
-ExcelValue choose(int index, int array_size, ExcelValue *array) {
+ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
+	if(index_v.type == ExcelError) return index_v;
+	int index = (int) number_from(index_v);
+	CHECK_FOR_CONVERSION_ERROR	
 	int i;
 	for(i=0;i<array_size;i++) {
 		if(array[i].type == ExcelError) return array[i];
@@ -323,11 +326,11 @@ int main()
 	assert(average(4, array3).type == ExcelError);
 	
 	// Test CHOOSE
-	assert(choose(1,4,array1).number == 10);
-	assert(choose(4,4,array1).type == ExcelBoolean);
-	assert(choose(0,4,array1).type == ExcelError);
-	assert(choose(5,4,array1).type == ExcelError);
-	assert(choose(1,4,array3).type == ExcelError);	
+	assert(choose(new_excel_number(1),4,array1).number == 10);
+	assert(choose(new_excel_number(4),4,array1).type == ExcelBoolean);
+	assert(choose(new_excel_number(0),4,array1).type == ExcelError);
+	assert(choose(new_excel_number(5),4,array1).type == ExcelError);
+	assert(choose(new_excel_number(1),4,array3).type == ExcelError);	
 	
 	// Test COUNT
 	assert(count(4,array1).number == 2);
