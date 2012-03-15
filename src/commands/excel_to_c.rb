@@ -459,6 +459,7 @@ class ExcelToRuby
     
     # output the common elements
     o.puts "// starting common elements"
+    w.rewind
     c = CompileToC.new
     i = input("common-elements.ast")
     c.rewrite(i,w,o)
