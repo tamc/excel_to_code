@@ -250,6 +250,17 @@ ExcelValue count(int array_size, ExcelValue *array) {
 	 return new_excel_number(n);
 }
 
+ExcelValue counta(int array_size, ExcelValue *array) {
+	int i;
+	int n = 0;
+	ExcelValue current_excel_value;
+	
+	for(i=0;i<array_size;i++) {
+		current_excel_value = array[i];
+		if(current_excel_value.type != ExcelEmpty) n++;
+	 }
+	 return new_excel_number(n);
+}
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -336,6 +347,10 @@ int main()
 	assert(count(4,array1).number == 2);
 	assert(count(3,array2).number == 3);
 	assert(count(4,array3).number == 3);
+	
+	// Test COUNTA
+	ExcelValue count_a_test_array_1[] = { new_excel_number(10), new_excel_number(5), TRUE, FALSE, new_excel_string("Hello"), VALUE, BLANK};
+	assert(counta(7, count_a_test_array_1).number == 6);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
