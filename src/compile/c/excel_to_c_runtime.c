@@ -269,6 +269,29 @@ ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
 	if(b == 0) return DIV0;
 	return new_excel_number(a / b);
 }
+
+ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
+	if(a_v.type == ExcelError) return a_v;
+	if(b_v.type == ExcelError) return b_v;
+
+	if(a_v.type != b_v.type) return FALSE;
+	
+	switch (a_v.type) {
+  	  case ExcelNumber:
+	  case ExcelBoolean: 
+	  case ExcelEmpty: 
+			if(a_v.number != b_v.number) return FALSE;
+			return TRUE;
+	  case ExcelString:
+	  	if(strcasecmp(a_v.string,b_v.string) != 0 ) return FALSE;
+		return TRUE;
+  	  case ExcelError:
+		return a_v;
+  	  case ExcelRange:
+  		return NA;
+  }
+  return FALSE;
+}
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -356,6 +379,15 @@ int main()
 	// Test divide
 	assert(divide(new_excel_number(12.4),new_excel_number(3.2)).number == 3.875);
 	assert(divide(new_excel_number(12.4),new_excel_number(0)).type == ExcelError);
+	
+	// Test excel_equal
+	assert(excel_equal(new_excel_number(1.2),new_excel_number(3.4)).type == ExcelBoolean);
+	assert(excel_equal(new_excel_number(1.2),new_excel_number(3.4)).number == false);
+	assert(excel_equal(new_excel_number(1.2),new_excel_number(1.2)).number == true);
+	assert(excel_equal(new_excel_string("hello"), new_excel_string("HELLO")).number == true);
+	assert(excel_equal(new_excel_string("hello world"), new_excel_string("HELLO")).number == false);
+	assert(excel_equal(new_excel_string("1"), new_excel_number(1)).number == false);
+	assert(excel_equal(DIV0, new_excel_number(1)).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
