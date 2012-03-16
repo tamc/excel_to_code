@@ -261,6 +261,14 @@ ExcelValue counta(int array_size, ExcelValue *array) {
 	 }
 	 return new_excel_number(n);
 }
+
+ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
+	NUMBER(a_v, a)
+	NUMBER(b_v, b)
+	CHECK_FOR_CONVERSION_ERROR
+	if(b == 0) return DIV0;
+	return new_excel_number(a / b);
+}
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -276,13 +284,6 @@ ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(a * b);
 }
 
-ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
-	NUMBER(a_v, a)
-	NUMBER(b_v, b)
-	CHECK_FOR_CONVERSION_ERROR
-	if(b == 0) return DIV0;
-	return new_excel_number(a + b);
-}
 
 ExcelValue sum(int array_size, ExcelValue *array) {
 	double total = 0;
@@ -351,6 +352,10 @@ int main()
 	// Test COUNTA
 	ExcelValue count_a_test_array_1[] = { new_excel_number(10), new_excel_number(5), TRUE, FALSE, new_excel_string("Hello"), VALUE, BLANK};
 	assert(counta(7, count_a_test_array_1).number == 6);
+	
+	// Test divide
+	assert(divide(new_excel_number(12.4),new_excel_number(3.2)).number == 3.875);
+	assert(divide(new_excel_number(12.4),new_excel_number(0)).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
