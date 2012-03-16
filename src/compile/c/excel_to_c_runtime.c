@@ -292,6 +292,30 @@ ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
   }
   return FALSE;
 }
+
+ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
+	switch (condition.type) {
+  	  case ExcelNumber:
+		if(condition.number == 0) return false_case;
+		return true_case;
+	  case ExcelBoolean:
+	  	if(condition.number == true) return true_case;
+	  	return false_case;
+	  case ExcelEmpty: 
+		return false_case;
+	  case ExcelString:
+	  	return VALUE;
+  	  case ExcelError:
+		return condition;
+  	  case ExcelRange:
+  		return VALUE;
+  }
+  return condition;
+}
+
+ExcelValue excel_if_2(ExcelValue condition, ExcelValue true_case ) {
+	return excel_if( condition, true_case, FALSE );
+}
 	
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -389,6 +413,21 @@ int main()
 	assert(excel_equal(new_excel_string("1"), new_excel_number(1)).number == false);
 	assert(excel_equal(DIV0, new_excel_number(1)).type == ExcelError);
 	
+	// Test excel_if
+	// Two argument version
+	assert(excel_if_2(TRUE,new_excel_number(10)).type == ExcelNumber);
+	assert(excel_if_2(TRUE,new_excel_number(10)).number == 10);
+	assert(excel_if_2(FALSE,new_excel_number(10)).type == ExcelBoolean);
+	assert(excel_if_2(FALSE,new_excel_number(10)).number == false);
+	assert(excel_if_2(NA,new_excel_number(10)).type == ExcelError);
+	// Three argument version
+	assert(excel_if(TRUE,new_excel_number(10),new_excel_number(20)).type == ExcelNumber);
+	assert(excel_if(TRUE,new_excel_number(10),new_excel_number(20)).number == 10);
+	assert(excel_if(FALSE,new_excel_number(10),new_excel_number(20)).type == ExcelNumber);
+	assert(excel_if(FALSE,new_excel_number(10),new_excel_number(20)).number == 20);
+	assert(excel_if(NA,new_excel_number(10),new_excel_number(20)).type == ExcelError);
+	
+
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
 	// assert(one.number == 38.8);
