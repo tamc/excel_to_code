@@ -21,12 +21,12 @@ class MapFormulaeToC < MapValuesToC
     '+' => 'add',
     '-' => 'subtract',
     '/' => 'divide',
-    '<' => 'less_than?',
-    '<=' => 'less_than_or_equal?',
-    '<>' => 'not_equal?',
-    '=' => 'excel_equal?',
-    '>' => 'more_than?',
-    '>=' => 'more_than_or_equal?',
+    '<' => 'less_than',
+    '<=' => 'less_than_or_equal',
+    '<>' => 'not_equal',
+    '=' => 'excel_equal',
+    '>' => 'more_than',
+    '>=' => 'more_than_or_equal',
     'ABS' => 'excel_abs',
     'AND' => 'excel_and',
     'AVERAGE' => 'average',
@@ -88,8 +88,8 @@ class MapFormulaeToC < MapValuesToC
       any_number_of_argument_function(function_name,arguments)
 
     # Check for whether this function has variants based on the number of arguments
-    elsif FUNCTIONS.has_key?("function_name#{arguments.size}")
-      "#{FUNCTIONS["function_name#{arguments.size}"]}(#{arguments.map { |a| map(a) }.join(",")})"
+    elsif FUNCTIONS.has_key?("#{function_name}#{arguments.size}")
+      "#{FUNCTIONS["#{function_name}#{arguments.size}"]}(#{arguments.map { |a| map(a) }.join(",")})"
 
     # Then check for whether it is just a standard type
     elsif FUNCTIONS.has_key?(function_name)
