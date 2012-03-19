@@ -29,6 +29,7 @@ struct excel_value {
 
 typedef struct excel_value ExcelValue;
 
+ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
 int cell_counter = 0;
@@ -344,6 +345,32 @@ ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
   return FALSE;
 }
 
+ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
+	if(a_v.type == ExcelError) return a_v;
+	if(b_v.type == ExcelError) return b_v;
+
+	switch (a_v.type) {
+  	  case ExcelNumber:
+	  case ExcelBoolean: 
+	  case ExcelEmpty:
+		if((b_v.type == ExcelNumber) || (b_v.type == ExcelBoolean) || (b_v.type == ExcelEmpty)) {
+			if(a_v.number >= b_v.number) return FALSE;
+			return TRUE;
+		} 
+		return FALSE;
+	  case ExcelString:
+	  	if(b_v.type == ExcelString) {
+		  	if(strcasecmp(a_v.string,b_v.string) >= 0 ) return FALSE;
+			return TRUE;	  		
+		}
+		return FALSE;
+  	  case ExcelError:
+		return a_v;
+  	  case ExcelRange:
+  		return NA;
+  }
+  return FALSE;
+}
 
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
@@ -475,6 +502,27 @@ int main()
     assert(more_than(BLANK,new_excel_number(-1)).number == true);
     assert(more_than(new_excel_number(1),BLANK).number == true);
     assert(more_than(new_excel_number(-1),BLANK).number == false);
+
+	// Test less than on
+	// .. numbers
+    assert(less_than(new_excel_number(1),new_excel_number(2)).number == true);
+    assert(less_than(new_excel_number(1),new_excel_number(1)).number == false);
+    assert(less_than(new_excel_number(1),new_excel_number(0)).number == false);
+	// .. booleans
+    assert(less_than(FALSE,FALSE).number == false);
+    assert(less_than(FALSE,TRUE).number == true);
+    assert(less_than(TRUE,FALSE).number == false);
+    assert(less_than(TRUE,TRUE).number == false);
+	// ..strings
+    assert(less_than(new_excel_string("HELLO"),new_excel_string("Ardvark")).number == false);		
+    assert(less_than(new_excel_string("HELLO"),new_excel_string("world")).number == true);
+    assert(less_than(new_excel_string("HELLO"),new_excel_string("hello")).number == false);
+	// ..blanks
+    assert(less_than(BLANK,new_excel_number(1)).number == true);
+    assert(less_than(BLANK,new_excel_number(-1)).number == false);
+    assert(less_than(new_excel_number(1),BLANK).number == false);
+    assert(less_than(new_excel_number(-1),BLANK).number == true);
+
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
