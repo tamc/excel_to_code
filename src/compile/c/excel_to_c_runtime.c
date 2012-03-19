@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+// FIXME: Extract a header file
+
 // I predefine an array of ExcelValues to store calculations
 // Probably bad practice. At the very least, I should make it
 // link to the cell reference in some way.
@@ -29,7 +31,11 @@ struct excel_value {
 
 typedef struct excel_value ExcelValue;
 
+
+// Headers
+ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
+
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
 int cell_counter = 0;
@@ -67,7 +73,8 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 };
 
 // Constants
-ExcelValue BLANK = {.type = ExcelEmpty };
+ExcelValue ZERO = {.type = ExcelNumber, .number = 0};
+ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
 
 // Booleans
 ExcelValue TRUE = {.type = ExcelBoolean, .number = true };
@@ -82,6 +89,40 @@ ExcelValue NA = {.type = ExcelError, .number = 4};
 
 // This is the error flag
 int conversion_error = 0;
+
+// Helpful for debugging
+void inspect_excel_value(ExcelValue v) {
+	switch (v.type) {
+  	  case ExcelNumber:
+		  printf("Number: %f\n",v.number);
+		  break;
+	  case ExcelBoolean:
+		  if(v.number == true) {
+			  printf("True\n");
+		  } else if(v.number == false) {
+			  printf("False\n");
+		  } else {
+			  printf("Boolean with undefined state %f\n",v.number);
+		  }
+		  break;
+	  case ExcelEmpty:
+	  	if(v.number == 0) {
+	  		printf("Empty\n");
+		} else {
+			printf("Empty with unexpected state %f\n",v.number);	
+		}
+		break;
+	  case ExcelRange:
+		 printf("Range rows: %d, columns: %d\n",v.rows,v.columns);
+		 break;
+	  case ExcelString:
+		 printf("String: '%s'",v.string);
+		 break;
+	  case ExcelError:
+		 printf("Error number %f",v.number);
+		 break;
+	 };
+}
 
 // Extracts numbers from ExcelValues
 // Excel treats empty cells as zero
@@ -317,7 +358,111 @@ ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false
 ExcelValue excel_if_2(ExcelValue condition, ExcelValue true_case ) {
 	return excel_if( condition, true_case, FALSE );
 }
+
+ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelValue match_type ) {
+	// Guard against errors
+	if(lookup_value.type == ExcelError) return lookup_value;
+	if(lookup_array.type == ExcelError) return lookup_array;
+	if(match_type.type == ExcelError) return match_type;
 	
+	// Blanks are treaked as zeros
+	if(lookup_value.type == ExcelEmpty) lookup_value = ZERO;
+
+	// Setup the array
+	ExcelValue *array;
+	int size;
+	if(lookup_array.type == ExcelRange) {
+		// Check that the range is a row or column rather than an area
+		if((lookup_array.rows == 1) || (lookup_array.columns == 1)) {
+			array = lookup_array.array;
+			size = lookup_array.rows * lookup_array.columns;
+		} else {
+			// return NA error if covers an area.
+			return NA;
+		};
+	} else {
+		// Need to wrap the argument up as an array
+		size = 1;
+		ExcelValue tmp_array[1] = {lookup_array};
+		array = tmp_array;
+	}
+    
+	int type = (int) number_from(match_type);
+	CHECK_FOR_CONVERSION_ERROR;
+	
+	int i;
+	ExcelValue x;
+	
+	switch(type) {
+		case 0:
+			for(i = 0; i < size; i++ ) {
+				x = array[i];
+				if(x.type == ExcelEmpty) x = ZERO;
+				if(excel_equal(lookup_value,x).number == true) return new_excel_number(i+1);
+			}
+			return NA;
+			break;
+		case 1:
+			for(i = 0; i < size; i++ ) {
+				x = array[i];
+				if(x.type == ExcelEmpty) x = ZERO;
+				if(more_than(x,lookup_value).number == true) {
+					if(i==0) return NA;
+					return new_excel_number(i);
+				}
+			}
+			return new_excel_number(size);
+			break;
+		case -1:
+			for(i = 0; i < size; i++ ) {
+				x = array[i];
+				if(x.type == ExcelEmpty) x = ZERO;
+				if(less_than(x,lookup_value).number == true) {
+					if(i==0) return NA;
+					return new_excel_number(i);
+				}
+			}
+			return new_excel_number(size-1);
+			break;
+	}
+	return NA;
+		
+  // 	
+  //   case match_type      
+  //   when 0, 0.0, false
+  //   when 1, 1.0, true
+  //     lookup_array.each_with_index do |item, index|
+  //       item ||= 0
+  //       next if lookup_value.is_a?(String) && !item.is_a?(String)
+  //       next if lookup_value.is_a?(Numeric) && !item.is_a?(Numeric)
+  //       item = item.downcase if item.respond_to?(:downcase)
+  //       if item > lookup_value
+  //         return :na if index == 0
+  //         return index
+  //       end
+  //     end
+  //     return lookup_array.to_a.size
+  //   when -1, -1.0
+  //     lookup_array.each_with_index do |item, index|
+  //       item ||= 0
+  //       next if lookup_value.is_a?(String) && !item.is_a?(String)
+  //       next if lookup_value.is_a?(Numeric) && !item.is_a?(Numeric)
+  //       item = item.downcase if item.respond_to?(:downcase)
+  //       if item < lookup_value
+  //         return :na if index == 0
+  //         return index
+  //       end
+  //     end
+  //     return lookup_array.to_a.size - 1
+  //   end
+  //   return :na
+  // end
+}
+
+ExcelValue excel_match_2(ExcelValue lookup_value, ExcelValue lookup_array ) {
+	return excel_match(lookup_value,lookup_array,new_excel_number(0));
+}
+
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
 	if(a_v.type == ExcelError) return a_v;
 	if(b_v.type == ExcelError) return b_v;
@@ -482,6 +627,38 @@ int main()
 	assert(excel_if(FALSE,new_excel_number(10),new_excel_number(20)).number == 20);
 	assert(excel_if(NA,new_excel_number(10),new_excel_number(20)).type == ExcelError);
 	
+	// Test excel_match
+	ExcelValue excel_match_array_1[] = { new_excel_number(10), new_excel_number(100) };
+	ExcelValue excel_match_array_1_v = new_excel_range(excel_match_array_1,1,2);
+	ExcelValue excel_match_array_2[] = { new_excel_string("Pear"), new_excel_string("Bear"), new_excel_string("Apple") };
+	ExcelValue excel_match_array_2_v = new_excel_range(excel_match_array_2,3,1);
+	ExcelValue excel_match_array_4[] = { new_excel_number(1), BLANK, new_excel_number(0) };
+	ExcelValue excel_match_array_4_v = new_excel_range(excel_match_array_4,1,3);
+	ExcelValue excel_match_array_5[] = { new_excel_number(1), new_excel_number(0), BLANK };
+	ExcelValue excel_match_array_5_v = new_excel_range(excel_match_array_5,1,3);
+	
+	// Two argument version
+	assert(excel_match_2(new_excel_number(10),excel_match_array_1_v).number == 1);
+	assert(excel_match_2(new_excel_number(100),excel_match_array_1_v).number == 2);
+	assert(excel_match_2(new_excel_number(1000),excel_match_array_1_v).type == ExcelError);
+    assert(excel_match_2(new_excel_number(0), excel_match_array_4_v).number == 2);
+    assert(excel_match_2(BLANK, excel_match_array_5_v).number == 2);
+
+	// Three argument version	
+    assert(excel_match(new_excel_number(10.0), excel_match_array_1_v, new_excel_number(0) ).number == 1);
+    assert(excel_match(new_excel_number(100.0), excel_match_array_1_v, new_excel_number(0) ).number == 2);
+    assert(excel_match(new_excel_number(1000.0), excel_match_array_1_v, new_excel_number(0) ).type == ExcelError);
+    assert(excel_match(new_excel_string("bEAr"), excel_match_array_2_v, new_excel_number(0) ).number == 2);
+    assert(excel_match(new_excel_number(1000.0), excel_match_array_1_v, new_excel_number(1) ).number == 2);
+    assert(excel_match(new_excel_number(1.0), excel_match_array_1_v, new_excel_number(1) ).type == ExcelError);
+    assert(excel_match(new_excel_string("Care"), excel_match_array_2_v, new_excel_number(-1) ).number == 1  );
+    assert(excel_match(new_excel_string("Zebra"), excel_match_array_2_v, new_excel_number(-1) ).type == ExcelError);
+    assert(excel_match(new_excel_string("a"), excel_match_array_2_v, new_excel_number(-1) ).number == 2);
+	
+	// When not given a range
+    assert(excel_match(new_excel_number(10.0), new_excel_number(10), new_excel_number(0.0)).number == 1);
+    assert(excel_match(new_excel_number(20.0), new_excel_number(10), new_excel_number(0.0)).type == ExcelError);
+    assert(excel_match(new_excel_number(10.0), excel_match_array_1_v, BLANK).number == 1);
 
 	// Test more than on
 	// .. numbers
