@@ -35,6 +35,8 @@ typedef struct excel_value ExcelValue;
 // Headers
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
+ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
+ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -426,42 +428,55 @@ ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelVa
 			break;
 	}
 	return NA;
-		
-  // 	
-  //   case match_type      
-  //   when 0, 0.0, false
-  //   when 1, 1.0, true
-  //     lookup_array.each_with_index do |item, index|
-  //       item ||= 0
-  //       next if lookup_value.is_a?(String) && !item.is_a?(String)
-  //       next if lookup_value.is_a?(Numeric) && !item.is_a?(Numeric)
-  //       item = item.downcase if item.respond_to?(:downcase)
-  //       if item > lookup_value
-  //         return :na if index == 0
-  //         return index
-  //       end
-  //     end
-  //     return lookup_array.to_a.size
-  //   when -1, -1.0
-  //     lookup_array.each_with_index do |item, index|
-  //       item ||= 0
-  //       next if lookup_value.is_a?(String) && !item.is_a?(String)
-  //       next if lookup_value.is_a?(Numeric) && !item.is_a?(Numeric)
-  //       item = item.downcase if item.respond_to?(:downcase)
-  //       if item < lookup_value
-  //         return :na if index == 0
-  //         return index
-  //       end
-  //     end
-  //     return lookup_array.to_a.size - 1
-  //   end
-  //   return :na
-  // end
 }
 
 ExcelValue excel_match_2(ExcelValue lookup_value, ExcelValue lookup_array ) {
 	return excel_match(lookup_value,lookup_array,new_excel_number(0));
 }
+
+ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue start_number_v) {
+	// Trap errors
+	if(find_text_v.type == ExcelError) return find_text_v;
+	if(within_text_v.type == ExcelError) return within_text_v;
+	if(start_number_v.type == ExcelError) return start_number_v;
+
+	char *find_text;	
+	char *within_text;
+	char *within_text_offset;
+	char *result;
+	int start_number = number_from(start_number_v);
+	CHECK_FOR_CONVERSION_ERROR
+
+	// Deal with blanks 
+	if(within_text_v.type == ExcelString) {
+		within_text = within_text_v.string;
+	} else if( within_text_v.type == ExcelEmpty) {
+		within_text = "";
+	}
+
+	if(find_text_v.type == ExcelString) {
+		find_text = find_text_v.string;
+	} else if( find_text_v.type == ExcelEmpty) {
+		return start_number_v;
+	}
+	
+	// Check length
+	if(start_number < 1) return VALUE;
+	if(start_number > strlen(within_text)) return VALUE;
+	
+	// Offset our within_text pointer
+	// FIXME: No way this is utf-8 compatible
+	within_text_offset = within_text + (start_number - 1);
+	result = strstr(within_text_offset,find_text);
+	if(result) {
+		return new_excel_number(result - within_text + 1);
+	}
+	return VALUE;
+}
+
+ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v) {
+	return find(string_to_look_for_v, string_to_look_in_v, new_excel_number(1));
+};
 
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
 	if(a_v.type == ExcelError) return a_v;
@@ -700,6 +715,33 @@ int main()
     assert(less_than(new_excel_number(1),BLANK).number == false);
     assert(less_than(new_excel_number(-1),BLANK).number == true);
 
+	// Test FIND function
+	// ... should find the first occurrence of one string in another, returning :value if the string doesn't match
+	assert(find_2(new_excel_string("one"),new_excel_string("onetwothree")).number == 1);
+	assert(find_2(new_excel_string("one"),new_excel_string("twoonethree")).number == 4);
+	assert(find_2(new_excel_string("one"),new_excel_string("twoonthree")).type == ExcelError);
+    // ... should find the first occurrence of one string in another after a given index, returning :value if the string doesn't match
+	assert(find(new_excel_string("one"),new_excel_string("onetwothree"),new_excel_number(1)).number == 1);
+	assert(find(new_excel_string("one"),new_excel_string("twoonethree"),new_excel_number(5)).type == ExcelError);
+	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(2)).number == 4);
+    // ... should be possible for the start_num to be a string, if that string converts to a number
+	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_string("2")).number == 4);
+    // ... should return a :value error when given anything but a number as the third argument
+	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_string("a")).type == ExcelError);
+    // ... should return a :value error when given a third argument that is less than 1 or greater than the length of the string
+	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(0)).type == ExcelError);
+	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(-1)).type == ExcelError);
+	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(7)).type == ExcelError);
+	// ... nil in the first argument matches any character
+	assert(find_2(BLANK,new_excel_string("abcdefg")).number == 1);
+	assert(find(BLANK,new_excel_string("abcdefg"),new_excel_number(4)).number == 4);
+    // ... should treat nil in the second argument as an empty string
+	assert(find_2(BLANK,BLANK).number == 1);
+	assert(find_2(new_excel_string("a"),BLANK).type == ExcelError);
+	// ... should return an error if any argument is an error
+	assert(find(new_excel_string("one"),new_excel_string("onetwothree"),NA).type == ExcelError);
+	assert(find(new_excel_string("one"),NA,new_excel_number(1)).type == ExcelError);
+	assert(find(NA,new_excel_string("onetwothree"),new_excel_number(1)).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
