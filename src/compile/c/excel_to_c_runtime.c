@@ -37,6 +37,7 @@ ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
+ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -478,6 +479,11 @@ ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_
 	return find(string_to_look_for_v, string_to_look_in_v, new_excel_number(1));
 };
 
+ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
+	if(value.type == ExcelError) return value_if_error;
+	return value;
+}
+
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
 	if(a_v.type == ExcelError) return a_v;
 	if(b_v.type == ExcelError) return b_v;
@@ -742,6 +748,10 @@ int main()
 	assert(find(new_excel_string("one"),new_excel_string("onetwothree"),NA).type == ExcelError);
 	assert(find(new_excel_string("one"),NA,new_excel_number(1)).type == ExcelError);
 	assert(find(NA,new_excel_string("onetwothree"),new_excel_number(1)).type == ExcelError);
+	
+	// Test the IFERROR function
+    assert(iferror(new_excel_string("ok"),new_excel_number(1)).type == ExcelString);
+	assert(iferror(VALUE,new_excel_number(1)).type == ExcelNumber);		
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
