@@ -317,6 +317,34 @@ ExcelValue excel_if_2(ExcelValue condition, ExcelValue true_case ) {
 	return excel_if( condition, true_case, FALSE );
 }
 	
+ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
+	if(a_v.type == ExcelError) return a_v;
+	if(b_v.type == ExcelError) return b_v;
+
+	switch (a_v.type) {
+  	  case ExcelNumber:
+	  case ExcelBoolean: 
+	  case ExcelEmpty:
+		if((b_v.type == ExcelNumber) || (b_v.type == ExcelBoolean) || (b_v.type == ExcelEmpty)) {
+			if(a_v.number <= b_v.number) return FALSE;
+			return TRUE;
+		} 
+		return FALSE;
+	  case ExcelString:
+	  	if(b_v.type == ExcelString) {
+		  	if(strcasecmp(a_v.string,b_v.string) <= 0 ) return FALSE;
+			return TRUE;	  		
+		}
+		return FALSE;
+  	  case ExcelError:
+		return a_v;
+  	  case ExcelRange:
+  		return NA;
+  }
+  return FALSE;
+}
+
+
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
@@ -428,6 +456,26 @@ int main()
 	assert(excel_if(NA,new_excel_number(10),new_excel_number(20)).type == ExcelError);
 	
 
+	// Test more than on
+	// .. numbers
+    assert(more_than(new_excel_number(1),new_excel_number(2)).number == false);
+    assert(more_than(new_excel_number(1),new_excel_number(1)).number == false);
+    assert(more_than(new_excel_number(1),new_excel_number(0)).number == true);
+	// .. booleans
+    assert(more_than(FALSE,FALSE).number == false);
+    assert(more_than(FALSE,TRUE).number == false);
+    assert(more_than(TRUE,FALSE).number == true);
+    assert(more_than(TRUE,TRUE).number == false);
+	// ..strings
+    assert(more_than(new_excel_string("HELLO"),new_excel_string("Ardvark")).number == true);		
+    assert(more_than(new_excel_string("HELLO"),new_excel_string("world")).number == false);
+    assert(more_than(new_excel_string("HELLO"),new_excel_string("hello")).number == false);
+	// ..blanks
+    assert(more_than(BLANK,new_excel_number(1)).number == false);
+    assert(more_than(BLANK,new_excel_number(-1)).number == true);
+    assert(more_than(new_excel_number(1),BLANK).number == true);
+    assert(more_than(new_excel_number(-1),BLANK).number == false);
+	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
 	// assert(one.number == 38.8);
