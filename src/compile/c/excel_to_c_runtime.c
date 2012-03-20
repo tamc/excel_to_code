@@ -40,6 +40,8 @@ ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v,
 ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
+ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
+ExcelValue left_1(ExcelValue string_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -78,8 +80,10 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 };
 
 // Constants
-ExcelValue ZERO = {.type = ExcelNumber, .number = 0};
 ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
+ExcelValue ZERO = {.type = ExcelNumber, .number = 0};
+ExcelValue ONE = {.type = ExcelNumber, .number = 1};
+
 
 // Booleans
 ExcelValue TRUE = {.type = ExcelBoolean, .number = true };
@@ -175,6 +179,7 @@ double number_from(ExcelValue v) {
 
 #define NUMBER(value_name, name) double name; if(value_name.type == ExcelError) { return value_name; }; name = number_from(value_name);
 #define CHECK_FOR_CONVERSION_ERROR 	if(conversion_error) { conversion_error = 0; return VALUE; };
+#define CHECK_FOR_PASSED_ERROR(name) 	if(name.type == ExcelError) return name;
 	
 ExcelValue excel_abs(ExcelValue a_v) {
 	NUMBER(a_v, a)
@@ -454,9 +459,9 @@ ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue c
 ExcelValue excel_index_2(ExcelValue array_v, ExcelValue offset) {
 	if(array_v.type == ExcelRange) {
 		if(array_v.rows == 1) {
-			return excel_index(array_v,new_excel_number(1),offset);
+			return excel_index(array_v,ONE,offset);
 		} else if (array_v.columns == 1) {
-			return excel_index(array_v,offset,new_excel_number(1));
+			return excel_index(array_v,offset,ONE);
 		} else {
 			return REF;
 		}
@@ -583,8 +588,49 @@ ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue sta
 }
 
 ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v) {
-	return find(string_to_look_for_v, string_to_look_in_v, new_excel_number(1));
+	return find(string_to_look_for_v, string_to_look_in_v, ONE);
 };
+
+ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
+	CHECK_FOR_PASSED_ERROR(string_v)
+	CHECK_FOR_PASSED_ERROR(number_of_characters_v)
+	if(string_v.type == ExcelEmpty) return BLANK;
+	if(number_of_characters_v.type == ExcelEmpty) return BLANK;
+	
+	int number_of_characters = (int) number_from(number_of_characters_v);
+	CHECK_FOR_CONVERSION_ERROR
+
+	char *string; 
+	switch (string_v.type) {
+  	  case ExcelString:
+  		string = string_v.string;
+  		break;
+  	  case ExcelNumber:
+		  string = malloc(20);
+		  snprintf(string,20,"%f",string_v.number);
+		  break;
+	  case ExcelBoolean:
+	  	if(string_v.number == true) {
+	  		string = "TRUE";
+		} else {
+			string = "FALSE";
+		}
+		break;
+	  case ExcelEmpty:	  	 
+  	  case ExcelError:
+  	  case ExcelRange:
+		return string_v;
+	}
+	
+	char *left_string = malloc(number_of_characters+1);
+	memcpy(left_string,string,number_of_characters);
+	left_string[number_of_characters] = '\0';
+	return new_excel_string(left_string);
+}
+
+ExcelValue left_1(ExcelValue string_v) {
+	return left(string_v, ONE);
+}
 
 ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
 	if(value.type == ExcelError) return value_if_error;
@@ -681,17 +727,17 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 int main()
 {
 	// Test ABS
-	assert(excel_abs(new_excel_number(1)).number == 1);
+	assert(excel_abs(ONE).number == 1);
 	assert(excel_abs(new_excel_number(-1)).number == 1);
 	assert(excel_abs(VALUE).type == ExcelError);
 	
 	// Test ADD
-	assert(add(new_excel_number(1),new_excel_number(-2.5)).number == -1.5);
-	assert(add(new_excel_number(1),VALUE).type == ExcelError);
+	assert(add(ONE,new_excel_number(-2.5)).number == -1.5);
+	assert(add(ONE,VALUE).type == ExcelError);
 	
 	// Test AND
 	ExcelValue true_array1[] = { TRUE, new_excel_number(10)};
-	ExcelValue true_array2[] = { new_excel_number(1) };
+	ExcelValue true_array2[] = { ONE };
 	ExcelValue false_array1[] = { FALSE, new_excel_number(10)};
 	ExcelValue false_array2[] = { TRUE, new_excel_number(0)};
 	// ExcelValue error_array1[] = { new_excel_number(10)}; // Not implemented
@@ -713,11 +759,11 @@ int main()
 	assert(average(4, array3).type == ExcelError);
 	
 	// Test CHOOSE
-	assert(choose(new_excel_number(1),4,array1).number == 10);
+	assert(choose(ONE,4,array1).number == 10);
 	assert(choose(new_excel_number(4),4,array1).type == ExcelBoolean);
 	assert(choose(new_excel_number(0),4,array1).type == ExcelError);
 	assert(choose(new_excel_number(5),4,array1).type == ExcelError);
-	assert(choose(new_excel_number(1),4,array3).type == ExcelError);	
+	assert(choose(ONE,4,array3).type == ExcelError);	
 	
 	// Test COUNT
 	assert(count(4,array1).number == 2);
@@ -738,8 +784,8 @@ int main()
 	assert(excel_equal(new_excel_number(1.2),new_excel_number(1.2)).number == true);
 	assert(excel_equal(new_excel_string("hello"), new_excel_string("HELLO")).number == true);
 	assert(excel_equal(new_excel_string("hello world"), new_excel_string("HELLO")).number == false);
-	assert(excel_equal(new_excel_string("1"), new_excel_number(1)).number == false);
-	assert(excel_equal(DIV0, new_excel_number(1)).type == ExcelError);
+	assert(excel_equal(new_excel_string("1"), ONE).number == false);
+	assert(excel_equal(DIV0, ONE).type == ExcelError);
 	
 	// Test excel_if
 	// Two argument version
@@ -760,9 +806,9 @@ int main()
 	ExcelValue excel_match_array_1_v = new_excel_range(excel_match_array_1,1,2);
 	ExcelValue excel_match_array_2[] = { new_excel_string("Pear"), new_excel_string("Bear"), new_excel_string("Apple") };
 	ExcelValue excel_match_array_2_v = new_excel_range(excel_match_array_2,3,1);
-	ExcelValue excel_match_array_4[] = { new_excel_number(1), BLANK, new_excel_number(0) };
+	ExcelValue excel_match_array_4[] = { ONE, BLANK, new_excel_number(0) };
 	ExcelValue excel_match_array_4_v = new_excel_range(excel_match_array_4,1,3);
-	ExcelValue excel_match_array_5[] = { new_excel_number(1), new_excel_number(0), BLANK };
+	ExcelValue excel_match_array_5[] = { ONE, new_excel_number(0), BLANK };
 	ExcelValue excel_match_array_5_v = new_excel_range(excel_match_array_5,1,3);
 	
 	// Two argument version
@@ -777,8 +823,8 @@ int main()
     assert(excel_match(new_excel_number(100.0), excel_match_array_1_v, new_excel_number(0) ).number == 2);
     assert(excel_match(new_excel_number(1000.0), excel_match_array_1_v, new_excel_number(0) ).type == ExcelError);
     assert(excel_match(new_excel_string("bEAr"), excel_match_array_2_v, new_excel_number(0) ).number == 2);
-    assert(excel_match(new_excel_number(1000.0), excel_match_array_1_v, new_excel_number(1) ).number == 2);
-    assert(excel_match(new_excel_number(1.0), excel_match_array_1_v, new_excel_number(1) ).type == ExcelError);
+    assert(excel_match(new_excel_number(1000.0), excel_match_array_1_v, ONE ).number == 2);
+    assert(excel_match(new_excel_number(1.0), excel_match_array_1_v, ONE ).type == ExcelError);
     assert(excel_match(new_excel_string("Care"), excel_match_array_2_v, new_excel_number(-1) ).number == 1  );
     assert(excel_match(new_excel_string("Zebra"), excel_match_array_2_v, new_excel_number(-1) ).type == ExcelError);
     assert(excel_match(new_excel_string("a"), excel_match_array_2_v, new_excel_number(-1) ).number == 2);
@@ -790,9 +836,9 @@ int main()
 
 	// Test more than on
 	// .. numbers
-    assert(more_than(new_excel_number(1),new_excel_number(2)).number == false);
-    assert(more_than(new_excel_number(1),new_excel_number(1)).number == false);
-    assert(more_than(new_excel_number(1),new_excel_number(0)).number == true);
+    assert(more_than(ONE,new_excel_number(2)).number == false);
+    assert(more_than(ONE,ONE).number == false);
+    assert(more_than(ONE,new_excel_number(0)).number == true);
 	// .. booleans
     assert(more_than(FALSE,FALSE).number == false);
     assert(more_than(FALSE,TRUE).number == false);
@@ -803,16 +849,16 @@ int main()
     assert(more_than(new_excel_string("HELLO"),new_excel_string("world")).number == false);
     assert(more_than(new_excel_string("HELLO"),new_excel_string("hello")).number == false);
 	// ..blanks
-    assert(more_than(BLANK,new_excel_number(1)).number == false);
+    assert(more_than(BLANK,ONE).number == false);
     assert(more_than(BLANK,new_excel_number(-1)).number == true);
-    assert(more_than(new_excel_number(1),BLANK).number == true);
+    assert(more_than(ONE,BLANK).number == true);
     assert(more_than(new_excel_number(-1),BLANK).number == false);
 
 	// Test less than on
 	// .. numbers
-    assert(less_than(new_excel_number(1),new_excel_number(2)).number == true);
-    assert(less_than(new_excel_number(1),new_excel_number(1)).number == false);
-    assert(less_than(new_excel_number(1),new_excel_number(0)).number == false);
+    assert(less_than(ONE,new_excel_number(2)).number == true);
+    assert(less_than(ONE,ONE).number == false);
+    assert(less_than(ONE,new_excel_number(0)).number == false);
 	// .. booleans
     assert(less_than(FALSE,FALSE).number == false);
     assert(less_than(FALSE,TRUE).number == true);
@@ -823,9 +869,9 @@ int main()
     assert(less_than(new_excel_string("HELLO"),new_excel_string("world")).number == true);
     assert(less_than(new_excel_string("HELLO"),new_excel_string("hello")).number == false);
 	// ..blanks
-    assert(less_than(BLANK,new_excel_number(1)).number == true);
+    assert(less_than(BLANK,ONE).number == true);
     assert(less_than(BLANK,new_excel_number(-1)).number == false);
-    assert(less_than(new_excel_number(1),BLANK).number == false);
+    assert(less_than(ONE,BLANK).number == false);
     assert(less_than(new_excel_number(-1),BLANK).number == true);
 
 	// Test FIND function
@@ -834,7 +880,7 @@ int main()
 	assert(find_2(new_excel_string("one"),new_excel_string("twoonethree")).number == 4);
 	assert(find_2(new_excel_string("one"),new_excel_string("twoonthree")).type == ExcelError);
     // ... should find the first occurrence of one string in another after a given index, returning :value if the string doesn't match
-	assert(find(new_excel_string("one"),new_excel_string("onetwothree"),new_excel_number(1)).number == 1);
+	assert(find(new_excel_string("one"),new_excel_string("onetwothree"),ONE).number == 1);
 	assert(find(new_excel_string("one"),new_excel_string("twoonethree"),new_excel_number(5)).type == ExcelError);
 	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(2)).number == 4);
     // ... should be possible for the start_num to be a string, if that string converts to a number
@@ -853,18 +899,18 @@ int main()
 	assert(find_2(new_excel_string("a"),BLANK).type == ExcelError);
 	// ... should return an error if any argument is an error
 	assert(find(new_excel_string("one"),new_excel_string("onetwothree"),NA).type == ExcelError);
-	assert(find(new_excel_string("one"),NA,new_excel_number(1)).type == ExcelError);
-	assert(find(NA,new_excel_string("onetwothree"),new_excel_number(1)).type == ExcelError);
+	assert(find(new_excel_string("one"),NA,ONE).type == ExcelError);
+	assert(find(NA,new_excel_string("onetwothree"),ONE).type == ExcelError);
 	
 	// Test the IFERROR function
-    assert(iferror(new_excel_string("ok"),new_excel_number(1)).type == ExcelString);
-	assert(iferror(VALUE,new_excel_number(1)).type == ExcelNumber);		
+    assert(iferror(new_excel_string("ok"),ONE).type == ExcelString);
+	assert(iferror(VALUE,ONE).type == ExcelNumber);		
 	
 	// Test the INDEX function
 	ExcelValue index_array_1[] = { new_excel_number(10), new_excel_number(20), BLANK };
 	ExcelValue index_array_1_v_column = new_excel_range(index_array_1,3,1);
 	ExcelValue index_array_1_v_row = new_excel_range(index_array_1,1,3);
-	ExcelValue index_array_2[] = { BLANK, new_excel_number(1), new_excel_number(10), new_excel_number(11), new_excel_number(100), new_excel_number(101) };
+	ExcelValue index_array_2[] = { BLANK, ONE, new_excel_number(10), new_excel_number(11), new_excel_number(100), new_excel_number(101) };
 	ExcelValue index_array_2_v = new_excel_range(index_array_2,3,2);
 	// ... if given one argument should return the value at that offset in the range
 	assert(excel_index_2(index_array_1_v_column,new_excel_number(2.0)).number == 20);
@@ -872,7 +918,7 @@ int main()
 	// ... but not if the range is not a single row or single column
 	assert(excel_index_2(index_array_2_v,new_excel_number(2.0)).type == ExcelError);
     // ... it should return the value in the array at position row_number, column_number
-	assert(excel_index(new_excel_number(10),new_excel_number(1),new_excel_number(1)).number == 10);
+	assert(excel_index(new_excel_number(10),ONE,ONE).number == 10);
 	assert(excel_index(index_array_2_v,new_excel_number(1.0),new_excel_number(2.0)).number == 1);
 	assert(excel_index(index_array_2_v,new_excel_number(2.0),new_excel_number(1.0)).number == 10);
 	assert(excel_index(index_array_2_v,new_excel_number(3.0),new_excel_number(1.0)).number == 100);
@@ -907,6 +953,23 @@ int main()
 	assert(excel_index(index_array_2_v,BLANK,new_excel_number(2.0)).type == ExcelRange);
     // ... it should return an error if an argument is an error
 	assert(excel_index(NA,NA,NA).type == ExcelError);
+	
+	// LEFT(string,[characters])
+	// ... should return the left n characters from a string
+    assert(strcmp(left_1(new_excel_string("ONE")).string,"O") == 0);
+    assert(strcmp(left(new_excel_string("ONE"),ONE).string,"O") == 0);
+    assert(strcmp(left(new_excel_string("ONE"),new_excel_number(3)).string,"ONE") == 0);
+	// ... should turn numbers into strings before processing
+	assert(strcmp(left(new_excel_number(1.31e12),new_excel_number(3)).string, "131") == 0);
+	// ... should turn booleans into the words TRUE and FALSE before processing
+    assert(strcmp(left(TRUE,new_excel_number(3)).string,"TRU") == 0);
+	assert(strcmp(left(FALSE,new_excel_number(3)).string,"FAL") == 0);
+	// ... should return nil if given nil for either argument
+	assert(left(BLANK,new_excel_number(3)).type == ExcelEmpty);
+	assert(left(new_excel_string("ONE"),BLANK).type == ExcelEmpty);
+	// ... should return an error if an argument is an error
+    assert(left_1(NA).type == ExcelError);
+    assert(left(new_excel_string("ONE"),NA).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
