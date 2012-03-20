@@ -35,6 +35,7 @@ typedef struct excel_value ExcelValue;
 // Headers
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
+ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
 ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
@@ -691,6 +692,34 @@ ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
   return FALSE;
 }
 
+ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
+	if(a_v.type == ExcelError) return a_v;
+	if(b_v.type == ExcelError) return b_v;
+
+	switch (a_v.type) {
+  	  case ExcelNumber:
+	  case ExcelBoolean: 
+	  case ExcelEmpty:
+		if((b_v.type == ExcelNumber) || (b_v.type == ExcelBoolean) || (b_v.type == ExcelEmpty)) {
+			if(a_v.number > b_v.number) return FALSE;
+			return TRUE;
+		} 
+		return FALSE;
+	  case ExcelString:
+	  	if(b_v.type == ExcelString) {
+		  	if(strcasecmp(a_v.string,b_v.string) > 0 ) return FALSE;
+			return TRUE;	  		
+		}
+		return FALSE;
+  	  case ExcelError:
+		return a_v;
+  	  case ExcelRange:
+  		return NA;
+  }
+  return FALSE;
+}
+
+
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
@@ -970,6 +999,27 @@ int main()
 	// ... should return an error if an argument is an error
     assert(left_1(NA).type == ExcelError);
     assert(left(new_excel_string("ONE"),NA).type == ExcelError);
+	
+	// Test less than or equal to
+	// .. numbers
+    assert(less_than_or_equal(ONE,new_excel_number(2)).number == true);
+    assert(less_than_or_equal(ONE,ONE).number == true);
+    assert(less_than_or_equal(ONE,new_excel_number(0)).number == false);
+	// .. booleans
+    assert(less_than_or_equal(FALSE,FALSE).number == true);
+    assert(less_than_or_equal(FALSE,TRUE).number == true);
+    assert(less_than_or_equal(TRUE,FALSE).number == false);
+    assert(less_than_or_equal(TRUE,TRUE).number == true);
+	// ..strings
+    assert(less_than_or_equal(new_excel_string("HELLO"),new_excel_string("Ardvark")).number == false);		
+    assert(less_than_or_equal(new_excel_string("HELLO"),new_excel_string("world")).number == true);
+    assert(less_than_or_equal(new_excel_string("HELLO"),new_excel_string("hello")).number == true);
+	// ..blanks
+    assert(less_than_or_equal(BLANK,ONE).number == true);
+    assert(less_than_or_equal(BLANK,new_excel_number(-1)).number == false);
+    assert(less_than_or_equal(ONE,BLANK).number == false);
+    assert(less_than_or_equal(new_excel_number(-1),BLANK).number == true);
+
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
