@@ -95,6 +95,8 @@ int conversion_error = 0;
 
 // Helpful for debugging
 void inspect_excel_value(ExcelValue v) {
+	ExcelValue *array;
+	int i, j, k;
 	switch (v.type) {
   	  case ExcelNumber:
 		  printf("Number: %f\n",v.number);
@@ -117,6 +119,15 @@ void inspect_excel_value(ExcelValue v) {
 		break;
 	  case ExcelRange:
 		 printf("Range rows: %d, columns: %d\n",v.rows,v.columns);
+		 array = v.array;
+		 for(i = 0; i < v.rows; i++) {
+			 printf("Row %d:\n",i+1);
+			 for(j = 0; j < v.columns; j++ ) {
+				 printf("%d ",j+1);
+				 k = (i * v.columns) + j;
+				 inspect_excel_value(array[k]);
+			 }
+		 }
 		 break;
 	  case ExcelString:
 		 printf("String: '%s'",v.string);
