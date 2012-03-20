@@ -38,6 +38,8 @@ ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
 ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
+ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
+ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -372,6 +374,100 @@ ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false
 ExcelValue excel_if_2(ExcelValue condition, ExcelValue true_case ) {
 	return excel_if( condition, true_case, FALSE );
 }
+
+ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v) {
+	// Guard agaist errors
+	if(array_v.type == ExcelError) return array_v;
+	if(row_number_v.type == ExcelError) return row_number_v;
+	if(column_number_v.type == ExcelError) return column_number_v;
+	
+	ExcelValue *array;
+	int rows;
+	int columns;
+	
+	NUMBER(row_number_v, row_number)
+	NUMBER(column_number_v, column_number)
+	CHECK_FOR_CONVERSION_ERROR
+	
+	if(array_v.type == ExcelRange) {
+		array = array_v.array;
+		rows = array_v.rows;
+		columns = array_v.columns;
+	} else {
+		ExcelValue tmp_array[] = {array_v};
+		array = tmp_array;
+		rows = 1;
+		columns = 1;
+	}
+	
+	if(row_number > rows) return REF;
+	if(column_number > columns) return REF;
+		
+	if(row_number == 0) { // We need the whole column
+		if(column_number < 1) return REF;
+		ExcelValue *result = malloc( sizeof(ExcelValue)*rows);
+		int result_index = 0;
+		ExcelValue r;
+		int array_index;
+		int i;
+		for(i = 0; i < rows; i++) {
+			array_index = (i*columns) + column_number - 1;
+			r = array[array_index];
+			if(r.type == ExcelEmpty) {
+				result[result_index] = ZERO;
+			} else {
+				result[result_index] = r;
+			}			
+			result_index++;
+		}
+		return new_excel_range(result,rows,1);
+	} else if(column_number == 0 ) { // We need the whole row
+		if(row_number < 1) return REF;
+		ExcelValue *result = malloc( sizeof(ExcelValue)*columns);
+		ExcelValue r;
+		int row_start = ((row_number-1)*columns);
+		int row_finish = row_start + columns;
+		int result_index = 0;
+		int i;
+		for(i = row_start; i < row_finish; i++) {
+			r = array[i];
+			if(r.type == ExcelEmpty) {
+				result[result_index] = ZERO;
+			} else {
+				result[result_index] = r;
+			}
+			result_index++;
+		}
+		return new_excel_range(result,1,columns);
+	} else { // We need a precise point
+		if(row_number < 1) return REF;
+		if(column_number < 1) return REF;
+		int position = ((row_number - 1) * columns) + column_number - 1;
+		ExcelValue result = array[position];
+		if(result.type == ExcelEmpty) return ZERO;
+		return result;
+	}
+	
+	return FALSE;
+};
+
+ExcelValue excel_index_2(ExcelValue array_v, ExcelValue offset) {
+	if(array_v.type == ExcelRange) {
+		if(array_v.rows == 1) {
+			return excel_index(array_v,new_excel_number(1),offset);
+		} else if (array_v.columns == 1) {
+			return excel_index(array_v,offset,new_excel_number(1));
+		} else {
+			return REF;
+		}
+	} else if (offset.type == ExcelNumber && offset.number == 1) {
+		return array_v;
+	} else {
+		return REF;
+	}
+	return REF;
+};
+
 
 ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelValue match_type ) {
 	// Guard against errors
@@ -763,6 +859,54 @@ int main()
 	// Test the IFERROR function
     assert(iferror(new_excel_string("ok"),new_excel_number(1)).type == ExcelString);
 	assert(iferror(VALUE,new_excel_number(1)).type == ExcelNumber);		
+	
+	// Test the INDEX function
+	ExcelValue index_array_1[] = { new_excel_number(10), new_excel_number(20), BLANK };
+	ExcelValue index_array_1_v_column = new_excel_range(index_array_1,3,1);
+	ExcelValue index_array_1_v_row = new_excel_range(index_array_1,1,3);
+	ExcelValue index_array_2[] = { BLANK, new_excel_number(1), new_excel_number(10), new_excel_number(11), new_excel_number(100), new_excel_number(101) };
+	ExcelValue index_array_2_v = new_excel_range(index_array_2,3,2);
+	// ... if given one argument should return the value at that offset in the range
+	assert(excel_index_2(index_array_1_v_column,new_excel_number(2.0)).number == 20);
+	assert(excel_index_2(index_array_1_v_row,new_excel_number(2.0)).number == 20);
+	// ... but not if the range is not a single row or single column
+	assert(excel_index_2(index_array_2_v,new_excel_number(2.0)).type == ExcelError);
+    // ... it should return the value in the array at position row_number, column_number
+	assert(excel_index(new_excel_number(10),new_excel_number(1),new_excel_number(1)).number == 10);
+	assert(excel_index(index_array_2_v,new_excel_number(1.0),new_excel_number(2.0)).number == 1);
+	assert(excel_index(index_array_2_v,new_excel_number(2.0),new_excel_number(1.0)).number == 10);
+	assert(excel_index(index_array_2_v,new_excel_number(3.0),new_excel_number(1.0)).number == 100);
+	assert(excel_index(index_array_2_v,new_excel_number(3.0),new_excel_number(3.0)).type == ExcelError);
+	// ... it should return ZERO not blank, if a blank cell is picked
+	assert(excel_index(index_array_2_v,new_excel_number(1.0),new_excel_number(1.0)).type == ExcelNumber);
+	assert(excel_index(index_array_2_v,new_excel_number(1.0),new_excel_number(1.0)).number == 0);
+	assert(excel_index_2(index_array_1_v_row,new_excel_number(3.0)).type == ExcelNumber);
+	assert(excel_index_2(index_array_1_v_row,new_excel_number(3.0)).number == 0);
+	// ... it should return the whole row if given a zero column number
+	ExcelValue index_result_1_v = excel_index(index_array_2_v,new_excel_number(1.0),new_excel_number(0.0));
+	assert(index_result_1_v.type == ExcelRange);
+	assert(index_result_1_v.rows == 1);
+	assert(index_result_1_v.columns == 2);
+	ExcelValue *index_result_1_a = index_result_1_v.array;
+	assert(index_result_1_a[0].number == 0);
+	assert(index_result_1_a[1].number == 1);
+	// ... it should return the whole column if given a zero row number
+	ExcelValue index_result_2_v = excel_index(index_array_2_v,new_excel_number(0),new_excel_number(1.0));
+	assert(index_result_2_v.type == ExcelRange);
+	assert(index_result_2_v.rows == 3);
+	assert(index_result_2_v.columns == 1);
+	ExcelValue *index_result_2_a = index_result_2_v.array;
+	assert(index_result_2_a[0].number == 0);
+	assert(index_result_2_a[1].number == 10);
+	assert(index_result_2_a[2].number == 100);
+    // ... it should return a :ref error when given arguments outside array range
+	assert(excel_index_2(index_array_1_v_row,new_excel_number(-1)).type == ExcelError);
+	assert(excel_index_2(index_array_1_v_row,new_excel_number(4)).type == ExcelError);
+    // ... it should treat nil as zero if given as a required row or column number
+	assert(excel_index(index_array_2_v,new_excel_number(1.0),BLANK).type == ExcelRange);
+	assert(excel_index(index_array_2_v,BLANK,new_excel_number(2.0)).type == ExcelRange);
+    // ... it should return an error if an argument is an error
+	assert(excel_index(NA,NA,NA).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
