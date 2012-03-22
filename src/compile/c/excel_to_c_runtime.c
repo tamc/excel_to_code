@@ -54,6 +54,7 @@ ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue pre
 ExcelValue power(ExcelValue a_v, ExcelValue b_v);
 ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
+ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -957,7 +958,18 @@ ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v) {
 	return new_excel_number( trunc(number * multiple) / multiple );	
 }
 
-
+ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
+	CHECK_FOR_PASSED_ERROR(number_v)
+	CHECK_FOR_PASSED_ERROR(decimal_places_v)
+		
+	NUMBER(number_v, number)
+	NUMBER(decimal_places_v, decimal_places)
+	CHECK_FOR_CONVERSION_ERROR
+		
+	double multiple = pow(10,decimal_places);
+	if(number < 0) return new_excel_number( floor(number * multiple) / multiple );
+	return new_excel_number( ceil(number * multiple) / multiple );	
+}
 
 int test_functions()
 {
@@ -1314,11 +1326,19 @@ int test_functions()
     assert(excel_round(new_excel_number(1.1), new_excel_number(0)).number == 1.0);
     assert(excel_round(new_excel_number(1.5), new_excel_number(0)).number == 2.0);
     assert(excel_round(new_excel_number(1.56),new_excel_number(1)).number == 1.6);
+    assert(excel_round(new_excel_number(-1.56),new_excel_number(1)).number == -1.6);
 
 	// Test rounddown
     assert(rounddown(new_excel_number(1.1), new_excel_number(0)).number == 1.0);
     assert(rounddown(new_excel_number(1.5), new_excel_number(0)).number == 1.0);
+    assert(rounddown(new_excel_number(1.56),new_excel_number(1)).number == 1.5);
     assert(rounddown(new_excel_number(-1.56),new_excel_number(1)).number == -1.5);	
+
+	// Test roundup
+    assert(roundup(new_excel_number(1.1), new_excel_number(0)).number == 2.0);
+    assert(roundup(new_excel_number(1.5), new_excel_number(0)).number == 2.0);
+    assert(roundup(new_excel_number(1.56),new_excel_number(1)).number == 1.6);
+    assert(roundup(new_excel_number(-1.56),new_excel_number(1)).number == -1.6);	
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
