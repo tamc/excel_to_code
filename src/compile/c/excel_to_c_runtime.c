@@ -43,6 +43,7 @@ ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue c
 ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 ExcelValue left_1(ExcelValue string_v);
+ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -760,6 +761,27 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 	return new_excel_number(total);
 }
 
+ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
+	double biggest_number_found = 0;
+	int i;
+	ExcelValue current_excel_value;
+	
+	for(i=0;i<number_of_arguments;i++) {
+		current_excel_value = arguments[i];
+		if(current_excel_value.type == ExcelNumber) {
+			if(current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number; 				
+		} else if(current_excel_value.type == ExcelRange) {
+			current_excel_value = max( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
+			if(current_excel_value.type == ExcelError) return current_excel_value;
+			if(current_excel_value.type == ExcelNumber && current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number; 
+		} else if(current_excel_value.type == ExcelError) {
+			return current_excel_value;
+		}
+	}
+	return new_excel_number(biggest_number_found);	
+}
+
+
 int main()
 {
 	// Test ABS
@@ -1027,6 +1049,11 @@ int main()
     assert(less_than_or_equal(ONE,BLANK).number == false);
     assert(less_than_or_equal(new_excel_number(-1),BLANK).number == true);
 
+	// Test MAX
+	assert(max(4, array1).number == 10);
+	inspect_excel_value(max(3,array2));
+	assert(max(3, array2).number == 10);
+	assert(max(4, array3).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
