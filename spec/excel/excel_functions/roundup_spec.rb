@@ -7,6 +7,7 @@ describe "ExcelFunctions: ROUNDUP(number,decimal places)" do
     FunctionTest.roundup(1.1,0).should == 2.0
     FunctionTest.roundup(1.5,0).should == 2.0
     FunctionTest.roundup(1.53,1).should == 1.6
+    FunctionTest.roundup(-1.53,1).should == -1.6
   end
 
   it "should return an error when given inappropriate arguments" do
