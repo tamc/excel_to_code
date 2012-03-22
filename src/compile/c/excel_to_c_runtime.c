@@ -51,6 +51,7 @@ ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 ExcelValue negative(ExcelValue a_v);
 ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
+ExcelValue power(ExcelValue a_v, ExcelValue b_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -918,6 +919,16 @@ ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue pre
 	return new_excel_number(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
 }
 
+ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
+		
+	NUMBER(a_v, a)
+	NUMBER(b_v, b)
+	CHECK_FOR_CONVERSION_ERROR
+	return new_excel_number(pow(a,b));
+}
+
 
 int test_functions()
 {
@@ -1264,16 +1275,11 @@ int test_functions()
     assert((pmt(new_excel_number(0.1),new_excel_number(10),new_excel_number(100)).number - -16.27) < 0.01);
     assert((pmt(new_excel_number(0.0123),new_excel_number(99.1),new_excel_number(123.32)).number - -2.159) < 0.01);
     assert((pmt(new_excel_number(0),new_excel_number(2),new_excel_number(10)).number - -5) < 0.01);
-    // ... should work if arguments are given as strings, so long as the strings contain numbers" do
-    // assert(pmt('0.1','10','100').should be_within(0.01).of(-16.27)
-    // ... should work if arguments given as booleans, with true = 1 and false = 0" do
-    // assert(pmt(false,true,true).should be_within(0.01).of(-1)
-    // ... should treat nil as zero" do
-    // assert(pmt(nil,1,nil).should == 0
-    // ... should return an error if an argument is an error" do
-    // assert(pmt(:error1,10,100).should == :error1
-    // assert(pmt(0.1,:error2,100).should == :error2
-    // assert(pmt(0.1,10,:error3).should == :error3
+
+	// Test power
+    // ... should return sum of its arguments
+	assert(power(new_excel_number(2),new_excel_number(3)).number == 8);
+	assert(power(new_excel_number(4.0),new_excel_number(0.5)).number == 2.0);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
