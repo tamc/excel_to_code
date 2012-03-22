@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 // FIXME: Extract a header file
 
@@ -45,6 +46,7 @@ ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 ExcelValue left_1(ExcelValue string_v);
 ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 ExcelValue min(int number_of_arguments, ExcelValue *arguments);
+ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -832,6 +834,14 @@ ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 	return new_excel_number(smallest_number_found);	
 }
 
+ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
+	NUMBER(a_v, a)
+	NUMBER(b_v, b)
+	CHECK_FOR_CONVERSION_ERROR
+	if(b == 0) return DIV0;
+	return new_excel_number(fmod(a,b));
+}
+
 int main()
 {
 	// Test ABS
@@ -1109,6 +1119,26 @@ int main()
 	assert(min(3, array2).number == 5);
 	assert(min(4, array3).type == ExcelError);
 
+	// Test MOD
+    // ... should return the remainder of a number
+	assert(mod(new_excel_number(10), new_excel_number(3)).number == 1.0);
+	assert(mod(new_excel_number(10), new_excel_number(5)).number == 0.0);
+    // ... should be possible for the the arguments to be strings, if they convert to a number" do
+	assert(mod(new_excel_string("3.5"),new_excel_string("2")).number == 1.5);
+    // ... should treat nil as zero" do
+	assert(mod(BLANK,new_excel_number(10)).number == 0);
+	assert(mod(new_excel_number(10),BLANK).type == ExcelError);
+	assert(mod(BLANK,BLANK).type == ExcelError);
+    // ... should treat true as 1 and false as 0" do
+	assert((mod(new_excel_number(1.1),TRUE).number - 0.1) < 0.001);	
+	assert(mod(new_excel_number(1.1),FALSE).type == ExcelError);
+	assert(mod(FALSE,new_excel_number(10)).number == 0);
+    // ... should return an error when given inappropriate arguments" do
+	assert(mod(new_excel_string("Asdasddf"),new_excel_string("adsfads")).type == ExcelError);
+    // ... should return an error if an argument is an error" do
+	assert(mod(new_excel_number(1),VALUE).type == ExcelError);
+	assert(mod(VALUE,new_excel_number(1)).type == ExcelError);
+	assert(mod(VALUE,VALUE).type == ExcelError);
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
