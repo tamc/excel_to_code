@@ -48,7 +48,6 @@ class MapFormulaeToC < MapValuesToC
     'MAX' => 'max',
     'MIN' => 'min',
     'MOD' => 'mod',
-    'PI' => 'pi',
     'PMT' => 'pmt',
     'ROUND' => 'round',
     'ROUNDDOWN' => 'rounddown',
@@ -105,6 +104,10 @@ class MapFormulaeToC < MapValuesToC
   end
   
   FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM AND AVERAGE COUNT COUNTA MAX MIN}
+  
+  def function_pi() 
+    "M_PI"
+  end
   
   def function_choose(index,*arguments)
     "#{FUNCTIONS["CHOOSE"]}(#{map(index)}, #{map_arguments_to_array(arguments)})"
