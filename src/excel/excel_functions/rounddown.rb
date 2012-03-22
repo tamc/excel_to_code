@@ -7,7 +7,7 @@ module ExcelFunctions
     return number if number.is_a?(Symbol)
     return decimal_places if decimal_places.is_a?(Symbol)
     
-    (number * 10**decimal_places).floor.to_f / 10**decimal_places
+    (number * 10**decimal_places).truncate.to_f / 10**decimal_places
   end
 
   
