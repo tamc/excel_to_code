@@ -50,6 +50,7 @@ ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 ExcelValue negative(ExcelValue a_v);
+ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -888,6 +889,19 @@ ExcelValue negative(ExcelValue a_v) {
 	return new_excel_number(-a);
 }
 
+ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v) {
+	CHECK_FOR_PASSED_ERROR(rate_v)
+	CHECK_FOR_PASSED_ERROR(number_of_periods_v)
+	CHECK_FOR_PASSED_ERROR(present_value_v)
+		
+	NUMBER(rate_v,rate)
+	NUMBER(number_of_periods_v,number_of_periods)
+	NUMBER(present_value_v,present_value)
+	CHECK_FOR_CONVERSION_ERROR
+	
+	if(rate == 0) return new_excel_number(-(present_value / number_of_periods));
+	return new_excel_number(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
+}
 
 int test_functions()
 {
@@ -1229,6 +1243,21 @@ int test_functions()
     // ... should treat nil as zero" do
 	assert(negative(BLANK).number == 0);
 	
+	// Test PMT(rate,number_of_periods,present_value) - optional arguments not yet implemented
+    // ... should calculate the monthly payment required for a given principal, interest rate and loan period" do
+    assert((pmt(new_excel_number(0.1),new_excel_number(10),new_excel_number(100)).number - -16.27) < 0.01);
+    assert((pmt(new_excel_number(0.0123),new_excel_number(99.1),new_excel_number(123.32)).number - -2.159) < 0.01);
+    assert((pmt(new_excel_number(0),new_excel_number(2),new_excel_number(10)).number - -5) < 0.01);
+    // ... should work if arguments are given as strings, so long as the strings contain numbers" do
+    // assert(pmt('0.1','10','100').should be_within(0.01).of(-16.27)
+    // ... should work if arguments given as booleans, with true = 1 and false = 0" do
+    // assert(pmt(false,true,true).should be_within(0.01).of(-1)
+    // ... should treat nil as zero" do
+    // assert(pmt(nil,1,nil).should == 0
+    // ... should return an error if an argument is an error" do
+    // assert(pmt(:error1,10,100).should == :error1
+    // assert(pmt(0.1,:error2,100).should == :error2
+    // assert(pmt(0.1,10,:error3).should == :error3
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
