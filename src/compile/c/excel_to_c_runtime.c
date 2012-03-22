@@ -752,6 +752,8 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 		current_excel_value = array[i];
 		if(current_excel_value.type == ExcelRange) {
 			number = number_from(sum( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ));
+		} if(current_excel_value.type == ExcelError) {
+			return current_excel_value;
 		} else {
 			number = number_from(current_excel_value);					
 		}
