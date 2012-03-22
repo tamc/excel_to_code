@@ -1051,7 +1051,6 @@ int main()
 
 	// Test MAX
 	assert(max(4, array1).number == 10);
-	inspect_excel_value(max(3,array2));
 	assert(max(3, array2).number == 10);
 	assert(max(4, array3).type == ExcelError);
 	
