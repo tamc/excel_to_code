@@ -49,7 +49,7 @@ class MapFormulaeToC < MapValuesToC
     'MIN' => 'min',
     'MOD' => 'mod',
     'PMT' => 'pmt',
-    'ROUND' => 'round',
+    'ROUND' => 'excel_round',
     'ROUNDDOWN' => 'rounddown',
     'ROUNDUP' => 'roundup',
     'SUBTOTAL' => 'subtotal',
