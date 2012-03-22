@@ -48,6 +48,7 @@ ExcelValue left_1(ExcelValue string_v);
 ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
+ExcelValue negative(ExcelValue a_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -871,6 +872,13 @@ ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(fmod(a,b));
 }
 
+ExcelValue negative(ExcelValue a_v) {
+	NUMBER(a_v, a)
+	CHECK_FOR_CONVERSION_ERROR
+	return new_excel_number(-a);
+}
+
+
 int test_functions()
 {
 	// Test ABS
@@ -1189,6 +1197,19 @@ int test_functions()
     assert(more_than_or_equal(BLANK,new_excel_number(-1)).number == true);
     assert(more_than_or_equal(ONE,BLANK).number == true);
     assert(more_than_or_equal(new_excel_number(-1),BLANK).number == false);	
+	
+	// Test negative
+    // ... should return the negative of its arguments
+	assert(negative(new_excel_number(1)).number == -1);
+	assert(negative(new_excel_number(-1)).number == 1);
+    // ... should treat strings that only contain numbers as numbers" do
+	assert(negative(new_excel_string("10")).number == -10);
+	assert(negative(new_excel_string("-1.3")).number == 1.3);
+    // ... should return an error when given inappropriate arguments" do
+	assert(negative(new_excel_string("Asdasddf")).type == ExcelError);
+    // ... should treat nil as zero" do
+	assert(negative(BLANK).number == 0);
+	
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
