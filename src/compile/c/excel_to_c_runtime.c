@@ -44,6 +44,7 @@ ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 ExcelValue left_1(ExcelValue string_v);
 ExcelValue max(int number_of_arguments, ExcelValue *arguments);
+ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -764,25 +765,72 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 }
 
 ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
-	double biggest_number_found = 0;
+	double biggest_number_found;
+	int any_number_found = 0;
 	int i;
 	ExcelValue current_excel_value;
 	
 	for(i=0;i<number_of_arguments;i++) {
 		current_excel_value = arguments[i];
 		if(current_excel_value.type == ExcelNumber) {
+			if(!any_number_found) {
+				any_number_found = 1;
+				biggest_number_found = current_excel_value.number;
+			}
 			if(current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number; 				
 		} else if(current_excel_value.type == ExcelRange) {
 			current_excel_value = max( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
 			if(current_excel_value.type == ExcelError) return current_excel_value;
-			if(current_excel_value.type == ExcelNumber && current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number; 
+			if(current_excel_value.type == ExcelNumber)
+				if(!any_number_found) {
+					any_number_found = 1;
+					biggest_number_found = current_excel_value.number;
+				}
+				if(current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number; 				
 		} else if(current_excel_value.type == ExcelError) {
 			return current_excel_value;
 		}
 	}
+	if(!any_number_found) {
+		any_number_found = 1;
+		biggest_number_found = 0;
+	}
 	return new_excel_number(biggest_number_found);	
 }
 
+ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
+	double smallest_number_found = 0;
+	int any_number_found = 0;
+	int i;
+	ExcelValue current_excel_value;
+	
+	for(i=0;i<number_of_arguments;i++) {
+		current_excel_value = arguments[i];
+		if(current_excel_value.type == ExcelNumber) {
+			if(!any_number_found) {
+				any_number_found = 1;
+				smallest_number_found = current_excel_value.number;
+			}
+			if(current_excel_value.number < smallest_number_found) smallest_number_found = current_excel_value.number; 				
+		} else if(current_excel_value.type == ExcelRange) {
+			current_excel_value = min( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
+			if(current_excel_value.type == ExcelError) return current_excel_value;
+			if(current_excel_value.type == ExcelNumber)
+				if(!any_number_found) {
+					any_number_found = 1;
+					smallest_number_found = current_excel_value.number;
+				}
+				if(current_excel_value.number < smallest_number_found) smallest_number_found = current_excel_value.number; 				
+		} else if(current_excel_value.type == ExcelError) {
+			return current_excel_value;
+		}
+	}
+	if(!any_number_found) {
+		any_number_found = 1;
+		smallest_number_found = 0;
+	}
+	return new_excel_number(smallest_number_found);	
+}
 
 int main()
 {
@@ -1055,6 +1103,12 @@ int main()
 	assert(max(4, array1).number == 10);
 	assert(max(3, array2).number == 10);
 	assert(max(4, array3).type == ExcelError);
+
+	// Test MIN
+	assert(min(4, array1).number == 5);
+	assert(min(3, array2).number == 5);
+	assert(min(4, array3).type == ExcelError);
+
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
