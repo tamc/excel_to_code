@@ -140,7 +140,14 @@ void inspect_excel_value(ExcelValue v) {
 		 printf("String: '%s'",v.string);
 		 break;
 	  case ExcelError:
-		 printf("Error number %f",v.number);
+		 printf("Error number %f ",v.number);
+		 switch( (int)v.number) {
+			 case 0: printf("VALUE\n"); break;
+			 case 1: printf("NAME\n"); break;
+			 case 2: printf("DIV0\n"); break;
+			 case 3: printf("REF\n"); break;
+			 case 4: printf("NA\n"); break;
+		 }
 		 break;
 	 };
 }
