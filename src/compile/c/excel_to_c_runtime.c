@@ -36,6 +36,7 @@ typedef struct excel_value ExcelValue;
 // Headers
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v);
+ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v);
 ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
@@ -368,6 +369,15 @@ ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
   		return NA;
   }
   return FALSE;
+}
+
+ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
+	ExcelValue result = excel_equal(a_v, b_v);
+	if(result.type == ExcelBoolean) {
+		if(result.number == 0) return TRUE;
+		return FALSE;
+	}
+	return result;
 }
 
 ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
@@ -941,6 +951,15 @@ int test_functions()
 	assert(excel_equal(new_excel_string("hello world"), new_excel_string("HELLO")).number == false);
 	assert(excel_equal(new_excel_string("1"), ONE).number == false);
 	assert(excel_equal(DIV0, ONE).type == ExcelError);
+
+	// Test not_equal
+	assert(not_equal(new_excel_number(1.2),new_excel_number(3.4)).type == ExcelBoolean);
+	assert(not_equal(new_excel_number(1.2),new_excel_number(3.4)).number == true);
+	assert(not_equal(new_excel_number(1.2),new_excel_number(1.2)).number == false);
+	assert(not_equal(new_excel_string("hello"), new_excel_string("HELLO")).number == false);
+	assert(not_equal(new_excel_string("hello world"), new_excel_string("HELLO")).number == true);
+	assert(not_equal(new_excel_string("1"), ONE).number == true);
+	assert(not_equal(DIV0, ONE).type == ExcelError);
 	
 	// Test excel_if
 	// Two argument version
