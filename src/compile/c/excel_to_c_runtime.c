@@ -198,6 +198,7 @@ double number_from(ExcelValue v) {
 #define CHECK_FOR_PASSED_ERROR(name) 	if(name.type == ExcelError) return name;
 	
 ExcelValue excel_abs(ExcelValue a_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)	
 	NUMBER(a_v, a)
 	CHECK_FOR_CONVERSION_ERROR
 	
@@ -209,6 +210,8 @@ ExcelValue excel_abs(ExcelValue a_v) {
 }
 
 ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
@@ -293,7 +296,8 @@ ExcelValue average(int array_size, ExcelValue *array) {
 }
 
 ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
-	if(index_v.type == ExcelError) return index_v;
+	CHECK_FOR_PASSED_ERROR(index_v)
+
 	int index = (int) number_from(index_v);
 	CHECK_FOR_CONVERSION_ERROR	
 	int i;
@@ -342,6 +346,8 @@ ExcelValue counta(int array_size, ExcelValue *array) {
 }
 
 ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
@@ -350,8 +356,8 @@ ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
 }
 
 ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
-	if(a_v.type == ExcelError) return a_v;
-	if(b_v.type == ExcelError) return b_v;
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 
 	if(a_v.type != b_v.type) return FALSE;
 	
@@ -382,13 +388,17 @@ ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 }
 
 ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
+	CHECK_FOR_PASSED_ERROR(condition)
+	CHECK_FOR_PASSED_ERROR(true_case)
+	CHECK_FOR_PASSED_ERROR(false_case)
+	
 	switch (condition.type) {
+  	  case ExcelBoolean:
+  	  	if(condition.number == true) return true_case;
+  	  	return false_case;
   	  case ExcelNumber:
 		if(condition.number == 0) return false_case;
 		return true_case;
-	  case ExcelBoolean:
-	  	if(condition.number == true) return true_case;
-	  	return false_case;
 	  case ExcelEmpty: 
 		return false_case;
 	  case ExcelString:
@@ -406,11 +416,10 @@ ExcelValue excel_if_2(ExcelValue condition, ExcelValue true_case ) {
 }
 
 ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v) {
-	// Guard agaist errors
-	if(array_v.type == ExcelError) return array_v;
-	if(row_number_v.type == ExcelError) return row_number_v;
-	if(column_number_v.type == ExcelError) return column_number_v;
-	
+	CHECK_FOR_PASSED_ERROR(array_v)
+	CHECK_FOR_PASSED_ERROR(row_number_v)
+	CHECK_FOR_PASSED_ERROR(column_number_v)
+		
 	ExcelValue *array;
 	int rows;
 	int columns;
@@ -500,11 +509,10 @@ ExcelValue excel_index_2(ExcelValue array_v, ExcelValue offset) {
 
 
 ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelValue match_type ) {
-	// Guard against errors
-	if(lookup_value.type == ExcelError) return lookup_value;
-	if(lookup_array.type == ExcelError) return lookup_array;
-	if(match_type.type == ExcelError) return match_type;
-	
+	CHECK_FOR_PASSED_ERROR(lookup_value)
+	CHECK_FOR_PASSED_ERROR(lookup_array)
+	CHECK_FOR_PASSED_ERROR(match_type)
+		
 	// Blanks are treaked as zeros
 	if(lookup_value.type == ExcelEmpty) lookup_value = ZERO;
 
@@ -573,10 +581,9 @@ ExcelValue excel_match_2(ExcelValue lookup_value, ExcelValue lookup_array ) {
 }
 
 ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue start_number_v) {
-	// Trap errors
-	if(find_text_v.type == ExcelError) return find_text_v;
-	if(within_text_v.type == ExcelError) return within_text_v;
-	if(start_number_v.type == ExcelError) return start_number_v;
+	CHECK_FOR_PASSED_ERROR(find_text_v)
+	CHECK_FOR_PASSED_ERROR(within_text_v)
+	CHECK_FOR_PASSED_ERROR(start_number_v)
 
 	char *find_text;	
 	char *within_text;
@@ -663,8 +670,8 @@ ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
 }
 
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
-	if(a_v.type == ExcelError) return a_v;
-	if(b_v.type == ExcelError) return b_v;
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 
 	switch (a_v.type) {
   	  case ExcelNumber:
@@ -690,8 +697,8 @@ ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
 }
 
 ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
-	if(a_v.type == ExcelError) return a_v;
-	if(b_v.type == ExcelError) return b_v;
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 
 	switch (a_v.type) {
   	  case ExcelNumber:
@@ -718,8 +725,8 @@ ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
 
 
 ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
-	if(a_v.type == ExcelError) return a_v;
-	if(b_v.type == ExcelError) return b_v;
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 
 	switch (a_v.type) {
   	  case ExcelNumber:
@@ -745,8 +752,8 @@ ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
 }
 
 ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
-	if(a_v.type == ExcelError) return a_v;
-	if(b_v.type == ExcelError) return b_v;
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 
 	switch (a_v.type) {
   	  case ExcelNumber:
@@ -773,6 +780,8 @@ ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
 
 
 ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
@@ -780,6 +789,8 @@ ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 }
 
 ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
@@ -876,6 +887,9 @@ ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 }
 
 ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
+		
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
@@ -884,6 +898,7 @@ ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 }
 
 ExcelValue negative(ExcelValue a_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
 	NUMBER(a_v, a)
 	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(-a);
@@ -902,6 +917,7 @@ ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue pre
 	if(rate == 0) return new_excel_number(-(present_value / number_of_periods));
 	return new_excel_number(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
 }
+
 
 int test_functions()
 {
