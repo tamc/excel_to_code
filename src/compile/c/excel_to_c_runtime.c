@@ -55,6 +55,7 @@ ExcelValue power(ExcelValue a_v, ExcelValue b_v);
 ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
+ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -971,6 +972,52 @@ ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
 	return new_excel_number( ceil(number * multiple) / multiple );	
 }
 
+ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
+	int allocated_length = 100;
+	int used_length = 0;
+	char *string = malloc(allocated_length);
+	char *current_string;
+	int current_string_length;
+	ExcelValue current_v;
+	int i;
+	for(i=0;i<number_of_arguments;i++) {
+		current_v = (ExcelValue) arguments[i];
+		switch (current_v.type) {
+  	  case ExcelString:
+	  		current_string = current_v.string;
+	  		break;
+  	  case ExcelNumber:
+			  current_string = malloc(20);
+			  snprintf(current_string,20,"%g",current_v.number);
+			  break;
+		  case ExcelBoolean:
+		  	if(current_v.number == true) {
+		  		current_string = "TRUE";
+  			} else {
+  				current_string = "FALSE";
+  			}
+        break;
+		  case ExcelEmpty:
+        current_string = "";
+        break;
+      case ExcelError:
+        return current_v;
+	  	case ExcelRange:
+        return VALUE;
+		}
+		current_string_length = strlen(current_string);
+		if( (used_length + current_string_length + 1) > allocated_length) {
+			allocated_length += 100;
+			string = realloc(string,allocated_length);
+		}
+		memcpy(string + used_length, current_string, current_string_length);
+		used_length = used_length + current_string_length;
+	}
+	string = realloc(string,used_length+1);
+	return new_excel_string(string);
+}
+
+
 int test_functions()
 {
 	// Test ABS
@@ -1339,6 +1386,25 @@ int test_functions()
     assert(roundup(new_excel_number(1.5), new_excel_number(0)).number == 2.0);
     assert(roundup(new_excel_number(1.56),new_excel_number(1)).number == 1.6);
     assert(roundup(new_excel_number(-1.56),new_excel_number(1)).number == -1.6);	
+	
+	// Test string joining
+	ExcelValue string_join_array_1[] = {new_excel_string("Hello "), new_excel_string("world")};
+	ExcelValue string_join_array_2[] = {new_excel_string("Hello "), new_excel_string("world"), new_excel_string("!")};
+	ExcelValue string_join_array_3[] = {new_excel_string("Top "), new_excel_number(10.0)};
+	ExcelValue string_join_array_4[] = {new_excel_string("Top "), new_excel_number(10.5)};	
+	ExcelValue string_join_array_5[] = {new_excel_string("Top "), TRUE, FALSE};	
+	// ... should return a string by combining its arguments
+	// inspect_excel_value(string_join(2, string_join_array_1));
+  assert(string_join(2, string_join_array_1).string[6] == 'w');
+	// ... should cope with an arbitrary number of arguments
+  assert(string_join(3, string_join_array_2).string[11] == '!');
+	// ... should convert values to strings as it goes
+  assert(string_join(2, string_join_array_3).string[4] == '1');
+	// ... should convert integer values into strings without decimal points
+  assert(string_join(2, string_join_array_3).string[7] == '\0');
+  assert(string_join(2, string_join_array_4).string[7] == '5');
+	// ... should convert TRUE and FALSE into strings
+  assert(string_join(3,string_join_array_5).string[4] == 'T');
 	
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);

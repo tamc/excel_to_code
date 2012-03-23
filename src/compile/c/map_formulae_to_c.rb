@@ -52,6 +52,7 @@ class MapFormulaeToC < MapValuesToC
     'ROUND' => 'excel_round',
     'ROUNDDOWN' => 'rounddown',
     'ROUNDUP' => 'roundup',
+    'string_join' => 'string_join',
     'SUBTOTAL' => 'subtotal',
     'SUM' => 'sum',
     'SUMIF' => 'sumif',
@@ -75,7 +76,7 @@ class MapFormulaeToC < MapValuesToC
   end
   
   def string_join(*strings)
-    "string_join(#{strings.map {|a| map(a)}.join(',')})"
+    any_number_of_argument_function('string_join',strings)
   end
   
   def comparison(left,operator,right)
