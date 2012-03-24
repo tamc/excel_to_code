@@ -56,6 +56,7 @@ ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
+ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -1029,6 +1030,35 @@ ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	return new_excel_string(string);
 }
 
+ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelValue *arguments) {
+  CHECK_FOR_PASSED_ERROR(subtotal_type_v)
+  NUMBER(subtotal_type_v,subtotal_type)
+  CHECK_FOR_CONVERSION_ERROR
+      
+  switch((int) subtotal_type) {
+    case 1:
+    case 101:
+      return average(number_of_arguments,arguments);
+      break;
+    case 2:
+    case 102:
+      return count(number_of_arguments,arguments);
+      break;
+    case 3:
+    case 103:
+      return counta(number_of_arguments,arguments);
+      break;
+    case 9:
+    case 109:
+      return sum(number_of_arguments,arguments);
+      break;
+    default:
+      return VALUE;
+      break;
+  }
+}
+
+
 
 int test_functions()
 {
@@ -1421,6 +1451,22 @@ int test_functions()
 	// ... should convert TRUE and FALSE into strings
   assert(string_join(3,string_join_array_5).string[4] == 'T');
 	
+  // Test SUBTOTAL function
+  ExcelValue subtotal_array_1[] = {new_excel_number(10),new_excel_number(100),BLANK};
+  ExcelValue subtotal_array_1_v = new_excel_range(subtotal_array_1,3,1);
+  ExcelValue subtotal_array_2[] = {new_excel_number(1),new_excel_string("two"),subtotal_array_1_v};
+  
+  assert(subtotal(new_excel_number(1.0),3,subtotal_array_2).number == 111.0/3.0);
+  assert(subtotal(new_excel_number(2.0),3,subtotal_array_2).number == 3);
+  assert(subtotal(new_excel_number(3.0),7, count_a_test_array_1).number == 6);
+  assert(subtotal(new_excel_number(3.0),3,subtotal_array_2).number == 4);
+  assert(subtotal(new_excel_number(9.0),3,subtotal_array_2).number == 111);
+  assert(subtotal(new_excel_number(101.0),3,subtotal_array_2).number == 111.0/3.0);
+  assert(subtotal(new_excel_number(102.0),3,subtotal_array_2).number == 3);
+  assert(subtotal(new_excel_number(103.0),3,subtotal_array_2).number == 4);
+  assert(subtotal(new_excel_number(109.0),3,subtotal_array_2).number == 111);
+  
+  
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
 	// assert(one.number == 38.8);
