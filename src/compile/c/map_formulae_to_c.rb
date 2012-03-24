@@ -114,6 +114,10 @@ class MapFormulaeToC < MapValuesToC
     "#{FUNCTIONS["CHOOSE"]}(#{map(index)}, #{map_arguments_to_array(arguments)})"
   end
   
+  def function_subtotal(type,*arguments)
+    "#{FUNCTIONS["SUBTOTAL"]}(#{map(type)}, #{map_arguments_to_array(arguments)})"
+  end
+  
   def any_number_of_argument_function(function_name,arguments)    
     "#{FUNCTIONS[function_name]}(#{map_arguments_to_array(arguments)})"
   end
