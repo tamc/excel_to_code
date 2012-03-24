@@ -345,7 +345,19 @@ ExcelValue counta(int array_size, ExcelValue *array) {
 	
 	for(i=0;i<array_size;i++) {
 		current_excel_value = array[i];
-		if(current_excel_value.type != ExcelEmpty) n++;
+    switch(current_excel_value.type) {
+  	  case ExcelNumber:
+      case ExcelBoolean:
+      case ExcelString:
+  	  case ExcelError:
+        n++;
+        break;
+      case ExcelRange: 
+	  	  n += counta( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ).number;
+        break;		
+  	  case ExcelEmpty:
+  		  break;
+    }
 	 }
 	 return new_excel_number(n);
 }
@@ -1066,7 +1078,10 @@ int test_functions()
 	
 	// Test COUNTA
 	ExcelValue count_a_test_array_1[] = { new_excel_number(10), new_excel_number(5), TRUE, FALSE, new_excel_string("Hello"), VALUE, BLANK};
+  ExcelValue count_a_test_array_1_v = new_excel_range(count_a_test_array_1,7,1);
+  ExcelValue count_a_test_array_2[] = {new_excel_string("Bye"),count_a_test_array_1_v};
 	assert(counta(7, count_a_test_array_1).number == 6);
+  assert(counta(2, count_a_test_array_2).number == 7);
 	
 	// Test divide
 	assert(divide(new_excel_number(12.4),new_excel_number(3.2)).number == 3.875);
