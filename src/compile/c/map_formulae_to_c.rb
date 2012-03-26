@@ -117,6 +117,11 @@ class MapFormulaeToC < MapValuesToC
   def function_subtotal(type,*arguments)
     "#{FUNCTIONS["SUBTOTAL"]}(#{map(type)}, #{map_arguments_to_array(arguments)})"
   end
+
+  def function_sumifs(sum_range,*criteria)
+    "#{FUNCTIONS["SUMIFS"]}(#{map(sum_range)}, #{map_arguments_to_array(criteria)})"
+  end
+
   
   def any_number_of_argument_function(function_name,arguments)    
     "#{FUNCTIONS[function_name]}(#{map_arguments_to_array(arguments)})"

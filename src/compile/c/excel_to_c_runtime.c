@@ -33,6 +33,16 @@ struct excel_value {
 typedef struct excel_value ExcelValue;
 
 
+// These are used in the SUMIF and SUMIFS criteria (e.g., when passed a string like "<20")
+typedef enum {LessThan, LessThanOrEqual, Equal, NotEqual, MoreThanOrEqual, MoreThan} ExcelComparisonType;
+
+struct excel_comparison {
+	ExcelComparisonType type;
+	ExcelValue comparator;
+};
+
+typedef struct excel_comparison ExcelComparison;
+
 // Headers
 ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
 ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v);
@@ -57,6 +67,7 @@ ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
 ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
+ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -1058,6 +1069,221 @@ ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelVa
   }
 }
 
+ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
+  // First, set up the sum_range
+  CHECK_FOR_PASSED_ERROR(sum_range_v);
+  ExcelValue *sum_range;
+  int sum_range_rows, sum_range_columns;
+  
+  if(sum_range_v.type == ExcelRange) {
+    sum_range = sum_range_v.array;
+    sum_range_rows = sum_range_v.rows;
+    sum_range_columns = sum_range_v.columns;
+  } else {
+    ExcelValue *tmp_array1 = malloc(sizeof(ExcelValue));
+    tmp_array1[0] = sum_range_v;
+    sum_range = tmp_array1;
+    sum_range_rows = 1;
+    sum_range_columns = 1;
+  }
+  
+  // Then go through and set up the check ranges
+  if(number_of_arguments % 2 != 0) return VALUE;
+  int number_of_criteria = number_of_arguments / 2;
+  ExcelValue *criteria_range = malloc(sizeof(ExcelValue)*number_of_criteria);
+  ExcelValue current_value;
+  int i;
+  for(i = 0; i < number_of_criteria; i++) {
+    current_value = arguments[i*2];
+    if(current_value.type == ExcelRange) {
+      criteria_range[i] = current_value;
+      if(current_value.rows != sum_range_rows) return VALUE;
+      if(current_value.columns != sum_range_columns) return VALUE;
+    } else {
+      if(sum_range_rows != 1) return VALUE;
+      if(sum_range_columns != 1) return VALUE;
+      ExcelValue *tmp_array2 = malloc(sizeof(ExcelValue));
+      tmp_array2[0] = current_value;
+      criteria_range[i] =  new_excel_range(tmp_array2,1,1);
+    }
+  }
+  
+  // Now go through and set up the criteria
+  ExcelComparison *criteria = malloc(sizeof(ExcelValue)*number_of_criteria);
+  char *s;
+  for(i = 0; i < number_of_criteria; i++) {
+    current_value = arguments[(i*2)+1];
+    
+    if(current_value.type == ExcelString) {
+      s = current_value.string;
+      if(s[0] == '<') {
+        if( s[1] == '>') {
+          criteria[i].type = NotEqual;
+          criteria[i].comparator = new_excel_string(strndup(s+2,strlen(s)-2));
+        } else if(s[1] == '=') {
+          criteria[i].type = LessThanOrEqual;
+          criteria[i].comparator = new_excel_string(strndup(s+2,strlen(s)-2));
+        } else {
+          criteria[i].type = LessThan;
+          criteria[i].comparator = new_excel_string(strndup(s+1,strlen(s)-1));
+        }
+      } else if(s[0] == '>') {
+        if(s[1] == '=') {
+          criteria[i].type = MoreThanOrEqual;
+          criteria[i].comparator = new_excel_string(strndup(s+2,strlen(s)-2));
+        } else {
+          criteria[i].type = MoreThan;
+          criteria[i].comparator = new_excel_string(strndup(s+1,strlen(s)-1));
+        }
+      } else if(s[0] == '=') {
+        criteria[i].type = Equal;
+        criteria[i].comparator = new_excel_string(strndup(s+1,strlen(s)-1));          
+      } else {
+        criteria[i].type = Equal;
+        criteria[i].comparator = current_value;          
+      }
+    } else {
+      criteria[i].type = Equal;
+      criteria[i].comparator = current_value;
+    }
+  }
+  
+  double total = 0;
+  int size = sum_range_columns * sum_range_rows;
+  int j;
+  int passed = 0;
+  ExcelValue value_to_be_checked;
+  ExcelComparison comparison;
+  ExcelValue comparator;
+  double number;
+  // For each cell in the sum range
+  for(j=0; j < size; j++ ) {
+    passed = 1;
+    for(i=0; i < number_of_criteria; i++) {
+      value_to_be_checked = ((ExcelValue *) ((ExcelValue) criteria_range[i]).array)[j];
+      comparison = criteria[i];
+      comparator = comparison.comparator;
+      
+      switch(value_to_be_checked.type) {
+        case ExcelError: // Errors match only errors
+          if(comparison.type != Equal) passed = 0;
+          if(comparator.type != ExcelError) passed = 0;
+          if(value_to_be_checked.number != comparator.number) passed = 0;
+          break;
+        case ExcelBoolean: // Booleans match only booleans (FIXME: I think?)
+          if(comparison.type != Equal) passed = 0;
+          if(comparator.type != ExcelBoolean ) passed = 0;
+          if(value_to_be_checked.number != comparator.number) passed = 0;
+          break;
+        case ExcelEmpty:
+          // if(comparator.type == ExcelEmpty) break; // FIXME: Huh? In excel blank doesn't match blank?!
+          if(comparator.type != ExcelString) {
+            passed = 0;
+            break;
+          } else {
+            if(strlen(comparator.string) != 0) passed = 0; // Empty strings match blanks.
+            break;
+          }
+          break;
+        case ExcelNumber:
+          if(comparator.type == ExcelNumber) {
+            number = comparator.number;
+          } else if(comparator.type == ExcelString) {
+            number = number_from(comparator);
+            if(conversion_error == 1) {
+              conversion_error = 0;
+              passed = 0;
+              break;
+            }
+          } else {
+            passed = 0;
+            break;
+          }
+          switch(comparison.type) {
+            case Equal:
+              if(value_to_be_checked.number != number) passed = 0;
+              break;
+            case LessThan:
+              if(value_to_be_checked.number >= number) passed = 0;
+              break;            
+            case LessThanOrEqual:
+              if(value_to_be_checked.number > number) passed = 0;
+              break;                        
+            case NotEqual:
+              if(value_to_be_checked.number == number) passed = 0;
+              break;            
+            case MoreThanOrEqual:
+              if(value_to_be_checked.number < number) passed = 0;
+              break;            
+            case MoreThan:
+              if(value_to_be_checked.number <= number) passed = 0;
+              break;
+          }
+          break;
+        case ExcelString:
+          // First case, the comparator is a number, simplification is that it can only be equal
+          if(comparator.type == ExcelNumber) {
+            if(comparison.type != Equal) {
+              printf("This shouldn't be possible?");
+              passed = 0;
+              break;
+            }
+            number = number_from(value_to_be_checked);
+            if(conversion_error == 1) {
+              conversion_error = 0;
+              passed = 0;
+              break;
+            }
+            if(number != comparator.number) {
+              passed = 0;
+              break;
+            } else {
+              break;
+            }
+          // Second case, the comparator is also a string, so need to be able to do full range of tests
+          } else if(comparator.type == ExcelString) {
+            switch(comparison.type) {
+              case Equal:
+                if(excel_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              case LessThan:
+                if(less_than(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;            
+              case LessThanOrEqual:
+                if(less_than_or_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;                        
+              case NotEqual:
+                if(not_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;            
+              case MoreThanOrEqual:
+                if(more_than_or_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;            
+              case MoreThan:
+                if(more_than(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              }
+          } else {
+            passed = 0;
+            break;
+          }
+          break;
+        case ExcelRange:
+          return VALUE;            
+      }
+      if(passed == 0) break;
+    }
+    if(passed == 1) {
+      current_value = sum_range[j];
+      if(current_value.type == ExcelError) {
+        return current_value;
+      } else if(current_value.type == ExcelNumber) {
+        total += current_value.number;
+      }
+    }
+  }
+  return new_excel_number(total);
+}
+
 
 
 int test_functions()
@@ -1466,6 +1692,67 @@ int test_functions()
   assert(subtotal(new_excel_number(103.0),3,subtotal_array_2).number == 4);
   assert(subtotal(new_excel_number(109.0),3,subtotal_array_2).number == 111);
   
+  // Test SUMIFS function
+  ExcelValue sumifs_array_1[] = {new_excel_number(10),new_excel_number(100),BLANK};
+  ExcelValue sumifs_array_1_v = new_excel_range(sumifs_array_1,3,1);
+  ExcelValue sumifs_array_2[] = {new_excel_string("pear"),new_excel_string("bear"),new_excel_string("apple")};
+  ExcelValue sumifs_array_2_v = new_excel_range(sumifs_array_2,3,1);
+  ExcelValue sumifs_array_3[] = {new_excel_number(1),new_excel_number(2),new_excel_number(3),new_excel_number(4),new_excel_number(5),new_excel_number(5)};
+  ExcelValue sumifs_array_3_v = new_excel_range(sumifs_array_3,6,1);
+  ExcelValue sumifs_array_4[] = {new_excel_string("CO2"),new_excel_string("CH4"),new_excel_string("N2O"),new_excel_string("CH4"),new_excel_string("N2O"),new_excel_string("CO2")};
+  ExcelValue sumifs_array_4_v = new_excel_range(sumifs_array_4,6,1);
+  ExcelValue sumifs_array_5[] = {new_excel_string("1A"),new_excel_string("1A"),new_excel_string("1A"),new_excel_number(4),new_excel_number(4),new_excel_number(5)};
+  ExcelValue sumifs_array_5_v = new_excel_range(sumifs_array_5,6,1);
+  
+  // ... should only sum values that meet all of the criteria
+  ExcelValue sumifs_array_6[] = { sumifs_array_1_v, new_excel_number(10), sumifs_array_2_v, new_excel_string("Bear") };
+  assert(sumifs(sumifs_array_1_v,4,sumifs_array_6).number == 0.0);
+  
+  ExcelValue sumifs_array_7[] = { sumifs_array_1_v, new_excel_number(10), sumifs_array_2_v, new_excel_string("Pear") };
+  assert(sumifs(sumifs_array_1_v,4,sumifs_array_7).number == 10.0);
+  
+  // ... should work when single cells are given where ranges expected
+  ExcelValue sumifs_array_8[] = { new_excel_string("CAR"), new_excel_string("CAR"), new_excel_string("FCV"), new_excel_string("FCV")};
+  assert(sumifs(new_excel_number(0.143897265452564), 4, sumifs_array_8).number == 0.143897265452564);
+
+  // ... should match numbers with strings that contain numbers
+  ExcelValue sumifs_array_9[] = { new_excel_number(10), new_excel_string("10.0")};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_9).number == 100);
+  
+  ExcelValue sumifs_array_10[] = { sumifs_array_4_v, new_excel_string("CO2"), sumifs_array_5_v, new_excel_number(2)};
+  assert(sumifs(sumifs_array_3_v,4, sumifs_array_10).number == 0);
+  
+  // ... should match with strings that contain criteria
+  ExcelValue sumifs_array_10a[] = { sumifs_array_3_v, new_excel_string("=5")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10a).number == 10);
+
+  ExcelValue sumifs_array_10b[] = { sumifs_array_3_v, new_excel_string("<>3")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10b).number == 17);
+
+  ExcelValue sumifs_array_10c[] = { sumifs_array_3_v, new_excel_string("<3")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10c).number == 3);
+  
+  ExcelValue sumifs_array_10d[] = { sumifs_array_3_v, new_excel_string("<=3")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10d).number == 6);
+
+  ExcelValue sumifs_array_10e[] = { sumifs_array_3_v, new_excel_string(">3")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10e).number == 14);
+
+  ExcelValue sumifs_array_10f[] = { sumifs_array_3_v, new_excel_string(">=3")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10f).number == 17);
+  
+  // ... should treat nil as an empty string when in the check_range, but not in the criteria
+  ExcelValue sumifs_array_11[] = { BLANK, new_excel_number(20)};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_11).number == 0);
+  
+  ExcelValue sumifs_array_12[] = {BLANK, new_excel_string("")};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_12).number == 100);
+  
+  ExcelValue sumifs_array_13[] = {BLANK, BLANK};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_13).number == 0);
+    
+  // ... should return an error if range argument is an error
+  assert(sumifs(REF,2,sumifs_array_13).type == ExcelError);
   
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
