@@ -68,6 +68,8 @@ ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
 ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
 ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
+ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v );
+ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -1072,6 +1074,8 @@ ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelVa
 ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
   // First, set up the sum_range
   CHECK_FOR_PASSED_ERROR(sum_range_v);
+
+  // Set up the sum range
   ExcelValue *sum_range;
   int sum_range_rows, sum_range_columns;
   
@@ -1284,6 +1288,15 @@ ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *a
   return new_excel_number(total);
 }
 
+ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v ) {
+	ExcelValue tmp_array_sumif[] = {check_range_v, criteria_v};
+	return sumifs(sum_range_v,2,tmp_array_sumif);
+}
+
+ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v) {
+	ExcelValue tmp_array_sumif2[] = {check_range_v, criteria_v};
+	return sumifs(check_range_v,2,tmp_array_sumif2);
+}
 
 
 int test_functions()
@@ -1753,6 +1766,18 @@ int test_functions()
     
   // ... should return an error if range argument is an error
   assert(sumifs(REF,2,sumifs_array_13).type == ExcelError);
+  
+  
+  // Test SUMIF
+  // ... where there is only a check range
+  assert(sumif_2(sumifs_array_1_v,new_excel_string(">0")).number == 110.0);
+  assert(sumif_2(sumifs_array_1_v,new_excel_string(">10")).number == 100.0);
+  assert(sumif_2(sumifs_array_1_v,new_excel_string("<100")).number == 10.0);
+  
+  // ... where there is a seprate sum range
+  ExcelValue sumif_array_1[] = {new_excel_number(15),new_excel_number(20), new_excel_number(30)};
+  ExcelValue sumif_array_1_v = new_excel_range(sumif_array_1,3,1);
+  assert(sumif(sumifs_array_1_v,new_excel_string("10"),sumif_array_1_v).number == 15);
   
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
