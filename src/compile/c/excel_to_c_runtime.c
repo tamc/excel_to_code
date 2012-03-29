@@ -70,6 +70,7 @@ ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *argume
 ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
 ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v );
 ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v);
+ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -176,6 +177,8 @@ void inspect_excel_value(ExcelValue v) {
 			 case 4: printf("NA\n"); break;
 		 }
 		 break;
+    default:
+      printf("Type %d not recognised",v.type);
 	 };
 }
 
@@ -1120,6 +1123,7 @@ ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *a
     
     if(current_value.type == ExcelString) {
       s = current_value.string;
+      malloc(10);
       if(s[0] == '<') {
         if( s[1] == '>') {
           criteria[i].type = NotEqual;
@@ -1298,9 +1302,68 @@ ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v) {
 	return sumifs(check_range_v,2,tmp_array_sumif2);
 }
 
+ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
+  if(number_of_arguments <1) return VALUE;
+  
+  int a;
+  int i;
+  int j;
+  int rows;
+  int columns;
+  ExcelValue current_value;
+  ExcelValue **ranges = malloc(sizeof(ExcelValue *)*number_of_arguments);
+  double product = 1;
+  double sum = 0;
+  
+  // Find out dimensions of first argument
+  if(arguments[0].type == ExcelRange) {
+    rows = arguments[0].rows;
+    columns = arguments[0].columns;
+  } else {
+    rows = 1;
+    columns = 1;
+  }
+  // Extract arrays from each of the given ranges, checking for errors and bounds as we go
+  for(a=0;a<number_of_arguments;a++) {
+    current_value = arguments[a];
+    switch(current_value.type) {
+      case ExcelRange:
+        if(current_value.rows != rows || current_value.columns != columns) return VALUE;
+        ranges[a] = current_value.array;
+        break;
+      case ExcelError:
+        return current_value;
+        break;
+      case ExcelEmpty:
+        return VALUE;
+        break;
+      default:
+        if(rows != 1 && columns !=1) return VALUE;
+        ranges[a] = malloc(sizeof(ExcelValue));
+        ranges[a][0] = arguments[a];
+        break;
+    }
+  }
+  	
+	for(i=0;i<rows;i++) {
+		for(j=0;j<columns;j++) {
+			product = 1;
+			for(a=0;a<number_of_arguments;a++) {
+				current_value = ranges[a][(i*columns)+j];
+				if(current_value.type == ExcelNumber) {
+					product *= current_value.number;
+				} else {
+					product *= 0;
+				}
+			}
+			sum += product;
+		}
+	}
+  	return new_excel_number(sum);
+}
 
-int test_functions()
-{
+
+int test_functions() {
 	// Test ABS
 	assert(excel_abs(ONE).number == 1);
 	assert(excel_abs(new_excel_number(-1)).number == 1);
@@ -1478,10 +1541,10 @@ int test_functions()
 	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(0)).type == ExcelError);
 	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(-1)).type == ExcelError);
 	assert(find(new_excel_string("one"),new_excel_string("oneone"),new_excel_number(7)).type == ExcelError);
-	// ... nil in the first argument matches any character
+	// ... BLANK in the first argument matches any character
 	assert(find_2(BLANK,new_excel_string("abcdefg")).number == 1);
 	assert(find(BLANK,new_excel_string("abcdefg"),new_excel_number(4)).number == 4);
-    // ... should treat nil in the second argument as an empty string
+    // ... should treat BLANK in the second argument as an empty string
 	assert(find_2(BLANK,BLANK).number == 1);
 	assert(find_2(new_excel_string("a"),BLANK).type == ExcelError);
 	// ... should return an error if any argument is an error
@@ -1535,7 +1598,7 @@ int test_functions()
     // ... it should return a :ref error when given arguments outside array range
 	assert(excel_index_2(index_array_1_v_row,new_excel_number(-1)).type == ExcelError);
 	assert(excel_index_2(index_array_1_v_row,new_excel_number(4)).type == ExcelError);
-    // ... it should treat nil as zero if given as a required row or column number
+    // ... it should treat BLANK as zero if given as a required row or column number
 	assert(excel_index(index_array_2_v,new_excel_number(1.0),BLANK).type == ExcelRange);
 	assert(excel_index(index_array_2_v,BLANK,new_excel_number(2.0)).type == ExcelRange);
     // ... it should return an error if an argument is an error
@@ -1551,7 +1614,7 @@ int test_functions()
 	// ... should turn booleans into the words TRUE and FALSE before processing
     assert(strcmp(left(TRUE,new_excel_number(3)).string,"TRU") == 0);
 	assert(strcmp(left(FALSE,new_excel_number(3)).string,"FAL") == 0);
-	// ... should return nil if given nil for either argument
+	// ... should return BLANK if given BLANK for either argument
 	assert(left(BLANK,new_excel_number(3)).type == ExcelEmpty);
 	assert(left(new_excel_string("ONE"),BLANK).type == ExcelEmpty);
 	// ... should return an error if an argument is an error
@@ -1592,19 +1655,19 @@ int test_functions()
     // ... should return the remainder of a number
 	assert(mod(new_excel_number(10), new_excel_number(3)).number == 1.0);
 	assert(mod(new_excel_number(10), new_excel_number(5)).number == 0.0);
-    // ... should be possible for the the arguments to be strings, if they convert to a number" do
+    // ... should be possible for the the arguments to be strings, if they convert to a number
 	assert(mod(new_excel_string("3.5"),new_excel_string("2")).number == 1.5);
-    // ... should treat nil as zero" do
+    // ... should treat BLANK as zero
 	assert(mod(BLANK,new_excel_number(10)).number == 0);
 	assert(mod(new_excel_number(10),BLANK).type == ExcelError);
 	assert(mod(BLANK,BLANK).type == ExcelError);
-    // ... should treat true as 1 and false as 0" do
+    // ... should treat true as 1 and false as 0
 	assert((mod(new_excel_number(1.1),TRUE).number - 0.1) < 0.001);	
 	assert(mod(new_excel_number(1.1),FALSE).type == ExcelError);
 	assert(mod(FALSE,new_excel_number(10)).number == 0);
-    // ... should return an error when given inappropriate arguments" do
+    // ... should return an error when given inappropriate arguments
 	assert(mod(new_excel_string("Asdasddf"),new_excel_string("adsfads")).type == ExcelError);
-    // ... should return an error if an argument is an error" do
+    // ... should return an error if an argument is an error
 	assert(mod(new_excel_number(1),VALUE).type == ExcelError);
 	assert(mod(VALUE,new_excel_number(1)).type == ExcelError);
 	assert(mod(VALUE,VALUE).type == ExcelError);
@@ -1634,16 +1697,16 @@ int test_functions()
     // ... should return the negative of its arguments
 	assert(negative(new_excel_number(1)).number == -1);
 	assert(negative(new_excel_number(-1)).number == 1);
-    // ... should treat strings that only contain numbers as numbers" do
+    // ... should treat strings that only contain numbers as numbers
 	assert(negative(new_excel_string("10")).number == -10);
 	assert(negative(new_excel_string("-1.3")).number == 1.3);
-    // ... should return an error when given inappropriate arguments" do
+    // ... should return an error when given inappropriate arguments
 	assert(negative(new_excel_string("Asdasddf")).type == ExcelError);
-    // ... should treat nil as zero" do
+    // ... should treat BLANK as zero
 	assert(negative(BLANK).number == 0);
 	
 	// Test PMT(rate,number_of_periods,present_value) - optional arguments not yet implemented
-    // ... should calculate the monthly payment required for a given principal, interest rate and loan period" do
+    // ... should calculate the monthly payment required for a given principal, interest rate and loan period
     assert((pmt(new_excel_number(0.1),new_excel_number(10),new_excel_number(100)).number - -16.27) < 0.01);
     assert((pmt(new_excel_number(0.0123),new_excel_number(99.1),new_excel_number(123.32)).number - -2.159) < 0.01);
     assert((pmt(new_excel_number(0),new_excel_number(2),new_excel_number(10)).number - -5) < 0.01);
@@ -1754,7 +1817,7 @@ int test_functions()
   ExcelValue sumifs_array_10f[] = { sumifs_array_3_v, new_excel_string(">=3")};
   assert(sumifs(sumifs_array_3_v,2, sumifs_array_10f).number == 17);
   
-  // ... should treat nil as an empty string when in the check_range, but not in the criteria
+  // ... should treat BLANK as an empty string when in the check_range, but not in the criteria
   ExcelValue sumifs_array_11[] = { BLANK, new_excel_number(20)};
   assert(sumifs(new_excel_number(100),2,sumifs_array_11).number == 0);
   
@@ -1778,6 +1841,61 @@ int test_functions()
   ExcelValue sumif_array_1[] = {new_excel_number(15),new_excel_number(20), new_excel_number(30)};
   ExcelValue sumif_array_1_v = new_excel_range(sumif_array_1,3,1);
   assert(sumif(sumifs_array_1_v,new_excel_string("10"),sumif_array_1_v).number == 15);
+  
+  
+  // Test SUMPRODUCT
+  ExcelValue sumproduct_1[] = { new_excel_number(10), new_excel_number(100), BLANK};
+  ExcelValue sumproduct_2[] = { BLANK, new_excel_number(100), new_excel_number(10), BLANK};
+  ExcelValue sumproduct_3[] = { BLANK };
+  ExcelValue sumproduct_4[] = { new_excel_number(10), new_excel_number(100), new_excel_number(1000)};
+  ExcelValue sumproduct_5[] = { new_excel_number(1), new_excel_number(2), new_excel_number(3)};
+  ExcelValue sumproduct_6[] = { new_excel_number(1), new_excel_number(2), new_excel_number(4), new_excel_number(5)};
+  ExcelValue sumproduct_7[] = { new_excel_number(10), new_excel_number(20), new_excel_number(40), new_excel_number(50)};
+  ExcelValue sumproduct_8[] = { new_excel_number(11), new_excel_number(21), new_excel_number(41), new_excel_number(51)};
+  ExcelValue sumproduct_9[] = { BLANK, BLANK };
+  
+  ExcelValue sumproduct_1_v = new_excel_range( sumproduct_1, 3, 1);
+  ExcelValue sumproduct_2_v = new_excel_range( sumproduct_2, 3, 1);
+  ExcelValue sumproduct_3_v = new_excel_range( sumproduct_3, 1, 1);
+  // ExcelValue sumproduct_4_v = new_excel_range( sumproduct_4, 1, 3); // Unused
+  ExcelValue sumproduct_5_v = new_excel_range( sumproduct_5, 3, 1);
+  ExcelValue sumproduct_6_v = new_excel_range( sumproduct_6, 2, 2);
+  ExcelValue sumproduct_7_v = new_excel_range( sumproduct_7, 2, 2);
+  ExcelValue sumproduct_8_v = new_excel_range( sumproduct_8, 2, 2);
+  ExcelValue sumproduct_9_v = new_excel_range( sumproduct_9, 2, 1);
+  
+  // ... should multiply together and then sum the elements in row or column areas given as arguments
+  ExcelValue sumproducta_1[] = {sumproduct_1_v, sumproduct_2_v};
+  assert(sumproduct(2,sumproducta_1).number == 100*100);
+
+  // ... should return :value when miss-matched array sizes
+  ExcelValue sumproducta_2[] = {sumproduct_1_v, sumproduct_3_v};
+  assert(sumproduct(2,sumproducta_2).type == ExcelError);
+
+  // ... if all its arguments are single values, should multiply them together
+  // ExcelValue *sumproducta_3 = sumproduct_4;
+  assert(sumproduct(3,sumproduct_4).number == 10*100*1000);
+
+  // ... if it only has one range as an argument, should add its elements together
+  ExcelValue sumproducta_4[] = {sumproduct_5_v};
+  assert(sumproduct(1,sumproducta_4).number == 1 + 2 + 3);
+
+  // ... if given multi row and column areas as arguments, should multipy the corresponding cell in each area and then add them all
+  ExcelValue sumproducta_5[] = {sumproduct_6_v, sumproduct_7_v, sumproduct_8_v};
+  assert(sumproduct(3,sumproducta_5).number == 1*10*11 + 2*20*21 + 4*40*41 + 5*50*51);
+
+  // ... should raise an error if BLANK values outside of an array
+  ExcelValue sumproducta_6[] = {BLANK,new_excel_number(1)};
+  assert(sumproduct(2,sumproducta_6).type == ExcelError);
+
+  // ... should ignore non-numeric values within an array
+  ExcelValue sumproducta_7[] = {sumproduct_9_v, sumproduct_9_v};
+  assert(sumproduct(2,sumproducta_7).number == 0);
+
+   // ... should return an error if an argument is an error
+  ExcelValue sumproducta_8[] = {VALUE};
+  assert(sumproduct(1,sumproducta_8).type == ExcelError);
+  
   
 	// // Test number handling
 	// ExcelValue one = new_excel_number(38.8);
