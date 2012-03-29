@@ -59,7 +59,8 @@ class MapFormulaeToC < MapValuesToC
     'SUMIF3' => 'sumif',
     'SUMIFS' => 'sumifs',
     'SUMPRODUCT' => 'sumproduct',
-    'VLOOKUP' => 'vlookup',
+    'VLOOKUP3' => 'vlookup_3',
+    'VLOOKUP4' => 'vlookup',
     '^' => 'power'
   }
   
