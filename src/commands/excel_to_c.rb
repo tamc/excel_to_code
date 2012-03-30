@@ -36,6 +36,7 @@ class ExcelToRuby
     compile_workbook
     compile_build_script
     compile_ruby_ffi_interface
+    compile_tests
   end
   
   def sort_out_output_directories    
@@ -611,6 +612,30 @@ END
       o.puts "  # end of #{name}"
     end
     o.puts "end"  
+    close(o)
+  end
+  
+  def compile_tests
+    name = compiled_module_name.downcase
+    o = ruby("#{name}_test.rb")    
+    o.puts "# coding: utf-8"
+    o.puts "# Test for #{name}"
+    o.puts  "require 'test/unit'"
+    o.puts  "require_relative '#{compiled_module_name.downcase}'"
+    o.puts
+    o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
+    o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
+    o.puts "  def init_spreadsheet; s = #{name.capitalize}; s.set_to_default_values; s; end"
+    
+    worksheets("Adding tests for") do |name,xml_filename|
+      i = input(name,"values_pruned2.ast")
+      o.puts
+      o.puts "  # start of #{name}"  
+      c_name = c_name_for_worksheet_name(name)
+      CompileToCUnitTest.rewrite(i, c_name, o)
+      close(i)
+    end
+    o.puts "end"
     close(o)
   end
   
