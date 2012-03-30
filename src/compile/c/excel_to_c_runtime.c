@@ -1089,9 +1089,8 @@ ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *a
     sum_range_rows = sum_range_v.rows;
     sum_range_columns = sum_range_v.columns;
   } else {
-    ExcelValue *tmp_array1 = malloc(sizeof(ExcelValue));
-    tmp_array1[0] = sum_range_v;
-    sum_range = tmp_array1;
+    sum_range = malloc(sizeof(ExcelValue));
+	sum_range[0] = sum_range_v;
     sum_range_rows = 1;
     sum_range_columns = 1;
   }
