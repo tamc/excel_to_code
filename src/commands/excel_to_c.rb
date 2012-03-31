@@ -620,6 +620,8 @@ END
     o = ruby("#{name}_test.rb")    
     o.puts "# coding: utf-8"
     o.puts "# Test for #{name}"
+    o.puts "require 'rubygems'"
+    o.puts "gem 'minitest'"
     o.puts  "require 'test/unit'"
     o.puts  "require_relative '#{compiled_module_name.downcase}'"
     o.puts
