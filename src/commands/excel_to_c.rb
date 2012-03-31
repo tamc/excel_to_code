@@ -453,7 +453,7 @@ class ExcelToRuby
     # Output the workbook preamble
     w = input("worksheet_c_names")
     o = ruby("#{compiled_module_name.downcase}.c")
-    o.puts "// Compiled version of #{excel_file}"
+    o.puts "// #{excel_file} approximately translated into C"
     o.puts '#include "excel_to_c_runtime.c"'
     o.puts
     
