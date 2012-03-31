@@ -15,11 +15,19 @@ class CompileToCUnitTest
         ast = eval(formula)
         case ast.first
         when :number, :percentage
-          output.puts "  assert_equal(r[:type],:ExcelNumber)"
-          output.puts "  assert_in_epsilon(r[:number],#{ast.last.to_f.to_s})"
+          output.puts "  assert_equal(:ExcelNumber,r[:type])"
+          output.puts "  assert_in_epsilon(#{ast.last.to_f.to_s},r[:number])"
         when :error
+          output.puts "  assert_equal(:ExcelError,r[:type])"
         when :string
-        when :boolean_true, :boolean_false
+          output.puts "  assert_equal(:ExcelString,r[:type])"
+          output.puts "  assert_equal(#{ast.last.inspect},r[:string].force_encoding('utf-8'))" 
+        when :boolean_true
+          output.puts "  assert_equal(:ExcelBoolean,r[:type])"
+          output.puts "  assert_equal(1,r[:number])" 
+        when :boolean_false
+          output.puts "  assert_equal(:ExcelBoolean,r[:type])"
+          output.puts "  assert_equal(0,r[:number])"           
         else
           raise NotSupportedException.new("#{ast} type can't be settable")
         end
