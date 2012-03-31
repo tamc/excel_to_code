@@ -166,9 +166,12 @@ class MapFormulaeToC < MapValuesToC
       r.map do |c| 
         map(c)
       end
-    end.flatten.join(',')
+    end.flatten
     
-    initializers << "ExcelValue #{array_name}[] = {#{cells}};"
+    initializers << "static ExcelValue #{array_name}[#{cells.size}];"
+    cells.each_with_index do |c,i|
+      initializers << "#{array_name}[#{i}] = #{c};"
+    end
     
     # Then we need to assign it to an excel value
     range_name = array_name+"_ev"
