@@ -837,15 +837,16 @@ ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
 ExcelValue sum(int array_size, ExcelValue *array) {
 	double total = 0;
 	int i;
-	ExcelValue current_excel_value;
 	for(i=0;i<array_size;i++) {
-		current_excel_value = array[i];
-    switch(current_excel_value.type) {
+    switch(array[i].type) {
       case ExcelNumber:
-        total += current_excel_value.number;
+        total += array[i].number;
         break;
       case ExcelRange:
-        total += number_from(sum( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ));
+        total += number_from(sum( array[i].rows * array[i].columns, array[i].array ));
+        break;
+      case ExcelError:
+        return array[i];
         break;
       default:
         break;
@@ -1974,7 +1975,13 @@ int test_functions() {
   assert(vlookup(new_excel_number(2.0),vlookup_a1_v,new_excel_number(2),VALUE).type == ExcelError);
   assert(vlookup(VALUE,VALUE,VALUE,VALUE).type == ExcelError);
 	
-	return 0;
+  // Test SUM
+  ExcelValue sum_array_0[] = {new_excel_number(1084.4557258064517),new_excel_number(32.0516914516129),new_excel_number(137.36439193548387)};
+  ExcelValue sum_array_0_v = new_excel_range(sum_array_0,3,1);
+  ExcelValue sum_array_1[] = {sum_array_0_v};
+  assert(sum(1,sum_array_1).number == 1253.8718091935484);
+  
+  return 0;
 }
 
 int main() {
