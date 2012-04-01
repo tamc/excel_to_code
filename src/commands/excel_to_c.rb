@@ -8,9 +8,11 @@ require_relative '../rewrite'
 require_relative '../simplify'
 require_relative '../compile'
 
-class ExcelToRuby
+class ExcelToC
   
   attr_accessor :excel_file, :output_directory, :xml_dir, :compiled_module_name, :values_that_can_be_set_at_runtime, :outputs_to_keep
+  attr_accessor :actually_compile_c_code
+  attr_accessor :actually_run_tests
   
   def initialize
     @values_that_can_be_set_at_runtime ||= {}
@@ -37,6 +39,10 @@ class ExcelToRuby
     compile_build_script
     compile_ruby_ffi_interface
     compile_tests
+    compile_c_code
+    run_tests
+    puts
+    puts "The generated code is available in #{File.join(output_directory,'c')}"
   end
   
   def sort_out_output_directories    
@@ -639,6 +645,18 @@ END
     end
     o.puts "end"
     close(o)
+  end
+  
+  def compile_c_code
+    return unless actually_compile_c_code
+    puts "Compiling the resulting c code"
+    puts `cd #{File.join(output_directory,'c')}; make clean; make`
+  end
+  
+  def run_tests
+    return unless actually_run_tests
+    puts "Running the resulting tests"
+    puts `cd #{File.join(output_directory,'c')}; ruby "#{compiled_module_name.downcase}_test.rb"`
   end
   
   def c_name_for_worksheet_name(name)
