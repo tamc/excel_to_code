@@ -18,8 +18,8 @@ class InlineFormulaeAst
   end
   
   def sheet_reference(sheet,reference)
-    if inline_ast.call(sheet,reference.last.gsub('$',''),references)
-      ast = references[sheet][reference.last.gsub('$','')]
+    if inline_ast.call(sheet,reference.last.upcase.gsub('$',''),references)
+      ast = references[sheet][reference.last.upcase.gsub('$','')]
       if ast
         current_sheet_name.push(sheet)
         result = map(ast)
@@ -35,8 +35,8 @@ class InlineFormulaeAst
   
   # TODO: Optimize by replacing contents of references hash with the inlined version
   def cell(reference)
-    if inline_ast.call(current_sheet_name.last,reference.gsub('$',''),references)
-      ast = references[current_sheet_name.last][reference.gsub('$','')]
+    if inline_ast.call(current_sheet_name.last,reference.upcase.gsub('$',''),references)
+      ast = references[current_sheet_name.last][reference.upcase.gsub('$','')]
       if ast
         map(ast)
       else
