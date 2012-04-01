@@ -284,13 +284,13 @@ class ExcelToC
     counter = 1
     
     # Setup start
-    worksheets("Setting up for optimise") do |name|
+    worksheets("Setting up for optimise -#{counter}") do |name|
       i = File.join(output_directory,'intermediate',name,start_filename)
       o = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
       `cp '#{i}' '#{o}'`
     end
     
-    worksheets("Replacing with calculated values") do |name,xml_filename|
+    worksheets("Replacing with calculated values #{counter}-#{counter+1}") do |name,xml_filename|
       #fork do
         replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
       #end
@@ -321,7 +321,7 @@ class ExcelToC
     r.references = references
     r.inline_ast = inline_ast_decision
     
-    worksheets("Inlining formulae") do |name,xml_filename|
+    worksheets("Inlining formulae #{counter}-#{counter+1}") do |name,xml_filename|
       #fork do
         r.default_sheet_name = name
         replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
@@ -331,7 +331,7 @@ class ExcelToC
     Process.waitall
     
     # Finish
-    worksheets("Moving sheets") do |name|
+    worksheets("Moving sheets #{counter}-") do |name|
       o = File.join(output_directory,'intermediate',name,finish_filename)
       i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
       `cp '#{i}' '#{o}'`
