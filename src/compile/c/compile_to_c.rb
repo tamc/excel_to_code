@@ -20,33 +20,37 @@ class CompileToC
         ref, formula = line.split("\t")
         ast = eval(formula)
         calculation = mapper.map(ast)
+        name = "#{c_name}_#{ref.downcase}"
         if settable.call(ref)
-          name = "#{c_name}_#{ref.downcase}"
+          output.puts "ExcelValue #{name}_default() {"
+          output.puts "  static ExcelValue result;"
+          output.puts "  static int calculated = 0;"
+          output.puts "  if(calculated == 1) { return result;}"
+            mapper.initializers.each do |i|
+              output.puts "  #{i}"
+            end
+            #output.puts "  return #{calculation};"
+          output.puts "  result = #{calculation};"
+          output.puts "  calculated = 1;"
+          output.puts "  return result;"
+          output.puts "}"
           output.puts "static ExcelValue #{name}_variable;"
-          output.puts "ExcelValue #{name}() { return #{name}_variable; }"
-          if mapper.initializers.empty?
-            output.puts "ExcelValue #{c_name}_#{ref.downcase}_default() { return #{calculation}; }"
-          else
-            output.puts "ExcelValue #{c_name}_#{ref.downcase}_default() {"
-              mapper.initializers.each do |i|
-                output.puts "  #{i}"
-              end
-              output.puts "  return #{calculation};"
-            output.puts "}"
-          end
-          output.puts "void set_#{name}(ExcelValue newValue) { #{name}_variable = newValue; }"
-          defaults.puts "  #{name}_variable = #{c_name}_#{ref.downcase}_default();" if defaults
+          output.puts "static int #{name}_variable_set = 0;"
+          output.puts "ExcelValue #{name}() { if(#{name}_variable_set == 1) { return #{name}_variable; } else { return #{c_name}_#{ref.downcase}_default(); } }"
+          output.puts "void set_#{name}(ExcelValue newValue) { #{name}_variable_set = 1; #{name}_variable = newValue; }"
         else
-          if mapper.initializers.empty?
-            output.puts "ExcelValue #{c_name}_#{ref.downcase}() { return #{calculation}; }"
-          else
-            output.puts "ExcelValue #{c_name}_#{ref.downcase}() {"
-              mapper.initializers.each do |i|
-                output.puts "  #{i}"
-              end
-              output.puts "  return #{calculation};"
-            output.puts "}"
-          end
+          output.puts "ExcelValue #{name}() {"
+          output.puts "  static ExcelValue result;"
+          output.puts "  static int calculated = 0;"
+          output.puts "  if(calculated == 1) { return result;}"
+            mapper.initializers.each do |i|
+              output.puts "  #{i}"
+            end
+            #output.puts "  return #{calculation};"
+          output.puts "  result = #{calculation};"
+          output.puts "  calculated = 1;"
+          output.puts "  return result;"
+          output.puts "}"
         end
         mapper.reset
       rescue Exception => e

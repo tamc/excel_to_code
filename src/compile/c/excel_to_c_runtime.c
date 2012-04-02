@@ -116,30 +116,31 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 };
 
 // Constants
-ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
-ExcelValue ZERO = {.type = ExcelNumber, .number = 0};
-ExcelValue ONE = {.type = ExcelNumber, .number = 1};
-ExcelValue TWO = {.type = ExcelNumber, .number = 2};
-ExcelValue THREE = {.type = ExcelNumber, .number = 3};
-ExcelValue FOUR = {.type = ExcelNumber, .number = 4};
-ExcelValue FIVE = {.type = ExcelNumber, .number = 5};
-ExcelValue SIX = {.type = ExcelNumber, .number = 6};
-ExcelValue SEVEN = {.type = ExcelNumber, .number = 7};
-ExcelValue EIGHT = {.type = ExcelNumber, .number = 8};
-ExcelValue NINE = {.type = ExcelNumber, .number = 9};
-ExcelValue TEN = {.type = ExcelNumber, .number = 10};
+const ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
+
+const ExcelValue ZERO = {.type = ExcelNumber, .number = 0};
+const ExcelValue ONE = {.type = ExcelNumber, .number = 1};
+const ExcelValue TWO = {.type = ExcelNumber, .number = 2};
+const ExcelValue THREE = {.type = ExcelNumber, .number = 3};
+const ExcelValue FOUR = {.type = ExcelNumber, .number = 4};
+const ExcelValue FIVE = {.type = ExcelNumber, .number = 5};
+const ExcelValue SIX = {.type = ExcelNumber, .number = 6};
+const ExcelValue SEVEN = {.type = ExcelNumber, .number = 7};
+const ExcelValue EIGHT = {.type = ExcelNumber, .number = 8};
+const ExcelValue NINE = {.type = ExcelNumber, .number = 9};
+const ExcelValue TEN = {.type = ExcelNumber, .number = 10};
 
 
 // Booleans
-ExcelValue TRUE = {.type = ExcelBoolean, .number = true };
-ExcelValue FALSE = {.type = ExcelBoolean, .number = false };
+const ExcelValue TRUE = {.type = ExcelBoolean, .number = true };
+const ExcelValue FALSE = {.type = ExcelBoolean, .number = false };
 
 // Errors
-ExcelValue VALUE = {.type = ExcelError, .number = 0};
-ExcelValue NAME = {.type = ExcelError, .number = 1};
-ExcelValue DIV0 = {.type = ExcelError, .number = 2};
-ExcelValue REF = {.type = ExcelError, .number = 3};
-ExcelValue NA = {.type = ExcelError, .number = 4};
+const ExcelValue VALUE = {.type = ExcelError, .number = 0};
+const ExcelValue NAME = {.type = ExcelError, .number = 1};
+const ExcelValue DIV0 = {.type = ExcelError, .number = 2};
+const ExcelValue REF = {.type = ExcelError, .number = 3};
+const ExcelValue NA = {.type = ExcelError, .number = 4};
 
 // This is the error flag
 int conversion_error = 0;
@@ -387,7 +388,7 @@ ExcelValue counta(int array_size, ExcelValue *array) {
         break;
       case ExcelRange: 
 	  	  n += counta( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ).number;
-        break;		
+        break;
   	  case ExcelEmpty:
   		  break;
     }

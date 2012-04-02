@@ -527,13 +527,13 @@ class ExcelToC
     close(i)
     o.puts "// ending the value constants"
     o.puts
-
+    
+    c = CompileToC.new
     # Output the elements from each worksheet in turn
     d = output('defaults')
     worksheets("Compiling worksheet") do |name,xml_filename|
       w.rewind
       settable_refs = @values_that_can_be_set_at_runtime[name]    
-      c = CompileToC.new
       c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
       c.worksheet = name
 
