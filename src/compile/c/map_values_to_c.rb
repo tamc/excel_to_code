@@ -19,6 +19,10 @@ class MapValuesToC
     "BLANK"
   end
   
+  def constant(name)
+    name
+  end
+  
   alias :null :blank
     
   def number(text)

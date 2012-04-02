@@ -435,10 +435,24 @@ class ExcelToC
     close(o)
     
     worksheets("Replacing repeated elements") do |name,xml_filename|
-      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned_with_sheets.ast"), "common-elements.ast", File.join(name,"formulae_inlined_pruned_replaced.ast")
+      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned_with_sheets.ast"), "common-elements.ast", File.join(name,"formulae_inlined_pruned_replaced-1.ast")
     end
+
+    
+    r = ReplaceValuesWithConstants.new  
+    worksheets("Replacing values with constants") do |name,xml_filename|
+      i = input(name,"formulae_inlined_pruned_replaced-1.ast")
+      o = output(name,"formulae_inlined_pruned_replaced.ast")
+      r.replace(i,o)
+      close(i,o)
+    end
+    co = output("value_constants.ast")
+    r.rewriter.constants.each do |ast,constant|
+      co.puts "#{constant}\t#{ast}"
+    end
+    close(co)
   end
-  
+    
   def all_formulae(filename)
     references = {}
     worksheets do |name,xml_filename|
@@ -485,7 +499,6 @@ class ExcelToC
     o.puts "// end of definitions"
     o.puts
     
-    
     # output the common elements
     o.puts "// starting common elements"
     w.rewind
@@ -494,6 +507,25 @@ class ExcelToC
     c.rewrite(i,w,o)
     close(i)
     o.puts "// ending common elements"
+    o.puts
+    
+    # Output the value constants
+    o.puts "// starting the value constants"
+    mapper = MapValuesToCStructs.new
+    i = input("value_constants.ast")
+    i.lines do |line|
+      begin
+        ref, formula = line.split("\t")
+        ast = eval(formula)
+        calculation = mapper.map(ast)
+        o.puts "static ExcelValue #{ref} = #{calculation};"
+      rescue Exception => e
+        puts "Exception at line #{line}"
+        raise
+      end
+    end          
+    close(i)
+    o.puts "// ending the value constants"
     o.puts
 
     # Output the elements from each worksheet in turn
@@ -588,20 +620,7 @@ END
       if settable_refs
         settable_refs = all_formulae[name].keys if settable_refs == :all
         settable_refs.each do |ref|
-          setter = "set_#{c_name}_#{ref.downcase}"
-          type = case all_formulae[name][ref.upcase].first
-          when :number, :percentage
-            ':double'
-          when :error
-            ":int"
-          when :string
-            ":string"
-          when :boolean_true, :boolean_false
-            ":int"
-          else
-            raise NotSupportedException.new("#{all_formulae[name][ref.downcase]} can't be settable")
-          end
-          o.puts "  attach_function '#{setter}', [#{type}], :void"
+          o.puts "  attach_function 'set_#{c_name}_#{ref.downcase}', [ExcelValue], :void"
         end
       end
 

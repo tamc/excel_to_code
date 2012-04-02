@@ -10,7 +10,7 @@
 // I predefine an array of ExcelValues to store calculations
 // Probably bad practice. At the very least, I should make it
 // link to the cell reference in some way.
-#define MAX_EXCEL_VALUE_HEAP_SIZE 100000
+#define MAX_EXCEL_VALUE_HEAP_SIZE 1000000
 
 #define true 1
 #define false 0
@@ -83,9 +83,12 @@ void reset() {
 	cell_counter = 0;
 }
 
+#define HEAPCHECK if(cell_counter >= MAX_EXCEL_VALUE_HEAP_SIZE) { printf("Heap exceeded"); exit(-1); }
+
 // The object initializers
 ExcelValue new_excel_number(double number) {
 	cell_counter++;
+	HEAPCHECK
 	ExcelValue new_cell = 	cells[cell_counter];
 	new_cell.type = ExcelNumber;
 	new_cell.number = number;
@@ -94,6 +97,7 @@ ExcelValue new_excel_number(double number) {
 
 ExcelValue new_excel_string(char *string) {
 	cell_counter++;
+	HEAPCHECK
 	ExcelValue new_cell = 	cells[cell_counter];
 	new_cell.type = ExcelString;
 	new_cell.string = string;
@@ -102,6 +106,7 @@ ExcelValue new_excel_string(char *string) {
 
 ExcelValue new_excel_range(void *array, int rows, int columns) {
 	cell_counter++;
+	HEAPCHECK
 	ExcelValue new_cell = cells[cell_counter];
 	new_cell.type = ExcelRange;
 	new_cell.array =array;
