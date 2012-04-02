@@ -30,7 +30,22 @@ class MapValuesToC
     else
       text.to_i.to_s
     end
-    "new_excel_number(#{n})"
+    
+    case n
+    when 0; "ZERO"
+    when 1; "ONE"
+    when 2; "TWO"
+    when 3; "THREE"
+    when 4; "FOUR"
+    when 5; "FIVE"
+    when 6; "SIX"
+    when 7; "SEVEN"
+    when 8; "EIGHT"
+    when 9; "NINE"
+    when 10; "TEN"
+    else   
+      "new_excel_number(#{n})"
+    end
   end
   
   def percentage(text)

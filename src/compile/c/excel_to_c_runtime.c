@@ -114,6 +114,15 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
 ExcelValue ZERO = {.type = ExcelNumber, .number = 0};
 ExcelValue ONE = {.type = ExcelNumber, .number = 1};
+ExcelValue TWO = {.type = ExcelNumber, .number = 2};
+ExcelValue THREE = {.type = ExcelNumber, .number = 3};
+ExcelValue FOUR = {.type = ExcelNumber, .number = 4};
+ExcelValue FIVE = {.type = ExcelNumber, .number = 5};
+ExcelValue SIX = {.type = ExcelNumber, .number = 6};
+ExcelValue SEVEN = {.type = ExcelNumber, .number = 7};
+ExcelValue EIGHT = {.type = ExcelNumber, .number = 8};
+ExcelValue NINE = {.type = ExcelNumber, .number = 9};
+ExcelValue TEN = {.type = ExcelNumber, .number = 10};
 
 
 // Booleans
