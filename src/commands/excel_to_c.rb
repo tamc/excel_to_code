@@ -272,6 +272,8 @@ class ExcelToC
       
       replace ReplaceRangesWithArrayLiterals, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
       counter += 1
+      replace ReplaceArraysWithSingleCells, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      counter += 1
       
       # Finally, create the output directory
       i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
