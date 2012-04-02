@@ -21,6 +21,14 @@ class ReplaceTableReferenceAst
     tables[table_name.downcase].reference_for(table_name,table_reference,worksheet,referring_cell)
   end
   
+  def local_table_reference(table_reference)
+    table = tables.values.find do |table|
+      table.includes?(worksheet,referring_cell)
+    end
+    return [:error,"#REF!"] unless table
+    table.reference_for(table.name,table_reference,worksheet,referring_cell)
+  end
+  
 end
 
 
@@ -44,7 +52,7 @@ class ReplaceTableReferences
     input.lines do |line|
       # Looks to match shared string lines
       begin
-        if line =~ /\[:table_reference/
+        if line =~ /\[(:table_reference|:local_table_reference)/
           cols = line.split("\t")
           ast = cols.pop
           ref = cols.first

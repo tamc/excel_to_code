@@ -32,6 +32,29 @@ r.sheet_name = "Tables"
 r.replace(input,tables,output)
 output.string.should == expected_output
 end # /it
+  
+it "should replace local table references with cell and array references" do
+
+input = <<END
+D3	[:arithmetic, [:local_table_reference, "Column A"], [:operator, "+"], [:local_table_reference, "Column B "]]
+END
+
+tables = <<END
+Table1	Tables	B2:D5	0	Column A	Column B 	Column C
+END
+
+expected_output = <<END
+D3	[:arithmetic, [:sheet_reference, "Tables", [:cell, "B3"]], [:operator, "+"], [:sheet_reference, "Tables", [:cell, "C3"]]]
+END
+    
+input = StringIO.new(input)
+tables = StringIO.new(tables)
+output = StringIO.new
+r = ReplaceTableReferences.new
+r.sheet_name = "Tables"
+r.replace(input,tables,output)
+output.string.should == expected_output
+end # /it
 
 it "should work when applied to array references" do
 

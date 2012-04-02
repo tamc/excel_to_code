@@ -82,5 +82,16 @@ describe Table do
 
   it 'should be able to return a reference for [:table_reference, "FirstTable", "[#This Row],[ColB]:[ColC]"]' do
     @table.reference_for("FirstTable", "[#This Row],[ColB]:[ColC]","sheet1","F5").should == [:sheet_reference, "sheet1", [:area, "C5","D5"]]
-  end    
+  end 
+  
+  it "should be able to tell whether a reference is inside or outside of the table" do 
+    @table.includes?("sheet1","B3").should == true
+    @table.includes?("sheet1","D7").should == true
+    @table.includes?("sheet1","B4").should == true
+    @table.includes?("sheet1","C6").should == true
+    
+    @table.includes?("sheet2","B3").should == false
+    @table.includes?("sheet1","A3").should == false
+    @table.includes?("sheet1","D8").should == false
+  end
 end
