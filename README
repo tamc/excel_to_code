@@ -15,3 +15,13 @@ Doesn't work yet, but the story so far is delivered by running:
 3. bundle
 4. rspec spec/*
 
+# Limitations
+
+1. INDIRECT formula must be convertable at runtime into a standard formula 
+
+# Known bugs
+
+1. Doesn't implement all functions
+2. Doesn't implement references that involve range unions and lists
+3. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
+
