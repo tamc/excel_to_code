@@ -44,35 +44,35 @@ struct excel_comparison {
 typedef struct excel_comparison ExcelComparison;
 
 // Headers
-ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
-ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v);
-ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v);
-ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
-ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
-ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
-ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
-ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
-ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
-ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
-ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
-ExcelValue left_1(ExcelValue string_v);
-ExcelValue max(int number_of_arguments, ExcelValue *arguments);
-ExcelValue min(int number_of_arguments, ExcelValue *arguments);
-ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
-ExcelValue negative(ExcelValue a_v);
-ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
-ExcelValue power(ExcelValue a_v, ExcelValue b_v);
-ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
-ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
-ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
-ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
-ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
-ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
-ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v );
-ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v);
-ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments);
-ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
-ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
+static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
+static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
+static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
+static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
+static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
+static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
+static ExcelValue left_1(ExcelValue string_v);
+static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue negative(ExcelValue a_v);
+static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
+static ExcelValue power(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
+static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
+static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
+static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
+static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
+static ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v );
+static ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v);
+static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
+static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
 
 // My little heap
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -86,7 +86,7 @@ void reset() {
 #define HEAPCHECK if(cell_counter >= MAX_EXCEL_VALUE_HEAP_SIZE) { printf("Heap exceeded"); exit(-1); }
 
 // The object initializers
-ExcelValue new_excel_number(double number) {
+static ExcelValue new_excel_number(double number) {
 	cell_counter++;
 	HEAPCHECK
 	ExcelValue new_cell = 	cells[cell_counter];
@@ -95,7 +95,7 @@ ExcelValue new_excel_number(double number) {
 	return new_cell;
 };
 
-ExcelValue new_excel_string(char *string) {
+static ExcelValue new_excel_string(char *string) {
 	cell_counter++;
 	HEAPCHECK
 	ExcelValue new_cell = 	cells[cell_counter];
@@ -104,7 +104,7 @@ ExcelValue new_excel_string(char *string) {
 	return new_cell;
 };
 
-ExcelValue new_excel_range(void *array, int rows, int columns) {
+static ExcelValue new_excel_range(void *array, int rows, int columns) {
 	cell_counter++;
 	HEAPCHECK
 	ExcelValue new_cell = cells[cell_counter];
@@ -115,7 +115,7 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 	return new_cell;
 };
 
-void * new_excel_value_array(int size) {
+static void * new_excel_value_array(int size) {
 	ExcelValue *pointer = malloc(sizeof(ExcelValue)*size);
 	if(pointer == 0) {
 		printf("Out of memory\n");
@@ -152,10 +152,10 @@ const ExcelValue REF = {.type = ExcelError, .number = 3};
 const ExcelValue NA = {.type = ExcelError, .number = 4};
 
 // This is the error flag
-int conversion_error = 0;
+static int conversion_error = 0;
 
 // Helpful for debugging
-void inspect_excel_value(ExcelValue v) {
+static void inspect_excel_value(ExcelValue v) {
 	ExcelValue *array;
 	int i, j, k;
 	switch (v.type) {
@@ -210,7 +210,7 @@ void inspect_excel_value(ExcelValue v) {
 
 // Extracts numbers from ExcelValues
 // Excel treats empty cells as zero
-double number_from(ExcelValue v) {
+static double number_from(ExcelValue v) {
 	char *s;
 	char *p;
 	double n;
@@ -245,7 +245,7 @@ double number_from(ExcelValue v) {
 #define CHECK_FOR_CONVERSION_ERROR 	if(conversion_error) { conversion_error = 0; return VALUE; };
 #define CHECK_FOR_PASSED_ERROR(name) 	if(name.type == ExcelError) return name;
 	
-ExcelValue excel_abs(ExcelValue a_v) {
+static ExcelValue excel_abs(ExcelValue a_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)	
 	NUMBER(a_v, a)
 	CHECK_FOR_CONVERSION_ERROR
@@ -257,7 +257,7 @@ ExcelValue excel_abs(ExcelValue a_v) {
 	}
 }
 
-ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
@@ -266,7 +266,7 @@ ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(a + b);
 }
 
-ExcelValue excel_and(int array_size, ExcelValue *array) {
+static ExcelValue excel_and(int array_size, ExcelValue *array) {
 	int i;
 	ExcelValue current_excel_value, array_result;
 	
@@ -300,7 +300,7 @@ struct average_result {
 	ExcelValue error;
 };
 	
-struct average_result calculate_average(int array_size, ExcelValue *array) {
+static struct average_result calculate_average(int array_size, ExcelValue *array) {
 	double sum = 0;
 	double count = 0;
 	int i;
@@ -336,14 +336,14 @@ struct average_result calculate_average(int array_size, ExcelValue *array) {
 	return r;
 }
 
-ExcelValue average(int array_size, ExcelValue *array) {
+static ExcelValue average(int array_size, ExcelValue *array) {
 	struct average_result r = calculate_average(array_size, array);
 	if(r.has_error == true) return r.error;
 	if(r.count == 0) return DIV0;
 	return new_excel_number(r.sum/r.count);
 }
 
-ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
+static ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
 	CHECK_FOR_PASSED_ERROR(index_v)
 
 	int index = (int) number_from(index_v);
@@ -357,7 +357,7 @@ ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
 	return array[index-1];
 }	
 
-ExcelValue count(int array_size, ExcelValue *array) {
+static ExcelValue count(int array_size, ExcelValue *array) {
 	int i;
 	int n = 0;
 	ExcelValue current_excel_value;
@@ -381,7 +381,7 @@ ExcelValue count(int array_size, ExcelValue *array) {
 	 return new_excel_number(n);
 }
 
-ExcelValue counta(int array_size, ExcelValue *array) {
+static ExcelValue counta(int array_size, ExcelValue *array) {
 	int i;
 	int n = 0;
 	ExcelValue current_excel_value;
@@ -405,7 +405,7 @@ ExcelValue counta(int array_size, ExcelValue *array) {
 	 return new_excel_number(n);
 }
 
-ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
@@ -415,7 +415,7 @@ ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(a / b);
 }
 
-ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 
@@ -438,7 +438,7 @@ ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
   return FALSE;
 }
 
-ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 	ExcelValue result = excel_equal(a_v, b_v);
 	if(result.type == ExcelBoolean) {
 		if(result.number == 0) return TRUE;
@@ -447,7 +447,7 @@ ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 	return result;
 }
 
-ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
+static ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
 	CHECK_FOR_PASSED_ERROR(condition)
 	CHECK_FOR_PASSED_ERROR(true_case)
 	CHECK_FOR_PASSED_ERROR(false_case)
@@ -471,11 +471,11 @@ ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false
   return condition;
 }
 
-ExcelValue excel_if_2(ExcelValue condition, ExcelValue true_case ) {
+static ExcelValue excel_if_2(ExcelValue condition, ExcelValue true_case ) {
 	return excel_if( condition, true_case, FALSE );
 }
 
-ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v) {
+static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v) {
 	CHECK_FOR_PASSED_ERROR(array_v)
 	CHECK_FOR_PASSED_ERROR(row_number_v)
 	CHECK_FOR_PASSED_ERROR(column_number_v)
@@ -550,7 +550,7 @@ ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue c
 	return FALSE;
 };
 
-ExcelValue excel_index_2(ExcelValue array_v, ExcelValue offset) {
+static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue offset) {
 	if(array_v.type == ExcelRange) {
 		if(array_v.rows == 1) {
 			return excel_index(array_v,ONE,offset);
@@ -568,7 +568,7 @@ ExcelValue excel_index_2(ExcelValue array_v, ExcelValue offset) {
 };
 
 
-ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelValue match_type ) {
+static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelValue match_type ) {
 	CHECK_FOR_PASSED_ERROR(lookup_value)
 	CHECK_FOR_PASSED_ERROR(lookup_array)
 	CHECK_FOR_PASSED_ERROR(match_type)
@@ -636,11 +636,11 @@ ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelVa
 	return NA;
 }
 
-ExcelValue excel_match_2(ExcelValue lookup_value, ExcelValue lookup_array ) {
+static ExcelValue excel_match_2(ExcelValue lookup_value, ExcelValue lookup_array ) {
 	return excel_match(lookup_value,lookup_array,new_excel_number(0));
 }
 
-ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue start_number_v) {
+static ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue start_number_v) {
 	CHECK_FOR_PASSED_ERROR(find_text_v)
 	CHECK_FOR_PASSED_ERROR(within_text_v)
 	CHECK_FOR_PASSED_ERROR(start_number_v)
@@ -679,11 +679,11 @@ ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue sta
 	return VALUE;
 }
 
-ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v) {
+static ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v) {
 	return find(string_to_look_for_v, string_to_look_in_v, ONE);
 };
 
-ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
+static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	CHECK_FOR_PASSED_ERROR(string_v)
 	CHECK_FOR_PASSED_ERROR(number_of_characters_v)
 	if(string_v.type == ExcelEmpty) return BLANK;
@@ -728,16 +728,16 @@ ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	return new_excel_string(left_string);
 }
 
-ExcelValue left_1(ExcelValue string_v) {
+static ExcelValue left_1(ExcelValue string_v) {
 	return left(string_v, ONE);
 }
 
-ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
+static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
 	if(value.type == ExcelError) return value_if_error;
 	return value;
 }
 
-ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 
@@ -764,7 +764,7 @@ ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
   return FALSE;
 }
 
-ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 
@@ -792,7 +792,7 @@ ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
 }
 
 
-ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 
@@ -819,7 +819,7 @@ ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
   return FALSE;
 }
 
-ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 
@@ -846,8 +846,7 @@ ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
   return FALSE;
 }
 
-
-ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
@@ -856,7 +855,7 @@ ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(a - b);
 }
 
-ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 	NUMBER(a_v, a)
@@ -865,8 +864,7 @@ ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(a * b);
 }
 
-
-ExcelValue sum(int array_size, ExcelValue *array) {
+static ExcelValue sum(int array_size, ExcelValue *array) {
 	double total = 0;
 	int i;
 	for(i=0;i<array_size;i++) {
@@ -887,7 +885,7 @@ ExcelValue sum(int array_size, ExcelValue *array) {
 	return new_excel_number(total);
 }
 
-ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
+static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
 	double biggest_number_found;
 	int any_number_found = 0;
 	int i;
@@ -921,7 +919,7 @@ ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
 	return new_excel_number(biggest_number_found);	
 }
 
-ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
+static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 	double smallest_number_found = 0;
 	int any_number_found = 0;
 	int i;
@@ -955,7 +953,7 @@ ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 	return new_excel_number(smallest_number_found);	
 }
 
-ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 		
@@ -966,14 +964,14 @@ ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(fmod(a,b));
 }
 
-ExcelValue negative(ExcelValue a_v) {
+static ExcelValue negative(ExcelValue a_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	NUMBER(a_v, a)
 	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(-a);
 }
 
-ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v) {
+static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v) {
 	CHECK_FOR_PASSED_ERROR(rate_v)
 	CHECK_FOR_PASSED_ERROR(number_of_periods_v)
 	CHECK_FOR_PASSED_ERROR(present_value_v)
@@ -987,7 +985,7 @@ ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue pre
 	return new_excel_number(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
 }
 
-ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
+static ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 		
@@ -997,7 +995,7 @@ ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
 	return new_excel_number(pow(a,b));
 }
 
-ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v) {
+static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v) {
 	CHECK_FOR_PASSED_ERROR(number_v)
 	CHECK_FOR_PASSED_ERROR(decimal_places_v)
 		
@@ -1010,7 +1008,7 @@ ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v) {
 	return new_excel_number( round(number * multiple) / multiple );
 }
 
-ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v) {
+static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v) {
 	CHECK_FOR_PASSED_ERROR(number_v)
 	CHECK_FOR_PASSED_ERROR(decimal_places_v)
 		
@@ -1023,7 +1021,7 @@ ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v) {
 	return new_excel_number( trunc(number * multiple) / multiple );	
 }
 
-ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
+static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
 	CHECK_FOR_PASSED_ERROR(number_v)
 	CHECK_FOR_PASSED_ERROR(decimal_places_v)
 		
@@ -1036,7 +1034,7 @@ ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
 	return new_excel_number( ceil(number * multiple) / multiple );	
 }
 
-ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
+static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	int allocated_length = 100;
 	int used_length = 0;
 	char *string = malloc(allocated_length);
@@ -1089,7 +1087,7 @@ ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	return new_excel_string(string);
 }
 
-ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelValue *arguments) {
+static ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelValue *arguments) {
   CHECK_FOR_PASSED_ERROR(subtotal_type_v)
   NUMBER(subtotal_type_v,subtotal_type)
   CHECK_FOR_CONVERSION_ERROR
@@ -1117,7 +1115,7 @@ ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelVa
   }
 }
 
-ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
+static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
   // First, set up the sum_range
   CHECK_FOR_PASSED_ERROR(sum_range_v);
 
@@ -1337,17 +1335,17 @@ ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *a
   return new_excel_number(total);
 }
 
-ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v ) {
+static ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v ) {
 	ExcelValue tmp_array_sumif[] = {check_range_v, criteria_v};
 	return sumifs(sum_range_v,2,tmp_array_sumif);
 }
 
-ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v) {
+static ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v) {
 	ExcelValue tmp_array_sumif2[] = {check_range_v, criteria_v};
 	return sumifs(check_range_v,2,tmp_array_sumif2);
 }
 
-ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
+static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   if(number_of_arguments <1) return VALUE;
   
   int a;
@@ -1411,11 +1409,11 @@ ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   	return new_excel_number(sum);
 }
 
-ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v) {
+static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v) {
   return vlookup(lookup_value_v,lookup_table_v,column_number_v,TRUE);
 }
 
-ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v) {
+static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v) {
   CHECK_FOR_PASSED_ERROR(lookup_value_v)
   CHECK_FOR_PASSED_ERROR(lookup_table_v)
   CHECK_FOR_PASSED_ERROR(column_number_v)

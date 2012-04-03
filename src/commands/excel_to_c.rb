@@ -484,12 +484,15 @@ class ExcelToC
 
     i = input("common-elements.ast")
     c = CompileToCHeader.new
+    c.gettable = lambda { |ref| false }
     c.rewrite(i,w,o)
     close(i)
 
     worksheets("Compiling definitions") do |name,xml_filename|
       w.rewind
       c = CompileToCHeader.new
+      c.settable = settable(name)
+      c.gettable = gettable(name)
       c.worksheet = name
       i = input(name,"formulae_inlined_pruned_replaced.ast")
       c.rewrite(i,w,o)
@@ -503,6 +506,7 @@ class ExcelToC
     o.puts "// starting common elements"
     w.rewind
     c = CompileToC.new
+    c.gettable = lambda { |ref| false }
     i = input("common-elements.ast")
     c.rewrite(i,w,o)
     close(i)
@@ -532,8 +536,8 @@ class ExcelToC
     # Output the elements from each worksheet in turn
     worksheets("Compiling worksheet") do |name,xml_filename|
       w.rewind
-      settable_refs = @values_that_can_be_set_at_runtime[name]    
-      c.settable =lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } if settable_refs
+      c.settable = settable(name)
+      c.gettable = gettable(name)
       c.worksheet = name
 
       i = input(name,"formulae_inlined_pruned_replaced.ast")
@@ -546,6 +550,29 @@ class ExcelToC
     end
     close(w,o)
   end
+  
+  def settable(name)
+    settable_refs = @values_that_can_be_set_at_runtime[name]    
+    if settable_refs
+      lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } 
+    else
+      lambda { |ref| false }
+    end
+  end
+  
+  def gettable(name)
+    if @outputs_to_keep
+      gettable_refs = @outputs_to_keep[name]
+      if gettable_refs
+        lambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref) }
+      else
+        lambda { |ref| false }
+      end
+    else
+      lambda { |ref| true }
+    end
+  end
+    
   
   def compile_build_script
     o = ruby("Makefile")

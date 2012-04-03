@@ -3,6 +3,7 @@ require_relative 'map_formulae_to_c'
 class CompileToC
   
   attr_accessor :settable
+  attr_accessor :gettable
   attr_accessor :worksheet
   
   def self.rewrite(*args)
@@ -11,6 +12,7 @@ class CompileToC
   
   def rewrite(input,sheet_names_file,output)
     self.settable ||= lambda { |ref| false }
+    self.gettable ||= lambda { |ref| true }
     mapper = MapFormulaeToC.new
     mapper.worksheet = worksheet
     mapper.sheet_names = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}]
@@ -21,6 +23,7 @@ class CompileToC
         ast = eval(formula)
         calculation = mapper.map(ast)
         name = "#{c_name}_#{ref.downcase}"
+        static_or_not = gettable.call(ref) ? "" : "static "
         if settable.call(ref)
           output.puts "ExcelValue #{name}_default() {"
           output.puts "  static ExcelValue result;"
@@ -39,7 +42,7 @@ class CompileToC
           output.puts "ExcelValue #{name}() { if(#{name}_variable_set == 1) { return #{name}_variable; } else { return #{c_name}_#{ref.downcase}_default(); } }"
           output.puts "void set_#{name}(ExcelValue newValue) { #{name}_variable_set = 1; #{name}_variable = newValue; }"
         else
-          output.puts "ExcelValue #{name}() {"
+          output.puts "#{static_or_not}ExcelValue #{name}() {"
           output.puts "  static ExcelValue result;"
           output.puts "  static int calculated = 0;"
           output.puts "  if(calculated == 1) { return result;}"
