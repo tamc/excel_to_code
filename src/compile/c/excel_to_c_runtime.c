@@ -115,6 +115,15 @@ ExcelValue new_excel_range(void *array, int rows, int columns) {
 	return new_cell;
 };
 
+void * new_excel_value_array(int size) {
+	ExcelValue *pointer = malloc(sizeof(ExcelValue)*size);
+	if(pointer == 0) {
+		printf("Out of memory\n");
+		exit(-1);
+	}
+	return pointer;
+};
+
 // Constants
 const ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
 
@@ -495,7 +504,7 @@ ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue c
 		
 	if(row_number == 0) { // We need the whole column
 		if(column_number < 1) return REF;
-		ExcelValue *result = malloc( sizeof(ExcelValue)*rows);
+		ExcelValue *result = (ExcelValue *) new_excel_value_array(rows);
 		int result_index = 0;
 		ExcelValue r;
 		int array_index;
@@ -513,7 +522,7 @@ ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue c
 		return new_excel_range(result,rows,1);
 	} else if(column_number == 0 ) { // We need the whole row
 		if(row_number < 1) return REF;
-		ExcelValue *result = malloc( sizeof(ExcelValue)*columns);
+		ExcelValue *result = (ExcelValue*) new_excel_value_array(columns);
 		ExcelValue r;
 		int row_start = ((row_number-1)*columns);
 		int row_finish = row_start + columns;
@@ -690,6 +699,10 @@ ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
   		break;
   	  case ExcelNumber:
 		  string = malloc(20);
+		  if(string == 0) {
+			  printf("Out of memory");
+			  exit(-1);
+		  }
 		  snprintf(string,20,"%f",string_v.number);
 		  break;
 	  case ExcelBoolean:
@@ -706,6 +719,10 @@ ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	}
 	
 	char *left_string = malloc(number_of_characters+1);
+	if(left_string == 0) {
+	  printf("Out of memory");
+	  exit(-1);
+	}	
 	memcpy(left_string,string,number_of_characters);
 	left_string[number_of_characters] = '\0';
 	return new_excel_string(left_string);
@@ -1023,6 +1040,10 @@ ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	int allocated_length = 100;
 	int used_length = 0;
 	char *string = malloc(allocated_length);
+	if(string == 0) {
+	  printf("Out of memory");
+	  exit(-1);
+	}		
 	char *current_string;
 	int current_string_length;
 	ExcelValue current_v;
@@ -1035,6 +1056,10 @@ ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	  		break;
   	  case ExcelNumber:
 			  current_string = malloc(20);
+		  	if(current_string == 0) {
+		  	  printf("Out of memory");
+		  	  exit(-1);
+		  	}				  
 			  snprintf(current_string,20,"%g",current_v.number);
 			  break;
 		  case ExcelBoolean:
@@ -1105,7 +1130,7 @@ ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *a
     sum_range_rows = sum_range_v.rows;
     sum_range_columns = sum_range_v.columns;
   } else {
-    sum_range = malloc(sizeof(ExcelValue));
+    sum_range = (ExcelValue*) new_excel_value_array(1);
 	sum_range[0] = sum_range_v;
     sum_range_rows = 1;
     sum_range_columns = 1;
@@ -1114,7 +1139,7 @@ ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *a
   // Then go through and set up the check ranges
   if(number_of_arguments % 2 != 0) return VALUE;
   int number_of_criteria = number_of_arguments / 2;
-  ExcelValue *criteria_range = malloc(sizeof(ExcelValue)*number_of_criteria);
+  ExcelValue *criteria_range =  (ExcelValue*) new_excel_value_array(number_of_criteria);
   ExcelValue current_value;
   int i;
   for(i = 0; i < number_of_criteria; i++) {
@@ -1126,21 +1151,24 @@ ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *a
     } else {
       if(sum_range_rows != 1) return VALUE;
       if(sum_range_columns != 1) return VALUE;
-      ExcelValue *tmp_array2 = malloc(sizeof(ExcelValue));
+      ExcelValue *tmp_array2 =  (ExcelValue*) new_excel_value_array(1);
       tmp_array2[0] = current_value;
       criteria_range[i] =  new_excel_range(tmp_array2,1,1);
     }
   }
   
   // Now go through and set up the criteria
-  ExcelComparison *criteria = malloc(sizeof(ExcelValue)*number_of_criteria);
+  ExcelComparison *criteria =  malloc(sizeof(ExcelComparison)*number_of_criteria);
+  if(criteria == 0) {
+	  printf("Out of memory\n");
+	  exit(-1);
+  }
   char *s;
   for(i = 0; i < number_of_criteria; i++) {
     current_value = arguments[(i*2)+1];
     
     if(current_value.type == ExcelString) {
       s = current_value.string;
-      malloc(10);
       if(s[0] == '<') {
         if( s[1] == '>') {
           criteria[i].type = NotEqual;
@@ -1329,6 +1357,10 @@ ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   int columns;
   ExcelValue current_value;
   ExcelValue **ranges = malloc(sizeof(ExcelValue *)*number_of_arguments);
+  if(ranges == 0) {
+	  printf("Out of memory\n");
+	  exit(-1);
+  }
   double product = 1;
   double sum = 0;
   
@@ -1356,7 +1388,7 @@ ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
         break;
       default:
         if(rows != 1 && columns !=1) return VALUE;
-        ranges[a] = malloc(sizeof(ExcelValue));
+        ranges[a] = (ExcelValue*) new_excel_value_array(1);
         ranges[a][0] = arguments[a];
         break;
     }
