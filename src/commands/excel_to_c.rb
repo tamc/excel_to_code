@@ -642,12 +642,21 @@ END
     o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{name.capitalize} end"
     
+    all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
+    
     worksheets("Adding tests for") do |name,xml_filename|
       i = input(name,"values_pruned2.ast")
       o.puts
       o.puts "  # start of #{name}"  
       c_name = c_name_for_worksheet_name(name)
-      CompileToCUnitTest.rewrite(i, c_name, o)
+      if !outputs_to_keep || outputs_to_keep.empty? || outputs_to_keep[name] == :all
+        refs_to_test = all_formulae[name].keys
+      else
+        refs_to_test = outputs_to_keep[name]
+      end
+      if refs_to_test && !refs_to_test.empty?
+        CompileToCUnitTest.rewrite(i, c_name, refs_to_test, o)
+      end
       close(i)
     end
     o.puts "end"

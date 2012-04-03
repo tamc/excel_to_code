@@ -7,9 +7,11 @@ class CompileToCUnitTest
   attr_accessor :worksheet
   
   def rewrite(input,c_name,output,defaults = nil)
+  def rewrite(input,c_name, refs_to_test, output)
     input.lines do |line|
       begin
         ref, formula = line.split("\t")
+        next unless refs_to_test.include?(ref)
         output.puts "def test_#{c_name}_#{ref.downcase}"
         output.puts "  r = spreadsheet.#{c_name}_#{ref.downcase}"
         ast = eval(formula)
