@@ -606,7 +606,7 @@ END
       if settable_refs
         settable_refs = all_formulae[name].keys if settable_refs == :all
         settable_refs.each do |ref|
-          o.puts "  attach_function 'set_#{c_name}_#{ref.downcase}', [ExcelValue], :void"
+          o.puts "  attach_function 'set_#{c_name}_#{ref.downcase}', [ExcelValue.by_value], :void"
         end
       end
 
