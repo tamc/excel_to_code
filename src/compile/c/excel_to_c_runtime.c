@@ -78,11 +78,6 @@ static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
 int cell_counter = 0;
 
-// Clears the heap
-void reset() {
-	cell_counter = 0;
-}
-
 #define HEAPCHECK if(cell_counter >= MAX_EXCEL_VALUE_HEAP_SIZE) { printf("Heap exceeded"); exit(-1); }
 
 // The object initializers

@@ -5,6 +5,7 @@ class CompileToC
   attr_accessor :settable
   attr_accessor :gettable
   attr_accessor :worksheet
+  attr_accessor :variable_set_counter
   
   def self.rewrite(*args)
     self.new.rewrite(*args)
@@ -13,6 +14,7 @@ class CompileToC
   def rewrite(input,sheet_names_file,output)
     self.settable ||= lambda { |ref| false }
     self.gettable ||= lambda { |ref| true }
+    @variable_set_counter ||= 0
     mapper = MapFormulaeToC.new
     mapper.worksheet = worksheet
     mapper.sheet_names = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}]
@@ -27,34 +29,33 @@ class CompileToC
         if settable.call(ref)
           output.puts "ExcelValue #{name}_default() {"
           output.puts "  static ExcelValue result;"
-          output.puts "  static int calculated = 0;"
-          output.puts "  if(calculated == 1) { return result;}"
+          output.puts "  if(variable_set[#{@variable_set_counter}] == 1) { return result;}"
             mapper.initializers.each do |i|
               output.puts "  #{i}"
             end
             #output.puts "  return #{calculation};"
           output.puts "  result = #{calculation};"
-          output.puts "  calculated = 1;"
+          output.puts "  variable_set[#{@variable_set_counter}] = 1;"
           output.puts "  return result;"
           output.puts "}"
           output.puts "static ExcelValue #{name}_variable;"
-          output.puts "static int #{name}_variable_set = 0;"
-          output.puts "ExcelValue #{name}() { if(#{name}_variable_set == 1) { return #{name}_variable; } else { return #{c_name}_#{ref.downcase}_default(); } }"
-          output.puts "void set_#{name}(ExcelValue newValue) { #{name}_variable_set = 1; #{name}_variable = newValue; }"
+          output.puts "ExcelValue #{name}() { if(variable_set[#{@variable_set_counter}] == 1) { return #{name}_variable; } else { return #{c_name}_#{ref.downcase}_default(); } }"
+          @variable_set_counter += 1
+          output.puts "void set_#{name}(ExcelValue newValue) { variable_set[#{@variable_set_counter}] = 1; #{name}_variable = newValue; }"
         else
           output.puts "#{static_or_not}ExcelValue #{name}() {"
           output.puts "  static ExcelValue result;"
-          output.puts "  static int calculated = 0;"
-          output.puts "  if(calculated == 1) { return result;}"
-            mapper.initializers.each do |i|
-              output.puts "  #{i}"
-            end
-            #output.puts "  return #{calculation};"
+          output.puts "  if(variable_set[#{@variable_set_counter}] == 1) { return result;}"
+          mapper.initializers.each do |i|
+            output.puts "  #{i}"
+          end
+          #output.puts "  return #{calculation};"
           output.puts "  result = #{calculation};"
-          output.puts "  calculated = 1;"
+          output.puts "  variable_set[#{@variable_set_counter}] = 1;"
           output.puts "  return result;"
           output.puts "}"
         end
+        @variable_set_counter += 1
         mapper.reset
       rescue Exception => e
         puts "Exception at line #{line}"

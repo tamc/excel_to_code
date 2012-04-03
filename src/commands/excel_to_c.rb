@@ -469,6 +469,10 @@ class ExcelToC
   
   def compile_workbook
     
+    all_refs = all_formulae("formulae_inlined_pruned_replaced.ast")
+    
+    number_of_refs = 0
+    
     # Probably a better way of getting the runtime file to be compiled with the created file
     puts `cp #{File.join(File.dirname(__FILE__),'..','compile','c','excel_to_c_runtime.c')} #{File.join(output_directory,'c','excel_to_c_runtime.c')}`
     
@@ -486,6 +490,8 @@ class ExcelToC
     c = CompileToCHeader.new
     c.gettable = lambda { |ref| false }
     c.rewrite(i,w,o)
+    i.rewind
+    number_of_refs += i.lines.to_a.size
     close(i)
 
     worksheets("Compiling definitions") do |name,xml_filename|
@@ -496,22 +502,39 @@ class ExcelToC
       c.worksheet = name
       i = input(name,"formulae_inlined_pruned_replaced.ast")
       c.rewrite(i,w,o)
+      i.rewind
+      number_of_refs += i.lines.to_a.size
       close(i)
     end
     
     o.puts "// end of definitions"
     o.puts
+    o.puts "// Used to decide whether to recalculate a cell"
+    o.puts "static int variable_set[#{number_of_refs}];"
+    o.puts "void reset() {"
+    o.puts "  int i;"
+    o.puts "  cell_counter = 0;"
+    o.puts "  for(i = 0; i < #{number_of_refs}; i++) {"
+    o.puts "    variable_set[i] = 0;"
+    o.puts "  }"
+    o.puts "};"
+    o.puts
+    
+    variable_set_counter = 0
     
     # output the common elements
     o.puts "// starting common elements"
     w.rewind
     c = CompileToC.new
+    c.variable_set_counter = variable_set_counter
     c.gettable = lambda { |ref| false }
     i = input("common-elements.ast")
     c.rewrite(i,w,o)
     close(i)
     o.puts "// ending common elements"
     o.puts
+    
+    variable_set_counter = c.variable_set_counter
     
     # Output the value constants
     o.puts "// starting the value constants"
@@ -533,6 +556,7 @@ class ExcelToC
     o.puts
     
     c = CompileToC.new
+    c.variable_set_counter = variable_set_counter
     # Output the elements from each worksheet in turn
     worksheets("Compiling worksheet") do |name,xml_filename|
       w.rewind
