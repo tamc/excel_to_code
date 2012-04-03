@@ -530,7 +530,6 @@ class ExcelToC
     
     c = CompileToC.new
     # Output the elements from each worksheet in turn
-    d = output('defaults')
     worksheets("Compiling worksheet") do |name,xml_filename|
       w.rewind
       settable_refs = @values_that_can_be_set_at_runtime[name]    
@@ -540,23 +539,12 @@ class ExcelToC
       i = input(name,"formulae_inlined_pruned_replaced.ast")
       ruby_name = c_name_for_worksheet_name(name)
       o.puts "// start #{name}"
-      c.rewrite(i,w,o,d)
+      c.rewrite(i,w,o)
       o.puts "// end #{name}"
       o.puts
       close(i)
     end
-    close(d)
-    
-    # Output a function that can set settable values to their defaults
-    o.puts "void set_to_default_values() {"
-    d = input('defaults')
-    d.each_line do |line|
-      o.puts line
-    end
-    o.puts "}"
-    o.puts
-    
-    close(w,o,d)
+    close(w,o)
   end
   
   def compile_build_script
@@ -604,8 +592,6 @@ module #{name.capitalize}
   
 END
     o.puts code
-    o.puts "  # use this function to set all cells to the values they had when the sheet was compiled"
-    o.puts "  attach_function 'set_to_default_values', [], :void"
     o.puts
     o.puts "  # use this function to reset all cell values"
     o.puts "  attach_function 'reset', [], :void"
@@ -654,7 +640,7 @@ END
     o.puts
     o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
     o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
-    o.puts "  def init_spreadsheet; s = #{name.capitalize}; s.set_to_default_values; s; end"
+    o.puts "  def init_spreadsheet; #{name.capitalize} end"
     
     worksheets("Adding tests for") do |name,xml_filename|
       i = input(name,"values_pruned2.ast")

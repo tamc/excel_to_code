@@ -9,7 +9,7 @@ class CompileToC
     self.new.rewrite(*args)
   end
   
-  def rewrite(input,sheet_names_file,output,defaults = nil)
+  def rewrite(input,sheet_names_file,output)
     self.settable ||= lambda { |ref| false }
     mapper = MapFormulaeToC.new
     mapper.worksheet = worksheet
