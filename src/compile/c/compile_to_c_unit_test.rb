@@ -4,9 +4,6 @@ class CompileToCUnitTest
     self.new.rewrite(*args)
   end
   
-  attr_accessor :worksheet
-  
-  def rewrite(input,c_name,output,defaults = nil)
   def rewrite(input,c_name, refs_to_test, output)
     input.lines do |line|
       begin
