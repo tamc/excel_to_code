@@ -186,7 +186,7 @@ static void inspect_excel_value(ExcelValue v) {
 		 }
 		 break;
 	  case ExcelString:
-		 printf("String: '%s'",v.string);
+		 printf("String: '%s'\n",v.string);
 		 break;
 	  case ExcelError:
 		 printf("Error number %f ",v.number);
