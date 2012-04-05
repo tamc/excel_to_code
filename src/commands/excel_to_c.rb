@@ -435,10 +435,9 @@ class ExcelToC
     close(o)
     
     worksheets("Replacing repeated elements") do |name,xml_filename|
-      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned_with_sheets.ast"), "common-elements.ast", File.join(name,"formulae_inlined_pruned_replaced-1.ast")
+      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned_with_sheets.ast"), "common-elements-1.ast", File.join(name,"formulae_inlined_pruned_replaced-1.ast")
     end
 
-    
     r = ReplaceValuesWithConstants.new  
     worksheets("Replacing values with constants") do |name,xml_filename|
       i = input(name,"formulae_inlined_pruned_replaced-1.ast")
@@ -446,6 +445,14 @@ class ExcelToC
       r.replace(i,o)
       close(i,o)
     end
+    
+    puts "Replacing values with constants in common elements"
+    i = input(name,"common-elements-1.ast")
+    o = output(name,"common-elements.ast")
+    r.replace(i,o)
+    close(i,o)
+    
+    puts "Writing out constants"
     co = output("value_constants.ast")
     r.rewriter.constants.each do |ast,constant|
       co.puts "#{constant}\t#{ast}"
