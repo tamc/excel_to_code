@@ -1,4 +1,4 @@
-require_relative 'map_formulae_to_ruby'
+require_relative '../compile/ruby/map_formulae_to_ruby'
 
 class CheckForUnknownFunctions
   
