@@ -28,15 +28,10 @@ class CompileToC
         static_or_not = gettable.call(ref) ? "" : "static "
         if settable.call(ref)
           output.puts "ExcelValue #{name}_default() {"
-          output.puts "  static ExcelValue result;"
-          output.puts "  if(variable_set[#{@variable_set_counter}] == 1) { return result;}"
-            mapper.initializers.each do |i|
-              output.puts "  #{i}"
-            end
-            #output.puts "  return #{calculation};"
-          output.puts "  result = #{calculation};"
-          output.puts "  variable_set[#{@variable_set_counter}] = 1;"
-          output.puts "  return result;"
+          mapper.initializers.each do |i|
+            output.puts "  #{i}"
+          end
+          output.puts "  return #{calculation};"
           output.puts "}"
           output.puts "static ExcelValue #{name}_variable;"
           output.puts "ExcelValue #{name}() { if(variable_set[#{@variable_set_counter}] == 1) { return #{name}_variable; } else { return #{c_name}_#{ref.downcase}_default(); } }"
@@ -54,6 +49,7 @@ class CompileToC
           output.puts "  return result;"
           output.puts "}"
         end
+        output.puts
         @variable_set_counter += 1
         mapper.reset
       rescue Exception => e
