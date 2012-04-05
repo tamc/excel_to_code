@@ -1,3 +1,4 @@
+require_relative 'extract/check_for_unknown_functions'
 require_relative "extract/extract_array_formulae"
 require_relative "extract/extract_formulae"
 require_relative "extract/extract_relationships"
