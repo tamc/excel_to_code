@@ -8,21 +8,84 @@ require_relative '../rewrite'
 require_relative '../simplify'
 require_relative '../compile'
 
+# Used to throw normally fatal errors
+class ExcelToCException < Exception; end
+
 class ExcelToC
   
-  attr_accessor :excel_file, :output_directory, :xml_dir, :compiled_module_name, :values_that_can_be_set_at_runtime, :outputs_to_keep
+  # Required attribute. The source excel file. This must be .xlsx not .xls
+  attr_accessor :excel_file
+  
+  # The output directory. All workings are also stored there
+  # Defaults to a directory with the same name as the excel file and in the same folder
+  attr_accessor :output_directory
+  
+  # Optional attribute. The excel file will be translated to xml and stored here.
+  # If not specified, will be in an 'xml' directory under the output directory
+  attr_accessor :xml_dir
+  
+  # Optional attribute. The name of the resulting c file (and associated ruby ffi module). Defaults to excelspreadsheet
+  attr_accessor :output_name
+
+  # Optional attribute. Specifies which cells have setters created in the c code so their values can be altered at runtime.
+  # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
+  # should be setable, or an array of cell names on that sheet that should be settable (e.g., A1)
+  attr_accessor :cells_that_can_be_set_at_runtime
+  
+  # Optional attribute. Specifies which cells must appear in the final generated code.
+  # The default is that all cells in the original spreadsheet appear in the final code.
+  #
+  # If specified, then any cells that are not:
+  #    * specified
+  #    * required to calculate one of the cells that is specified
+  #    * specified as a cell that can be set at runtime
+  # may be excluded from the final generated code.
+  #
+  # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
+  # should be lept, or an array of cell names on that sheet that should be kept (e.g., A1)
+  attr_accessor :cells_to_keep
+  
+  # Optional attribute. Boolean. 
+  #   * true - the generated c code is compiled
+  #   * false - the generated c code is not compiled (default, unless actuall_run_tests is specified as true)
   attr_accessor :actually_compile_c_code
+
+  # Optional attribute. Boolean. 
+  #   * true - the generated tests are run
+  #   * false - the generated tests are not run
   attr_accessor :actually_run_tests
   
-  def initialize
-    @values_that_can_be_set_at_runtime ||= {}
+  def set_defaults
+    raise ExcelToCException.new("No excel file has been specified in ExcelToC.excel_file") unless excel_file
+    
+    self.output_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"))
+    
+    self.xml_dir ||= File.join(output_directory,'xml')
+    
+    self.output_name = "Excelspreadsheet"
+    
+    self.cells_that_can_be_set_at_runtime ||= {}
+    
+    # Make sure that all the cell names are downcase and don't have any $ in them
+    cells_that_can_be_set_at_runtime.keys.each do |sheet|
+      next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
+      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').downcase }
+    end
+
+    if cells_to_keep
+      cells_to_keep.keys.each do |sheet|
+        next unless cells_to_keep[sheet].is_a?(Array)
+        cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').downcase }
+      end
+    end    
   end
   
   def go!
+    set_defaults
+    
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
-    self.xml_dir = File.join(output_directory,'xml')
-  
+    
     sort_out_output_directories
     unzip_excel
     process_workbook
@@ -302,7 +365,7 @@ class ExcelToC
       
     references = all_formulae("#{basename}#{counter}.ast")
     inline_ast_decision = lambda do |sheet,cell,references|
-      references_to_keep = @values_that_can_be_set_at_runtime[sheet]
+      references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
         false
       else
@@ -341,10 +404,10 @@ class ExcelToC
   end
   
   def remove_any_cells_not_needed_for_outputs(formula_in = "formulae_no_blanks.ast", formula_out = "formulae_pruned.ast", values_in = "values_no_shared_strings.ast", values_out = "values_pruned.ast")
-    if outputs_to_keep && !outputs_to_keep.empty?
+    if cells_to_keep && !cells_to_keep.empty?
       identifier = IdentifyDependencies.new
       identifier.references = all_formulae(formula_in)
-      outputs_to_keep.each do |sheet_to_keep,cells_to_keep|
+      cells_to_keep.each do |sheet_to_keep,cells_to_keep|
         if cells_to_keep == :all
           identifier.add_depedencies_for(sheet_to_keep)
         elsif cells_to_keep.is_a?(Array)
@@ -380,7 +443,7 @@ class ExcelToC
     count = counter.count(references)
     
     inline_ast_decision = lambda do |sheet,cell,references|
-      references_to_keep = @values_that_can_be_set_at_runtime[sheet]
+      references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
         false
       else
@@ -426,7 +489,7 @@ class ExcelToC
     repeated_elements.delete_if do |element,count|
       count < 2
     end
-    o = output('common-elements.ast')
+    o = output('common-elements-1.ast')
     i = 0
     repeated_elements.each do |element,count|
       o.puts "common#{i}\t#{element}"
@@ -447,8 +510,8 @@ class ExcelToC
     end
     
     puts "Replacing values with constants in common elements"
-    i = input(name,"common-elements-1.ast")
-    o = output(name,"common-elements.ast")
+    i = input("common-elements-1.ast")
+    o = output("common-elements.ast")
     r.replace(i,o)
     close(i,o)
     
@@ -485,7 +548,7 @@ class ExcelToC
     
     # Output the workbook preamble
     w = input("worksheet_c_names")
-    o = ruby("#{compiled_module_name.downcase}.c")
+    o = ruby("#{output_name.downcase}.c")
     o.puts "// #{excel_file} approximately translated into C"
     o.puts '#include "excel_to_c_runtime.c"'
     o.puts
@@ -527,22 +590,6 @@ class ExcelToC
     o.puts "};"
     o.puts
     
-    variable_set_counter = 0
-    
-    # output the common elements
-    o.puts "// starting common elements"
-    w.rewind
-    c = CompileToC.new
-    c.variable_set_counter = variable_set_counter
-    c.gettable = lambda { |ref| false }
-    i = input("common-elements.ast")
-    c.rewrite(i,w,o)
-    close(i)
-    o.puts "// ending common elements"
-    o.puts
-    
-    variable_set_counter = c.variable_set_counter
-    
     # Output the value constants
     o.puts "// starting the value constants"
     mapper = MapValuesToCStructs.new
@@ -561,6 +608,22 @@ class ExcelToC
     close(i)
     o.puts "// ending the value constants"
     o.puts
+    
+    variable_set_counter = 0
+    
+    # output the common elements
+    o.puts "// starting common elements"
+    w.rewind
+    c = CompileToC.new
+    c.variable_set_counter = variable_set_counter
+    c.gettable = lambda { |ref| false }
+    i = input("common-elements.ast")
+    c.rewrite(i,w,o)
+    close(i)
+    o.puts "// ending common elements"
+    o.puts
+    
+    variable_set_counter = c.variable_set_counter
     
     c = CompileToC.new
     c.variable_set_counter = variable_set_counter
@@ -583,7 +646,7 @@ class ExcelToC
   end
   
   def settable(name)
-    settable_refs = @values_that_can_be_set_at_runtime[name]    
+    settable_refs = @cells_that_can_be_set_at_runtime[name]    
     if settable_refs
       lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } 
     else
@@ -592,8 +655,8 @@ class ExcelToC
   end
   
   def gettable(name)
-    if @outputs_to_keep
-      gettable_refs = @outputs_to_keep[name]
+    if @cells_to_keep
+      gettable_refs = @cells_to_keep[name]
       if gettable_refs
         lambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref) }
       else
@@ -607,7 +670,7 @@ class ExcelToC
   
   def compile_build_script
     o = ruby("Makefile")
-    name = compiled_module_name.downcase
+    name = output_name.downcase
     
     # Target for shared library
     o.puts "lib#{name}.dylib: #{name}.o"
@@ -629,7 +692,7 @@ class ExcelToC
   
   def compile_ruby_ffi_interface
     all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
-    name = compiled_module_name.downcase
+    name = output_name.downcase
     o = ruby("#{name}.rb")
     code = <<END
 require 'ffi'
@@ -660,7 +723,7 @@ END
       c_name = c_name_for_worksheet_name(name)
 
       # Put in place the setters, if any
-      settable_refs = @values_that_can_be_set_at_runtime[name]
+      settable_refs = @cells_that_can_be_set_at_runtime[name]
       if settable_refs
         settable_refs = all_formulae[name].keys if settable_refs == :all
         settable_refs.each do |ref|
@@ -668,12 +731,12 @@ END
         end
       end
 
-      if !outputs_to_keep || outputs_to_keep.empty? || outputs_to_keep[name] == :all
+      if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
         getable_refs = all_formulae[name].keys
-      elsif !outputs_to_keep[name] && settable_refs
+      elsif !cells_to_keep[name] && settable_refs
         getable_refs = settable_refs
       else
-        getable_refs = outputs_to_keep[name] || []
+        getable_refs = cells_to_keep[name] || []
       end
         
       getable_refs.each do |ref|
@@ -687,14 +750,14 @@ END
   end
   
   def compile_tests
-    name = compiled_module_name.downcase
+    name = output_name.downcase
     o = ruby("#{name}_test.rb")    
     o.puts "# coding: utf-8"
     o.puts "# Test for #{name}"
     o.puts "require 'rubygems'"
     o.puts "gem 'minitest'"
     o.puts  "require 'test/unit'"
-    o.puts  "require_relative '#{compiled_module_name.downcase}'"
+    o.puts  "require_relative '#{output_name.downcase}'"
     o.puts
     o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
     o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
@@ -707,10 +770,10 @@ END
       o.puts
       o.puts "  # start of #{name}"  
       c_name = c_name_for_worksheet_name(name)
-      if !outputs_to_keep || outputs_to_keep.empty? || outputs_to_keep[name] == :all
+      if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
         refs_to_test = all_formulae[name].keys
       else
-        refs_to_test = outputs_to_keep[name]
+        refs_to_test = cells_to_keep[name]
       end
       if refs_to_test && !refs_to_test.empty?
         CompileToCUnitTest.rewrite(i, c_name, refs_to_test, o)
@@ -722,7 +785,7 @@ END
   end
   
   def compile_c_code
-    return unless actually_compile_c_code
+    return unless actually_compile_c_code || actually_run_tests
     puts "Compiling the resulting c code"
     puts `cd #{File.join(output_directory,'c')}; make clean; make`
   end
@@ -730,7 +793,7 @@ END
   def run_tests
     return unless actually_run_tests
     puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory,'c')}; ruby "#{compiled_module_name.downcase}_test.rb"`
+    puts `cd #{File.join(output_directory,'c')}; ruby "#{output_name.downcase}_test.rb"`
   end
   
   def c_name_for_worksheet_name(name)

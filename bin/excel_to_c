@@ -3,7 +3,6 @@ require 'optparse'
 require_relative '../src/commands/excel_to_c'
 
 command = ExcelToC.new
-command.compiled_module_name = "Excelspreadsheet"
 
 opts = OptionParser.new do |opts|
   opts.banner = <<-END
@@ -19,16 +18,16 @@ END
   opts.separator ""
   opts.separator "Specific options:"
   
-  opts.on('-s','--settable WORKSHEET','Make it possible to set the values of cells in this worksheet at runtime') do |sheet|
-    command.values_that_can_be_set_at_runtime = { sheet => :all }
+  opts.on('-s','--settable WORKSHEET','Make it possible to set the values of cells in this worksheet at runtime. By default no values are settable.') do |sheet|
+    command.cells_that_can_be_set_at_runtime = { sheet => :all }
   end
 
-  opts.on('-o','--output-name NAME','Filename to give to c version of code (and associated ruby interface)') do |name|
-    command.compiled_module_name = name
+  opts.on('-o','--output-name NAME','Filename to give to c version of code (and associated ruby interface). Defaults to a folder with the same name as the excel file.') do |name|
+    command.output_name = name
   end
   
-  opts.on('-p','--prune-except WORKSHEET',"Remove all cells except those on this worksheet, or that are required to calculate values on that worksheet") do |sheet|
-    command.outputs_to_keep = { sheet => :all }
+  opts.on('-p','--prune-except WORKSHEET',"Remove all cells except those on this worksheet, or that are required to calculate values on that worksheet. By default keeps all cells.") do |sheet|
+    command.cells_to_keep = { sheet => :all }
   end
   
   opts.on('-c','--compile',"Compile the generated c code") do
@@ -59,10 +58,6 @@ unless ARGV.size > 0
 end
 
 command.excel_file = ARGV[0]
-if ARGV[1]
-  command.output_directory = ARGV[1]
-else
-  command.output_directory = File.basename(ARGV[0],".*")
-end
+command.output_directory = ARGV[1] if ARGV[1]
 
 command.go!
