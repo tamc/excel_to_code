@@ -40,7 +40,6 @@ class CompileToC
           output.puts "}"
           output.puts "static ExcelValue #{name}_variable;"
           output.puts "ExcelValue #{name}() { if(variable_set[#{@variable_set_counter}] == 1) { return #{name}_variable; } else { return #{c_name}_#{ref.downcase}_default(); } }"
-          @variable_set_counter += 1
           output.puts "void set_#{name}(ExcelValue newValue) { variable_set[#{@variable_set_counter}] = 1; #{name}_variable = newValue; }"
         else
           output.puts "#{static_or_not}ExcelValue #{name}() {"
