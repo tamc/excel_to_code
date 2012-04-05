@@ -1,12 +1,16 @@
-This allows some excel spreadsheets to be converted into some other programming languages.
+This allows some excel spreadsheets to be converted into some other programming languages (currently ruby or c).
 
-It is a (currently incomplete) rewrite of http://github.com/tamc/rubyfromexcel
+It is a rewrite of http://github.com/tamc/rubyfromexcel
 
 # Running excel2code
 
-Doesn't work yet, but the story so far is delivered by running:
+To just have a go:
 
-    ./bin/excel_to_ruby <excelfile.xlsx> <outputdirectory> <name of sheet with inputs> <name of sheet with outputs>
+	./bin/excel_to_c <excel_file_name>
+	
+for more detail:
+	
+	./bin/excel_to_c --compile --run-tests --settable <name of input worksheet> --prune-except <name of output worksheet> <excel file name> 
 
 # Testing excel2code
 
@@ -17,11 +21,57 @@ Doesn't work yet, but the story so far is delivered by running:
 
 # Limitations
 
-1. INDIRECT formula must be convertable at runtime into a standard formula 
+1. Not tested at all on Windows
+2. INDIRECT formula must be convertable at runtime into a standard formula
+3. Doesn't implement all functions (see below for list)
+4. Doesn't implement references that involve range unions and lists
+5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
 
-# Known bugs
+# Functions supported
 
-1. Doesn't implement all functions
-2. Doesn't implement references that involve range unions and lists
-3. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
+## Arithmetic
 
+* * - multiplying
+* + - adding
+* - - subtracting
+* / - dividing
+* ^ - powers
+
+## Comparisons
+
+* < - less than
+* <= - less than or equal
+* <> - not equal
+* = - equal
+* > - greater than
+* >= - greater than or equal
+
+## Functions (alphabetically)
+
+* ABS
+* AND
+* AVERAGE
+* CHOOSE
+* COSH
+* COUNT
+* COUNTA
+* FIND
+* IF
+* IFERROR
+* INDEX
+* LEFT
+* MATCH
+* MAX
+* MIN
+* MOD
+* PI
+* PMT
+* ROUND
+* ROUNDDOWN
+* ROUNDUP
+* SUBTOTAL
+* SUM
+* SUMIF
+* SUMIFS
+* SUMPRODUCT
+* VLOOKUP
