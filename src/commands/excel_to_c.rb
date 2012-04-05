@@ -77,14 +77,15 @@ class ExcelToC
         next unless cells_to_keep[sheet].is_a?(Array)
         cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').downcase }
       end
-    end    
+    end  
+    
+    self.excel_file = File.expand_path(excel_file)
+    self.output_directory = File.expand_path(output_directory)
+      
   end
   
   def go!
     set_defaults
-    
-    self.excel_file = File.expand_path(excel_file)
-    self.output_directory = File.expand_path(output_directory)
     
     sort_out_output_directories
     unzip_excel
