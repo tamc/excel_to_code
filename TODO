@@ -1,0 +1,9 @@
+# TODO
+
+* Sort out parsing of unions
+* Optimize IF, CHOOSE, MATCH, VLOOKUP and similar functions so that they don't have to calculate all their arguments
+* Fix it so that cells that are being reported as empty, that excel would give a numeric value of zero, are fixed
+* Add missing functions
+* Add output in other programming languages
+
+

@@ -85,26 +85,40 @@ class ExcelToC
   end
   
   def go!
+    # This sorts out the attributes
     set_defaults
     
+    # These turn the excel into a more accesible format
     sort_out_output_directories
     unzip_excel
-    process_workbook
-    extract_worksheets
+    
+    # These get all the information out of the excel and put
+    # into a useful format
+    extract_data_from_workbook
+    extract_data_from_worksheets
     merge_table_files
     rewrite_worksheets
+    
+    # These perform a series of transformations to the information
+    # with the intent of removing any redundant calculations
+    # that are in the excel
     simplify_worksheets
     optimise_and_replace_indirect_loop
     replace_blanks
     remove_any_cells_not_needed_for_outputs
     inline_formulae_that_are_only_used_once
     separate_formulae_elements
-    compile_workbook
-    compile_build_script
-    compile_ruby_ffi_interface
-    compile_tests
+    
+    # These actually create the code version of the excel
+    write_out_excel_as_code
+    write_build_script
+    write_fuby_ffi_interface
+    write_tests
+    
+    # These compile and run the code version of the excel
     compile_c_code
     run_tests
+    
     puts
     puts "The generated code is available in #{File.join(output_directory,'c')}"
   end
@@ -119,12 +133,8 @@ class ExcelToC
     puts `unzip -uo '#{excel_file}' -d '#{xml_dir}'`
   end
 
-  def process_workbook
-    if File.exists?(File.join(xml_dir,'xl','sharedStrings.xml'))
-      extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
-    else
-      FileUtils.touch(File.join(output_directory,'intermediate','shared_strings'))
-    end
+  def extract_data_from_workbook
+    extract_shared_strings
     
     extract ExtractNamedReferences, 'workbook.xml', 'named_references'
     rewrite RewriteFormulaeToAst, 'named_references', 'named_references.ast'
@@ -137,17 +147,14 @@ class ExcelToC
     extract_dimensions_from_worksheets
   end
   
-  # Extracts each worksheets values and formulas
-  def extract_worksheets
-    worksheets("Initial data extract") do |name,xml_filename|
-      #fork do
-        $0 = "ruby initial extract #{name}"
-        initial_extract_from_worksheet(name,xml_filename)
-      #end
+  def extract_shared_strings
+    if File.exists?(File.join(xml_dir,'xl','sharedStrings.xml'))
+      extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
+    else
+      FileUtils.touch(File.join(output_directory,'intermediate','shared_strings'))
     end
   end
-
-  # Extracts the dimensions of each worksheet and puts them in a single file  
+  
   def extract_dimensions_from_worksheets    
     dimension_file = output('dimensions')
     worksheets("Extracting dimensions") do |name,xml_filename|
@@ -158,14 +165,51 @@ class ExcelToC
     dimension_file.close
   end
   
+  def extract_data_from_worksheets
+    worksheets("Initial data extract") do |name,xml_filename|
+      worksheet_directory = File.join(output_directory,'intermediate',name)
+      FileUtils.mkdir_p(worksheet_directory)
+      worksheet_xml = File.open(xml_filename,'r')
+      { ExtractValues => 'values', 
+        ExtractSimpleFormulae => 'simple_formulae',
+        ExtractSharedFormulae => 'shared_formulae',
+        ExtractArrayFormulae => 'array_formulae'
+      }.each do |_klass,output_filename|
+        worksheet_xml.rewind
+        extract _klass, worksheet_xml, File.join(name,output_filename)
+        if _klass == ExtractValues
+          rewrite RewriteValuesToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
+        else
+          rewrite RewriteFormulaeToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
+        end  
+      end
+      worksheet_xml.rewind
+      extract ExtractWorksheetTableRelationships, worksheet_xml, File.join(name,'table_rids')
+      if File.exists?(File.join(xml_dir,'xl','worksheets','_rels',"#{File.basename(xml_filename)}.rels"))
+        extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), File.join(name,'relationships')
+        rewrite RewriteRelationshipIdToFilename, File.join(name,'table_rids'), File.join(name,'relationships'), File.join(name,'table_filenames')
+        tables = output(name,'tables')
+        table_extractor = ExtractTable.new(name)
+        table_filenames = input(name,'table_filenames')
+        table_filenames.lines.each do |line|
+          extract table_extractor, File.join('worksheets',line.strip), tables
+        end
+        close(tables,table_filenames)
+      else
+        FileUtils.touch File.join(output_directory,'intermediate',name,'relationships')
+        FileUtils.touch File.join(output_directory,'intermediate',name,'table_filenames')      
+        FileUtils.touch File.join(output_directory,'intermediate',name,'tables')      
+      end
+      close(worksheet_xml)
+    end
+  end
+  
   def rewrite_worksheets
     worksheets("Initial rewrite of references and formulae") do |name,xml_filename|
-      #fork do 
         rewrite_row_and_column_references(name,xml_filename)
         rewrite_shared_formulae(name,xml_filename)
         rewrite_array_formulae(name,xml_filename)
         combine_formulae_files(name,xml_filename)
-      #end
     end
   end
   
@@ -211,43 +255,6 @@ class ExcelToC
     rewrite RewriteMergeFormulaeAndValues, values, shared_formulae, array_formulae, simple_formulae, output
   end
   
-  def initial_extract_from_worksheet(name,xml_filename)
-    worksheet_directory = File.join(output_directory,'intermediate',name)
-    FileUtils.mkdir_p(worksheet_directory)
-    worksheet_xml = File.open(xml_filename,'r')
-    { ExtractValues => 'values', 
-      ExtractSimpleFormulae => 'simple_formulae',
-      ExtractSharedFormulae => 'shared_formulae',
-      ExtractArrayFormulae => 'array_formulae'
-    }.each do |_klass,output_filename|
-      worksheet_xml.rewind
-      extract _klass, worksheet_xml, File.join(name,output_filename)
-      if _klass == ExtractValues
-        rewrite RewriteValuesToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
-      else
-        rewrite RewriteFormulaeToAst, File.join(name,output_filename), File.join(name,"#{output_filename}.ast")
-      end  
-    end
-    worksheet_xml.rewind
-    extract ExtractWorksheetTableRelationships, worksheet_xml, File.join(name,'table_rids')
-    if File.exists?(File.join(xml_dir,'xl','worksheets','_rels',"#{File.basename(xml_filename)}.rels"))
-      extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), File.join(name,'relationships')
-      rewrite RewriteRelationshipIdToFilename, File.join(name,'table_rids'), File.join(name,'relationships'), File.join(name,'table_filenames')
-      tables = output(name,'tables')
-      table_extractor = ExtractTable.new(name)
-      table_filenames = input(name,'table_filenames')
-      table_filenames.lines.each do |line|
-        extract table_extractor, File.join('worksheets',line.strip), tables
-      end
-      close(tables,table_filenames)
-    else
-      FileUtils.touch File.join(output_directory,'intermediate',name,'relationships')
-      FileUtils.touch File.join(output_directory,'intermediate',name,'table_filenames')      
-      FileUtils.touch File.join(output_directory,'intermediate',name,'tables')      
-    end
-    close(worksheet_xml)
-  end
-  
   def merge_table_files
     tables = []
     worksheets("Merging table files") do |name,xml_filename|
@@ -258,19 +265,8 @@ class ExcelToC
   
   def simplify_worksheets
     worksheets("Simplifying") do |name,xml_filename|
-      #fork do
-        # i = input( File.join(name,'formulae.ast'))
-        # o = output(File.join(name,'missing_functions'))
-        # CheckForUnknownFunctions.new.check(i,o)
-        # close(i,o)
-        simplify_worksheet(name,xml_filename)
-      #end
+      simplify_worksheet(name,xml_filename)
     end
-    # missing_function_files = []
-    # worksheets("Consolidating any missing functions") do |name,xml_filename|
-    #   missing_function_files << File.join(output_directory,'intermediate',name,'missing_functions')
-    # end
-    # `sort -u #{missing_function_files.map { |t| " '#{t}' "}.join} > #{File.join(output_directory,'intermediate','all_missing_functions')}`
   end
   
   def simplify_worksheet(name,xml_filename)
@@ -464,15 +460,6 @@ class ExcelToC
     end
     
     remove_any_cells_not_needed_for_outputs("formulae_inlined.ast", "formulae_inlined_pruned.ast", "values_pruned.ast", "values_pruned2.ast")
-    
-    # worksheets("Skipping inlining") do |name,xml_filename|
-    #   i = File.join(output_directory,'intermediate',name, "formulae_pruned.ast")
-    #   o = File.join(output_directory,'intermediate',name, "formulae_inlined_pruned.ast")
-    #   `cp '#{i}' '#{o}'`
-    #   i = File.join(output_directory,'intermediate',name, "values_pruned.ast")
-    #   o = File.join(output_directory,'intermediate',name, "values_pruned2.ast")
-    #   `cp '#{i}' '#{o}'`
-    # end
 
   end
   
@@ -523,22 +510,8 @@ class ExcelToC
     end
     close(co)
   end
-    
-  def all_formulae(filename)
-    references = {}
-    worksheets do |name,xml_filename|
-      r = references[name] = {}
-      i = input(name,filename)
-      i.lines do |line|
-        line =~ /^(.*?)\t(.*)$/
-        ref, ast = $1, $2
-        r[$1] = eval($2)
-      end
-    end 
-    references
-  end
   
-  def compile_workbook
+  def write_out_excel_as_code
     
     all_refs = all_formulae("formulae_inlined_pruned_replaced.ast")
     
@@ -668,8 +641,7 @@ class ExcelToC
     end
   end
     
-  
-  def compile_build_script
+  def write_build_script
     o = ruby("Makefile")
     name = output_name.downcase
     
@@ -691,7 +663,7 @@ class ExcelToC
     close(o)
   end
   
-  def compile_ruby_ffi_interface
+  def write_fuby_ffi_interface
     all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
     name = output_name.downcase
     o = ruby("#{name}.rb")
@@ -750,7 +722,7 @@ END
     close(o)
   end
   
-  def compile_tests
+  def write_tests
     name = output_name.downcase
     o = ruby("#{name}_test.rb")    
     o.puts "# coding: utf-8"
@@ -795,6 +767,23 @@ END
     return unless actually_run_tests
     puts "Running the resulting tests"
     puts `cd #{File.join(output_directory,'c')}; ruby "#{output_name.downcase}_test.rb"`
+  end
+  
+  
+  # UTILITY FUNCTIONS
+  
+  def all_formulae(filename)
+    references = {}
+    worksheets do |name,xml_filename|
+      r = references[name] = {}
+      i = input(name,filename)
+      i.lines do |line|
+        line =~ /^(.*?)\t(.*)$/
+        ref, ast = $1, $2
+        r[$1] = eval($2)
+      end
+    end 
+    references
   end
   
   def c_name_for_worksheet_name(name)

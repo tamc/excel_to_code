@@ -17,10 +17,3 @@ In brief:
 ** src/rewrite - contains code that takes the series of text files and converts them into different text files (for instance, to remove INDIRECT functions, or to turn the excel form of formulas into ast)
 ** src/simplify - contains code that takes the rewritten text files and tries to simplify the calculations by, for instance, replacing functions with their values if they can be calculated at runtime
 ** src/util 
-
-# TODO
-
-* Sort out parsing of unions
-* Add missing functions
-* Add output in other programming languages
-
