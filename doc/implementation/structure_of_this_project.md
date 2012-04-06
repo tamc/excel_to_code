@@ -1,7 +1,5 @@
 # Excel2Code project structure
 
-In brief:
-
 * bin - empty at the moment
 * doc - notes and documentation
 * examples - empty at the moment

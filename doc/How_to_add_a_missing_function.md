@@ -1,4 +1,4 @@
-= Functions
+# How to add a missing function
 
 Only some excel functions are currently implemented. These are listed in src/compile/ruby/map_formulae_to_ruby.rb in the MapFormulaeToRuby::FUNCTIONS hash.
 

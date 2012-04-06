@@ -16,10 +16,3 @@ In that file, each line contains an excel formula, followed by the ast into whic
 The tests are run by:
 
     rspec spec/excel/formula_peg_spec.rb
-
-## Probable bugs in parsing
-
-* Whitespace handling in table references
-* Whitespace handling between arguments in a list
-* Doesn't do range unions (e.g., 10:10 C:C == C:10)
-* Doesn't do manually entered arrays {1,2,3;4,5,6}

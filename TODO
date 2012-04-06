@@ -1,9 +1,26 @@
 # TODO
 
-* Sort out parsing of unions
+## Parsing bugs
+
+See doc/How_to_fix_parsing_bugs.md for help
+
+* Whitespace handling in table references
+* Whitespace handling between arguments in a list
+* Doesn't do range unions (e.g., 10:10 C:C == C:10)
+* Doesn't do manually entered arrays {1,2,3;4,5,6}
+
+## Missing functions
+
+See doc/Which_functions_are_implemented.md
+
+See doc/How_to_add_a_missing_function.md
+
+## Simplification & optimisation bugs
+
 * Optimize IF, CHOOSE, MATCH, VLOOKUP and similar functions so that they don't have to calculate all their arguments
 * Fix it so that cells that are being reported as empty, that excel would give a numeric value of zero, are fixed
-* Add missing functions
-* Add output in other programming languages
+
+
+
 
 

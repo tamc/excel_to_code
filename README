@@ -1,12 +1,16 @@
+# Excel2Code
+
 This allows some excel spreadsheets to be converted into some other programming languages (currently ruby or c).
 
-It is a rewrite of http://github.com/tamc/rubyfromexcel
+Its cannonical source is at http://github.com/tamc/excel2code
 
 # Running excel2code
 
 To just have a go:
 
 	./bin/excel_to_c <excel_file_name>
+	
+NB:For small spreadsheets this will take a minute or so. For large spreadsheets it is best to run it overnight.
 	
 for more detail:
 	
@@ -19,59 +23,14 @@ for more detail:
 3. bundle
 4. rspec spec/*
 
+# Hacking excel2code
+
+There are some how to guides in the doc folder. 
+
 # Limitations
 
 1. Not tested at all on Windows
 2. INDIRECT formula must be convertable at runtime into a standard formula
-3. Doesn't implement all functions (see below for list)
+3. Doesn't implement all functions (see doc/Which_functions_are_implemented.md)
 4. Doesn't implement references that involve range unions and lists
 5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
-
-# Functions supported
-
-## Arithmetic
-
-* * - multiplying
-* + - adding
-* - - subtracting
-* / - dividing
-* ^ - powers
-
-## Comparisons
-
-* < - less than
-* <= - less than or equal
-* <> - not equal
-* = - equal
-* > - greater than
-* >= - greater than or equal
-
-## Functions (alphabetically)
-
-* ABS
-* AND
-* AVERAGE
-* CHOOSE
-* COSH
-* COUNT
-* COUNTA
-* FIND
-* IF
-* IFERROR
-* INDEX
-* LEFT
-* MATCH
-* MAX
-* MIN
-* MOD
-* PI
-* PMT
-* ROUND
-* ROUNDDOWN
-* ROUNDUP
-* SUBTOTAL
-* SUM
-* SUMIF
-* SUMIFS
-* SUMPRODUCT
-* VLOOKUP
