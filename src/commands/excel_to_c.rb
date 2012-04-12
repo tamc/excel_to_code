@@ -16,17 +16,21 @@ class ExcelToC
   # Required attribute. The source excel file. This must be .xlsx not .xls
   attr_accessor :excel_file
   
-  # The output directory. All workings are also stored there
-  # Defaults to a directory with the same name as the excel file and in the same folder
+  # Optional attribute. The output directory.
+  #  If not specified, will be '#{excel_file_name}/c'
   attr_accessor :output_directory
-  
-  # Optional attribute. The excel file will be translated to xml and stored here.
-  # If not specified, will be in an 'xml' directory under the output directory
-  attr_accessor :xml_dir
   
   # Optional attribute. The name of the resulting c file (and associated ruby ffi module). Defaults to excelspreadsheet
   attr_accessor :output_name
 
+  # Optional attribute. The excel file will be translated to xml and stored here.
+  # If not specified, will be '#{excel_file_name}/xml'
+  attr_accessor :xml_directory
+
+  # Optional attribute. The intermediate workings will be stored here.
+  # If not specified, will be '#{excel_file_name}/intermediate'
+  attr_accessor :intermediate_directory
+  
   # Optional attribute. Specifies which cells have setters created in the c code so their values can be altered at runtime.
   # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
   # should be setable, or an array of cell names on that sheet that should be settable (e.g., A1)
@@ -58,11 +62,11 @@ class ExcelToC
   def set_defaults
     raise ExcelToCException.new("No excel file has been specified in ExcelToC.excel_file") unless excel_file
     
-    self.output_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"))
+    self.output_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'c')
+    self.xml_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'xml')
+    self.intermediate_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'intermediate')
     
-    self.xml_dir ||= File.join(output_directory,'xml')
-    
-    self.output_name = "Excelspreadsheet"
+    self.output_name ||= "Excelspreadsheet"
     
     self.cells_that_can_be_set_at_runtime ||= {}
     
@@ -120,17 +124,18 @@ class ExcelToC
     run_tests
     
     puts
-    puts "The generated code is available in #{File.join(output_directory,'c')}"
+    puts "The generated code is available in #{File.join(output_directory)}"
   end
   
   def sort_out_output_directories    
-    FileUtils.mkdir_p(File.join(output_directory,'intermediate'))
-    FileUtils.mkdir_p(File.join(output_directory,'c'))
+    FileUtils.mkdir_p(output_directory)
+    FileUtils.mkdir_p(xml_directory)
+    FileUtils.mkdir_p(intermediate_directory)
   end
   
   def unzip_excel
-    puts `rm -fr '#{xml_dir}'`
-    puts `unzip -uo '#{excel_file}' -d '#{xml_dir}'`
+    puts `rm -fr '#{xml_directory}'`
+    puts `unzip -uo '#{excel_file}' -d '#{xml_directory}'`
   end
 
   def extract_data_from_workbook
@@ -148,15 +153,15 @@ class ExcelToC
   end
   
   def extract_shared_strings
-    if File.exists?(File.join(xml_dir,'xl','sharedStrings.xml'))
+    if File.exists?(File.join(xml_directory,'xl','sharedStrings.xml'))
       extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
     else
-      FileUtils.touch(File.join(output_directory,'intermediate','shared_strings'))
+      FileUtils.touch(File.join(intermediate_directory,'shared_strings'))
     end
   end
   
   def extract_dimensions_from_worksheets    
-    dimension_file = output('dimensions')
+    dimension_file = intermediate('dimensions')
     worksheets("Extracting dimensions") do |name,xml_filename|
       dimension_file.write name
       dimension_file.write "\t"
@@ -167,7 +172,7 @@ class ExcelToC
   
   def extract_data_from_worksheets
     worksheets("Initial data extract") do |name,xml_filename|
-      worksheet_directory = File.join(output_directory,'intermediate',name)
+      worksheet_directory = File.join(intermediate_directory,name)
       FileUtils.mkdir_p(worksheet_directory)
       worksheet_xml = File.open(xml_filename,'r')
       { ExtractValues => 'values', 
@@ -185,10 +190,10 @@ class ExcelToC
       end
       worksheet_xml.rewind
       extract ExtractWorksheetTableRelationships, worksheet_xml, File.join(name,'table_rids')
-      if File.exists?(File.join(xml_dir,'xl','worksheets','_rels',"#{File.basename(xml_filename)}.rels"))
+      if File.exists?(File.join(xml_directory,'xl','worksheets','_rels',"#{File.basename(xml_filename)}.rels"))
         extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), File.join(name,'relationships')
         rewrite RewriteRelationshipIdToFilename, File.join(name,'table_rids'), File.join(name,'relationships'), File.join(name,'table_filenames')
-        tables = output(name,'tables')
+        tables = intermediate(name,'tables')
         table_extractor = ExtractTable.new(name)
         table_filenames = input(name,'table_filenames')
         table_filenames.lines.each do |line|
@@ -196,9 +201,9 @@ class ExcelToC
         end
         close(tables,table_filenames)
       else
-        FileUtils.touch File.join(output_directory,'intermediate',name,'relationships')
-        FileUtils.touch File.join(output_directory,'intermediate',name,'table_filenames')      
-        FileUtils.touch File.join(output_directory,'intermediate',name,'tables')      
+        FileUtils.touch File.join(intermediate_directory,name,'relationships')
+        FileUtils.touch File.join(intermediate_directory,name,'table_filenames')      
+        FileUtils.touch File.join(intermediate_directory,name,'tables')      
       end
       close(worksheet_xml)
     end
@@ -217,8 +222,8 @@ class ExcelToC
     dimensions = input('dimensions')
     %w{simple_formulae.ast shared_formulae.ast array_formulae.ast}.each do |file|
       dimensions.rewind
-      i = File.open(File.join(output_directory,'intermediate',name,file),'r')
-      o = File.open(File.join(output_directory,'intermediate',name,"#{file}-nocols"),'w')
+      i = File.open(File.join(intermediate_directory,name,file),'r')
+      o = File.open(File.join(intermediate_directory,name,"#{file}-nocols"),'w')
       RewriteWholeRowColumnReferencesToAreas.rewrite(i,name, dimensions, o)
       close(i,o)
     end
@@ -226,8 +231,8 @@ class ExcelToC
   end
   
   def rewrite_shared_formulae(name,xml_filename)
-    i = File.open(File.join(output_directory,'intermediate',name,'shared_formulae.ast-nocols'),'r')
-    o = File.open(File.join(output_directory,'intermediate',name,"shared_formulae-expanded.ast"),'w')
+    i = File.open(File.join(intermediate_directory,name,'shared_formulae.ast-nocols'),'r')
+    o = File.open(File.join(intermediate_directory,name,"shared_formulae-expanded.ast"),'w')
     RewriteSharedFormulae.rewrite(i,o)
     close(i,o)
   end
@@ -258,9 +263,9 @@ class ExcelToC
   def merge_table_files
     tables = []
     worksheets("Merging table files") do |name,xml_filename|
-      tables << File.join(output_directory,'intermediate',name,'tables')
+      tables << File.join(intermediate_directory,name,'tables')
     end
-    `sort #{tables.map { |t| " '#{t}' "}.join} > #{File.join(output_directory,'intermediate','all_tables')}`
+    `sort #{tables.map { |t| " '#{t}' "}.join} > #{File.join(intermediate_directory,'all_tables')}`
   end
   
   def simplify_worksheets
@@ -336,8 +341,8 @@ class ExcelToC
       counter += 1
       
       # Finally, create the output directory
-      i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
-      o = File.join(output_directory,'intermediate',name,finish_filename)
+      i = File.join(intermediate_directory,name,"#{basename}#{counter}.ast")
+      o = File.join(intermediate_directory,name,finish_filename)
       `cp '#{i}' '#{o}'`
     end
   end
@@ -347,8 +352,8 @@ class ExcelToC
     
     # Setup start
     worksheets("Setting up for optimise -#{counter}") do |name|
-      i = File.join(output_directory,'intermediate',name,start_filename)
-      o = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
+      i = File.join(intermediate_directory,name,start_filename)
+      o = File.join(intermediate_directory,name,"#{basename}#{counter}.ast")
       `cp '#{i}' '#{o}'`
     end
     
@@ -394,8 +399,8 @@ class ExcelToC
     
     # Finish
     worksheets("Moving sheets #{counter}-") do |name|
-      o = File.join(output_directory,'intermediate',name,finish_filename)
-      i = File.join(output_directory,'intermediate',name,"#{basename}#{counter}.ast")
+      o = File.join(intermediate_directory,name,finish_filename)
+      i = File.join(intermediate_directory,name,"#{basename}#{counter}.ast")
       `cp '#{i}' '#{o}'`
     end
   end
@@ -424,11 +429,11 @@ class ExcelToC
       Process.waitall
     else
       worksheets do |name,xml_filename|
-        i = File.join(output_directory,'intermediate',name, formula_in)
-        o = File.join(output_directory,'intermediate',name, formula_out)
+        i = File.join(intermediate_directory,name, formula_in)
+        o = File.join(intermediate_directory,name, formula_out)
         `cp '#{i}' '#{o}'`
-        i = File.join(output_directory,'intermediate',name, values_in)
-        o = File.join(output_directory,'intermediate',name, values_out)
+        i = File.join(intermediate_directory,name, values_in)
+        o = File.join(intermediate_directory,name, values_out)
         `cp '#{i}' '#{o}'`
       end
     end
@@ -477,7 +482,7 @@ class ExcelToC
     repeated_elements.delete_if do |element,count|
       count < 2
     end
-    o = output('common-elements-1.ast')
+    o = intermediate('common-elements-1.ast')
     i = 0
     repeated_elements.each do |element,count|
       o.puts "common#{i}\t#{element}"
@@ -492,19 +497,19 @@ class ExcelToC
     r = ReplaceValuesWithConstants.new  
     worksheets("Replacing values with constants") do |name,xml_filename|
       i = input(name,"formulae_inlined_pruned_replaced-1.ast")
-      o = output(name,"formulae_inlined_pruned_replaced.ast")
+      o = intermediate(name,"formulae_inlined_pruned_replaced.ast")
       r.replace(i,o)
       close(i,o)
     end
     
     puts "Replacing values with constants in common elements"
     i = input("common-elements-1.ast")
-    o = output("common-elements.ast")
+    o = intermediate("common-elements.ast")
     r.replace(i,o)
     close(i,o)
     
     puts "Writing out constants"
-    co = output("value_constants.ast")
+    co = intermediate("value_constants.ast")
     r.rewriter.constants.each do |ast,constant|
       co.puts "#{constant}\t#{ast}"
     end
@@ -518,11 +523,11 @@ class ExcelToC
     number_of_refs = 0
     
     # Probably a better way of getting the runtime file to be compiled with the created file
-    puts `cp #{File.join(File.dirname(__FILE__),'..','compile','c','excel_to_c_runtime.c')} #{File.join(output_directory,'c','excel_to_c_runtime.c')}`
+    puts `cp #{File.join(File.dirname(__FILE__),'..','compile','c','excel_to_c_runtime.c')} #{File.join(output_directory,'excel_to_c_runtime.c')}`
     
     # Output the workbook preamble
     w = input("worksheet_c_names")
-    o = ruby("#{output_name.downcase}.c")
+    o = output("#{output_name.downcase}.c")
     o.puts "// #{excel_file} approximately translated into C"
     o.puts '#include "excel_to_c_runtime.c"'
     o.puts
@@ -642,7 +647,7 @@ class ExcelToC
   end
     
   def write_build_script
-    o = ruby("Makefile")
+    o = output("Makefile")
     name = output_name.downcase
     
     # Target for shared library
@@ -666,7 +671,7 @@ class ExcelToC
   def write_fuby_ffi_interface
     all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
     name = output_name.downcase
-    o = ruby("#{name}.rb")
+    o = output("#{name}.rb")
     code = <<END
 require 'ffi'
 
@@ -724,7 +729,7 @@ END
   
   def write_tests
     name = output_name.downcase
-    o = ruby("#{name}_test.rb")    
+    o = output("#{name}_test.rb")    
     o.puts "# coding: utf-8"
     o.puts "# Test for #{name}"
     o.puts "require 'rubygems'"
@@ -760,13 +765,13 @@ END
   def compile_c_code
     return unless actually_compile_c_code || actually_run_tests
     puts "Compiling the resulting c code"
-    puts `cd #{File.join(output_directory,'c')}; make clean; make`
+    puts `cd #{File.join(output_directory)}; make clean; make`
   end
   
   def run_tests
     return unless actually_run_tests
     puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory,'c')}; ruby "#{output_name.downcase}_test.rb"`
+    puts `cd #{File.join(output_directory)}; ruby "#{output_name.downcase}_test.rb"`
   end
   
   
@@ -796,9 +801,9 @@ END
   end
     
   def worksheets(message = "Processing",&block)
-    IO.readlines(File.join(output_directory,'intermediate','worksheet_names')).each do |line|
+    IO.readlines(File.join(intermediate_directory,'worksheet_names')).each do |line|
       name, filename = *line.split("\t")
-      filename = File.expand_path(File.join(xml_dir,'xl',filename.strip))
+      filename = File.expand_path(File.join(xml_directory,'xl',filename.strip))
       puts "#{message} #{name}"
       block.call(name, filename)
     end
@@ -806,7 +811,7 @@ END
     
   def extract(_klass,xml_name,output_name)
     i = xml_name.is_a?(String) ? xml(xml_name) : xml_name
-    o = output_name.is_a?(String) ? output(output_name) : output_name
+    o = output_name.is_a?(String) ? intermediate(output_name) : output_name
     _klass.extract(i,o)
     if xml_name.is_a?(String)
       close(i)
@@ -817,33 +822,33 @@ END
   end
   
   def rewrite(_klass,*args)
-    o = output(args.pop)
+    o = intermediate(args.pop)
     inputs = args.map { |name| input(name) }
     _klass.rewrite(*inputs,o)
     close(*inputs,o)
   end
   
   def replace(_klass,*args)
-    o = output(args.pop)
+    o = intermediate(args.pop)
     inputs = args.map { |name| input(name) }
     _klass.replace(*inputs,o)
     close(*inputs,o)
   end
   
   def xml(*args)
-    File.open(File.join(xml_dir,'xl',*args),'r')
+    File.open(File.join(xml_directory,'xl',*args),'r')
   end
   
   def input(*args)
-    File.open(File.join(output_directory,'intermediate',*args),'r')
+    File.open(File.join(intermediate_directory,*args),'r')
+  end
+  
+  def intermediate(*args)
+    File.open(File.join(intermediate_directory,*args),'w')
   end
   
   def output(*args)
-    File.open(File.join(output_directory,'intermediate',*args),'w')
-  end
-  
-  def ruby(*args)
-    File.open(File.join(output_directory,'c',*args),'w')
+    File.open(File.join(output_directory,*args),'w')
   end
   
   def close(*args)
