@@ -672,7 +672,7 @@ require 'ffi'
 
 module #{name.capitalize}
   extend FFI::Library
-  ffi_lib '#{name}'
+  ffi_lib  File.join(File.dirname(__FILE__),'lib#{name}.dylib')
   ExcelType = enum :ExcelEmpty, :ExcelNumber, :ExcelString, :ExcelBoolean, :ExcelError, :ExcelRange
                 
   class ExcelValue < FFI::Struct
