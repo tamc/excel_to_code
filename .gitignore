@@ -1,8 +1,7 @@
 *.swp
 ~$*.xlsx
 *.out
+*.gem
 src/compile/c/test
-
 src/compile/c/test.dSYM/Contents/Info.plist
-
 src/compile/c/test.dSYM/Contents/Resources/DWARF/test

@@ -2,13 +2,7 @@ require 'rspec'
 require 'stringio'
 require 'tmpdir'
 
-require_relative '../src/util'
-require_relative '../src/commands'
-require_relative '../src/excel'
-require_relative '../src/extract'
-require_relative '../src/rewrite'
-require_relative '../src/simplify'
-require_relative '../src/compile'
+require_relative '../src/excel_to_code'
 
 def excel_fragment(name)
   File.open(File.join(File.dirname(__FILE__),'test_data',name))
