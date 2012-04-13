@@ -1,10 +1,11 @@
-# Excel2Code
+# excel_to_code
 
-This allows some excel spreadsheets to be converted into some other programming languages (currently ruby or c).
+Converts some excel spreadsheets (.xlsx, not .xls) into some other programming languages (currently ruby or c).
+This allows the excel spreadsheets to be run programatically, without excel.
 
 Its cannonical source is at http://github.com/tamc/excel2code
 
-# Running excel2code
+# Running excel_to_code
 
 To just have a go:
 
@@ -15,15 +16,19 @@ NB:For small spreadsheets this will take a minute or so. For large spreadsheets 
 for more detail:
 	
 	./bin/excel_to_c --compile --run-tests --settable <name of input worksheet> --prune-except <name of output worksheet> <excel file name> 
+	
+this should work:
 
-# Testing excel2code
+	./bin/excel_to_c --help
+
+# Testing excel_to_code
 
 1. Make sure you have ruby 1.9.2 or later installed
 2. gem install bundler # May need to use sudo
 3. bundle
 4. rspec spec/*
 
-# Hacking excel2code
+# Hacking excel_to_code
 
 There are some how to guides in the doc folder. 
 

@@ -20,7 +20,15 @@ See doc/How_to_add_a_missing_function.md
 * Optimize IF, CHOOSE, MATCH, VLOOKUP and similar functions so that they don't have to calculate all their arguments
 * Fix it so that cells that are being reported as empty, that excel would give a numeric value of zero, are fixed
 
+## Things that are badly written
 
+* Rewrite the excel_to_ruby command to use command line options
+* Refactor the common elements of src/commands/excel_to_c.rb and src/commands/excel_to_ruby.rb
+* Refactor excel_to_c_runtime - split the functions? split the tests?
+* Figure out a common test framework for different code output
+* Tool for turning spreadsheets into tests
+* Option to reorder test output to make it easier to localise errors
+* Tool to create minimal failing example out of test run
 
 
 
