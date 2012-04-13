@@ -30,12 +30,11 @@ END
     command.cells_to_keep = { sheet => :all }
   end
   
-  opts.on('-c','--compile',"Compile the generated c code") do
-    command.actually_compile_c_code = true
+  opts.on('-c','--compile',"Compile the generated code (where relevant)") do
+    command.actually_compile_code = true
   end
   
-  opts.on('-r','--run-tests',"Compile the generated c code and then run the tests") do
-    command.actually_compile_c_code = true
+  opts.on('-r','--run-tests',"Compile the generated code and then run the tests") do
     command.actually_run_tests = true
   end
   
