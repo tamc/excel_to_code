@@ -10,11 +10,7 @@ class ExcelToC < ExcelToX
     write_fuby_ffi_interface
     write_tests
   end
-  
-  def rewrite_sheet_names
-    rewrite MapSheetNamesToCNames, 'worksheet_names', 'worksheet_c_names'
-  end
-  
+    
   def write_out_excel_as_code
     
     all_refs = all_formulae("formulae_inlined_pruned_replaced.ast")
