@@ -1,0 +1,7 @@
+# 0.0.2
+
+Added an option to just keep intermediate files in memory rather than writing them to disk
+
+# 0.0.1
+
+First release as a gem
