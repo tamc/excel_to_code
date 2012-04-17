@@ -61,7 +61,7 @@ class ExcelToX
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
     
-    self.output_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'c')
+    self.output_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),language)
     self.xml_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'xml')
     self.intermediate_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'intermediate')
     
@@ -113,6 +113,7 @@ class ExcelToX
     remove_any_cells_not_needed_for_outputs
     inline_formulae_that_are_only_used_once
     separate_formulae_elements
+    replace_values_with_constants
     
     # This actually creates the code (implemented in subclasses)
     write_code
@@ -516,7 +517,9 @@ class ExcelToX
     worksheets("Replacing repeated elements") do |name,xml_filename|
       replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned_with_sheets.ast"), "common-elements-1.ast", File.join(name,"formulae_inlined_pruned_replaced-1.ast")
     end
-
+  end
+  
+  def replace_values_with_constants
     r = ReplaceValuesWithConstants.new  
     worksheets("Replacing values with constants") do |name,xml_filename|
       i = input(name,"formulae_inlined_pruned_replaced-1.ast")

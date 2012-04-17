@@ -14,14 +14,16 @@ class CompileToRuby
     mapper = MapFormulaeToRuby.new
     mapper.worksheet = worksheet
     mapper.sheet_names = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}]
+    c_name = mapper.sheet_names[worksheet]
     input.lines do |line|
       begin
         ref, formula = line.split("\t")
+        name = "#{c_name}_#{ref.downcase}"
         if settable.call(ref)
-          output.puts "  attr_accessor :#{ref.downcase} # Default: #{mapper.map(eval(formula))}"
-          defaults.puts "    @#{ref.downcase} = #{mapper.map(eval(formula))}" if defaults
+          output.puts "  attr_accessor :#{name} # Default: #{mapper.map(eval(formula))}"
+          defaults.puts "    @#{name} = #{mapper.map(eval(formula))}" if defaults
         else
-          output.puts "  def #{ref.downcase}; @#{ref.downcase} ||= #{mapper.map(eval(formula))}; end"
+          output.puts "  def #{name}; @#{name} ||= #{mapper.map(eval(formula))}; end"
         end
       rescue Exception => e
         puts "Exception at line #{line}"

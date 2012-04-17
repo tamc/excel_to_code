@@ -3,6 +3,10 @@ require_relative 'excel_to_x'
 
 class ExcelToC < ExcelToX
   
+  def language
+    "c"
+  end
+  
   # These actually create the code version of the excel
   def write_code
     write_out_excel_as_code
@@ -109,7 +113,6 @@ class ExcelToC < ExcelToX
       c.worksheet = name
 
       i = input(name,"formulae_inlined_pruned_replaced.ast")
-      ruby_name = c_name_for_worksheet_name(name)
       o.puts "// start #{name}"
       c.rewrite(i,w,o)
       o.puts "// end #{name}"
@@ -202,7 +205,7 @@ END
   
   def write_tests
     name = output_name.downcase
-    o = output("#{name}_test.rb")    
+    o = output("test_#{name}.rb")    
     o.puts "# coding: utf-8"
     o.puts "# Test for #{name}"
     o.puts "require 'rubygems'"
@@ -244,7 +247,7 @@ END
   def run_tests
     return unless actually_run_tests
     puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory)}; ruby "#{output_name.downcase}_test.rb"`
+    puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
   end
   
 end
