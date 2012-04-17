@@ -3,7 +3,7 @@
 Converts some excel spreadsheets (.xlsx, not .xls) into some other programming languages (currently ruby or c).
 This allows the excel spreadsheets to be run programatically, without excel.
 
-Its cannonical source is at http://github.com/tamc/excel2code
+Its cannonical source is at http://github.com/tamc/excel_to_code
 
 # Running excel_to_code
 

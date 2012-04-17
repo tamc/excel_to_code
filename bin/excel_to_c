@@ -13,7 +13,7 @@ Usage: excel_to_c [options] input_excel_file <output_directory>
   input_excel_file    the name of a .xlsx excel file (i.e., produced by Excel 2007+, not a .xls file) 
   output_directory    the name of a folder in which to place the generated code. If not specified will have the same name as the input_excel_file, without the .xlsx
   
-Support: http://github.com/tamc/excel2code
+Support: http://github.com/tamc/excel_to_code
 END
   
   opts.separator ""
