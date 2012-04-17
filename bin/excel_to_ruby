@@ -1,9 +1,63 @@
 #!/usr/bin/env ruby
-require_relative '../src/commands/excel_to_ruby'
+require 'optparse'
+require_relative '../src/excel_to_code'
+
 command = ExcelToRuby.new
+
+opts = OptionParser.new do |opts|
+  opts.banner = <<-END
+
+A command to approximately translate excel files into c code.
+
+Usage: excel_to_ruby [options] input_excel_file <output_directory>
+  input_excel_file    the name of a .xlsx excel file (i.e., produced by Excel 2007+, not a .xls file) 
+  output_directory    the name of a folder in which to place the generated code. If not specified will have the same name as the input_excel_file, without the .xlsx
+  
+Support: http://github.com/tamc/excel_to_code
+END
+  
+  opts.separator ""
+  opts.separator "Specific options:"
+  
+  opts.on('-s','--settable WORKSHEET','Make it possible to set the values of cells in this worksheet at runtime. By default no values are settable.') do |sheet|
+    command.cells_that_can_be_set_at_runtime = { sheet => :all }
+  end
+
+  opts.on('-o','--output-name NAME','Filename to give to ruby version of code. Defaults to a folder with the same name as the excel file.') do |name|
+    command.output_name = name
+  end
+  
+  opts.on('-p','--prune-except WORKSHEET',"Remove all cells except those on this worksheet, or that are required to calculate values on that worksheet. By default keeps all cells.") do |sheet|
+    command.cells_to_keep = { sheet => :all }
+  end
+    
+  opts.on('-r','--run-tests',"Run the generated tests") do
+    command.actually_run_tests = true
+  end
+  
+  opts.on('-m','--run-in-memory',"Instead of writing intermediate files to disk, uses memory. Requires a lot of memory") do
+    command.run_in_memory = true
+  end
+  
+  opts.on("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end
+
+begin
+  opts.parse!(ARGV)
+rescue OptionParser::ParseError => e 
+  STDERR.puts e.message, "\n", opts 
+  exit(-1)
+end
+
+unless ARGV.size > 0
+  puts opts
+  exit(-1)
+end
+
 command.excel_file = ARGV[0]
-command.compiled_module_name = "ExcelSpreadsheet"
-command.output_directory = ARGV[1]
-command.values_that_can_be_set_at_runtime = { ARGV[2] => :all } if ARGV[2]
-command.outputs_to_keep = { ARGV[3] => :all } if ARGV[3]
+command.output_directory = ARGV[1] if ARGV[1]
+
 command.go!
