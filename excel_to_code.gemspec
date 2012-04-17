@@ -2,6 +2,7 @@ Gem::Specification.new do |s|
   s.name = "excel_to_code"
   s.add_dependency('nokogiri','>= 1.5.0')
   s.add_dependency('rspec','>= 2.7.0')
+  s.add_dependency('ffi','>= 1.0.11')
   s.required_ruby_version = "~>1.9.1"
   s.version = '0.0.2'
   s.author = "Thomas Counsell, Green on Black Ltd"
