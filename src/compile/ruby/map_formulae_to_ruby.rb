@@ -76,12 +76,7 @@ class MapFormulaeToRuby < MapValuesToRuby
   end
   
   def cell(reference)
-    # FIXME: What a cludge.
-    if reference =~ /common\d+/
-      "_#{reference}"
-    else
-      reference.downcase.gsub('$','')
-    end
+    reference.downcase.gsub('$','')
   end
   
   def sheet_reference(sheet,reference)

@@ -18,7 +18,7 @@ class CompileToRuby
     input.lines do |line|
       begin
         ref, formula = line.split("\t")
-        name = "#{c_name}_#{ref.downcase}"
+        name = c_name ? "#{c_name}_#{ref.downcase}" : ref.downcase
         if settable.call(ref)
           output.puts "  attr_accessor :#{name} # Default: #{mapper.map(eval(formula))}"
           defaults.puts "    @#{name} = #{mapper.map(eval(formula))}" if defaults

@@ -1,7 +1,7 @@
 A1	[:cell, "C4"]
 A2	[:sheet_reference, "Referencing", [:cell, "C4"]]
 A4	[:number, "10"]
-B4	[:arithmetic, [:cell, "A4"], [:operator, "+"], [:number, "1"]]
+B4	[:arithmetic, [:number, "10"], [:operator, "+"], [:number, "1"]]
 C4	[:arithmetic, [:cell, "B4"], [:operator, "+"], [:number, "1"]]
 A5	[:number, "3"]
 B8	[:sheet_reference, "Referencing", [:cell, "C4"]]

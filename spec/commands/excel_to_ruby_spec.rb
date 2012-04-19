@@ -9,12 +9,13 @@ describe ExcelToRuby do
     puts "Writing to #{actual}"
     command = ExcelToRuby.new
     command.excel_file = excel
-    command.output_directory = actual
-    command.compiled_module_name = "ExampleSpreadsheet"
-    command.values_that_can_be_set_at_runtime = {
+    command.xml_directory = File.join(actual,'xml')
+    command.intermediate_directory = File.join(actual,'intermediate')
+    command.output_directory = File.join(actual,'ruby')
+    command.output_name = "ExampleSpreadsheet"
+    command.cells_that_can_be_set_at_runtime = {
       'Referencing' => ['A4']
     }
-    # command.outputs_to_keep = {'Tables' => ['A1']}
     command.go!
     differences = `diff -r #{expected} #{actual}`
     unless differences == ""

@@ -5,7 +5,7 @@ describe CompileToRubyUnitTest do
   def compile(text)
     input = StringIO.new(text)
     output = StringIO.new
-    CompileToRubyUnitTest.rewrite(input,output)
+    CompileToRubyUnitTest.rewrite(input,'sheet1', ['a1','a2','a3','a4','a5','a6'] , output)
     output.string
   end
   
@@ -22,12 +22,12 @@ A6\t[:number, "0"]
 END
 
 expected = <<END
-  def test_a1; assert_in_epsilon(1,worksheet.a1); end
-  def test_a2; assert_equal("Hello",worksheet.a2); end
-  def test_a3; assert_equal(:name,worksheet.a3); end
-  def test_a4; assert_equal(true,worksheet.a4); end
-  def test_a5; assert_equal(false,worksheet.a5); end
-  def test_a6; assert_in_epsilon(0,worksheet.a6 || 0); end
+  def test_sheet1_a1; assert_in_epsilon(1,worksheet.sheet1_a1); end
+  def test_sheet1_a2; assert_equal("Hello",worksheet.sheet1_a2); end
+  def test_sheet1_a3; assert_equal(:name,worksheet.sheet1_a3); end
+  def test_sheet1_a4; assert_equal(true,worksheet.sheet1_a4); end
+  def test_sheet1_a5; assert_equal(false,worksheet.sheet1_a5); end
+  def test_sheet1_a6; assert_in_epsilon(0,worksheet.sheet1_a6 || 0); end
 END
 
 compile(input).should == expected

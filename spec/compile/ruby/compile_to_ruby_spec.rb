@@ -45,7 +45,7 @@ A complicated sheet name\ta_complicated_sheet_name
 END
 
 expected = <<END
-  def a1; @a1 ||= a_complicated_sheet_name.a2; end
+  def a1; @a1 ||= a_complicated_sheet_name_a2; end
 END
 
 compile(input,sheet_names).should == expected

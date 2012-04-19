@@ -8,7 +8,7 @@ class CompileToCUnitTest
     input.lines do |line|
       begin
         ref, formula = line.split("\t")
-        next unless refs_to_test.include?(ref)
+        next unless refs_to_test.include?(ref.downcase)
         output.puts "def test_#{c_name}_#{ref.downcase}"
         output.puts "  r = spreadsheet.#{c_name}_#{ref.downcase}"
         ast = eval(formula)

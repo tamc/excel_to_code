@@ -6,10 +6,11 @@ class CompileToRubyUnitTest
     self.new.rewrite(*args)
   end
   
-  def rewrite(input, c_name, output)
+  def rewrite(input, c_name, refs_to_test, output)
     mapper = MapValuesToRuby.new
     input.lines do |line|
       ref, formula = line.split("\t")
+      next unless refs_to_test.include?(ref.downcase)
       ast = eval(formula)
       value = mapper.map(ast)
       full_reference = "worksheet.#{c_name}_#{ref.downcase}"

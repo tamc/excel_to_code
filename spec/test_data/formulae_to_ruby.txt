@@ -55,7 +55,7 @@
 # References
 [:cell,"A1"]	a1
 [:cell,"$A$1"]	a1
-[:sheet_reference, "A complicated sheet name", [:cell,"AAA27"]]	a_complicated_sheet_name.aaa27
+[:sheet_reference, "A complicated sheet name", [:cell,"AAA27"]]	a_complicated_sheet_name_aaa27
 
 # Arrays
 [:array, [:row, [:cell, "F4"],[:cell, "G4"]]]	[[f4,g4]]

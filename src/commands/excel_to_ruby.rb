@@ -97,12 +97,20 @@ class ExcelToRuby < ExcelToX
     o.puts "  def worksheet; @worksheet ||= #{output_name.capitalize}.new; end"
     
     c = CompileToRubyUnitTest.new
+    all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
     
     worksheets("Compiling worksheet") do |name,xml_filename|
       i = input(name,"values_pruned2.ast")
       o.puts "  # Start of #{name}"
       c_name = c_name_for_worksheet_name(name)
-      c.rewrite(i, c_name, o)
+      if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
+        refs_to_test = all_formulae[name].keys
+      else
+        refs_to_test = cells_to_keep[name]
+      end
+      if refs_to_test && !refs_to_test.empty?
+        c.rewrite(i, c_name, refs_to_test, o)
+      end
       o.puts "  # End of #{name}"
       o.puts ""
       close(i)

@@ -43,7 +43,6 @@ class CompileToC
           mapper.initializers.each do |i|
             output.puts "  #{i}"
           end
-          #output.puts "  return #{calculation};"
           output.puts "  result = #{calculation};"
           output.puts "  variable_set[#{@variable_set_counter}] = 1;"
           output.puts "  return result;"

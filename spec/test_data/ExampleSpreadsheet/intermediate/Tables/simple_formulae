@@ -1,0 +1,13 @@
+A1	Referencing!D11
+D3	FirstTable[[#This Row],[ColA]]&FirstTable[[#This Row],[ColB]]
+D4	FirstTable[[#This Row],[ColA]]&FirstTable[[#This Row],[ColB]]
+F4	FirstTable[[#This Row],[ColB]]
+G4	MATCH("2B",FirstTable[#This Row],FALSE)
+H4	MATCH("B",FirstTable[[#This Row],[ColB]:[Column1]])
+B5	SUM(FirstTable[ColA])
+C5	SUM(FirstTable[ColB])
+C10	SUM(FirstTable[#Totals])
+C11	SUM(FirstTable[ColA])
+C12	FirstTable[[#Totals],[ColA]]
+C13	SUM(FirstTable[#Data])
+C14	SUM(FirstTable[])

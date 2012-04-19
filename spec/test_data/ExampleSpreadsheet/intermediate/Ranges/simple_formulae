@@ -1,0 +1,6 @@
+B2	SUM(F4:F6)
+C2	SUM(ValueTypes!A3:A4)
+B3	SUM(F:F)
+C3	SUM(ValueTypes!A:A)
+B4	SUM(5:5)
+C4	SUM(ValueTypes!4:4)
