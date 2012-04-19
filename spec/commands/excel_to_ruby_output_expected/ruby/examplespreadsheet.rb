@@ -1,3 +1,4 @@
+# coding: utf-8
 # Compiled version of /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx
 require '/Users/tamc/Documents/github/excel_to_code/src/excel/excel_functions'
 

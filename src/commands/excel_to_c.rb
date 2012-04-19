@@ -230,6 +230,7 @@ END
         refs_to_test = cells_to_keep[name]
       end
       if refs_to_test && !refs_to_test.empty?
+        refs_to_test = refs_to_test.map(&:downcase)
         CompileToCUnitTest.rewrite(i, c_name, refs_to_test, o)
       end
       close(i)

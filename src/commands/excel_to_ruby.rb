@@ -39,6 +39,7 @@ class ExcelToRuby < ExcelToX
   def write_out_excel_as_code
     w = input("worksheet_c_names")
     o = output("#{output_name.downcase}.rb")
+    o.puts "# coding: utf-8"
     o.puts "# Compiled version of #{excel_file}"
     o.puts "require '#{File.expand_path(File.join(File.dirname(__FILE__),'../excel/excel_functions'))}'"
     o.puts ""
@@ -89,6 +90,7 @@ class ExcelToRuby < ExcelToX
   def write_out_test_as_code
     o = output("test_#{output_name.downcase}.rb")
     
+    o.puts "# coding: utf-8"
     o.puts "# All tests for #{excel_file}"
     o.puts "require 'test/unit'"
     o.puts "require_relative '#{output_name.downcase}'"
@@ -109,6 +111,7 @@ class ExcelToRuby < ExcelToX
         refs_to_test = cells_to_keep[name]
       end
       if refs_to_test && !refs_to_test.empty?
+        refs_to_test = refs_to_test.map(&:downcase)
         c.rewrite(i, c_name, refs_to_test, o)
       end
       o.puts "  # End of #{name}"

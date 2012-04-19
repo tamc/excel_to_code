@@ -6,6 +6,7 @@
 * spec - contains the tests that make sure the code is working properly
 ** spec/test_data - contains bits of xml and other that are used in the testing
 ** spec_helper - contains global methods and setup, available to all tests
+* benchmark - contains some tests of how fast some bits of code are, useful when trying to optimise
 * src - contains the actual code used to run the project
 ** src/commands - contains the higher level code that executes commands, such as converting an entire workbook into ruby
 ** src/compile - contians code that takes the rewritten text files and converts them into code (e.g., a ruby version of a spreadsheet) 
