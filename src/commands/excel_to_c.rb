@@ -22,13 +22,18 @@ class ExcelToC < ExcelToX
     number_of_refs = 0
     
     # Probably a better way of getting the runtime file to be compiled with the created file
-    puts `cp #{File.join(File.dirname(__FILE__),'..','compile','c','excel_to_c_runtime.c')} #{File.join(output_directory,'excel_to_c_runtime.c')}`
+    puts `cp #} #{File.join(output_directory,'excel_to_c_runtime.c')}`
     
     # Output the workbook preamble
     w = input("worksheet_c_names")
     o = output("#{output_name.downcase}.c")
     o.puts "// #{excel_file} approximately translated into C"
-    o.puts '#include "excel_to_c_runtime.c"'
+
+    o.puts '// First we have c versions of all the excel functions that we know'
+    o.puts IO.readlines(File.join(File.dirname(__FILE__),'..','compile','c','excel_to_c_runtime.c')).join
+    o.puts '// End of the generic c functions'
+    o.puts 
+    o.puts '// Start of the file specific functions'
     o.puts
     
     # Now we have to put all the initial definitions out
