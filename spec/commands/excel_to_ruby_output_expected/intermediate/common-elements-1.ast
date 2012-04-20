@@ -1,0 +1,1 @@
+common0	[:arithmetic, [:sheet_reference, "Referencing", [:cell, "A4"]], [:operator, "+"], [:number, "1"]]

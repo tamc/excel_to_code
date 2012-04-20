@@ -5,7 +5,7 @@ describe CompileToRubyUnitTest do
   def compile(text)
     input = StringIO.new(text)
     output = StringIO.new
-    CompileToRubyUnitTest.rewrite(input,'sheet1', ['a1','a2','a3','a4','a5','a6'] , output)
+    CompileToRubyUnitTest.rewrite(input,'sheet1', ['A1','A2','A3','A4','A5','A6'] , output)
     output.string
   end
   

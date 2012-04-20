@@ -72,14 +72,14 @@ class ExcelToX
     # Make sure that all the cell names are downcase and don't have any $ in them
     cells_that_can_be_set_at_runtime.keys.each do |sheet|
       next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
-      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').downcase }
+      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').upcase }
     end
 
     # Make sure that all the cell names are downcase and don't have any $ in them
     if cells_to_keep
       cells_to_keep.keys.each do |sheet|
         next unless cells_to_keep[sheet].is_a?(Array)
-        cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').downcase }
+        cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase }
       end
     end  
     
@@ -547,7 +547,7 @@ class ExcelToX
   def settable(name)
     settable_refs = @cells_that_can_be_set_at_runtime[name]    
     if settable_refs
-      lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref) } 
+      lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref.upcase) } 
     else
       lambda { |ref| false }
     end
@@ -557,7 +557,7 @@ class ExcelToX
     if @cells_to_keep
       gettable_refs = @cells_to_keep[name]
       if gettable_refs
-        lambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref) }
+        lambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref.upcase) }
       else
         lambda { |ref| false }
       end

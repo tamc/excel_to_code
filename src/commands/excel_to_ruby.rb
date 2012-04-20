@@ -111,7 +111,7 @@ class ExcelToRuby < ExcelToX
         refs_to_test = cells_to_keep[name]
       end
       if refs_to_test && !refs_to_test.empty?
-        refs_to_test = refs_to_test.map(&:downcase)
+        refs_to_test = refs_to_test.map(&:upcase)
         c.rewrite(i, c_name, refs_to_test, o)
       end
       o.puts "  # End of #{name}"

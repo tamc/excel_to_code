@@ -6,6 +6,7 @@ class Examplespreadsheet
   include ExcelFunctions
 
   # Starting common elements
+  def common0; @common0 ||= add(referencing_a4,1); end
   # Ending common elements
 
   # Start of ValueTypes
@@ -56,21 +57,21 @@ class Examplespreadsheet
   # End of Ranges
 
   # Start of Referencing
-  def referencing_a1; @referencing_a1 ||= 12; end
-  def referencing_a2; @referencing_a2 ||= 12; end
-  def referencing_a4; @referencing_a4 ||= 10; end
-  def referencing_b4; @referencing_b4 ||= 11; end
-  def referencing_c4; @referencing_c4 ||= 12; end
+  def referencing_a1; @referencing_a1 ||= referencing_c4; end
+  def referencing_a2; @referencing_a2 ||= referencing_c4; end
+  attr_accessor :referencing_a4 # Default: 10
+  def referencing_b4; @referencing_b4 ||= common0; end
+  def referencing_c4; @referencing_c4 ||= add(common0,1); end
   def referencing_a5; @referencing_a5 ||= 3; end
-  def referencing_b8; @referencing_b8 ||= 12; end
+  def referencing_b8; @referencing_b8 ||= referencing_c4; end
   def referencing_b9; @referencing_b9 ||= 3; end
   def referencing_b11; @referencing_b11 ||= "Named"; end
   def referencing_c11; @referencing_c11 ||= "Reference"; end
-  def referencing_d11; @referencing_d11 ||= 12; end
+  def referencing_d11; @referencing_d11 ||= referencing_c4; end
   # End of Referencing
 
   # Start of Tables
-  def tables_a1; @tables_a1 ||= 12; end
+  def tables_a1; @tables_a1 ||= referencing_c4; end
   def tables_b2; @tables_b2 ||= "ColA"; end
   def tables_c2; @tables_c2 ||= "ColB"; end
   def tables_d2; @tables_d2 ||= "Column1"; end
@@ -117,6 +118,7 @@ class Examplespreadsheet
 
   # starting initializer
   def initialize
+    @referencing_a4 = 10
   end
 
 end

@@ -10,7 +10,7 @@ class CompileToRubyUnitTest
     mapper = MapValuesToRuby.new
     input.lines do |line|
       ref, formula = line.split("\t")
-      next unless refs_to_test.include?(ref.downcase)
+      next unless refs_to_test.include?(ref.upcase)
       ast = eval(formula)
       value = mapper.map(ast)
       full_reference = "worksheet.#{c_name}_#{ref.downcase}"

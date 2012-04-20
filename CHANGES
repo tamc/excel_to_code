@@ -1,3 +1,8 @@
+# 0.0.3
+
+- Refactoring
+- Fixed bug when specifying individual cell dependencies
+
 # 0.0.2
 
 Added an option to just keep intermediate files in memory rather than writing them to disk
