@@ -273,7 +273,21 @@ class ExcelToX
     array_formulae = File.join(name,"array_formulae-expanded.ast")
     simple_formulae = File.join(name,"simple_formulae.ast-nocols")
     output = File.join(name,'formulae.ast')
-    rewrite RewriteMergeFormulaeAndValues, values, shared_formulae, array_formulae, simple_formulae, output
+    
+    # This ensures that all gettable and settable values appear in the output
+    # even if they are blank in the underlying excel
+    required_refs = []
+    if @cells_that_can_be_set_at_runtime && @cells_that_can_be_set_at_runtime[name] && @cells_that_can_be_set_at_runtime[name] != :all
+      required_refs.concat(@cells_that_can_be_set_at_runtime[name])
+    end
+    if @cells_to_keep && @cells_to_keep[name] && @cells_to_keep[name] != :all
+      required_refs.concat(@cells_to_keep[name])
+    end
+    
+    r = RewriteMergeFormulaeAndValues.new
+    r.references_to_add_if_they_are_not_already_present = required_refs
+    
+    rewrite r, values, shared_formulae, array_formulae, simple_formulae, output
   end
   
   def merge_table_files

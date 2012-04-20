@@ -34,10 +34,13 @@ A3	[:function,"MATCH"]
 A4	[:function,"IF"]
 A5	[:error, "#NAME?"]
 A6	[:string, "Hello"]
+B1	[:blank]
 END
 
 output = StringIO.new
-RewriteMergeFormulaeAndValues.rewrite(StringIO.new(values),StringIO.new(shared_formulae),StringIO.new(array_formulae),StringIO.new(simple_formulae),output)
+r = RewriteMergeFormulaeAndValues.new
+r.references_to_add_if_they_are_not_already_present = ["A1","B1"]
+r.rewrite(StringIO.new(values),StringIO.new(shared_formulae),StringIO.new(array_formulae),StringIO.new(simple_formulae),output)
 output.string.should == expected_output
 end
 end
