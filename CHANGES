@@ -1,3 +1,7 @@
+# 0.0.4
+
+- Specifing an output name in snake_case will now cause camel case ruby module names to be created (e.g., --output-name simple_model causes a class called SimpleModel to be created )
+
 # 0.0.3
 
 - Refactoring
