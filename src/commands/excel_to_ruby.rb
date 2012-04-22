@@ -43,7 +43,7 @@ class ExcelToRuby < ExcelToX
     o.puts "# Compiled version of #{excel_file}"
     o.puts "require '#{File.expand_path(File.join(File.dirname(__FILE__),'../excel/excel_functions'))}'"
     o.puts ""
-    o.puts "class #{output_name.capitalize}"
+    o.puts "class #{ruby_module_name}"
     o.puts "  include ExcelFunctions"
     
     o.puts  
@@ -96,7 +96,7 @@ class ExcelToRuby < ExcelToX
     o.puts "require_relative '#{output_name.downcase}'"
     o.puts
     o.puts "class Test#{output_name.capitalize} < Test::Unit::TestCase"
-    o.puts "  def worksheet; @worksheet ||= #{output_name.capitalize}.new; end"
+    o.puts "  def worksheet; @worksheet ||= #{ruby_module_name}.new; end"
     
     c = CompileToRubyUnitTest.new
     all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')

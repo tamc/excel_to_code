@@ -153,12 +153,13 @@ class ExcelToC < ExcelToX
     all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
     name = output_name.downcase
     o = output("#{name}.rb")
+      
     code = <<END
 require 'ffi'
 
-module #{name.capitalize}
+module #{ruby_module_name}
   extend FFI::Library
-  ffi_lib  File.join(File.dirname(__FILE__),'lib#{name}.dylib')
+  ffi_lib  File.join(File.dirname(__FILE__),FFI.map_library_name('#{name}'))
   ExcelType = enum :ExcelEmpty, :ExcelNumber, :ExcelString, :ExcelBoolean, :ExcelError, :ExcelRange
                 
   class ExcelValue < FFI::Struct
@@ -220,7 +221,7 @@ END
     o.puts
     o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
     o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
-    o.puts "  def init_spreadsheet; #{name.capitalize} end"
+    o.puts "  def init_spreadsheet; #{ruby_module_name} end"
     
     all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
     

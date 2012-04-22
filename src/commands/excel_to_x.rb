@@ -14,7 +14,7 @@ class ExcelToX
   #  If not specified, will be '#{excel_file_name}/c'
   attr_accessor :output_directory
   
-  # Optional attribute. The name of the resulting c file (and associated ruby ffi module). Defaults to excelspreadsheet
+  # Optional attribute. The name of the resulting ruby or c file and ruby or ruby ffi module name. Defaults to excelspreadsheet
   attr_accessor :output_name
 
   # Optional attribute. The excel file will be translated to xml and stored here.
@@ -672,6 +672,14 @@ class ExcelToX
       next if f.is_a?(String)
       f.close
     end
+  end
+  
+  def ruby_module_name
+    puts output_name
+    @ruby_module_name = output_name.sub(/^[a-z\d]*/) { $&.capitalize }
+    @ruby_module_name = @ruby_module_name.gsub(/(?:_|(\/))([a-z\d]*)/i) { "#{$1}#{$2.capitalize}" }.gsub('/', '::')
+    puts @ruby_module_name
+    @ruby_module_name
   end
   
 end
