@@ -1,5 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "excel_to_code"
+  s.add_dependency('rubypeg')
   s.add_dependency('nokogiri','>= 1.5.0')
   s.add_dependency('rspec','>= 2.7.0')
   s.add_dependency('ffi','>= 1.0.11')
