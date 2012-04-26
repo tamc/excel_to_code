@@ -446,9 +446,16 @@ class ExcelToX
       end
       r = RemoveCells.new
       worksheets("Removing cells") do |name,xml_filename|
-          r.cells_to_keep = identifier.dependencies[name]
-          rewrite r, File.join(name, formula_in), File.join(name, formula_out)
-          rewrite r, File.join(name, values_in), File.join(name, values_out)
+        next if @cells_that_can_be_set_at_runtime[name] == :all
+        cells_to_keep = identifier.dependencies[name]
+        if @cells_that_can_be_set_at_runtime[name]
+          @cells_that_can_be_set_at_runtime[name].each do |ref|
+            cells_to_keep[ref] = true
+          end
+        end
+        r.cells_to_keep = cells_to_keep
+        rewrite r, File.join(name, formula_in), File.join(name, formula_out)
+        rewrite r, File.join(name, values_in), File.join(name, values_out)
       end
     else
       worksheets do |name,xml_filename|
