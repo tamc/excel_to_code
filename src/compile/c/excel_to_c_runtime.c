@@ -104,7 +104,7 @@ static ExcelValue new_excel_range(void *array, int rows, int columns) {
 	HEAPCHECK
 	ExcelValue new_cell = cells[cell_counter];
 	new_cell.type = ExcelRange;
-	new_cell.array =array;
+	new_cell.array = array;
 	new_cell.rows = rows;
 	new_cell.columns = columns;
 	return new_cell;
@@ -328,6 +328,7 @@ static struct average_result calculate_average(int array_size, ExcelValue *array
 	}
 	r.count = count;
 	r.sum = sum;
+	r.has_error = false;
 	return r;
 }
 
@@ -1849,6 +1850,11 @@ int test_functions() {
   ExcelValue subtotal_array_1[] = {new_excel_number(10),new_excel_number(100),BLANK};
   ExcelValue subtotal_array_1_v = new_excel_range(subtotal_array_1,3,1);
   ExcelValue subtotal_array_2[] = {new_excel_number(1),new_excel_string("two"),subtotal_array_1_v};
+  
+  // new_excel_number(1.0); 
+  // inspect_excel_value(new_excel_number(1.0)); 
+  // inspect_excel_value(new_excel_range(subtotal_array_2,3,1)); 
+  // inspect_excel_value(subtotal(new_excel_number(1.0),3,subtotal_array_2)); 
   
   assert(subtotal(new_excel_number(1.0),3,subtotal_array_2).number == 111.0/3.0);
   assert(subtotal(new_excel_number(2.0),3,subtotal_array_2).number == 3);
