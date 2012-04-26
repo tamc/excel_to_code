@@ -109,7 +109,6 @@ class ExcelToX
     # that are in the excel
     simplify_worksheets
     optimise_and_replace_indirect_loop
-    replace_blanks
     remove_any_cells_not_needed_for_outputs
     inline_formulae_that_are_only_used_once
     separate_formulae_elements
@@ -326,17 +325,7 @@ class ExcelToX
       replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast")
     end
   end
-  
-  def replace_blanks
-    references = all_formulae("formulae_no_indirects_optimised.ast")
-    r = ReplaceBlanks.new
-    r.references = references
-    worksheets("Replacing blanks") do |name,xml_filename|
-      r.default_sheet_name = name
-      replace r, File.join(name,"formulae_no_indirects_optimised.ast"),File.join(name,"formulae_no_blanks.ast")
-    end
-  end
-  
+    
   def optimise_and_replace_indirect_loop
     number_of_loops = 4
     1.upto(number_of_loops) do |pass|
@@ -441,7 +430,7 @@ class ExcelToX
     end
   end
   
-  def remove_any_cells_not_needed_for_outputs(formula_in = "formulae_no_blanks.ast", formula_out = "formulae_pruned.ast", values_in = "values_no_shared_strings.ast", values_out = "values_pruned.ast")
+  def remove_any_cells_not_needed_for_outputs(formula_in = "formulae_no_indirects_optimised.ast", formula_out = "formulae_pruned.ast", values_in = "values_no_shared_strings.ast", values_out = "values_pruned.ast")
     if cells_to_keep && !cells_to_keep.empty?
       identifier = IdentifyDependencies.new
       identifier.references = all_formulae(formula_in)
