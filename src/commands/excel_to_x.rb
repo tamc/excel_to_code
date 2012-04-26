@@ -147,7 +147,8 @@ class ExcelToX
     if File.exists?(File.join(xml_directory,'xl','sharedStrings.xml'))
       extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
     else
-      FileUtils.touch(File.join(intermediate_directory,'shared_strings'))
+      i = intermediate('shared_strings')
+      close(i)
     end
   end
   
