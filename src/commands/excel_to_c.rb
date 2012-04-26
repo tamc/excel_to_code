@@ -20,10 +20,7 @@ class ExcelToC < ExcelToX
     all_refs = all_formulae("formulae_inlined_pruned_replaced.ast")
     
     number_of_refs = 0
-    
-    # Probably a better way of getting the runtime file to be compiled with the created file
-    puts `cp #} #{File.join(output_directory,'excel_to_c_runtime.c')}`
-    
+        
     # Output the workbook preamble
     w = input("worksheet_c_names")
     o = output("#{output_name.downcase}.c")
