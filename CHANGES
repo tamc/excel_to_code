@@ -1,3 +1,7 @@
+# 0.0.6
+
+- Ensure that if you have explicitly made a cell settable, it always appears in the resulting, even if it is blank or unneeded by the output functions
+
 # 0.0.5
 
 - Fixed intermittent bug in average function of excel_to_c_runtime.c
