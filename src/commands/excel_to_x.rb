@@ -114,6 +114,11 @@ class ExcelToX
     separate_formulae_elements
     replace_values_with_constants
     
+    # In case this hasn't been set by the user
+    if cells_that_can_be_set_at_runtime.empty?
+      create_a_good_set_of_cells_that_should_be_settable_at_runtime
+    end
+    
     # This actually creates the code (implemented in subclasses)
     write_code
     
@@ -551,6 +556,26 @@ class ExcelToX
       co.puts "#{constant}\t#{ast}"
     end
     close(co)
+  end
+  
+  def create_a_good_set_of_cells_that_should_be_settable_at_runtime
+    references = all_formulae("formulae_inlined_pruned_with_sheets.ast")
+    counter = CountFormulaReferences.new
+    count = counter.count(references)
+
+    count.each do |sheet,keys|
+      keys.each do |ref,count|
+        ast = references[sheet][ref]
+        next unless ast
+        p ast.first
+        if [:blank,:number,:null,:string,:constant,:percentage,:error,:boolean_true,:boolean_false].include?(ast.first)
+          @cells_that_can_be_set_at_runtime[sheet] ||= []
+          @cells_that_can_be_set_at_runtime[sheet] << ref.upcase
+        end
+      end
+    end
+    p @cells_that_can_be_set_at_runtime
+    
   end
   
   # UTILITY FUNCTIONS
