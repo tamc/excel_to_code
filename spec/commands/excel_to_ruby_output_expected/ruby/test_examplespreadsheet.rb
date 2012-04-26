@@ -3,8 +3,8 @@
 require 'test/unit'
 require_relative 'examplespreadsheet'
 
-class TestExamplespreadsheet < Test::Unit::TestCase
-  def worksheet; @worksheet ||= Examplespreadsheet.new; end
+class TestExampleSpreadsheet < Test::Unit::TestCase
+  def worksheet; @worksheet ||= ExampleSpreadsheet.new; end
   # Start of ValueTypes
   def test_valuetypes_a1; assert_equal(true,worksheet.valuetypes_a1); end
   def test_valuetypes_a2; assert_equal("Hello",worksheet.valuetypes_a2); end

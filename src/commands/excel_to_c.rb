@@ -219,7 +219,7 @@ END
     o.puts  "require 'test/unit'"
     o.puts  "require_relative '#{output_name.downcase}'"
     o.puts
-    o.puts "class Test#{name.capitalize} < Test::Unit::TestCase"
+    o.puts "class Test#{ruby_module_name} < Test::Unit::TestCase"
     o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{ruby_module_name} end"
     
