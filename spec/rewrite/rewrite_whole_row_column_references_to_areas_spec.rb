@@ -7,7 +7,10 @@ describe RewriteWholeRowColumnReferencesToAreas do
     default_worksheet_name = "Ranges"
     worksheet_dimensions = test_data("RowAndColumnRangeDimensions")
     output = StringIO.new
-    RewriteWholeRowColumnReferencesToAreas.rewrite(input,default_worksheet_name,worksheet_dimensions,output)
+    r = RewriteWholeRowColumnReferencesToAreas.new
+    r.sheet_name = default_worksheet_name
+    r.worksheet_dimensions = worksheet_dimensions
+    r.rewrite(input,output)
     expected =<<END
 B2	[:function, "SUM", [:area, "F4", "F6"]]
 C2	[:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A3", "A4"]]]

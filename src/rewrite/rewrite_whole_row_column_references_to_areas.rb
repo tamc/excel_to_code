@@ -66,16 +66,14 @@ end
 
 class RewriteWholeRowColumnReferencesToAreas
   
-  def self.rewrite(input,default_worksheet_name,worksheet_dimensions,output)
-    new.rewrite(input,default_worksheet_name,worksheet_dimensions,output)
+  attr_accessor :sheet_name
+  attr_accessor :dimensions
+  
+  def self.rewrite(input,output)
+    new.rewrite(input,output)
   end
   
-  def rewrite(input,default_worksheet_name,worksheet_dimensions,output)
-    dimensions =  Hash[worksheet_dimensions.readlines.map do |line| 
-      worksheet_name, area = line.split("\t")
-      [worksheet_name,WorksheetDimension.new(area)]
-    end]
-    mapper = MapColumnAndRowRangeAst.new(default_worksheet_name,dimensions)
+  def rewrite(input,output)
     input.lines do |line|
       if line =~ /(:column_range|:row_range)/
         content = line.split("\t")
@@ -85,6 +83,18 @@ class RewriteWholeRowColumnReferencesToAreas
         output.puts line
       end
     end
+  end
+  
+  def worksheet_dimensions=(worksheet_dimensions)
+    @dimensions =  Hash[worksheet_dimensions.readlines.map do |line| 
+      worksheet_name, area = line.split("\t")
+      [worksheet_name,WorksheetDimension.new(area)]
+    end]
+    @mapper = nil
+  end
+  
+  def mapper
+    @mapper ||= MapColumnAndRowRangeAst.new(sheet_name,dimensions)
   end
   
 end
