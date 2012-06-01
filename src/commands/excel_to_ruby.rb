@@ -9,25 +9,7 @@ class ExcelToRuby < ExcelToX
   end  
   
   # Skip this
-  def replace_values_with_constants
-    
-    worksheets("Skipping replacing values with constants") do |name,xml_filename|    
-      i = File.join(intermediate_directory, name, "formulae_inlined_pruned_replaced-1.ast")
-      o = File.join(intermediate_directory, name, "formulae_inlined_pruned_replaced.ast")
-      if run_in_memory
-        @files[o] = @files[i]
-      else
-        `cp '#{i}' '#{o}'`
-      end
-    end
-
-    i = File.join(intermediate_directory,"common-elements-1.ast")
-    o = File.join(intermediate_directory,"common-elements.ast")
-    if run_in_memory
-      @files[o] = @files[i]
-    else
-      `cp '#{i}' '#{o}'`
-    end
+  def replace_values_with_constants    
   end
   
   # These actually create the code version of the excel
@@ -37,10 +19,13 @@ class ExcelToRuby < ExcelToX
   end
     
   def write_out_excel_as_code
-    w = input("worksheet_c_names")
+    log.info "Starting to write out code"
+    
+    w = input('Worksheet C names')
     o = output("#{output_name.downcase}.rb")
     o.puts "# coding: utf-8"
     o.puts "# Compiled version of #{excel_file}"
+    # FIXME: Should include the ruby files as part of the output, so don't have any dependencies
     o.puts "require '#{File.expand_path(File.join(File.dirname(__FILE__),'../excel/excel_functions'))}'"
     o.puts ""
     o.puts "class #{ruby_module_name}"
@@ -48,43 +33,50 @@ class ExcelToRuby < ExcelToX
     
     o.puts  
     o.puts "  # Starting common elements"
+    log.info "Starting to write code for common elements"
     c = CompileToRuby.new
-    i = input("common-elements.ast")
+    i = input("Common elements")
     w.rewind    
     c.rewrite(i,w,o)
     o.puts "  # Ending common elements"
     o.puts
     close(i)
+    log.info "Finished writing code for common elements"
     
-    d = intermediate('defaults')
+    d = intermediate('Defaults')
     
-    worksheets("Turning worksheet into code") do |name,xml_filename|
+    worksheets do |name,xml_filename|
+      log.info "Starting to write code for worksheet #{name}"
       c.settable = settable(name)
       c.worksheet = name
-      i = input(name,"formulae_inlined_pruned_replaced.ast")
+      i = input([name,"Formulae"])
       w.rewind
       o.puts "  # Start of #{name}"
       c.rewrite(i,w,o,d)
       o.puts "  # End of #{name}"
       o.puts ""
       close(i)
+      log.info "Finished writing code for worksheet #{name}"
     end   
      
     close(d)
     
+    log.info "Starting to write initializer"
     o.puts
     o.puts "  # starting initializer"
     o.puts "  def initialize"
-    d = input('defaults')
+    d = input('Defaults')
     d.lines do |line|
       o.puts line
     end
     o.puts "  end"
     o.puts ""
     close(d)
+    log.info "Finished writing initializer"
               
     o.puts "end"
     close(w,o)
+    log.info "Finished writing code"
   end
 
   def write_out_test_as_code
@@ -99,14 +91,14 @@ class ExcelToRuby < ExcelToX
     o.puts "  def worksheet; @worksheet ||= #{ruby_module_name}.new; end"
     
     c = CompileToRubyUnitTest.new
-    all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
+    formulae = all_formulae()
     
-    worksheets("Compiling worksheet") do |name,xml_filename|
-      i = input(name,"values_pruned2.ast")
+    worksheets do |name,xml_filename|
+      i = input(name,"Values")
       o.puts "  # Start of #{name}"
       c_name = c_name_for_worksheet_name(name)
       if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
-        refs_to_test = all_formulae[name].keys
+        refs_to_test = formulae[name].keys
       else
         refs_to_test = cells_to_keep[name]
       end

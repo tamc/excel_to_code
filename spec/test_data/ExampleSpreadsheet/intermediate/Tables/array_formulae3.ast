@@ -1,3 +1,0 @@
-E6	E6:G6	[:sheet_reference, "Tables", [:area, "B2", "D2"]]
-E7	E7:G7	[:sheet_reference, "Tables", [:area, "B5", "D5"]]
-E8	E8:G11	[:sheet_reference, "Tables", [:area, "B2", "D5"]]

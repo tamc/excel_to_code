@@ -1,9 +1,13 @@
 # coding: utf-8
+require 'pry'
 require 'fileutils'
+require 'logger'
 require_relative '../excel_to_code'
 
 # Used to throw normally fatal errors
 class ExcelToCodeException < Exception; end
+class VersionedFileNotFoundException < Exception; end
+class XMLFileNotFoundException < Exception; end
 
 class ExcelToX
   
@@ -58,6 +62,9 @@ class ExcelToX
   #   * false - the intermediate files are written to disk (default, easier to debug)
   attr_accessor :run_in_memory
   
+  # This is the log file, if set it needs to respond to the same methods as the standard logger library
+  attr_accessor :log
+  
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
     
@@ -86,10 +93,13 @@ class ExcelToX
     # Make sure the relevant directories exist
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
+    
+    # Set up our log file
+    self.log ||= Logger.new(STDOUT)
   end
   
   def go!
-    # This sorts out the attributes
+    # This sorts out the settings
     set_defaults
     
     # These turn the excel into a more accesible format
@@ -97,50 +107,65 @@ class ExcelToX
     unzip_excel
     
     # These get all the information out of the excel and put
-    # into a useful format
+    # into a series of plain text files
     extract_data_from_workbook
     extract_data_from_worksheets
     merge_table_files
     
+    # These perform some translations to simplify the excel
+    # Including:
+    # * Turning row and column references (e.g., A:A) to areas, based on the size of the worksheet
+    # * Turning range references (e.g., A1:B2) into array litterals (e.g., {A1,B1;A2,B2})
+    # * Turning shared formulae into a series of conventional formulae
+    # * Turning array formulae into a series of conventional formulae
+    # * Mergining all the different types of formulae and values into a single file
     rewrite_worksheets
+    
+    # In case this hasn't been set by the user
+    if cells_that_can_be_set_at_runtime.empty?
+      log.info "Creating a good set of cells that should be settable"
+      create_a_good_set_of_cells_that_should_be_settable_at_runtime
+    end
     
     # These perform a series of transformations to the information
     # with the intent of removing any redundant calculations
-    # that are in the excel
-    simplify_worksheets
-    optimise_and_replace_indirect_loop
+    # that are in the excel.
+    simplify_worksheets # Replacing shared strings and named references with their actual values, tidying arithmetic
+    replace_formulae_with_their_results
     remove_any_cells_not_needed_for_outputs
     inline_formulae_that_are_only_used_once
     separate_formulae_elements
     replace_values_with_constants
-    
-    # In case this hasn't been set by the user
-    if cells_that_can_be_set_at_runtime.empty?
-      create_a_good_set_of_cells_that_should_be_settable_at_runtime
-    end
-    
+        
     # This actually creates the code (implemented in subclasses)
     write_code
     
-    # These compile and run the code version of the excel
+    # These compile and run the code version of the excel (implemented in subclasses)
     compile_code
     run_tests
     
-    puts
-    puts "The generated code is available in #{File.join(output_directory)}"
+    log.info "The generated code is available in #{File.join(output_directory)}"
   end
   
+  # Creates any directories that are needed
   def sort_out_output_directories    
     FileUtils.mkdir_p(output_directory)
     FileUtils.mkdir_p(xml_directory)
-    FileUtils.mkdir_p(intermediate_directory)
+    FileUtils.mkdir_p(intermediate_directory) unless run_in_memory
   end
   
+  # FIXME: Replace these with pure ruby versions?
   def unzip_excel
-    puts `rm -fr '#{xml_directory}'`
-    puts `unzip -uo '#{excel_file}' -d '#{xml_directory}'`
+    log.info `rm -fr '#{xml_directory}'` # Force delete
+    log.info `unzip '#{excel_file}' -d '#{xml_directory}'` # If don't force delete, make sure that force the zip to overwrite old files 
   end
-
+  
+  # The excel workbook.xml and allied relationship files knows about
+  # shared strings, named references and the actual human readable
+  # names of each of the worksheets. 
+  #
+  # In this method we also loop through each of the individual 
+  # worksheet files to work out their dimensions
   def extract_data_from_workbook
     extract_shared_strings
     extract_named_references
@@ -148,254 +173,235 @@ class ExcelToX
     extract_dimensions_from_worksheets
   end
   
+  # Excel keeps a central file of strings that appear in worksheet cells
   def extract_shared_strings
-    if File.exists?(File.join(xml_directory,'xl','sharedStrings.xml'))
-      extract ExtractSharedStrings, 'sharedStrings.xml', 'shared_strings'
-    else
-      i = intermediate('shared_strings')
-      close(i)
-    end
+    extract ExtractSharedStrings, 'sharedStrings.xml', 'Shared strings'
   end
   
+  # Excel keeps a central list of named references. This includes those
+  # that are local to a specific worksheet.
   def extract_named_references
-    extract ExtractNamedReferences, 'workbook.xml', 'named_references'
-    rewrite RewriteFormulaeToAst, 'named_references', 'named_references.ast'
+    extract ExtractNamedReferences, 'workbook.xml', 'Named references'
+    apply_rewrite RewriteFormulaeToAst, 'Named references'
   end
   
+  # Excel keeps a list of worksheet names. To get the mapping between
+  # human and computer name  correct we have to look in the workbook 
+  # relationships files. We also need to mangle the name into something
+  # that will work ok as a filesystem or program name
   def extract_worksheet_names
-    extract ExtractWorksheetNames, 'workbook.xml', 'worksheet_names_without_filenames'
-    extract ExtractRelationships, File.join('_rels','workbook.xml.rels'), 'workbook_relationships'
-    rewrite RewriteWorksheetNames, 'worksheet_names_without_filenames', 'workbook_relationships', 'worksheet_names'
-    rewrite MapSheetNamesToCNames, 'worksheet_names', 'worksheet_c_names'
+    extract ExtractWorksheetNames, 'workbook.xml', 'Worksheet names'
+    extract ExtractRelationships, File.join('_rels','workbook.xml.rels'), 'Workbook relationships'
+    rewrite RewriteWorksheetNames, 'Worksheet names', 'Workbook relationships', 'Worksheet names'
+    rewrite MapSheetNamesToCNames, 'Worksheet names', 'Worksheet C names'
   end
   
-  def extract_dimensions_from_worksheets    
-    dimension_file = intermediate('dimensions')
-    worksheets("Extracting dimensions") do |name,xml_filename|
+  # We want a central list of the maximum extent of each worksheet
+  # so that we can convert column (e.g., C:F) and row (e.g., 13:18)
+  # references into equivalent area references (e.g., C1:F30)
+  def extract_dimensions_from_worksheets 
+    log.info "Starting to extract dimensions from worksheets"  
+    dimension_file = intermediate('Worksheet dimensions')
+    extractor = ExtractWorksheetDimensions.new
+    worksheets do |name, xml_filename|
+      log.info "Extracting dimensions for #{name}"
       dimension_file.write name
       dimension_file.write "\t"
-      extract ExtractWorksheetDimensions, File.open(xml_filename,'r'), dimension_file 
+      
+      extractor.extract(xml(xml_filename), dimension_file)
+      close(xml_filename)
     end
-    dimension_file.close
+    close(dimension_file)
   end
   
+  # For each worksheet, this makes four passes through the xml
+  # 1. Extract the values of each cell
+  # 2. Extract all the cells which are simple formulae
+  # 3. Extract all the cells which use shared formulae
+  # 4. Extract all the cells which are part of array formulae
+  # 
+  # It then looks at the relationship file and extracts any tables
   def extract_data_from_worksheets
-    worksheets("Initial data extract") do |name,xml_filename|
-      worksheet_directory = File.join(intermediate_directory,name)
-      worksheet_xml = File.open(xml_filename,'r')
+    worksheets do |name, xml_filename|
       
-      worksheet_xml.rewind
-      extract ExtractValues, worksheet_xml, File.join(name,'values')
-      rewrite RewriteValuesToAst, File.join(name,'values'), File.join(name,'values.ast')
+      extract ExtractValues, xml_filename, [name, 'Values']
+      apply_rewrite RewriteValuesToAst, [name, 'Values']
       
-      worksheet_xml.rewind
-      extract ExtractSimpleFormulae, worksheet_xml, File.join(name,'simple_formulae')
-      rewrite RewriteFormulaeToAst,  File.join(name,'simple_formulae'),  File.join(name,'simple_formulae.ast')
+      extract ExtractSimpleFormulae, xml_filename, [name, 'Formulae (simple)']
+      apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (simple)']
 
-      worksheet_xml.rewind
-      extract ExtractSharedFormulae, worksheet_xml, File.join(name,'shared_formulae')
-      rewrite RewriteFormulaeToAst,  File.join(name,'shared_formulae'),  File.join(name,'shared_formulae.ast')
+      extract ExtractSharedFormulae, xml_filename, [name, 'Formulae (shared)']
+      apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (shared)']
 
-      worksheet_xml.rewind
-      extract ExtractArrayFormulae, worksheet_xml, File.join(name,'array_formulae')
-      rewrite RewriteFormulaeToAst,  File.join(name,'array_formulae'),  File.join(name,'array_formulae.ast')
+      extract ExtractArrayFormulae, xml_filename, [name, 'Formulae (array)']
+      apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (array)']
       
-      worksheet_xml.rewind
-      extract ExtractWorksheetTableRelationships, worksheet_xml, File.join(name,'table_rids')
-      if File.exists?(File.join(xml_directory,'xl','worksheets','_rels',"#{File.basename(xml_filename)}.rels"))
-        extract_tables(name,xml_filename)
-      else
-        fake_extract_tables(name,xml_filename)
-      end
-      close(worksheet_xml)
+      extract_tables_for_worksheet(name,xml_filename)
     end
   end
   
-  def extract_tables(name,xml_filename)
-    extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), File.join(name,'relationships')
-    rewrite RewriteRelationshipIdToFilename, File.join(name,'table_rids'), File.join(name,'relationships'), File.join(name,'table_filenames')
-    tables = intermediate(name,'tables')
+  # To extract a table we need to look in the worksheet for table references
+  # then we look in the relationships file for the filename that matches that
+  # reference and contains the table data. Then we consolidate all the data
+  # from individual table files into a single table file for the worksheet.
+  def extract_tables_for_worksheet(name, xml_filename)
+    extract ExtractWorksheetTableRelationships, xml_filename, [name, "Worksheet tables"]
+    extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), [name, 'Relationships']
+    rewrite RewriteRelationshipIdToFilename, [name, "Worksheet tables"], [name, 'Relationships'], [name, "Worksheet tables"]
+    table_filenames = input(name, "Worksheet tables")
+    tables = intermediate(name, "Worksheet tables")
     table_extractor = ExtractTable.new(name)
-    table_filenames = input(name,'table_filenames')
     table_filenames.lines.each do |line|
-      extract table_extractor, File.join('worksheets',line.strip), tables
+      table_xml = xml(File.join('worksheets',line.strip))
+      table_extractor.extract(table_xml, tables)
     end
     close(tables,table_filenames)
   end
-    
-  def fake_extract_tables(name,xml_filename)
-      a = intermediate(name,'relationships')
-      b = intermediate(name,'table_filenames')
-      c = intermediate(name,'tables')
-      close(a,b,c)
+  
+  # Tables are like named references in that they can be referred to from
+  # anywhere in the workbook. Therefore we consolidate all the tables from
+  # all the worksheets into a central table file.
+  def merge_table_files
+    merged_table_file = intermediate("Workbook tables")
+    worksheets do |name,xml_filename|
+      log.info "Merging table files for #{name}"
+      worksheet_table_file = input([name, "Worksheet tables"])
+      worksheet_table_file.lines do |line|
+        merged_table_file.puts line
+      end
+      close worksheet_table_file
+    end
+    close merged_table_file
   end
   
   def rewrite_worksheets
-    worksheets("Initial rewrite of references and formulae") do |name,xml_filename|
-        rewrite_row_and_column_references(name,xml_filename)
-        rewrite_shared_formulae(name,xml_filename)
-        rewrite_array_formulae(name,xml_filename)
-        combine_formulae_files(name,xml_filename)
+    worksheets do |name,xml_filename|
+      log.info "Rewriting worksheet #{name}"
+      rewrite_row_and_column_references(name,xml_filename)
+      rewrite_shared_formulae(name,xml_filename)
+      rewrite_array_formulae(name,xml_filename)
+      combine_formulae_files(name,xml_filename)
     end
   end
   
   def rewrite_row_and_column_references(name,xml_filename)
-    dimensions = input('dimensions')
-    %w{simple_formulae.ast shared_formulae.ast array_formulae.ast}.each do |file|
-      dimensions.rewind
-      i = input(name,file)
-      o = intermediate(name,"#{file}-nocols")
-      RewriteWholeRowColumnReferencesToAreas.rewrite(i,name, dimensions, o)
-      close(i,o)
-    end
+    dimensions = input('Worksheet dimensions')
+    
+    r = RewriteWholeRowColumnReferencesToAreas.new
+    r.worksheet_dimensions = dimensions
+    r.sheet_name = name
+    
+    apply_rewrite r, [name, 'Formulae (simple)']
+    apply_rewrite r, [name, 'Formulae (shared)']
+    apply_rewrite r, [name, 'Formulae (array)']
+    
     dimensions.close
   end
   
   def rewrite_shared_formulae(name,xml_filename)
-    i = input(name,'shared_formulae.ast-nocols')
-    o = intermediate(name,"shared_formulae-expanded.ast")
-    RewriteSharedFormulae.rewrite(i,o)
-    close(i,o)
+    apply_rewrite RewriteSharedFormulae, [name, 'Formulae (shared)']
   end
   
   def rewrite_array_formulae(name,xml_filename)
     r = ReplaceNamedReferences.new
     r.sheet_name = name
-    replace r, File.join(name,'array_formulae.ast-nocols'), 'named_references.ast', File.join(name,"array_formulae1.ast")
+    replace r, [name, 'Formulae (array)'], 'Named references', [name, 'Formulae (array)']
 
     r = ReplaceTableReferences.new
     r.sheet_name = name    
-    replace r, File.join(name,'array_formulae1.ast'), 'all_tables', File.join(name,"array_formulae2.ast")
-    replace SimplifyArithmetic, File.join(name,'array_formulae2.ast'), File.join(name,'array_formulae3.ast')
-    replace ReplaceRangesWithArrayLiterals, File.join(name,"array_formulae3.ast"), File.join(name,"array_formulae4.ast")
-    rewrite RewriteArrayFormulaeToArrays, File.join(name,"array_formulae4.ast"), File.join(name,"array_formulae5.ast")
-    rewrite RewriteArrayFormulae, File.join(name,'array_formulae5.ast'), File.join(name,"array_formulae-expanded.ast")
+    replace r,                              [name, 'Formulae (array)'], "Workbook tables", [name, 'Formulae (array)']
+    replace SimplifyArithmetic,             [name, 'Formulae (array)'], [name, 'Formulae (array)']
+    replace ReplaceRangesWithArrayLiterals, [name, 'Formulae (array)'], [name, 'Formulae (array)']
+    apply_rewrite RewriteArrayFormulaeToArrays,   [name, 'Formulae (array)']
+    apply_rewrite RewriteArrayFormulae,           [name, 'Formulae (array)']
   end
   
   def combine_formulae_files(name,xml_filename)
-    values = File.join(name,'values.ast')
-    shared_formulae = File.join(name,"shared_formulae-expanded.ast")
-    array_formulae = File.join(name,"array_formulae-expanded.ast")
-    simple_formulae = File.join(name,"simple_formulae.ast-nocols")
-    output = File.join(name,'formulae.ast')
+    combiner = RewriteMergeFormulaeAndValues.new
+    combiner.references_to_add_if_they_are_not_already_present = required_references(name)
     
-    # This ensures that all gettable and settable values appear in the output
-    # even if they are blank in the underlying excel
+    rewrite combiner, [name, 'Values'], [name, 'Formulae (shared)'], [name, 'Formulae (array)'], [name, 'Formulae (simple)'], [name, 'Formulae']
+  end
+  
+  # This ensures that all gettable and settable values appear in the output
+  # even if they are blank in the underlying excel
+  def required_references(worksheet_name)
     required_refs = []
-    if @cells_that_can_be_set_at_runtime && @cells_that_can_be_set_at_runtime[name] && @cells_that_can_be_set_at_runtime[name] != :all
-      required_refs.concat(@cells_that_can_be_set_at_runtime[name])
+    if @cells_that_can_be_set_at_runtime && @cells_that_can_be_set_at_runtime[worksheet_name] && @cells_that_can_be_set_at_runtime[worksheet_name] != :all
+      required_refs.concat(@cells_that_can_be_set_at_runtime[worksheet_name])
     end
-    if @cells_to_keep && @cells_to_keep[name] && @cells_to_keep[name] != :all
-      required_refs.concat(@cells_to_keep[name])
+    if @cells_to_keep && @cells_to_keep[worksheet_name] && @cells_to_keep[worksheet_name] != :all
+      required_refs.concat(@cells_to_keep[worksheet_name])
     end
-    
-    r = RewriteMergeFormulaeAndValues.new
-    r.references_to_add_if_they_are_not_already_present = required_refs
-    
-    rewrite r, values, shared_formulae, array_formulae, simple_formulae, output
+    required_refs
   end
-  
-  def merge_table_files
-    tables = []
-    worksheets("Merging table files") do |name,xml_filename|
-      tables << File.join(name,'tables')
-    end
-    if run_in_memory
-      o = intermediate("all_tables")
-      tables.each do |t|
-        i = input(t)
-        o.print i.string
-        close(i)
-      end
-      close(o)
-    else
-      `sort #{tables.map { |t| " '#{File.join(intermediate_directory,t)}' "}.join} > #{File.join(intermediate_directory,'all_tables')}`
-    end
-  end
-  
+    
   def simplify_worksheets
-    worksheets("Simplifying") do |name,xml_filename|
-      replace SimplifyArithmetic, File.join(name,'formulae.ast'), File.join(name,'formulae_simple_arithmetic.ast')
+    worksheets do |name,xml_filename|
+      replace ReplaceSharedStrings, [name, 'Values'], 'Shared strings', File.join(name, 'Values')
       
-      replace ReplaceSharedStrings, File.join(name,'formulae_simple_arithmetic.ast'), 'shared_strings', File.join(name,"formulae_no_shared_strings.ast")
-      replace ReplaceSharedStrings, File.join(name,'values.ast'), 'shared_strings', File.join(name,"values_no_shared_strings.ast")
+      replace SimplifyArithmetic,   [name, 'Formulae'], [name, 'Formulae']      
+      replace ReplaceSharedStrings, [name, 'Formulae'], 'Shared strings', [name, 'Formulae']
       
       r = ReplaceNamedReferences.new
       r.sheet_name = name
-      replace r, File.join(name,'formulae_no_shared_strings.ast'), 'named_references.ast', File.join(name,"formulae_no_named_references.ast")
+      replace r, [name, 'Formulae'], 'Named references', [name, 'Formulae']
 
       r = ReplaceTableReferences.new
       r.sheet_name = name
-      replace r, File.join(name,'formulae_no_named_references.ast'), 'all_tables', File.join(name,"formulae_no_table_references.ast")
+      replace r, [name, 'Formulae'], "Workbook tables", [name, 'Formulae']
       
-      replace ReplaceRangesWithArrayLiterals, File.join(name,"formulae_no_table_references.ast"), File.join(name,"formulae_no_ranges.ast")
+      replace ReplaceRangesWithArrayLiterals, [name, 'Formulae'],  [name, 'Formulae']
     end
   end
     
-  def optimise_and_replace_indirect_loop
-    number_of_loops = 4
-    1.upto(number_of_loops) do |pass|
-      puts "Optimise and replace indirects pass #{pass}"
-      start = pass == 1 ? "formulae_no_ranges.ast" : "optimse-output-#{pass-1}.ast"
-      finish = pass == number_of_loops ? "formulae_no_indirects_optimised.ast" : "optimse-output-#{pass}.ast"
-      replace_indirects(start,"replace-indirect-output-#{pass}.ast","replace-indirect-working-#{pass}-")
-      optimise_sheets("replace-indirect-output-#{pass}.ast",finish,"optimse-working-#{pass}-")
+  # FIXME: This should work out how often it needs to operate, rather than having a hardwired 4
+  def replace_formulae_with_their_results
+    4.times do 
+      replace_indirects
+      replace_formulae_with_calculated_values
+      replace_references_to_values_with_values
     end
   end
   
-  def replace_indirects(start_filename,finish_filename,basename)
-    worksheets("Replacing indirects") do |name,xml_filename|
-      counter = 1
-      replace ReplaceIndirectsWithReferences, File.join(name,start_filename), File.join(name,"#{basename}#{counter+1}.ast")
-      counter += 1
-
+  # There is no support for INDIRECT in the ruby or c runtime
+  # However, in many cases it isn't needed, because we can work
+  # out the value of the indirect at compile time and eliminate it
+  def replace_indirects
+    worksheets do |name,xml_filename|
+      log.info "Replacing indirects in #{name}"
+      
+      # First of all we replace any indirects where their values can be calculated at compile time with those
+      # calculated values (e.g., INDIRECT("A"&1) can be turned into A1)
+      replace ReplaceIndirectsWithReferences, [name, 'Formulae'],  [name, 'Formulae']
+      
+      # The result of the indirect might be a named reference, which we need to simplify
       r = ReplaceNamedReferences.new
       r.sheet_name = name
-      replace r, File.join(name,"#{basename}#{counter}.ast"), 'named_references.ast', File.join(name,"#{basename}#{counter+1}.ast")
-      counter += 1
+      replace r, [name, 'Formulae'], 'Named references', [name, 'Formulae']
       
+      # The result of the indirect might be a table reference, which we need to simplify
       r = ReplaceTableReferences.new
       r.sheet_name = name
-      replace r, File.join(name,"#{basename}#{counter}.ast"), 'all_tables', File.join(name,"#{basename}#{counter+1}.ast")
-      counter += 1
+      replace r, [name, 'Formulae'], "Workbook tables", [name, 'Formulae']
       
-      replace ReplaceRangesWithArrayLiterals, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
-      counter += 1
-      replace ReplaceArraysWithSingleCells, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
-      counter += 1
-      
-      # Finally, create the output file
-      i = File.join(intermediate_directory,name,"#{basename}#{counter}.ast")
-      o = File.join(intermediate_directory,name,finish_filename)
-      if run_in_memory
-        @files[o] = @files[i]
-      else
-        `cp '#{i}' '#{o}'`
-      end
+      # The result of the indirect might be a range, which we need to simplify
+      replace ReplaceRangesWithArrayLiterals, [name, 'Formulae'],  [name, 'Formulae']
+      replace ReplaceArraysWithSingleCells, [name, 'Formulae'],  [name, 'Formulae']
     end
   end
   
-  def optimise_sheets(start_filename,finish_filename,basename)
-    counter = 1
-    
-    # Setup start
-    worksheets("Setting up for optimise -#{counter}") do |name|
-      i = File.join(intermediate_directory,name,start_filename)
-      o = File.join(intermediate_directory,name,"#{basename}#{counter}.ast")
-      if run_in_memory
-        @files[o] = @files[i]
-      else
-        `cp '#{i}' '#{o}'`
-      end
+  # If a formula's value can be calculated at compile time, it is replaced with its calculated value (e.g., 1+1 gets replaced with 2)
+  def replace_formulae_with_calculated_values    
+    worksheets do |name,xml_filename|
+      replace ReplaceFormulaeWithCalculatedValues, [name, 'Formulae'],  [name, 'Formulae']
     end
+  end
+
+  # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
+  def replace_references_to_values_with_values
+    references = all_formulae
     
-    worksheets("Replacing with calculated values #{counter}-#{counter+1}") do |name,xml_filename|
-      replace ReplaceFormulaeWithCalculatedValues, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
-    end
-    counter += 1
-    Process.waitall
-      
-    references = all_formulae("#{basename}#{counter}.ast")
     inline_ast_decision = lambda do |sheet,cell,references|
       references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
@@ -413,80 +419,73 @@ class ExcelToX
         end
       end
     end
+    
     r = InlineFormulae.new
     r.references = references
     r.inline_ast = inline_ast_decision
     
-    worksheets("Inlining formulae #{counter}-#{counter+1}") do |name,xml_filename|
+    worksheets do |name,xml_filename|
       r.default_sheet_name = name
-      replace r, File.join(name,"#{basename}#{counter}.ast"), File.join(name,"#{basename}#{counter+1}.ast")
+      replace r, [name, 'Formulae'],  [name, 'Formulae']
     end
-    counter += 1
-    Process.waitall
+  end
+  
+  # If 'cells to keep' are specified, then other cells are removed, unless
+  # they are required to calculate the value of a cell in 'cells to keep'.
+  def remove_any_cells_not_needed_for_outputs
+
+    # If 'cells to keep' isn't specified, then ALL cells are kept
+    return unless cells_to_keep && !cells_to_keep.empty?
     
-    # Finish
-    worksheets("Moving sheets #{counter}-") do |name|
-      o = File.join(intermediate_directory,name,finish_filename)
-      i = File.join(intermediate_directory,name,"#{basename}#{counter}.ast")
-      if run_in_memory
-        @files[o] = @files[i]
-      else
-        `cp '#{i}' '#{o}'`
-      end
-    end
-  end
-  
-  def remove_any_cells_not_needed_for_outputs(formula_in = "formulae_no_indirects_optimised.ast", formula_out = "formulae_pruned.ast", values_in = "values_no_shared_strings.ast", values_out = "values_pruned.ast")
-    if cells_to_keep && !cells_to_keep.empty?
-      identifier = IdentifyDependencies.new
-      identifier.references = all_formulae(formula_in)
-      cells_to_keep.each do |sheet_to_keep,cells_to_keep|
-        if cells_to_keep == :all
-          identifier.add_depedencies_for(sheet_to_keep)
-        elsif cells_to_keep.is_a?(Array)
-          cells_to_keep.each do |cell|
-            identifier.add_depedencies_for(sheet_to_keep,cell)
-          end
+    # Work out what cells the cells in 'cells to keep' need 
+    # in order to be able to calculate their values
+    identifier = IdentifyDependencies.new
+    identifier.references = all_formulae
+    cells_to_keep.each do |sheet_to_keep,cells_to_keep|
+      if cells_to_keep == :all
+        identifier.add_depedencies_for(sheet_to_keep)
+      elsif cells_to_keep.is_a?(Array)
+        cells_to_keep.each do |cell|
+          identifier.add_depedencies_for(sheet_to_keep,cell)
         end
       end
+    end
+        
+    # On top of that, we don't want to remove any cells
+    # that have been specified as 'settable'
+    worksheets do |name,xml_filename|
+      s = @cells_that_can_be_set_at_runtime[name]
+      next unless s
+      if s == :all
+        identifier.add_depedencies_for(name)
+      else 
+        s.each do |ref|
+          identifier.add_depedencies_for(name,ref)
+        end
+      end
+    end
+    
+    # Now we actually go ahead and remove the cells
+    worksheets do |name,xml_filename|
       r = RemoveCells.new
-      worksheets("Removing cells") do |name,xml_filename|
-        next if @cells_that_can_be_set_at_runtime[name] == :all
-        cells_to_keep = identifier.dependencies[name]
-        if @cells_that_can_be_set_at_runtime[name]
-          @cells_that_can_be_set_at_runtime[name].each do |ref|
-            cells_to_keep[ref] = true
-          end
-        end
-        r.cells_to_keep = cells_to_keep
-        rewrite r, File.join(name, formula_in), File.join(name, formula_out)
-        rewrite r, File.join(name, values_in), File.join(name, values_out)
-      end
-    else
-      worksheets do |name,xml_filename|
-        i = File.join(intermediate_directory,name, formula_in)
-        o = File.join(intermediate_directory,name, formula_out)
-        if run_in_memory
-          @files[o] = @files[i]
-        else
-          `cp '#{i}' '#{o}'`
-        end
-        i = File.join(intermediate_directory,name, values_in)
-        o = File.join(intermediate_directory,name, values_out)
-        if run_in_memory
-          @files[o] = @files[i]
-        else
-          `cp '#{i}' '#{o}'`
-        end
-      end
+      r.cells_to_keep = identifier.dependencies[name]
+      rewrite r, [name, 'Formulae'],  [name, 'Formulae']
+      rewrite r, [name, 'Values'],  [name, 'Values'] # Must remove the values as well, to avoid any tests being generated for cells that don't exist
     end
   end
   
+  # If a cell is only referenced from one other cell, then it is inlined into that other cell
+  # e.g., A1 := B3+B6 ; B1 := A1 + B3 becomes: B1 := (B3 + B6) + B3. A1 is removed.
   def inline_formulae_that_are_only_used_once
-    references = all_formulae("formulae_pruned.ast")
+    references = all_formulae
+    
+    # First step is to calculate how many times each cell is referenced by another cell
     counter = CountFormulaReferences.new
     count = counter.count(references)
     
+    # This takes the decision:
+    # 1. If a cell is in the list of cells to keep, then it is never inlined
+    # 2. Otherwise, it is inlined if only one other cell refers to it.
     inline_ast_decision = lambda do |sheet,cell,references|
       references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
@@ -500,29 +499,34 @@ class ExcelToX
     r.references = references
     r.inline_ast = inline_ast_decision
     
-    worksheets("Inlining formulae") do |name,xml_filename|
+    worksheets do |name,xml_filename|
       r.default_sheet_name = name
-      replace r, File.join(name,"formulae_pruned.ast"), File.join(name,"formulae_inlined.ast")
+      replace r, [name, 'Formulae'],  [name, 'Formulae']
     end
     
-    remove_any_cells_not_needed_for_outputs("formulae_inlined.ast", "formulae_inlined_pruned.ast", "values_pruned.ast", "values_pruned2.ast")
+    # We need to do this again, to get rid of the cells that we have just inlined
+    # FIXME: This could be done more efficiently, given we know which cells were removed
+    remove_any_cells_not_needed_for_outputs
   end
   
+  # This looks for repeated formula parts, and separates them out. It is the opposite of inlining:
+  # e.g., A1 := (B1 + B3) + B10; A2 := (B1 + B3) + 3 gets transformed to: Common1 := B1 + B3 ; A1 := Common1 + B10 ; A2 := Common1 + 3
   def separate_formulae_elements
-    # First we add the sheet to all references, so that we can then look for common elements accross worksheets
-    r = RewriteCellReferencesToIncludeSheet.new
-    worksheets("Adding the sheet to all references") do |name,xml_filename|
-      r.worksheet = name
-      rewrite r, File.join(name,"formulae_inlined_pruned.ast"), File.join(name,"formulae_inlined_pruned_with_sheets.ast") 
-    end
     
-    references = all_formulae("formulae_inlined_pruned_with_sheets.ast")
+    replace_all_simple_references_with_sheet_references # So we can be sure which references are repeating and which references are distinct
+    
+    references = all_formulae
     identifier = IdentifyRepeatedFormulaElements.new
     repeated_elements = identifier.count(references)
+    
+    # We apply a threshold that something needs to be used twice for us to bother separating it out. 
+    # FIXME: This threshold is arbitrary
     repeated_elements.delete_if do |element,count|
       count < 2
     end
-    o = intermediate('common-elements-1.ast')
+    
+    # Dump our selected common elements into a separate file of formulae
+    o = intermediate('Common elements')
     i = 0
     repeated_elements.each do |element,count|
       o.puts "common#{i}\t#{element}"
@@ -530,52 +534,65 @@ class ExcelToX
     end
     close(o)
     
-    worksheets("Replacing repeated elements") do |name,xml_filename|
-      replace ReplaceCommonElementsInFormulae, File.join(name,"formulae_inlined_pruned_with_sheets.ast"), "common-elements-1.ast", File.join(name,"formulae_inlined_pruned_replaced-1.ast")
+    # Replace common elements in formulae with references to otherw
+    worksheets do |name,xml_filename|
+      replace ReplaceCommonElementsInFormulae, [name, 'Formulae'], "Common elements", [name, 'Formulae']
     end
+    # FIXME: This means that some common elements won't ever be called, becuase they are replaced by a longer common element
+    # Should the common elements be merged first?
   end
+
+  # We add the sheet name to all references, so that we can then look for common elements accross worksheets
+  # e.g., A1 := A2 gets transformed to A1 := Sheet1!A2  
+  def replace_all_simple_references_with_sheet_references
+    r = RewriteCellReferencesToIncludeSheet.new
+    worksheets do |name,xml_filename|
+      r.worksheet = name
+      rewrite r, [name, 'Formulae'],  [name, 'Formulae']
+    end
+  end  
   
+  # This puts back in an optimisation that excel carries out by making sure that
+  # two copies of the same value actually refer to the same underlying spot in memory
   def replace_values_with_constants
-    r = ReplaceValuesWithConstants.new  
-    worksheets("Replacing values with constants") do |name,xml_filename|
-      i = input(name,"formulae_inlined_pruned_replaced-1.ast")
-      o = intermediate(name,"formulae_inlined_pruned_replaced.ast")
-      r.replace(i,o)
-      close(i,o)
+    
+    # First do it in the formulae
+    r = ReplaceValuesWithConstants.new
+    worksheets do |name,xml_filename|
+      replace r, [name, 'Formulae'],  [name, 'Formulae']
     end
     
-    puts "Replacing values with constants in common elements"
-    i = input("common-elements-1.ast")
-    o = intermediate("common-elements.ast")
-    r.replace(i,o)
-    close(i,o)
+    # Then do it in the common elements
+    replace r, "Common elements", "Common elements"
     
-    puts "Writing out constants"
-    co = intermediate("value_constants.ast")
+    # Then write out the constants
+    output = intermediate("Constants")
+    # FIXME: This looks bad!
     r.rewriter.constants.each do |ast,constant|
-      co.puts "#{constant}\t#{ast}"
+      output.puts "#{constant}\t#{ast}"
     end
-    close(co)
+    close(output)
   end
   
+  # If no settable cells have been specified, then we assume that
+  # all value cells should be settable if they are referenced by
+  # any other forumla.
   def create_a_good_set_of_cells_that_should_be_settable_at_runtime
-    references = all_formulae("formulae_inlined_pruned_with_sheets.ast")
+    references = all_formulae
     counter = CountFormulaReferences.new
     count = counter.count(references)
 
     count.each do |sheet,keys|
       keys.each do |ref,count|
+        next unless count >= 1
         ast = references[sheet][ref]
         next unless ast
-        p ast.first
-        if [:blank,:number,:null,:string,:constant,:percentage,:error,:boolean_true,:boolean_false].include?(ast.first)
+        if [:blank,:number,:null,:string,:shared_string,:constant,:percentage,:error,:boolean_true,:boolean_false].include?(ast.first)
           @cells_that_can_be_set_at_runtime[sheet] ||= []
           @cells_that_can_be_set_at_runtime[sheet] << ref.upcase
         end
       end
-    end
-    p @cells_that_can_be_set_at_runtime
-    
+    end    
   end
   
   # UTILITY FUNCTIONS
@@ -602,11 +619,11 @@ class ExcelToX
     end
   end
     
-  def all_formulae(filename)
+  def all_formulae
     references = {}
     worksheets do |name,xml_filename|
       r = references[name] = {}
-      i = input(name,filename)
+      i = input([name,'Formulae'])
       i.lines do |line|
         line =~ /^(.*?)\t(.*)$/
         ref, ast = $1, $2
@@ -618,63 +635,95 @@ class ExcelToX
   
   def c_name_for_worksheet_name(name)
     unless @worksheet_names
-      w = input("worksheet_c_names")
+      w = input('Worksheet C names')
       @worksheet_names = Hash[w.readlines.map { |line| line.split("\t").map { |a| a.strip }}]
       close(w)
     end
     @worksheet_names[name]
   end
     
-  def worksheets(message = "Processing",&block)
-    input('worksheet_names').lines.each do |line|
-      name, filename = *line.split("\t")
-      filename = File.expand_path(File.join(xml_directory,'xl',filename.strip))
-      puts "#{message} #{name}"
+  def worksheets(&block)
+    unless @worksheet_filenames
+      worksheet_names = input('Worksheet names')
+      @worksheet_filenames = worksheet_names.lines.map do |line|
+        name, filename = *line.split("\t")
+        [name, filename.strip]
+      end
+      close(worksheet_names)
+    end
+    
+    @worksheet_filenames.each do |name, filename|
       block.call(name, filename)
     end
   end
     
-  def extract(_klass,xml_name,output_name)
-    i = xml_name.is_a?(String) ? xml(xml_name) : xml_name
-    o = output_name.is_a?(String) ? intermediate(output_name) : output_name
-    _klass.extract(i,o)
-    if xml_name.is_a?(String)
-      close(i)
-    end
-    if output_name.is_a?(String)
-      close(o)
-    end
+  def extract(klass,xml_name,output_name)
+    log.debug "Started using #{klass} to extract xml: #{xml_name} to #{output_name}"
+    
+    i = xml(xml_name)
+    o = intermediate(output_name)
+    klass.extract(i,o)
+    close(i,o)
+
+    log.info "Finished using #{klass} to extract xml: #{xml_name} to #{output_name}"
   end
   
-  def rewrite(_klass,*args)
-    o = intermediate(args.pop)
-    inputs = args.map { |name| input(name) }
-    _klass.rewrite(*inputs,o)
-    close(*inputs,o)
+  def apply_rewrite(klass,filename)
+    rewrite klass, filename, filename
   end
   
-  def replace(_klass,*args)
-    o = intermediate(args.pop)
-    inputs = args.map { |name| input(name) }
-    _klass.replace(*inputs,o)
-    close(*inputs,o)
+  def rewrite(klass, *args)
+    execute klass, :rewrite, *args
+  end
+  
+  def replace(klass, *args)
+    execute klass, :replace, *args
+  end
+  
+  def execute(klass, method, *args)
+    log.debug "Started executing #{klass}.#{method} with #{args.inspect}"
+    inputs = args[0..-2].map { |name| input(name) }
+    output = intermediate(args.last)
+    klass.send(method,*inputs,output)
+    close(*inputs,output)
+    log.info "Finished executing #{klass}.#{method} with #{args.inspect}"
   end
   
   def xml(*args)
-    File.open(File.join(xml_directory,'xl',*args),'r')
+    args.flatten!
+    filename = File.join(xml_directory,'xl',*args)
+    if File.exists?(filename)
+      File.open(filename,'r')
+    else
+      log.warn("#{filename} does not exist in xml(#{args.inspect}), using blank instead")
+      StringIO.new
+    end
   end
   
   def input(*args)
-    filename = File.join(intermediate_directory,*args)
+    args.flatten!
+    filename = versioned_filename_read(intermediate_directory,*args)
     if run_in_memory
-      io = StringIO.new(@files[filename].string,'r')
+      existing_file = @files[filename]
+      if existing_file
+        StringIO.new(existing_file.string,'r')
+      else
+        log.warn("#{filename} does not exist in input(#{args.inspect}), using blank instead")
+        StringIO.new
+      end
     else
-      File.open(filename,'r')
+      if File.exists?(filename)
+        File.open(filename,'r')
+      else
+        log.warn("#{filename} does not exist in input(#{args.inspect}), using blank instead")
+        StringIO.new
+      end
     end
   end
   
   def intermediate(*args)
-    filename = File.join(intermediate_directory,*args)
+    args.flatten!
+    filename = versioned_filename_write(intermediate_directory,*args)
     if run_in_memory
       @files ||= {}
       @files[filename] = StringIO.new("",'w')
@@ -685,6 +734,7 @@ class ExcelToX
   end
   
   def output(*args)
+    args.flatten!
     File.open(File.join(output_directory,*args),'w')
   end
   
@@ -697,11 +747,39 @@ class ExcelToX
   end
   
   def ruby_module_name
-    puts output_name
     @ruby_module_name = output_name.sub(/^[a-z\d]*/) { $&.capitalize }
     @ruby_module_name = @ruby_module_name.gsub(/(?:_|(\/))([a-z\d]*)/i) { "#{$1}#{$2.capitalize}" }.gsub('/', '::')
-    puts @ruby_module_name
     @ruby_module_name
+  end
+  
+  def versioned_filename_read(*args)
+    @versioned_filenames ||= {}
+    standardised_name = standardise_name(args)
+    counter = @versioned_filenames[standardised_name]
+    filename_with_counter counter, args
+  end
+  
+  def versioned_filename_write(*args)
+    @versioned_filenames ||= {}
+    standardised_name = standardise_name(args)
+    if @versioned_filenames.has_key?(standardised_name)
+      counter =  @versioned_filenames[standardised_name] + 1
+    else
+      counter = 0
+    end
+    @versioned_filenames[standardised_name] = counter
+    filename_with_counter(counter, args)
+  end
+  
+  def filename_with_counter(counter, args)
+    counter ||= 0
+    last_name = args.last
+    last_name = last_name + sprintf(" %03d", counter)
+    File.join(*args[0..-2], last_name)    
+  end  
+  
+  def standardise_name(*args)
+    File.expand_path(File.join(args))
   end
   
 end

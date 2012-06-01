@@ -1,6 +1,0 @@
-B2	[:function, "SUM", [:area, "F4", "F6"]]
-C2	[:function, "SUM", [:sheet_reference, "ValueTypes", [:area, "A3", "A4"]]]
-B3	[:function, "SUM", [:column_range, "F", "F"]]
-C3	[:function, "SUM", [:sheet_reference, "ValueTypes", [:column_range, "A", "A"]]]
-B4	[:function, "SUM", [:row_range, "5", "5"]]
-C4	[:function, "SUM", [:sheet_reference, "ValueTypes", [:row_range, "4", "4"]]]

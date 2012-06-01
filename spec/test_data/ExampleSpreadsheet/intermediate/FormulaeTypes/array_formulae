@@ -1,2 +1,0 @@
-B5	B5	B1:B4
-B6	B6:B8	IF(B3:B5=8,"Eight","Not Eight")

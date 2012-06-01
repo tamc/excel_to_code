@@ -63,11 +63,10 @@ class TestExampleSpreadsheet < Test::Unit::TestCase
   def test_referencing_b9; assert_in_epsilon(3,worksheet.referencing_b9); end
   def test_referencing_b11; assert_equal("Named",worksheet.referencing_b11); end
   def test_referencing_c11; assert_equal("Reference",worksheet.referencing_c11); end
-  def test_referencing_d11; assert_in_epsilon(12,worksheet.referencing_d11); end
   # End of Referencing
 
   # Start of Tables
-  def test_tables_a1; assert_in_epsilon(12,worksheet.tables_a1); end
+  def test_tables_a1; assert_in_epsilon(0,worksheet.tables_a1 || 0); end
   def test_tables_b2; assert_equal("ColA",worksheet.tables_b2); end
   def test_tables_c2; assert_equal("ColB",worksheet.tables_c2); end
   def test_tables_d2; assert_equal("Column1",worksheet.tables_d2); end

@@ -1,4 +1,0 @@
-B5	[:cell, "B1"]
-B6	[:function, "IF", [:comparison, [:cell, "B3"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]
-B7	[:function, "IF", [:comparison, [:cell, "B4"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]
-B8	[:function, "IF", [:comparison, [:cell, "B5"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]

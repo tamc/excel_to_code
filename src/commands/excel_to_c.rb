@@ -17,13 +17,13 @@ class ExcelToC < ExcelToX
   end
     
   def write_out_excel_as_code
-    
-    all_refs = all_formulae("formulae_inlined_pruned_replaced.ast")
+        
+    all_refs = all_formulae
     
     number_of_refs = 0
         
     # Output the workbook preamble
-    w = input("worksheet_c_names")
+    w = input('Worksheet C names')
     o = output("#{output_name.downcase}.c")
     o.puts "// #{excel_file} approximately translated into C"
 
@@ -37,7 +37,7 @@ class ExcelToC < ExcelToX
     # Now we have to put all the initial definitions out
     o.puts "// definitions"
 
-    i = input("common-elements.ast")
+    i = input("Common elements")
     c = CompileToCHeader.new
     c.gettable = lambda { |ref| false }
     c.rewrite(i,w,o)
@@ -45,13 +45,13 @@ class ExcelToC < ExcelToX
     number_of_refs += i.lines.to_a.size
     close(i)
 
-    worksheets("Compiling definitions") do |name,xml_filename|
+    worksheets do |name,xml_filename|
       w.rewind
       c = CompileToCHeader.new
       c.settable = settable(name)
       c.gettable = gettable(name)
       c.worksheet = name
-      i = input(name,"formulae_inlined_pruned_replaced.ast")
+      i = input([name,"Formulae"])
       c.rewrite(i,w,o)
       i.rewind
       number_of_refs += i.lines.to_a.size
@@ -74,7 +74,7 @@ class ExcelToC < ExcelToX
     # Output the value constants
     o.puts "// starting the value constants"
     mapper = MapValuesToCStructs.new
-    i = input("value_constants.ast")
+    i = input("Constants")
     i.lines do |line|
       begin
         ref, formula = line.split("\t")
@@ -98,7 +98,7 @@ class ExcelToC < ExcelToX
     c = CompileToC.new
     c.variable_set_counter = variable_set_counter
     c.gettable = lambda { |ref| false }
-    i = input("common-elements.ast")
+    i = input("Common elements")
     c.rewrite(i,w,o)
     close(i)
     o.puts "// ending common elements"
@@ -109,13 +109,13 @@ class ExcelToC < ExcelToX
     c = CompileToC.new
     c.variable_set_counter = variable_set_counter
     # Output the elements from each worksheet in turn
-    worksheets("Compiling worksheet") do |name,xml_filename|
+    worksheets do |name,xml_filename|
       w.rewind
       c.settable = settable(name)
       c.gettable = gettable(name)
       c.worksheet = name
 
-      i = input(name,"formulae_inlined_pruned_replaced.ast")
+      i = input([name,"Formulae"])
       o.puts "// start #{name}"
       c.rewrite(i,w,o)
       o.puts "// end #{name}"
@@ -124,7 +124,9 @@ class ExcelToC < ExcelToX
     end
     close(w,o)
   end
-    
+  
+  # FIXME: Should make a Rakefile, especially in order to make sure the dynamic library name
+  # is set properly
   def write_build_script
     o = output("Makefile")
     name = output_name.downcase
@@ -149,7 +151,7 @@ class ExcelToC < ExcelToX
   end
   
   def write_fuby_ffi_interface
-    all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
+    all_formulae = all_formulae()
     name = output_name.downcase
     o = output("#{name}.rb")
       
@@ -176,7 +178,7 @@ END
     o.puts "  # use this function to reset all cell values"
     o.puts "  attach_function 'reset', [], :void"
 
-    worksheets("Adding references to ruby shim for") do |name,xml_filename|
+    worksheets do |name,xml_filename|
       o.puts
       o.puts "  # start of #{name}"  
       c_name = c_name_for_worksheet_name(name)
@@ -197,7 +199,7 @@ END
       else
         getable_refs = cells_to_keep[name] || []
       end
-        
+              
       getable_refs.each do |ref|
         o.puts "  attach_function '#{c_name}_#{ref.downcase}', [], ExcelValue.by_value"
       end
@@ -222,10 +224,10 @@ END
     o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{ruby_module_name} end"
     
-    all_formulae = all_formulae('formulae_inlined_pruned_replaced.ast')
+    all_formulae = all_formulae()
     
-    worksheets("Adding tests for") do |name,xml_filename|
-      i = input(name,"values_pruned2.ast")
+    worksheets do |name,xml_filename|
+      i = input([name,"Values"])
       o.puts
       o.puts "  # start of #{name}"  
       c_name = c_name_for_worksheet_name(name)
