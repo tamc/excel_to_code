@@ -26,6 +26,7 @@ class CountFormulaReferences
   end
     
   def count_dependencies_for(sheet,ref,ast)
+    @dependencies[sheet][ref] ||= 0
     current_sheet.push(sheet)
     map(ast)
     current_sheet.pop

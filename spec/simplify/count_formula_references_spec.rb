@@ -20,21 +20,25 @@ references = {
   }
 }
 
-dependencies = {
+reference_count = {
   'sheet1' => {
+    'A1' => 0,
     'A2' => 1,
     'A3' => 1
   },
   'sheet2' => {
-    'A2' => 2
+    'A1' => 0,
+    'A2' => 2,
+    'A3' => 0
   },
   'sheet3' => {
-    'A1' => 1
+    'A1' => 1,
+    'A5' => 0
   }
 }
 
 counter = CountFormulaReferences.new
-counter.count(references).should == dependencies
+counter.count(references).should == reference_count
 end # / do
 
 
