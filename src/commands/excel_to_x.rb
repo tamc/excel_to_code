@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'pry'
 require 'fileutils'
 require 'logger'
 require_relative '../excel_to_code'
