@@ -5,4 +5,14 @@
 src/compile/c/test
 src/compile/c/test.dSYM/Contents/Info.plist
 src/compile/c/test.dSYM/Contents/Resources/DWARF/test
+examples/Makefile
 examples/blank
+examples/blank.rb
+examples/test_blank.rb
+examples/eu
+examples/eu.rb
+examples/test_eu.rb
+examples/*.c
+examples/*.o
+examples/*.dylib
+spec/commands/excel_to_ruby_output_actual
