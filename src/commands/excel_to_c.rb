@@ -132,9 +132,9 @@ class ExcelToC < ExcelToX
     name = output_name.downcase
     
     # Target for shared library
-    dynamic_library_name = FFI.map_library_name(name)
-    o.puts "#{dynamic_library_name}: #{name}.o"
-    o.puts "\tgcc -shared -o #{dynamic_library_name} #{name}.o"
+    shared_library_name = FFI.map_library_name(name)
+    o.puts "#{shared_library_name}: #{name}.o"
+    o.puts "\tgcc -shared -o #{shared_library_name} #{name}.o"
     o.puts
     
     # Target for compiled version
@@ -145,7 +145,7 @@ class ExcelToC < ExcelToX
     # Target for cleaning
     o.puts "clean:"
     o.puts "\trm #{name}.o"
-    o.puts "\trm #{dynamic_library_name}"
+    o.puts "\trm #{shared_library_name}"
     
     close(o)
   end
