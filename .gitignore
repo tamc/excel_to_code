@@ -6,3 +6,4 @@ src/compile/c/test
 src/compile/c/test.dSYM/Contents/Info.plist
 src/compile/c/test.dSYM/Contents/Resources/DWARF/test
 examples/blank
+spec/commands/excel_to_ruby_output_actual
