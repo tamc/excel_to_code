@@ -1040,20 +1040,23 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	}		
 	char *current_string;
 	int current_string_length;
+	int must_free_current_string;
 	ExcelValue current_v;
 	int i;
 	for(i=0;i<number_of_arguments;i++) {
+		must_free_current_string = 0;
 		current_v = (ExcelValue) arguments[i];
 		switch (current_v.type) {
   	  case ExcelString:
 	  		current_string = current_v.string;
 	  		break;
   	  case ExcelNumber:
-			  current_string = malloc(20);
+			  current_string = malloc(20); // Freed
 		  	if(current_string == 0) {
 		  	  printf("Out of memory");
 		  	  exit(-1);
-		  	}				  
+		  	}
+			must_free_current_string = 1;				  
 			  snprintf(current_string,20,"%g",current_v.number);
 			  break;
 		  case ExcelBoolean:
@@ -1077,6 +1080,9 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 			string = realloc(string,allocated_length);
 		}
 		memcpy(string + used_length, current_string, current_string_length);
+		if(must_free_current_string == 1) {
+			free(current_string);
+		}
 		used_length = used_length + current_string_length;
 	}
 	string = realloc(string,used_length+1);
