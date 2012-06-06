@@ -688,17 +688,19 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	int number_of_characters = (int) number_from(number_of_characters_v);
 	CHECK_FOR_CONVERSION_ERROR
 
-	char *string; 
+	char *string;
+	int string_must_be_freed = 0;
 	switch (string_v.type) {
   	  case ExcelString:
   		string = string_v.string;
   		break;
   	  case ExcelNumber:
-		  string = malloc(20);
+		  string = malloc(20); // Freed
 		  if(string == 0) {
 			  printf("Out of memory");
 			  exit(-1);
 		  }
+		  string_must_be_freed = 1;
 		  snprintf(string,20,"%f",string_v.number);
 		  break;
 	  case ExcelBoolean:
@@ -721,6 +723,9 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	}	
 	memcpy(left_string,string,number_of_characters);
 	left_string[number_of_characters] = '\0';
+	if(string_must_be_freed == 1) {
+		free(string);
+	}
 	return new_excel_string(left_string);
 }
 
