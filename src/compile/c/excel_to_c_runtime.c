@@ -1352,7 +1352,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   int rows;
   int columns;
   ExcelValue current_value;
-  ExcelValue **ranges = malloc(sizeof(ExcelValue *)*number_of_arguments);
+  ExcelValue **ranges = malloc(sizeof(ExcelValue *)*number_of_arguments); // Added free statements
   if(ranges == 0) {
 	  printf("Out of memory\n");
 	  exit(-1);
@@ -1377,9 +1377,11 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
         ranges[a] = current_value.array;
         break;
       case ExcelError:
+		free(ranges);
         return current_value;
         break;
       case ExcelEmpty:
+		free(ranges);
         return VALUE;
         break;
       default:
@@ -1404,6 +1406,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
 			sum += product;
 		}
 	}
+	free(ranges);
   	return new_excel_number(sum);
 }
 
