@@ -1152,7 +1152,7 @@ static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelV
   }
   
   // Now go through and set up the criteria
-  ExcelComparison *criteria =  malloc(sizeof(ExcelComparison)*number_of_criteria);
+  ExcelComparison *criteria =  malloc(sizeof(ExcelComparison)*number_of_criteria); // freed at end of function
   if(criteria == 0) {
 	  printf("Out of memory\n");
 	  exit(-1);
@@ -1328,6 +1328,8 @@ static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelV
       }
     }
   }
+  // Tidy up
+  free(criteria);
   return new_excel_number(total);
 }
 
