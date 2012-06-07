@@ -62,9 +62,13 @@ class ExcelToC < ExcelToX
     o.puts
     o.puts "// Used to decide whether to recalculate a cell"
     o.puts "static int variable_set[#{number_of_refs}];"
+    o.puts ""
+    o.puts "// Used to reset all cached values and free up memory"
+    # FIXME: This feels like a bad place for this. Should be in runtime?
     o.puts "void reset() {"
     o.puts "  int i;"
     o.puts "  cell_counter = 0;"
+    o.puts "  free_all_allocated_memory(); "
     o.puts "  for(i = 0; i < #{number_of_refs}; i++) {"
     o.puts "    variable_set[i] = 0;"
     o.puts "  }"

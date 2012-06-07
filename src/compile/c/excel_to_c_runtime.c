@@ -11,6 +11,7 @@
 // Probably bad practice. At the very least, I should make it
 // link to the cell reference in some way.
 #define MAX_EXCEL_VALUE_HEAP_SIZE 1000000
+#define MAX_MEMORY_TO_BE_FREED_HEAP_SIZE 100
 
 #define true 1
 #define false 0
@@ -74,11 +75,34 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
 static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
 
-// My little heap
+// My little heap for excel values
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
 int cell_counter = 0;
 
-#define HEAPCHECK if(cell_counter >= MAX_EXCEL_VALUE_HEAP_SIZE) { printf("Heap exceeded"); exit(-1); }
+#define HEAPCHECK if(cell_counter >= MAX_EXCEL_VALUE_HEAP_SIZE) { printf("ExcelValue heap full. Edit MAX_EXCEL_VALUE_HEAP_SIZE in the c source code."); exit(-1); }
+
+// My little heap for keeping pointers to memory that I need to reclaim
+void *memory_that_needs_to_be_freed[MAX_MEMORY_TO_BE_FREED_HEAP_SIZE];
+int memory_that_needs_to_be_freed_counter = 0;
+
+#define MEMORY_THAT_NEEDS_TO_BE_FREED_HEAP_CHECK 
+
+static void free_later(void *pointer) {
+	memory_that_needs_to_be_freed[memory_that_needs_to_be_freed_counter] = pointer;
+	memory_that_needs_to_be_freed_counter++;
+	if(memory_that_needs_to_be_freed_counter >= MAX_MEMORY_TO_BE_FREED_HEAP_SIZE) { 
+		printf("Memory that needs to be freed heap full. Edit MAX_MEMORY_TO_BE_FREED_HEAP_SIZE in the c source code"); 
+		exit(-1);
+	}
+}
+
+static void free_all_allocated_memory() {
+	int i;
+	for(i = 0; i < memory_that_needs_to_be_freed_counter; i++) {
+		free(memory_that_needs_to_be_freed[i]);
+	}
+	memory_that_needs_to_be_freed_counter = 0;
+}
 
 // The object initializers
 static ExcelValue new_excel_number(double number) {
@@ -111,11 +135,12 @@ static ExcelValue new_excel_range(void *array, int rows, int columns) {
 };
 
 static void * new_excel_value_array(int size) {
-	ExcelValue *pointer = malloc(sizeof(ExcelValue)*size);
+	ExcelValue *pointer = malloc(sizeof(ExcelValue)*size); // Freed later
 	if(pointer == 0) {
 		printf("Out of memory\n");
 		exit(-1);
 	}
+	free_later(pointer);
 	return pointer;
 };
 
@@ -133,7 +158,6 @@ const ExcelValue SEVEN = {.type = ExcelNumber, .number = 7};
 const ExcelValue EIGHT = {.type = ExcelNumber, .number = 8};
 const ExcelValue NINE = {.type = ExcelNumber, .number = 9};
 const ExcelValue TEN = {.type = ExcelNumber, .number = 10};
-
 
 // Booleans
 const ExcelValue TRUE = {.type = ExcelBoolean, .number = true };
@@ -716,11 +740,12 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 		return string_v;
 	}
 	
-	char *left_string = malloc(number_of_characters+1);
+	char *left_string = malloc(number_of_characters+1); // Freed
 	if(left_string == 0) {
 	  printf("Out of memory");
 	  exit(-1);
-	}	
+	}
+	free_later(left_string);
 	memcpy(left_string,string,number_of_characters);
 	left_string[number_of_characters] = '\0';
 	if(string_must_be_freed == 1) {
@@ -1038,11 +1063,12 @@ static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	int allocated_length = 100;
 	int used_length = 0;
-	char *string = malloc(allocated_length);
+	char *string = malloc(allocated_length); // Freed later
 	if(string == 0) {
 	  printf("Out of memory");
 	  exit(-1);
-	}		
+	}
+	free_later(string);
 	char *current_string;
 	int current_string_length;
 	int must_free_current_string;
@@ -2042,6 +2068,9 @@ int test_functions() {
   ExcelValue sum_array_0_v = new_excel_range(sum_array_0,3,1);
   ExcelValue sum_array_1[] = {sum_array_0_v};
   assert(sum(1,sum_array_1).number == 1253.8718091935484);
+  
+  // Release memory
+  free_all_allocated_memory();
   
   return 0;
 }
