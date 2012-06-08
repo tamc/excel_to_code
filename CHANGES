@@ -1,3 +1,7 @@
+# 0.0.10
+
+- Increased the default heap size for the memory to be freed later heap
+
 # 0.0.9
 
 - Memory used by generated C code can now be freed, reducing memory leak
