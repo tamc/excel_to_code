@@ -1,3 +1,18 @@
+# 0.0.9
+
+- Memory used by generated C code can now be freed, reducing memory leak
+
+# 0.0.8
+
+- Simplified the code by making it automatically generate filenames for intermediate files
+- Added a script to clean up the examples directory
+- Fix bug that removed too many cells if the user hadn't specified the cells that they wished to keep
+
+# 0.0.7
+
+- The dynamic library name is no longer hardwired in the generated C makefile
+- Better defaults for which cells are considered settable
+
 # 0.0.6
 
 - Ensure that if you have explicitly made a cell settable, it always appears in the resulting, even if it is blank or unneeded by the output functions
