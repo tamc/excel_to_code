@@ -11,7 +11,7 @@
 // Probably bad practice. At the very least, I should make it
 // link to the cell reference in some way.
 #define MAX_EXCEL_VALUE_HEAP_SIZE 1000000
-#define MAX_MEMORY_TO_BE_FREED_HEAP_SIZE 100
+#define MAX_MEMORY_TO_BE_FREED_HEAP_SIZE 1000000
 
 #define true 1
 #define false 0
