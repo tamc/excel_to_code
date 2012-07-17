@@ -232,6 +232,8 @@ class ExcelToX
       extract ExtractSharedFormulae, xml_filename, [name, 'Formulae (shared)']
       apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (shared)']
 
+      extract ExtractSharedFormulaeTargets, xml_filename, [name, 'Formulae (shared targets)']
+
       extract ExtractArrayFormulae, xml_filename, [name, 'Formulae (array)']
       apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (array)']
       
@@ -298,7 +300,7 @@ class ExcelToX
   end
   
   def rewrite_shared_formulae(name,xml_filename)
-    apply_rewrite RewriteSharedFormulae, [name, 'Formulae (shared)']
+    rewrite RewriteSharedFormulae, [name, 'Formulae (shared)'], [name, 'Formulae (shared targets)'], [name, 'Formulae (shared)']
   end
   
   def rewrite_array_formulae(name,xml_filename)

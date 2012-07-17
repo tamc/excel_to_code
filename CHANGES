@@ -1,3 +1,7 @@
+# 0.0.11
+
+- Better handling of shared formulae in Excel: copes with cells that are exceptions to the general sharing rule
+
 # 0.0.10
 
 - Increased the default heap size for the memory to be freed later heap
