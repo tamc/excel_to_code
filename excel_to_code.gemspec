@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = "~>1.9.1"
   s.author = "Thomas Counsell, Green on Black Ltd"
   s.email = "tamc@greenonblack.com"
-  s.homepage = "http://github.com/tamc/excel2code"
+  s.homepage = "http://github.com/tamc/excel_to_code"
   s.platform = Gem::Platform::RUBY
   s.summary = "Converts .xlxs files into pure ruby 1.9 code or pure C code so that they can be executed without excel"
   s.description = File.read(File.join(File.dirname(__FILE__), 'README.md'))
