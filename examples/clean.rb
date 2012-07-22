@@ -6,7 +6,7 @@ exit unless File.expand_path(Dir.pwd) == File.expand_path(File.dirname(__FILE__)
 
 rm_f "Makefile"
 
-%w{blank eu}.each do |name|
+%w{blank eu smallnumbers}.each do |name|
   rm_f "#{name}.c"
   rm_f "#{name}.o"
   rm_f "#{name}.rb"

@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
   s.name = "excel_to_code"
+  s.version = '0.0.12'
   s.add_dependency('rubypeg')
   s.add_dependency('nokogiri','>= 1.5.0')
   s.add_dependency('rspec','>= 2.7.0')
   s.add_dependency('ffi','>= 1.0.11')
   s.required_ruby_version = "~>1.9.1"
-  s.version = '0.0.11'
   s.author = "Thomas Counsell, Green on Black Ltd"
   s.email = "tamc@greenonblack.com"
   s.homepage = "http://github.com/tamc/excel2code"

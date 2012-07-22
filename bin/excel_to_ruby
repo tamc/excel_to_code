@@ -35,8 +35,16 @@ END
     command.actually_run_tests = true
   end
   
-  opts.on('-m','--run-in-memory',"Instead of writing intermediate files to disk, uses memory. Requires a lot of memory") do
+  opts.on('-m','--run-in-memory',"Instead of writing intermediate files to disk, uses memory. Requires a lot of memory.") do
     command.run_in_memory = true
+  end
+
+  opts.on('--sloppy-tests',"The generated tests treat blanks and zeros as equivalent and only require numbers to be approximately the same. This is the default.") do
+    command.sloppy_tests = true
+  end
+
+  opts.on('--precise-tests',"The generated tests treat blanks and zeros as different and requires numbers to be exactly the same.") do
+    command.sloppy_tests = false
   end
   
   opts.on("-h", "--help", "Show this message") do

@@ -1,3 +1,8 @@
+# 0.0.12
+
+- By default, the generated tests for the generated code are more relaxed about how closely numbers match.
+- Command line option to generate tests that require an exact match
+
 # 0.0.11
 
 - Better handling of shared formulae in Excel: copes with cells that are exceptions to the general sharing rule

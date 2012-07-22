@@ -63,6 +63,11 @@ class ExcelToX
   
   # This is the log file, if set it needs to respond to the same methods as the standard logger library
   attr_accessor :log
+
+  # Optional attribute. Boolean. Default true.
+  #   * true - empty cells and zeros are treated as being equivalent in tests. Numbers greater then 1 are only expected to match with assert_in_epsilon, numbers less than 1 are only expected to match with assert_in_delta
+  #   * false - empty cells and zeros are treated as being different in tests. Numbers must match to full accuracy.
+  attr_accessor :sloppy_tests
   
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
@@ -95,6 +100,9 @@ class ExcelToX
     
     # Set up our log file
     self.log ||= Logger.new(STDOUT)
+
+    # By default, tests allow empty cells and zeros to be treated as equivalent, and numbers only have to match to a 0.001 epsilon (if expected>1) or 0.001 delta (if expected<1)
+    self.sloppy_tests ||= true
   end
   
   def go!

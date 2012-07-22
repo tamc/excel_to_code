@@ -1,10 +1,18 @@
 class CompileToCUnitTest
+
+  attr_accessor :epsilon
+  attr_accessor :delta
+
+  def initialize
+    @epsilon = 0.001
+    @delta = 0.001
+  end
   
   def self.rewrite(*args)
     self.new.rewrite(*args)
   end
   
-  def rewrite(input,c_name, refs_to_test, output)
+  def rewrite(input, sloppy, c_name, refs_to_test, output)
     input.lines do |line|
       begin
         ref, formula = line.split("\t")
@@ -14,8 +22,22 @@ class CompileToCUnitTest
         ast = eval(formula)
         case ast.first
         when :number, :percentage
-          output.puts "  assert_equal(:ExcelNumber,r[:type])"
-          output.puts "  assert_in_epsilon(#{ast.last.to_f.to_s},r[:number])"
+          unless sloppy
+            output.puts "  assert_equal(:ExcelNumber,r[:type])"
+            output.puts "  assert_equal(#{ast.last.to_f.to_s},r[:number])"
+          else
+            if ast.last.to_f == 0
+              output.puts "  pass if r[:type] == :ExcelEmpty"
+            end
+            
+            output.puts "  assert_equal(:ExcelNumber,r[:type])"
+
+            if ast.last.to_f <= 1
+              output.puts "  assert_in_delta(#{ast.last.to_f.to_s},r[:number],#{@delta})"
+            else
+              output.puts "  assert_in_epsilon(#{ast.last.to_f.to_s},r[:number],#{@epsilon})"
+            end
+          end
         when :error
           output.puts "  assert_equal(:ExcelError,r[:type])"
         when :string
@@ -27,8 +49,16 @@ class CompileToCUnitTest
         when :boolean_false
           output.puts "  assert_equal(:ExcelBoolean,r[:type])"
           output.puts "  assert_equal(0,r[:number])"           
+        when :blank
+          unless sloppy
+            output.puts "  assert_equal(:ExcelEmpty,r[:type])"
+          else
+            output.puts "  pass if r[:type] == :ExcelEmpty"
+            output.puts "  assert_equal(:ExcelNumber,r[:type])"
+            output.puts "  assert_in_delta(0.0,r[:number],#{@delta})"
+          end
         else
-          raise NotSupportedException.new("#{ast} type can't be settable")
+          raise NotSupportedException.new("#{ast} type can't be tested")
         end
         output.puts "end"
         output.puts

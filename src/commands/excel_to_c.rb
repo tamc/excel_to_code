@@ -242,7 +242,7 @@ END
       end
       if refs_to_test && !refs_to_test.empty?
         refs_to_test = refs_to_test.map(&:upcase)
-        CompileToCUnitTest.rewrite(i, c_name, refs_to_test, o)
+        CompileToCUnitTest.rewrite(i, sloppy_tests, c_name, refs_to_test, o)
       end
       close(i)
     end
