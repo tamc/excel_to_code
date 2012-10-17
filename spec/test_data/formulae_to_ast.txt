@@ -56,6 +56,7 @@ INDEX([1]!Modules[Module], MATCH($C5, [1]!Modules[Code], 0))	[:function, "INDEX"
 EF.NaturalGas.N2O	[:named_reference, "EF.NaturalGas.N2O"]
 USD2009_	[:named_reference, "USD2009_"]
 (F47*(USD2009_/Unit.boe))*(Price2009)	[:arithmetic, [:brackets, [:arithmetic, [:cell, "F47"], [:operator, "*"], [:brackets, [:arithmetic, [:named_reference, "USD2009_"], [:operator, "/"], [:named_reference, "Unit.boe"]]]]], [:operator, "*"], [:brackets, [:named_reference, "Price2009"]]]
+排放.煤炭.CO2 [:named_reference, "排放.煤炭.CO2"]
 
 # parses string joins
 "A handy string"&$A$1	[:string_join, [:string, "A handy string"], [:cell, "$A$1"]]

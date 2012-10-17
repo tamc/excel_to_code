@@ -1,3 +1,7 @@
+# 0.0.14
+
+- Fix parsing of non-western characters in formulae and named references
+
 # 0.0.13
 
 - Fix homepage in gem

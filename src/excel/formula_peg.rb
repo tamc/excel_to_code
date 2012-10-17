@@ -128,7 +128,7 @@ class Formula < RubyPeg
   end
   
   def table_name
-    terminal(/[.a-zA-Z0-9_]+/)
+    terminal(/[.\p{Word}_]+/)
   end
   
   def range_structured_reference
@@ -149,13 +149,13 @@ class Formula < RubyPeg
   
   def named_reference
     node :named_reference do
-      terminal(/[#a-zA-Z][\w_.!]+/)
+      terminal(/[#\p{word}][\p{word}_.!]+/)
     end
   end
   
   def sheet_reference
     node :sheet_reference do
-      (single_quoted_string || terminal(/[a-zA-Z0-9][\w_.]+/)) && ignore { terminal("!") } && (sheetless_reference || named_reference)
+      (single_quoted_string || terminal(/[\p{word}][\p{word}_.]+/)) && ignore { terminal("!") } && (sheetless_reference || named_reference)
     end
   end
   
