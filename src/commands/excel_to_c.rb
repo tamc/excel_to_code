@@ -161,6 +161,66 @@ class ExcelToC < ExcelToX
       
     code = <<END
 require 'ffi'
+require 'singleton'
+
+class #{ruby_module_name}Shim
+  # Singleton as a reminder that this is not thread safe
+  include Singleton
+  
+  def reset
+    #{ruby_module_name}.reset
+  end
+
+  def method_missing(name, *arguments)
+    if arguments.size == 0
+      get(name)
+    elsif arguments.size == 1
+      set(name, arguments.first)
+    else
+      super
+    end 
+  end
+
+  def get(name)
+    return 0 unless #{ruby_module_name}.respond_to?(name)
+    excel_value = #{ruby_module_name}.send(name)
+    case excel_value[:type]
+    when :ExcelNumber; excel_value[:number]
+    when :ExcelString; excel_value[:string].encode("utf-8","utf-8")
+    when :ExcelBoolean; excel_value[:number] == 1
+    when :ExcelEmpty; nil
+    when :ExcelError; [:value,:name,:div0,:ref,:na][excel_value[:number]]
+    else
+      raise Exception.new("ExcelValue type \u0023{excel_value[:type].inspect} not recognised")
+    end
+  end
+
+  def set(name, ruby_value)
+    name = "set_\#{name[0..-2]}" if name.end_with?('=')
+    return false unless #{ruby_module_name}.respond_to?(name)
+    excel_value = excel::ExcelValue.new
+    case ruby_value
+    when Numeric
+      excel_value[:type] = :ExcelNumber
+      excel_value[:number] = ruby_value
+    when String
+      excel_value[:type] = :ExcelString
+      excel_value[:number] = ruby_value
+    when Boolean
+      excel_value[:type] = :ExcelBoolean
+      excel_value[:number] = ruby_value ? 1 : 0
+    when nil
+      excel_value[:type] = :ExcelEmpty
+    when Symbol
+      excel_value[:type] = :ExcelError
+      excel_value[:number] = [:value, :name, :div0, :ref, :na].index(ruby_value)
+    else
+      raise Exception.new("Ruby value \u0023{ruby_value.inspect} not translatable into excel")
+    end
+  end
+
+end
+    
 
 module #{ruby_module_name}
   extend FFI::Library
@@ -225,8 +285,8 @@ END
     o.puts  "require_relative '#{output_name.downcase}'"
     o.puts
     o.puts "class Test#{ruby_module_name} < Test::Unit::TestCase"
-    o.puts "  def spreadsheet; @spreadsheet ||= init_spreadsheet; end"
-    o.puts "  def init_spreadsheet; #{ruby_module_name} end"
+    o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
+    o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.instance end"
     
     all_formulae = all_formulae()
     

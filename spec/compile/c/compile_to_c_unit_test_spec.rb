@@ -21,41 +21,14 @@ A6\t[:blank]
 END
 
 expected = <<END
-def test_sheet1_a1
-  r = spreadsheet.sheet1_a1
-  assert_equal(:ExcelNumber,r[:type])
-  assert_equal(1.0,r[:number])
-end
-
-def test_sheet1_a2
-  r = spreadsheet.sheet1_a2
-  assert_equal(:ExcelString,r[:type])
-  assert_equal("Hello",r[:string].force_encoding('utf-8'))
-end
-
-def test_sheet1_a3
-  r = spreadsheet.sheet1_a3
-  assert_equal(:ExcelError,r[:type])
-end
-
-def test_sheet1_a4
-  r = spreadsheet.sheet1_a4
-  assert_equal(:ExcelBoolean,r[:type])
-  assert_equal(1,r[:number])
-end
-
-def test_sheet1_a5
-  r = spreadsheet.sheet1_a5
-  assert_equal(:ExcelBoolean,r[:type])
-  assert_equal(0,r[:number])
-end
-
-def test_sheet1_a6
-  r = spreadsheet.sheet1_a6
-  assert_equal(:ExcelEmpty,r[:type])
-end
-
+  def test_sheet1_a1; assert_equal(1, worksheet.sheet1_a1); end
+  def test_sheet1_a2; assert_equal("Hello", worksheet.sheet1_a2); end
+  def test_sheet1_a3; assert_equal(:name, worksheet.sheet1_a3); end
+  def test_sheet1_a4; assert_equal(true, worksheet.sheet1_a4); end
+  def test_sheet1_a5; assert_equal(false, worksheet.sheet1_a5); end
+  def test_sheet1_a6; assert_equal(nil, worksheet.sheet1_a6); end
 END
+
 compile(input).should == expected
 end
 
@@ -73,55 +46,14 @@ A8\t[:blank]
 END
 
 expected = <<END
-def test_sheet1_a1
-  r = spreadsheet.sheet1_a1
-  assert_equal(:ExcelNumber,r[:type])
-  assert_in_epsilon(1000.0,r[:number],0.001)
-end
-
-def test_sheet1_a2
-  r = spreadsheet.sheet1_a2
-  assert_equal(:ExcelNumber,r[:type])
-  assert_in_delta(0.1,r[:number],0.001)
-end
-
-def test_sheet1_a3
-  r = spreadsheet.sheet1_a3
-  pass if r[:type] == :ExcelEmpty
-  assert_equal(:ExcelNumber,r[:type])
-  assert_in_delta(0.0,r[:number],0.001)
-end
-
-def test_sheet1_a4
-  r = spreadsheet.sheet1_a4
-  assert_equal(:ExcelString,r[:type])
-  assert_equal("Hello",r[:string].force_encoding('utf-8'))
-end
-
-def test_sheet1_a5
-  r = spreadsheet.sheet1_a5
-  assert_equal(:ExcelError,r[:type])
-end
-
-def test_sheet1_a6
-  r = spreadsheet.sheet1_a6
-  assert_equal(:ExcelBoolean,r[:type])
-  assert_equal(1,r[:number])
-end
-
-def test_sheet1_a7
-  r = spreadsheet.sheet1_a7
-  assert_equal(:ExcelBoolean,r[:type])
-  assert_equal(0,r[:number])
-end
-
-def test_sheet1_a8
-  r = spreadsheet.sheet1_a8
-  pass if r[:type] == :ExcelEmpty
-  assert_equal(:ExcelNumber,r[:type])
-  assert_in_delta(0.0,r[:number],0.001)
-end
-
+  def test_sheet1_a1; assert_in_epsilon(1000, worksheet.sheet1_a1, 0.001); end
+  def test_sheet1_a2; assert_in_delta(0.1, worksheet.sheet1_a2, 0.001); end
+  def test_sheet1_a3; assert_in_delta(0, (worksheet.sheet1_a3||0), 0.001); end
+  def test_sheet1_a4; assert_equal("Hello", worksheet.sheet1_a4); end
+  def test_sheet1_a5; assert_equal(:name, worksheet.sheet1_a5); end
+  def test_sheet1_a6; assert_equal(true, worksheet.sheet1_a6); end
+  def test_sheet1_a7; assert_equal(false, worksheet.sheet1_a7); end
+  def test_sheet1_a8; assert_includes([nil, 0], worksheet.sheet1_a8); end
 END
 
 compile(input, true).should == expected

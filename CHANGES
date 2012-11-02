@@ -1,3 +1,7 @@
+# 0.0.15
+
+- C version now generates a Shim class that automatically translates between ruby values and excel values
+
 # 0.0.14
 
 - Fix parsing of non-western characters in formulae and named references
