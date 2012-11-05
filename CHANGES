@@ -1,6 +1,8 @@
-# 0.0.15
+# 0.1.0
 
-- C version now generates a Shim class that automatically translates between ruby values and excel values
+- BACKWARDS INCOMPATIBLE CHANGE: The ExcelValue struct in the Ruby FFI interface that is generated when compiling excel to C now gives type 'pointer' to its 'string' attribute. This is so that string values can be written through the FFI interface as well as read.
+
+- C version now generates a Shim class that automatically translates between ruby values and excel values. This makes it closer to being drop in compatible with the Ruby version.
 
 # 0.0.14
 

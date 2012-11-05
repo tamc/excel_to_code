@@ -164,9 +164,12 @@ require 'ffi'
 require 'singleton'
 
 class #{ruby_module_name}Shim
-  # Singleton as a reminder that this is not thread safe
-  include Singleton
-  
+
+  # WARNING: this is not thread safe
+  def initialize
+    reset
+  end
+
   def reset
     #{ruby_module_name}.reset
   end
@@ -186,7 +189,7 @@ class #{ruby_module_name}Shim
     excel_value = #{ruby_module_name}.send(name)
     case excel_value[:type]
     when :ExcelNumber; excel_value[:number]
-    when :ExcelString; excel_value[:string].encode("utf-8","utf-8")
+    when :ExcelString; excel_value[:string].read_string.force_encoding("utf-8")
     when :ExcelBoolean; excel_value[:number] == 1
     when :ExcelEmpty; nil
     when :ExcelError; [:value,:name,:div0,:ref,:na][excel_value[:number]]
@@ -196,16 +199,17 @@ class #{ruby_module_name}Shim
   end
 
   def set(name, ruby_value)
+    name = name.to_s
     name = "set_\#{name[0..-2]}" if name.end_with?('=')
     return false unless #{ruby_module_name}.respond_to?(name)
-    excel_value = excel::ExcelValue.new
+    excel_value = #{ruby_module_name}::ExcelValue.new
     case ruby_value
     when Numeric
       excel_value[:type] = :ExcelNumber
       excel_value[:number] = ruby_value
     when String
       excel_value[:type] = :ExcelString
-      excel_value[:number] = ruby_value
+      excel_value[:string] = FFI::MemoryPointer.from_string(ruby_value.encode('utf-8'))
     when Boolean
       excel_value[:type] = :ExcelBoolean
       excel_value[:number] = ruby_value ? 1 : 0
@@ -217,6 +221,7 @@ class #{ruby_module_name}Shim
     else
       raise Exception.new("Ruby value \u0023{ruby_value.inspect} not translatable into excel")
     end
+    #{ruby_module_name}.send(name, excel_value)
   end
 
 end
@@ -230,7 +235,7 @@ module #{ruby_module_name}
   class ExcelValue < FFI::Struct
     layout :type, ExcelType,
   	       :number, :double,
-  	       :string, :string,
+  	       :string, :pointer,
          	 :array, :pointer,
            :rows, :int,
            :columns, :int             
@@ -286,7 +291,7 @@ END
     o.puts
     o.puts "class Test#{ruby_module_name} < Test::Unit::TestCase"
     o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
-    o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.instance end"
+    o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.new end"
     
     all_formulae = all_formulae()
     
