@@ -39,3 +39,4 @@ There are some how to guides in the doc folder.
 3. Doesn't implement all functions (see doc/Which_functions_are_implemented.md)
 4. Doesn't implement references that involve range unions and lists
 5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
+6. The generated C version does not multithread and will give bad results if you try
