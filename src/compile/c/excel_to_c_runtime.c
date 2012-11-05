@@ -1117,6 +1117,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 		used_length = used_length + current_string_length;
 	}
 	string = realloc(string,used_length+1);
+  string[used_length] = '\0';
 	return new_excel_string(string);
 }
 
@@ -1878,13 +1879,20 @@ int test_functions() {
 	// ... should return a string by combining its arguments
 	// inspect_excel_value(string_join(2, string_join_array_1));
   assert(string_join(2, string_join_array_1).string[6] == 'w');
+  assert(string_join(2, string_join_array_1).string[11] == '\0');
 	// ... should cope with an arbitrary number of arguments
   assert(string_join(3, string_join_array_2).string[11] == '!');
+  assert(string_join(3, string_join_array_3).string[12] == '\0');
 	// ... should convert values to strings as it goes
   assert(string_join(2, string_join_array_3).string[4] == '1');
-	// ... should convert integer values into strings without decimal points
-  assert(string_join(2, string_join_array_3).string[7] == '\0');
+  assert(string_join(2, string_join_array_3).string[5] == '0');
+  assert(string_join(2, string_join_array_3).string[6] == '\0');
+	// ... should convert integer values into strings without decimal points, and float values with decimal points
+  assert(string_join(2, string_join_array_4).string[4] == '1');
+  assert(string_join(2, string_join_array_4).string[5] == '0');
+  assert(string_join(2, string_join_array_4).string[6] == '.');
   assert(string_join(2, string_join_array_4).string[7] == '5');
+  assert(string_join(2, string_join_array_4).string[8] == '\0');
 	// ... should convert TRUE and FALSE into strings
   assert(string_join(3,string_join_array_5).string[4] == 'T');
 	
