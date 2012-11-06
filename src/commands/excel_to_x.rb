@@ -128,16 +128,17 @@ class ExcelToX
     # * Mergining all the different types of formulae and values into a single file
     rewrite_worksheets
     
+    # These perform a series of transformations to the information
+    # with the intent of removing any redundant calculations
+    # that are in the excel.
+    simplify_worksheets # Replacing shared strings and named references with their actual values, tidying arithmetic
+    
     # In case this hasn't been set by the user
     if cells_that_can_be_set_at_runtime.empty?
       log.info "Creating a good set of cells that should be settable"
       create_a_good_set_of_cells_that_should_be_settable_at_runtime
     end
-    
-    # These perform a series of transformations to the information
-    # with the intent of removing any redundant calculations
-    # that are in the excel.
-    simplify_worksheets # Replacing shared strings and named references with their actual values, tidying arithmetic
+
     replace_formulae_with_their_results
     remove_any_cells_not_needed_for_outputs
     inline_formulae_that_are_only_used_once
