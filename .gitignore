@@ -17,5 +17,7 @@ examples/*.o
 examples/*.dylib
 examples/stringexample.rb
 examples/test_stringexample.rb
+examples/getsetranges.rb
+examples/test_getsetranges.rb
 spec/commands/excel_to_ruby_output_actual
 spec/test_data/ExampleSpreadsheet
