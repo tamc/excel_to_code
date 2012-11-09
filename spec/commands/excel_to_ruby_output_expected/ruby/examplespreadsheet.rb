@@ -16,11 +16,11 @@ class ExampleSpreadsheet
   # Ending common elements
 
   # Start of ValueTypes
-  def valuetypes_a1; @valuetypes_a1 ||= true; end
-  def valuetypes_a2; @valuetypes_a2 ||= "Hello"; end
+  attr_accessor :valuetypes_a1 # Default: true
+  attr_accessor :valuetypes_a2 # Default: "Hello"
   attr_accessor :valuetypes_a3 # Default: 1
   attr_accessor :valuetypes_a4 # Default: 3.1415
-  def valuetypes_a5; @valuetypes_a5 ||= :name; end
+  attr_accessor :valuetypes_a5 # Default: :name
   attr_accessor :valuetypes_a6 # Default: "Hello"
   # End of ValueTypes
 
@@ -47,19 +47,19 @@ class ExampleSpreadsheet
   def ranges_b1; @ranges_b1 ||= "This sheet"; end
   def ranges_c1; @ranges_c1 ||= "Other sheet"; end
   def ranges_a2; @ranges_a2 ||= "Standard"; end
-  def ranges_b2; @ranges_b2 ||= 6; end
+  def ranges_b2; @ranges_b2 ||= sum([[ranges_f4],[ranges_f5],[ranges_f6]]); end
   def ranges_c2; @ranges_c2 ||= sum([[valuetypes_a3],[valuetypes_a4]]); end
   def ranges_a3; @ranges_a3 ||= "Column"; end
-  def ranges_b3; @ranges_b3 ||= 6; end
-  def ranges_c3; @ranges_c3 ||= sum([[true],["Hello"],[valuetypes_a3],[valuetypes_a4],[:name],[valuetypes_a6]]); end
+  def ranges_b3; @ranges_b3 ||= sum([[nil],[nil],[nil],[ranges_f4],[ranges_f5],[ranges_f6]]); end
+  def ranges_c3; @ranges_c3 ||= sum([[valuetypes_a1],[valuetypes_a2],[valuetypes_a3],[valuetypes_a4],[valuetypes_a5],[valuetypes_a6]]); end
   def ranges_a4; @ranges_a4 ||= "Row"; end
-  def ranges_b4; @ranges_b4 ||= 6; end
+  def ranges_b4; @ranges_b4 ||= sum([[nil,nil,nil,nil,ranges_e5,ranges_f5,ranges_g5]]); end
   def ranges_c4; @ranges_c4 ||= sum([[valuetypes_a4]]); end
-  def ranges_f4; @ranges_f4 ||= 1; end
-  def ranges_e5; @ranges_e5 ||= 1; end
-  def ranges_f5; @ranges_f5 ||= 2; end
-  def ranges_g5; @ranges_g5 ||= 3; end
-  def ranges_f6; @ranges_f6 ||= 3; end
+  attr_accessor :ranges_f4 # Default: 1
+  attr_accessor :ranges_e5 # Default: 1
+  attr_accessor :ranges_f5 # Default: 2
+  attr_accessor :ranges_g5 # Default: 3
+  attr_accessor :ranges_f6 # Default: 3
   # End of Ranges
 
   # Start of Referencing
@@ -123,9 +123,17 @@ class ExampleSpreadsheet
 
   # starting initializer
   def initialize
+    @valuetypes_a1 = true
+    @valuetypes_a2 = "Hello"
     @valuetypes_a3 = 1
     @valuetypes_a4 = 3.1415
+    @valuetypes_a5 = :name
     @valuetypes_a6 = "Hello"
+    @ranges_f4 = 1
+    @ranges_e5 = 1
+    @ranges_f5 = 2
+    @ranges_g5 = 3
+    @ranges_f6 = 3
     @referencing_a4 = 10
     @tables_b2 = "ColA"
     @tables_c2 = "ColB"

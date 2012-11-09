@@ -126,6 +126,19 @@ class ExcelToC < ExcelToX
       o.puts
       close(i)
     end
+
+    # Output the named references
+    o.puts "// Start of named references"
+    i = input('Named references C names')
+    w.rewind
+    c.gettable = lambda { |ref| true }
+    c.settable = lambda { |ref| false }
+    c.worksheet = ""
+    c.rewrite(i,w,o)
+    close(i)
+    o.puts "// End of named references"
+
+
     close(w,o)
   end
   
@@ -292,6 +305,7 @@ END
         end
       end
 
+      # Put in place the getters
       if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
         getable_refs = all_formulae[name].keys
       elsif !cells_to_keep[name] && settable_refs
@@ -306,6 +320,15 @@ END
         
       o.puts "  # end of #{name}"
     end
+    o.puts "# Start of named references"
+
+    i = input('Named references C names')
+    i.lines.each do |line|
+      name = line.strip.split("\t").first
+      o.puts "attach_function '#{name}', [], ExcelValue.by_value"
+    end
+    close(i)
+
     o.puts "end"  
     close(o)
   end

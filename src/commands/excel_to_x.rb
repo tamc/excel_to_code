@@ -32,6 +32,7 @@ class ExcelToX
   # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
   # should be setable, or an array of cell names on that sheet that should be settable (e.g., A1)
   attr_accessor :cells_that_can_be_set_at_runtime
+  attr_accessor :named_refernces_that_can_be_set_at_runtime
   
   # Optional attribute. Specifies which cells must appear in the final generated code.
   # The default is that all cells in the original spreadsheet appear in the final code.
@@ -45,6 +46,7 @@ class ExcelToX
   # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
   # should be lept, or an array of cell names on that sheet that should be kept (e.g., A1)
   attr_accessor :cells_to_keep
+  attr_accessor :named_references_to_keep
   
   # Optional attribute. Boolean. Not relevant to all types of code output
   #   * true - the generated c code is compiled
@@ -191,6 +193,8 @@ class ExcelToX
   def extract_named_references
     extract ExtractNamedReferences, 'workbook.xml', 'Named references'
     apply_rewrite RewriteFormulaeToAst, 'Named references'
+    replace ReplaceRangesWithArrayLiterals, 'Named references', 'Named references'
+    rewrite RewriteNamedReferenceNames, 'Named references', 'Worksheet C names', 'Named references C names'
   end
   
   # Excel keeps a list of worksheet names. To get the mapping between
@@ -203,7 +207,7 @@ class ExcelToX
     rewrite RewriteWorksheetNames, 'Worksheet names', 'Workbook relationships', 'Worksheet names'
     rewrite MapSheetNamesToCNames, 'Worksheet names', 'Worksheet C names'
   end
-  
+
   # We want a central list of the maximum extent of each worksheet
   # so that we can convert column (e.g., C:F) and row (e.g., 13:18)
   # references into equivalent area references (e.g., C1:F30)
@@ -620,7 +624,7 @@ class ExcelToX
     if @cells_to_keep
       gettable_refs = @cells_to_keep[name]
       if gettable_refs
-        lambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref.upcase) }
+        eambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref.upcase) }
       else
         lambda { |ref| false }
       end
@@ -637,7 +641,7 @@ class ExcelToX
       i.lines do |line|
         line =~ /^(.*?)\t(.*)$/
         ref, ast = $1, $2
-        r[$1] = eval($2)
+        r[ref] = eval(ast)
       end
     end 
     references

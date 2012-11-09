@@ -1,6 +1,14 @@
+    @valuetypes_a1 = true
+    @valuetypes_a2 = "Hello"
     @valuetypes_a3 = 1
     @valuetypes_a4 = 3.1415
+    @valuetypes_a5 = :name
     @valuetypes_a6 = "Hello"
+    @ranges_f4 = 1
+    @ranges_e5 = 1
+    @ranges_f5 = 2
+    @ranges_g5 = 3
+    @ranges_f6 = 3
     @referencing_a4 = 10
     @tables_b2 = "ColA"
     @tables_c2 = "ColB"

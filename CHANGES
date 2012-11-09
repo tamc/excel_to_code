@@ -1,3 +1,9 @@
+# Head
+
+- C version: now writes out accessors for named references
+- C version: shim can now get and set arrays of values, where the underlying C code supports it (which it doesn't, at the moment)
+- C version: fixed bug in mapping of sheet names that could occur if two sheets had similar names
+
 # 0.1.0
 
 - BACKWARDS INCOMPATIBLE CHANGE: The ExcelValue struct in the Ruby FFI interface that is generated when compiling excel to C now gives type 'pointer' to its 'string' attribute. This is so that string values can be written through the FFI interface as well as read.

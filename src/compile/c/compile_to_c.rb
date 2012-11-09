@@ -24,7 +24,7 @@ class CompileToC
         ref, formula = line.split("\t")
         ast = eval(formula)
         calculation = mapper.map(ast)
-        name = "#{c_name}_#{ref.downcase}"
+        name = c_name ? "#{c_name}_#{ref.downcase}" : ref.downcase
         static_or_not = gettable.call(ref) ? "" : "static "
         if settable.call(ref)
           output.puts "ExcelValue #{name}_default() {"
