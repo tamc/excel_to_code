@@ -1,7 +1,9 @@
 # Head
 
-- C version: now writes out accessors for named references
-- C version: shim can now get and set arrays of values, where the underlying C code supports it (which it doesn't, at the moment)
+# 0.1.1
+
+- C version: now optionally writes out accessors for named references
+- C version: shim can now get and set arrays of values, where the underlying C code supports it (which is only the case for some named references)
 - C version: fixed bug in mapping of sheet names that could occur if two sheets had similar names
 
 # 0.1.0

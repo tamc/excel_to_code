@@ -32,7 +32,18 @@ class ExcelToX
   # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
   # should be setable, or an array of cell names on that sheet that should be settable (e.g., A1)
   attr_accessor :cells_that_can_be_set_at_runtime
-  attr_accessor :named_refernces_that_can_be_set_at_runtime
+
+  # Optional attribute. Specifies which named references to be turned into setters
+  #
+  # Should be an array of strings. Each string is a named reference. Case sensitive.
+  # To specify a named reference scoped to a worksheet, use ['worksheet', 'named reference'] instead
+  # of a string.
+  #
+  # Each named reference then has a function in the resulting C code of the form
+  # void set_named_reference_mangled_into_a_c_function(ExcelValue newValue)
+  #
+  # By default, no named references are output
+  attr_accessor :named_references_that_can_be_set_at_runtime
   
   # Optional attribute. Specifies which cells must appear in the final generated code.
   # The default is that all cells in the original spreadsheet appear in the final code.
@@ -46,6 +57,17 @@ class ExcelToX
   # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
   # should be lept, or an array of cell names on that sheet that should be kept (e.g., A1)
   attr_accessor :cells_to_keep
+ 
+  # Optional attribute. Specifies which named references should be included in the output
+  # Should be an array of strings. Each string is a named reference. Case sensitive.
+  #
+  # To specify a named reference scoped to a worksheet, use ['worksheet', 'named reference'] instead
+  # of a string.
+  #
+  # Each named reference then has a function in the resulting C code of the form
+  # ExcelValue named_reference_mangled_into_a_c_function()
+  #
+  # By default, no named references are output
   attr_accessor :named_references_to_keep
   
   # Optional attribute. Boolean. Not relevant to all types of code output
@@ -134,12 +156,17 @@ class ExcelToX
     # with the intent of removing any redundant calculations
     # that are in the excel.
     simplify_worksheets # Replacing shared strings and named references with their actual values, tidying arithmetic
+
+    transfer_named_references_to_keep_into_cells_to_keep
+    transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
     
     # In case this hasn't been set by the user
     if cells_that_can_be_set_at_runtime.empty?
       log.info "Creating a good set of cells that should be settable"
       create_a_good_set_of_cells_that_should_be_settable_at_runtime
     end
+
+    filter_named_references
 
     replace_formulae_with_their_results
     remove_any_cells_not_needed_for_outputs
@@ -194,9 +221,8 @@ class ExcelToX
     extract ExtractNamedReferences, 'workbook.xml', 'Named references'
     apply_rewrite RewriteFormulaeToAst, 'Named references'
     replace ReplaceRangesWithArrayLiterals, 'Named references', 'Named references'
-    rewrite RewriteNamedReferenceNames, 'Named references', 'Worksheet C names', 'Named references C names'
   end
-  
+
   # Excel keeps a list of worksheet names. To get the mapping between
   # human and computer name  correct we have to look in the workbook 
   # relationships files. We also need to mangle the name into something
@@ -298,6 +324,10 @@ class ExcelToX
     end
   end
   
+  # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
+  # A to Z and all cells in rows 5 to 20 respectively. This function translates these
+  # into more conventional references (e.g., A5:Z20) based on the maximum area that 
+  # has been used on a worksheet
   def rewrite_row_and_column_references(name,xml_filename)
     dimensions = input('Worksheet dimensions')
     
@@ -348,6 +378,104 @@ class ExcelToX
       required_refs.concat(@cells_to_keep[worksheet_name])
     end
     required_refs
+  end
+
+  # Returns a hash of named references, and the ast of their links
+  # where the named reference is global the key will be a string of
+  # its name and case sensitive.
+  # where the named reference is coped to a worksheet, the key will be
+  # a two element array. The first element will be the sheet name. The
+  # second will be the name. 
+  def named_references
+    return @named_references if @named_references
+    @named_references = {}
+    i = input('Named references')
+    i.lines.each do |line|
+      sheet, name, ref = *line.split("\t")
+      key = sheet.size != 0 ? [sheet, name] : name
+      @named_references[key] = eval(ref)
+    end
+    close(i)
+    @named_references
+  end
+
+  # This makes sure that cells_to_keep includes named_references_to_keep
+  def transfer_named_references_to_keep_into_cells_to_keep
+    log.debug "Started transfering named references to keep into cells to keep"
+    return unless @named_references_to_keep
+    @cells_to_keep ||= {}
+    all_named_references = named_references
+    @named_references_to_keep.each do |name|
+      ref = all_named_references[name]
+      if ref
+        add_ref_to_hash(ref, @cells_to_keep)
+      else
+        log.warn "Named reference #{name} not found"
+      end
+    end
+  end
+
+  def transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
+    log.debug "Started transfering named references that can be set at runtime into cells that can be set at runtime"
+    return unless @named_references_that_can_be_set_at_runtime
+    @cells_that_can_be_set_at_runtime ||= {}
+    all_named_references = named_references
+    @named_references_that_can_be_set_at_runtime.each do |name|
+      ref = all_named_references[name]
+      if ref
+        add_ref_to_hash(ref, @cells_that_can_be_set_at_runtime)
+      else
+        log.warn "Named reference #{name} not found"
+      end
+    end
+  end
+
+  def add_ref_to_hash(ref, hash)
+    if ref.first == :sheet_reference
+      sheet = ref[1]
+      cell = ref[2][1].gsub('$','')
+      hash[sheet] ||= []
+      return if hash[sheet] == :all
+      hash[sheet] << cell unless hash[sheet].include?(cell)
+    elsif ref.first == :array
+      ref.shift
+      ref.each do |row|
+        row.shift
+        row.each do |cell|
+          add_ref_to_hash(cell, hash)
+        end
+      end
+    else
+      log.error "Weird reference in named reference #{ref}"
+    end
+  end
+
+  # FIXME: Feels like a kludge
+  def filter_named_references
+    @named_references_to_keep ||= []
+    @named_references_that_can_be_set_at_runtime ||= []
+
+    i = input('Named references')
+    o = intermediate('Named references to keep')
+    i.lines.each do |line|
+      sheet, name, ref = *line.split("\t")
+      key = sheet.length != 0 ? [sheet, name] : name
+      o.puts line if named_references_to_keep.include?(key) || named_references_that_can_be_set_at_runtime.include?(key)
+    end
+    close(o)
+
+    i.rewind
+    o = intermediate('Named references to set')
+    i.lines.each do |line|
+      sheet, name, ref = *line.split("\t")
+      key = sheet.length != 0 ? [sheet, name] : name
+      o.puts line if named_references_that_can_be_set_at_runtime.include?(key)
+    end
+    close(o)
+
+    # FIXME: Might result in getter and setter having different names
+    rewrite RewriteNamedReferenceNames, 'Named references to keep', 'Worksheet C names', 'Named references to keep'
+    rewrite RewriteNamedReferenceNames, 'Named references to set', 'Worksheet C names', 'Named references to set'
   end
     
   def simplify_worksheets
@@ -588,7 +716,8 @@ class ExcelToX
     close(output)
   end
   
-  # If no settable cells have been specified, then we assume that
+  # If nothing has been specified in named_refernces_that_can_be_set_at_runtime 
+  # or in cells_that_can_be_set_at_runtime, then we assume that
   # all value cells should be settable if they are referenced by
   # any other forumla.
   def create_a_good_set_of_cells_that_should_be_settable_at_runtime
@@ -624,7 +753,7 @@ class ExcelToX
     if @cells_to_keep
       gettable_refs = @cells_to_keep[name]
       if gettable_refs
-        eambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref.upcase) }
+        lambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref.upcase) }
       else
         lambda { |ref| false }
       end
