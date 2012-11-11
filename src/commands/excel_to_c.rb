@@ -58,6 +58,11 @@ class ExcelToC < ExcelToX
       close(i)
     end
     
+    # Need to make sure there are enough refs for named references as well
+    i = input('Named references C names')
+    number_of_refs += i.lines.to_a.size
+    close(i)
+
     o.puts "// end of definitions"
     o.puts
     o.puts "// Used to decide whether to recalculate a cell"
@@ -128,6 +133,8 @@ class ExcelToC < ExcelToX
     end
 
     # Output the named references
+
+    # Getters
     o.puts "// Start of named references"
     i = input('Named references C names')
     w.rewind
@@ -135,9 +142,17 @@ class ExcelToC < ExcelToX
     c.settable = lambda { |ref| false }
     c.worksheet = ""
     c.rewrite(i,w,o)
+
+    # Setters
+    i.rewind # Named references C names
+    w.rewind # Worksheet C names
+    
+    c = CompileNamedReferenceSetters.new
+    c.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
+    c.rewrite(i,w,o)
+
     close(i)
     o.puts "// End of named references"
-
 
     close(w,o)
   end
@@ -320,13 +335,24 @@ END
         
       o.puts "  # end of #{name}"
     end
+
+    # Now put in place the getters and setters for the named references
     o.puts "# Start of named references"
 
+    # Getters
     i = input('Named references C names')
     i.lines.each do |line|
       name = line.strip.split("\t").first
       o.puts "attach_function '#{name}', [], ExcelValue.by_value"
     end
+
+    # Setters
+    i.rewind
+    i.lines.each do |line|
+      name = line.strip.split("\t").first
+      o.puts "attach_function 'set_#{name}', [ExcelValue.by_value], :void"
+    end
+
     close(i)
 
     o.puts "end"  
