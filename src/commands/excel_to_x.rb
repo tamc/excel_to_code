@@ -143,6 +143,17 @@ class ExcelToX
     inline_formulae_that_are_only_used_once
     separate_formulae_elements
     replace_values_with_constants
+
+    # clear some memory here, before trying to compile
+    if run_in_memory
+      @files = nil
+      @cells_to_keep = nil
+      @cells_that_can_be_set_at_runtime = nil
+      # now do garbage collection, because what we've just done will have freed a lot of memory
+      GC.enable
+      GC.start
+      # TODO I think there's still another 500MB that could be freed here, when compiling decc_model
+    end
         
     # This actually creates the code (implemented in subclasses)
     write_code
