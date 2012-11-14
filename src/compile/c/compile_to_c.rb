@@ -18,7 +18,7 @@ class CompileToC
     mapper = MapFormulaeToC.new
     mapper.worksheet = worksheet
     mapper.sheet_names = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}]
-    c_name = mapper.sheet_names[worksheet]
+    c_name = mapper.sheet_names[worksheet] || worksheet
     input.lines do |line|
       begin
         ref, formula = line.split("\t")

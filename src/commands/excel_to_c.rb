@@ -105,6 +105,7 @@ class ExcelToC < ExcelToX
     c = CompileToC.new
     c.variable_set_counter = variable_set_counter
     c.gettable = lambda { |ref| false }
+    c.worksheet = ""
     i = input("Common elements")
     c.rewrite(i,w,o)
     close(i)
