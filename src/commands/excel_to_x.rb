@@ -174,6 +174,9 @@ class ExcelToX
     separate_formulae_elements
     replace_values_with_constants
 
+    # This actually creates the code (implemented in subclasses)
+    write_code
+    
     # clear some memory here, before trying to compile
     if run_in_memory
       @files = nil
@@ -185,9 +188,6 @@ class ExcelToX
       # TODO I think there's still another 500MB that could be freed here, when compiling decc_model
     end
         
-    # This actually creates the code (implemented in subclasses)
-    write_code
-    
     # These compile and run the code version of the excel (implemented in subclasses)
     compile_code
     run_tests

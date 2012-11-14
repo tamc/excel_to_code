@@ -1,5 +1,11 @@
 # Head
 
+# 0.1.2
+
+- C version: Fixed naming of common methods
+- Updated the way that command tests are run
+- Merged energynumbers memory freeing code
+
 # 0.1.1
 
 - C version: now optionally writes out accessors for named references
