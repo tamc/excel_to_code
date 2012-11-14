@@ -1,7 +1,0 @@
-A1	C4
-A2	Named_reference
-B4	A4+1
-C4	B4+1
-A5	1+1+1
-B8	INDIRECT("naMed_reFerence")
-B9	SUM(INDIRECT("firsttable[#Totals]"))

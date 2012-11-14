@@ -1,0 +1,3 @@
+Autotest.add_hook :initialize do |autotest|
+  autotest.add_exception('spec/commands/excel_to_X_output_actual')
+end

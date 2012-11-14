@@ -1,7 +1,0 @@
-common0	[:arithmetic, [:sheet_reference, "Referencing", [:cell, "A4"]], [:operator, "+"], [:number, "1"]]
-common1	[:function, "SUM", [:array, [:row, [:sheet_reference, "Tables", [:cell, "B5"]], [:sheet_reference, "Tables", [:cell, "C5"]], [:blank]]]]
-common2	[:array, [:row, [:sheet_reference, "Tables", [:cell, "B5"]], [:sheet_reference, "Tables", [:cell, "C5"]], [:blank]]]
-common3	[:function, "SUM", [:array, [:row, [:sheet_reference, "Tables", [:cell, "B3"]]], [:row, [:sheet_reference, "Tables", [:cell, "B4"]]]]]
-common4	[:array, [:row, [:sheet_reference, "Tables", [:cell, "B3"]]], [:row, [:sheet_reference, "Tables", [:cell, "B4"]]]]
-common5	[:function, "SUM", [:array, [:row, [:sheet_reference, "Tables", [:cell, "B3"]], [:sheet_reference, "Tables", [:cell, "C3"]], [:sheet_reference, "Tables", [:cell, "D3"]]], [:row, [:sheet_reference, "Tables", [:cell, "B4"]], [:sheet_reference, "Tables", [:cell, "C4"]], [:sheet_reference, "Tables", [:cell, "D4"]]]]]
-common6	[:array, [:row, [:sheet_reference, "Tables", [:cell, "B3"]], [:sheet_reference, "Tables", [:cell, "C3"]], [:sheet_reference, "Tables", [:cell, "D3"]]], [:row, [:sheet_reference, "Tables", [:cell, "B4"]], [:sheet_reference, "Tables", [:cell, "C4"]], [:sheet_reference, "Tables", [:cell, "D4"]]]]
