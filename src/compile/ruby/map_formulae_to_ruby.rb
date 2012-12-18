@@ -23,6 +23,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'COSH' => 'cosh',
     'COUNT' => 'count',
     'COUNTA' => 'counta',
+    'COUNTIF' => 'countif',
     'FIND' => 'find',
     'IF' => 'excel_if',
     'IFERROR' => 'iferror',

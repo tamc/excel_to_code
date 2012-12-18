@@ -82,3 +82,5 @@ require_relative 'excel_functions/roundup'
 require_relative 'excel_functions/rounddown'
 
 require_relative 'excel_functions/negative'
+
+require_relative 'excel_functions/countif'
