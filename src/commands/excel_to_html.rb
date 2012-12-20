@@ -224,18 +224,7 @@ class ExcelToHTML
 
   # Write out the html
   def write_out_excel_as_html  
-    c = CompileToHTML.new
-    c.worksheet_dimensions = input('Worksheet dimensions')
-    c.formulae = all_formulae
-    c.values = all_values
-
-    worksheets do |name, sheet|
-      log.info "Writing out the html for #{name}"
-      o = output("#{name}.html")
-      c.rewrite(name, o)
-      close(o)
-    end
-
+    #
     # Create an index file that just redirects to the first sheet
     main_sheet_name = worksheets.first.first
     File.open(File.join(output_directory,'index.html'),'w') do |f|
@@ -251,6 +240,20 @@ class ExcelToHTML
     %w{ jquery.min.js application.css application.js }.each do |file|
       `cp #{File.join(File.dirname(__FILE__),'..','compile','html',file)} #{File.join(output_directory,file)}`
     end
+
+    # Now go through and create a web page for each worksheet
+    c = CompileToHTML.new
+    c.worksheet_dimensions = input('Worksheet dimensions')
+    c.formulae = all_formulae
+    c.values = all_values
+
+    worksheets do |name, sheet|
+      log.info "Writing out the html for #{name}"
+      o = output("#{name}.html")
+      c.rewrite(name, o)
+      close(o)
+    end
+
   end
 
   # UTILITY FUNCTIONS
