@@ -11,6 +11,9 @@ $(document).ready(function() {
       $('table.cells td').removeClass('selected');
       $(this).addClass('selected');
     });    
+    $(window).on('hashchange', function(event) {
+      $(window.location.hash).trigger('click');
+    });
     if(window.location.hash == "") {
       $('table.cells td').first().trigger('click');
     } else {

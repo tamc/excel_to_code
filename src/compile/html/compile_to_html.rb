@@ -1,3 +1,100 @@
+require_relative '../../util/not_supported_exception'
+
+class MapForumlaeToLinkedHTML
+
+  def map(ast)
+    return ast unless ast.is_a?(Array) # i.e., a value such as 1
+    if ast.first.is_a?(Symbol) # i.e., [:operator, '+']
+      operator = ast[0]
+      arguments = ast[1..-1]
+      if respond_to?(operator)
+        send(operator,*arguments)
+      else
+        default(operator, arguments)
+      end
+    else # i.e., a stream of arguments [[:number, '1'], [:operator, '+'], [:number, '2']]
+      ast.map do |a|
+        map(a)
+      end
+    end
+  end
+  
+  def default(operator, arguments)
+    "[#{operator}, #{map(arguments).join(", ")}]"
+  end
+
+  def function(name, *arguments)
+    "#{name.upcase}(#{map(arguments).join(', ')})"
+  end
+
+  def brackets(*arguments)
+    "(#{map(arguments).join('')})"
+  end
+
+  def string_join(left, right)
+    "#{map(left)}&#{map(right)}"
+  end
+
+  def arithmetic(*arguments)
+    map(arguments).join('')
+  end
+
+  def comparison(*arguments)
+    map(arguments).join('')
+  end
+
+  def string(s)
+    s.inspect
+  end
+
+  def percentage(p)
+    "#{p*100}%"
+  end
+
+  def number(n)
+    n
+  end
+
+  def operator(op)
+    op
+  end
+
+  def sheet_reference(sheet,reference)
+    @sheet = sheet+".html"
+    s = map(reference)
+    @sheet = nil
+    s
+  end
+  
+  def area(start,finish)
+    cell(start)+":"+cell(finish)
+  end
+
+  def cell(ref)
+    "<a href=\"#{@sheet}##{ref.gsub('$','')}\">#{ref}</a>"
+  end
+
+  def boolean_false()
+    'FALSE'
+  end
+
+  def boolean_true()
+    'TRUE'
+  end
+
+  def prefix(op, *arguments)
+    op + map(arguments).join('')
+  end
+
+  def null()
+    ', '
+  end
+
+
+
+end
+
+
 class CompileToHTML
   
   attr_accessor :dimensions
@@ -88,15 +185,8 @@ class CompileToHTML
   end
 
   def ast_to_html(ast)
-    ast.shift
-    ast.map do |a|
-      if a.is_a?(Array)
-        ast_to_html(a)
-      else
-        a
-      end  
-    end.join('')
-
+    @mapper ||= MapForumlaeToLinkedHTML.new
+    @mapper.map(ast)
   end
 
 
