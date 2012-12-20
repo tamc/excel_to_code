@@ -59,6 +59,14 @@ class MapForumlaeToLinkedHTML
     op
   end
 
+  # Must implement:
+  # external_reference
+  # table_reference
+  # local_table_rereference
+  # named_reference
+  # column_range
+  # row_range
+
   def sheet_reference(sheet,reference)
     @sheet = sheet+".html"
     s = map(reference)
