@@ -18,12 +18,16 @@ $(document).ready(function() {
     }
 
     $(window).on('hashchange', function(event) {
-      reference = window.location.hash.substring(1)
+      reference = window.location.hash.substring(1);
       highlight(reference);
       showFormula(reference);
     });
 
     if(window.location.hash == "") {
-      window.location.hash = $('table.cells td').first().id.substring(1);
+      window.location.hash = $('table.cells td').first()[0].id.substring(1);
+    } else {
+      $(window).trigger('hashchange'); // Doesn't happen on page load
     };
+
+
 });
