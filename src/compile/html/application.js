@@ -1,22 +1,29 @@
 $(document).ready(function() {
-    $('#worksheet').on('change', function(event) {
-      window.location = event.target.value;
-    });
 
     $('table.cells td').on('click', function(event) {
-      window.location.hash = this.id;
-      $('#selectedcell').html(this.id);
-      $('#selectedformula').html($(this).data('formula'));
-      $('#selectedvalue').html($(this).data('value'));
-      $('table.cells td').removeClass('selected');
-      $(this).addClass('selected');
-    });    
-    $(window).on('hashchange', function(event) {
-      $(window.location.hash).trigger('click');
+      window.location.hash = this.id.substring(1);
     });
-    if(window.location.hash == "") {
-      $('table.cells td').first().trigger('click');
-    } else {
-      $(window.location.hash).trigger('click');
+
+    var highlight = function(reference) {
+      $('table.cells td').removeClass('selected');
+      c = $("#c"+reference)
+      c.addClass('selected');
+    };
+
+    var showFormula = function(reference) {
+      c = $("#c"+reference)
+      $('#selectedcell').html(reference);
+      $('#selectedformula').html(c.data('formula'));
+      $('#selectedvalue').html(c.data('value'));
     }
+
+    $(window).on('hashchange', function(event) {
+      reference = window.location.hash.substring(1)
+      highlight(reference);
+      showFormula(reference);
+    });
+
+    if(window.location.hash == "") {
+      window.location.hash = $('table.cells td').first().id.substring(1);
+    };
 });

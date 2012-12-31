@@ -31,8 +31,8 @@ class MapForumlaeToLinkedHTML
     "(#{map(arguments).join('')})"
   end
 
-  def string_join(left, right)
-    "#{map(left)}&#{map(right)}"
+  def string_join(*arguments)
+    map(arguments).join('&')
   end
 
   def arithmetic(*arguments)
@@ -98,8 +98,6 @@ class MapForumlaeToLinkedHTML
     ', '
   end
 
-
-
 end
 
 
@@ -114,7 +112,9 @@ class CompileToHTML
   end
   
   def rewrite(sheet_name,o)
-    cells = Area.for(dimensions[sheet_name]).to_array_literal
+    # d = dimensions[sheet_name]
+    d = check_dimensions(sheet_name) # if d.length > 5 # Sometimes excel goes mad and has insane sheet dimensions
+    cells = Area.for(d).to_array_literal
 
     # Put in the header and preamble
     o.puts <<-END
@@ -127,6 +127,8 @@ class CompileToHTML
       <div id='formulabar'>
         [<a id='workbook' href=''>2050Model.xlsx</a>]'#{sheet_name}'!<span id='selectedcell'></span>=<span id='selectedformula'></span> Value = <span id='selectedvalue'></span>
       </div>
+
+      <div id='worksheet'>
     END
 
     # Put in the worksheet
@@ -152,11 +154,12 @@ class CompileToHTML
       row.shift # :row
       row.each do |cell|
         ref = cell.last
-        o.puts "<td id='#{ref}' data-formula='#{formula(sheet_name,ref)}' data-value='#{value(sheet_name, ref)}'>#{formatted_value(sheet_name, ref)}</td>"
+        o.puts "<td id='c#{ref}' data-formula='#{formula(sheet_name,ref)}' data-value='#{value(sheet_name, ref)}'>#{formatted_value(sheet_name, ref)}</td>"
       end
     end
     o.puts "</table>"
     o.puts "<p>Generated on #{Time.now} by <a href='http://github.com/tamc/excel_to_code'>excel_to_code</a></p>"
+    o.puts "</worksheet>"
 
     o.puts "<div id='jumpbar'>Worksheets: "
     dimensions.each do |name, dimensions|
@@ -197,6 +200,29 @@ class CompileToHTML
     @mapper.map(ast)
   end
 
+  def check_dimensions(sheet_name)
+    max_row = maximum_row_in(values[sheet_name])
+    max_col = maximum_column_in(values[sheet_name])
+    "A1:#{max_col.excel_column}#{max_row.excel_row}"
+  end
+
+  def maximum_row_in(hash)
+    hash.keys.map do |c| 
+      Reference.for(c)
+    end.sort_by do |r|
+      r.calculate_excel_variables
+      r.excel_row_number
+    end.last
+  end
+      
+  def maximum_column_in(hash)
+    r = hash.keys.map do |c| 
+      Reference.for(c)
+    end.sort_by do |r|
+      r.calculate_excel_variables
+      r.excel_column_number
+    end.last
+  end
 
   def worksheet_dimensions=(worksheet_dimensions)
     @dimensions =  Hash[worksheet_dimensions.readlines.map do |line| 
