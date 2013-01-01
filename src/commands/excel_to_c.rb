@@ -242,7 +242,7 @@ class #{ruby_module_name}Shim
     name = name.to_s
     name = "set_\#{name[0..-2]}" if name.end_with?('=')
     return false unless #{ruby_module_name}.respond_to?(name)
-    Getsetranges.send(name, excel_value_from_ruby_value(ruby_value))
+    #{ruby_module_name}.send(name, excel_value_from_ruby_value(ruby_value))
   end
 
   def excel_value_from_ruby_value(ruby_value, excel_value = #{ruby_module_name}::ExcelValue.new)
