@@ -139,7 +139,7 @@ class ExcelToC < ExcelToX
     w.rewind
     c.gettable = lambda { |ref| true }
     c.settable = lambda { |ref| false }
-    c.worksheet = ""
+    c.worksheet = nil
     c.rewrite(i,w,o)
     close(i)
 
