@@ -1,5 +1,10 @@
 # Head
 
+# 0.1.3
+
+- Closed #9 a bug which left Getsetranges where it shouldn't be.
+- Closed #10 a bug that gave named references a prefix of '_'
+
 # 0.1.2
 
 - C version: Fixed naming of common methods
