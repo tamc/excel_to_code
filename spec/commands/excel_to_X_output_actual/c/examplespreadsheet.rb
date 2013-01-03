@@ -52,7 +52,7 @@ class ExampleSpreadsheetShim
     name = name.to_s
     name = "set_#{name[0..-2]}" if name.end_with?('=')
     return false unless ExampleSpreadsheet.respond_to?(name)
-    Getsetranges.send(name, excel_value_from_ruby_value(ruby_value))
+    ExampleSpreadsheet.send(name, excel_value_from_ruby_value(ruby_value))
   end
 
   def excel_value_from_ruby_value(ruby_value, excel_value = ExampleSpreadsheet::ExcelValue.new)
