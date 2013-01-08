@@ -18,7 +18,7 @@ class MapForumlaeToLinkedHTML
       end
     end
   end
-  
+
   def default(operator, arguments)
     "[#{operator}, #{map(arguments).join(", ")}]"
   end
@@ -106,6 +106,7 @@ class CompileToHTML
   attr_accessor :dimensions
   attr_accessor :formulae
   attr_accessor :values
+  attr_accessor :title
 
   def self.rewrite(*args)
     self.new.rewrite(*args)
@@ -124,8 +125,15 @@ class CompileToHTML
       <script type='text/javascript' src='application.js'></script>
       <body>
 
-      <div id='formulabar'>
-        [<a id='workbook' href=''>2050Model.xlsx</a>]'#{sheet_name}'!<span id='selectedcell'></span>=<span id='selectedformula'></span> Value = <span id='selectedvalue'></span>
+      <div id='top'>
+          <h1>#{title}</h1>
+          <table>
+            <tr>
+              <td id='sheetref'>'#{sheet_name}'!<span id='selectedcell'></span></td>
+              <td id='functionof'>&fnof;<i>x</i></td>
+              <td id='selectedformula'>&nbsp;</td>
+            </tr>
+          </table>
       </div>
 
       <div id='worksheet'>
@@ -154,18 +162,18 @@ class CompileToHTML
       row.shift # :row
       row.each do |cell|
         ref = cell.last
-        o.puts "<td id='c#{ref}' data-formula='#{formula(sheet_name,ref)}' data-value='#{value(sheet_name, ref)}'>#{formatted_value(sheet_name, ref)}</td>"
+        o.puts "<td id='c#{ref}' class='c#{ref}' data-formula='#{formula(sheet_name,ref)}'>#{formatted_value(sheet_name, ref)}</td>"
       end
     end
     o.puts "</table>"
     o.puts "<p>Generated on #{Time.now} by <a href='http://github.com/tamc/excel_to_code'>excel_to_code</a></p>"
-    o.puts "</worksheet>"
-
-    o.puts "<div id='jumpbar'>Worksheets: "
-    dimensions.each do |name, dimensions|
-      o.puts "<a href='#{name}.html' class='#{name == sheet_name && "current"}'>#{name}</a>"
-    end
     o.puts "</div>"
+
+    o.puts "<div id='jumpbar'><table><tr>"
+    dimensions.each do |name, dimensions|
+      o.puts "<td class='#{name == sheet_name && "current"}'><a href='#{name}.html' >#{name}</a></td>"
+    end
+    o.puts "</table></div>"
 
     # Put in the closing tags
     o.puts "</body>"
@@ -191,7 +199,7 @@ class CompileToHTML
 
   def formula(sheet, cell)
     f = formulae[sheet][cell]
-    return nil unless f
+    return "&nbsp;" unless f
     ast_to_html(f)
   end
 

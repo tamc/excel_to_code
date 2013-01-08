@@ -200,6 +200,7 @@ class ExcelToHTML
   def simplify_worksheets
     worksheets do |name,xml_filename|
       replace ReplaceSharedStrings, [name, 'Values'], 'Shared strings', File.join(name, 'Values')
+      replace ReplaceSharedStrings, [name, 'Formulae'], 'Shared strings', [name, 'Formulae']
     end
   end
       
@@ -243,6 +244,7 @@ class ExcelToHTML
 
     # Now go through and create a web page for each worksheet
     c = CompileToHTML.new
+    c.title = File.basename(excel_file)
     c.worksheet_dimensions = input('Worksheet dimensions')
     c.formulae = all_formulae
     c.values = all_values

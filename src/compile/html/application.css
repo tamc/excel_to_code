@@ -1,20 +1,30 @@
-#worksheet {
-  width: 100%;
-  margin-top: 40px;
-  overflow: auto;
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
-table.cells {  
+h1 {
+  margin-left: 5px;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
+#worksheet {
+  width: 100%;
+  overflow: scroll;
+}
+
+#worksheet table.cells {  
   table-layout: fixed; 
   border-collapse:collapse;
 }
 
-table.cells th {
+#worksheet table.cells th {
   background-color: #ccc;
   border: solid 1px #fff;
 }
 
-table.cells td {
+#worksheet table.cells td {
   border: solid 1px #ccc;
 }
 
@@ -23,46 +33,68 @@ table.cells td {
   background-color: #FFFF00;
 }
 
-#formulabar {
-  position: fixed;
-  left: 0;
-  top: 0;
+#top {
   width: 100%;
-  height: 25px;
-  background-color: #ccc;
+  background-color: #fff;
   box-shadow: 0px 4px 3px rgba(50, 50, 50, 0.75);
   border-bottom: solid 1px #000;
-  padding: 5px;
 }
 
-#selectedformula {
-  display: inline-block;
-  height: 1em;
-  width: 50%;
-  padding: 2px 5px;
+#top table {
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#top table td {
+  border-collapse: collapse;
+}
+
+td#sheetref {
+  white-space: nowrap;
+  padding-right: 5px;
+}
+
+td#functionof {
+  text-align: right;
+  background-color: #ccc;
+  margin-right: 0px;
+  padding-right: 0px;
+  padding-left: 5px;
+}
+
+td#selectedformula {
   background-color: #fff;
   border: solid 1px #000;
+  width: 100%;
+  margin-right: 5px;
+  padding: 2px;
 }
 
-
 #jumpbar {
-  position: fixed;
-  left: 0;
-  bottom: 0;
   width: 100%;
-  background-color: #ccc;
+  background-color: #fff;
   box-shadow: 0px -4px 3px rgba(50, 50, 50, 0.75);
   border-top: solid 1px #000;
 }
 
-#jumpbar a {
-  padding-right: 5px;
-  margin: 0;
-  border-right: solid 1px #000;
+#jumpbar table {
+  border-collapse: collapse;
+  padding: 0;
 }
 
-#jumpbar a.current {
-  background-color: #fff;
+#jumpbar tr {
+  padding: 0;
+  margin: 0;
+}
+
+#jumpbar td {
+  border-right: solid 1px #000;
+  border-left: solid 1px #000;
+}
+
+#jumpbar td.current {
+  background-color: #FFFF00;
 }
 
 
