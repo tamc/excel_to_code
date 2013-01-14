@@ -49,7 +49,7 @@ $(document).ready(function() {
       st = so.top + w.scrollTop();
       w = eo.left - so.left + e.width();
       h = eo.top - so.top + e.height();
-      highlight_div.animate({left: sl, top: st, width: w, height: h}, 1000);
+      highlight_div.animate({left: sl, top: st, width: w, height: h}, 500);
     };
 
     var showFormula = function(reference) {
