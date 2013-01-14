@@ -20,10 +20,36 @@ $(document).ready(function() {
       window.location.hash = this.id.substring(1);
     });
 
-    var highlight = function(reference) {
-      $('table.cells td').removeClass('selected');
-      c = $(".c"+reference)
-      c.addClass('selected');
+  
+    var singleReference = /^[A-Z]+[0-9]+$/
+    var rangeReference = /^([A-Z]+[0-9]+):([A-Z]+[0-9]+)$/
+    var cellsFromReference = function(reference) {
+      if(singleReference.test(reference)) {
+        return {start: reference, end: reference};
+      } else if(m = rangeReference.exec(reference)) {
+        return {start: m[1], end: m[2]};
+      } else {
+        return {start: 'A1', end: 'A1'};
+      }
+    };
+
+    $('#worksheet').append("<div id='highlight'>&nbsp;</div>");
+    var highlight_div = $('#highlight');
+
+    var highlight = function(start_reference, end_reference) {
+      if(end_reference == undefined) {
+        end_reference = start_reference;
+      }
+      s = $(".c"+start_reference);
+      e = $(".c"+end_reference);
+      w = $('#worksheet');
+      so = s.position(); // Returns relative to #worksheet, but varies based on overflow
+      eo = e.position();
+      sl = so.left + w.scrollLeft(); // We are setting relative to #worksheet, but should not vary with overflow
+      st = so.top + w.scrollTop();
+      w = eo.left - so.left + e.width();
+      h = eo.top - so.top + e.height();
+      highlight_div.animate({left: sl, top: st, width: w, height: h}, 1000);
     };
 
     var showFormula = function(reference) {
@@ -34,9 +60,9 @@ $(document).ready(function() {
     }
 
     $(window).on('hashchange', function(event) {
-      reference = window.location.hash.substring(1);
-      highlight(reference);
-      showFormula(reference);
+      cells = cellsFromReference(window.location.hash.substring(1));
+      highlight(cells.start, cells.end);
+      showFormula(cells.start);
     });
 
     if(window.location.hash == "") {
@@ -45,5 +71,5 @@ $(document).ready(function() {
       $(window).trigger('hashchange'); // Doesn't happen on page load
     };
 
-    scrollTo($('.selected'));
+    //scrollTo($('.selected'));
 });

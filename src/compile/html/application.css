@@ -10,6 +10,7 @@ h1 {
 }
 
 #worksheet {
+  position: relative;
   width: 100%;
   overflow: scroll;
 }
@@ -28,9 +29,11 @@ h1 {
   border: solid 1px #ccc;
 }
 
-.selected {
-  border: solid 2px #000;
-  background-color: #FFFF00;
+#highlight {
+  position: absolute;
+  z-index: 1;
+  border: solid 2px rgba(100,100,0,0.6);
+  background-color: rgba(255,255,0,0.4);
 }
 
 #top {
