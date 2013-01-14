@@ -75,7 +75,7 @@ class MapForumlaeToLinkedHTML
   end
   
   def area(start,finish)
-    cell(start)+":"+cell(finish)
+    "<a href=\"#{@sheet}##{start.gsub('$','')}:#{finish.gsub('$','')}\">#{start}:#{finish}</a>"
   end
 
   def cell(ref)
