@@ -22,6 +22,8 @@ examples/test_getsetranges.rb
 examples/eu-html
 examples/2050Model-html
 examples/2050Model
+examples/html_test
+examples/html_test-html
 spec/commands/excel_to_ruby_output_actual
 spec/test_data/ExampleSpreadsheet
 *.o
