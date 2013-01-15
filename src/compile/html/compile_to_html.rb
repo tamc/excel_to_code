@@ -67,19 +67,21 @@ class MapForumlaeToLinkedHTML
   # column_range
   # row_range
 
-  def sheet_reference(sheet,reference)
-    @sheet = sheet+".html"
+  def sheet_reference(sheet, reference)
+    @sheet_name = "'#{sheet}'!"
+    @sheet_file = sheet+".html"
     s = map(reference)
-    @sheet = nil
+    @sheet_name = @sheet_file = nil
+    p s
     s
   end
   
   def area(start,finish)
-    "<a href=\"#{@sheet}##{start.gsub('$','')}:#{finish.gsub('$','')}\">#{start}:#{finish}</a>"
+    "<a href=\"#{@sheet_file}##{start.gsub('$','')}:#{finish.gsub('$','')}\">#{@sheet_name}#{start}:#{finish}</a>"
   end
 
   def cell(ref)
-    "<a href=\"#{@sheet}##{ref.gsub('$','')}\">#{ref}</a>"
+    "<a href=\"#{@sheet_file}##{ref.gsub('$','')}\">#{@sheet_name}#{ref}</a>"
   end
 
   def boolean_false()
@@ -162,7 +164,7 @@ class CompileToHTML
       row.shift # :row
       row.each do |cell|
         ref = cell.last
-        o.puts "<td id='c#{ref}' class='c#{ref}' data-formula='#{formula(sheet_name,ref)}'>#{formatted_value(sheet_name, ref)}</td>"
+        o.puts "<td id='c#{ref}' class='c#{ref}' data-formula='#{formula(sheet_name,ref).gsub("'","&quot;")}'>#{formatted_value(sheet_name, ref)}</td>"
       end
     end
     o.puts "</table>"
