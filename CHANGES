@@ -1,5 +1,9 @@
 # Head
 
+# 0.1.4
+
+- Changed from requiring Ruby 1.9 to requiring 1.9 or newer. 
+
 # 0.1.3
 
 - Closed #9 a bug which left Getsetranges where it shouldn't be.
