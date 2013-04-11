@@ -12,6 +12,7 @@ class ReplaceFormulaeWithCalculatedValues
       begin
         ref, ast = line.split("\t")
         output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
+        rewriter.reset
       rescue Exception => e
         puts "Exception at line #{line}"
         raise

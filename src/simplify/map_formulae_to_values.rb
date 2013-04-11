@@ -11,9 +11,18 @@ class MapFormulaeToValues
   def initialize
     @value_for_ast = MapValuesToRuby.new
     @calculator = FormulaeCalculator.new
+    @cache = {}
   end
-  
+
+  def reset
+    @cache = {}
+  end
+
   def map(ast)
+    @cache[ast] ||= do_map(ast)
+  end
+
+  def do_map(ast)
     return ast unless ast.is_a?(Array)
     operator = ast[0]
     if respond_to?(operator)
