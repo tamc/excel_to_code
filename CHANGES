@@ -1,5 +1,9 @@
 # Head
 
+# 0.1.5
+
+- map_formulae_to_values now caches its results, which dramatically speeds up some edge-case long formulae
+
 # 0.1.4
 
 - Changed from requiring Ruby 1.9 to requiring 1.9 or newer. 

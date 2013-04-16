@@ -18,6 +18,8 @@ class MapFormulaeToValues
     @cache = {}
   end
 
+  # FIXME: Caching works in the odd edge cases of long formula
+  # but I really need to find the root cause of the problem
   def map(ast)
     @cache[ast] ||= do_map(ast)
   end
