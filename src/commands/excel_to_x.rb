@@ -143,6 +143,11 @@ class ExcelToX
     extract_data_from_worksheets
     merge_table_files
     
+    # This turns named references that are specified as getters and setters
+    # into a series of required cell references
+    transfer_named_references_to_keep_into_cells_to_keep
+    transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
+    
     # These perform some translations to simplify the excel
     # Including:
     # * Turning row and column references (e.g., A:A) to areas, based on the size of the worksheet
@@ -157,9 +162,6 @@ class ExcelToX
     # that are in the excel.
     simplify_worksheets # Replacing shared strings and named references with their actual values, tidying arithmetic
 
-    transfer_named_references_to_keep_into_cells_to_keep
-    transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
-    
     # In case this hasn't been set by the user
     if cells_that_can_be_set_at_runtime.empty?
       log.info "Creating a good set of cells that should be settable"
