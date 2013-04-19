@@ -3,6 +3,7 @@
 # 0.1.5
 
 - map_formulae_to_values now caches its results, which dramatically speeds up some edge-case long formulae
+- Fixed an error in the way the C version of excel's IF function was implemented. It no longer returns an error if the unused argument is an error.
 
 # 0.1.4
 

@@ -28,6 +28,11 @@ this should work:
 3. bundle
 4. rspec spec/*
 
+To test the C runtime:
+1. cd src/compile/c
+2. cc excel_to_c_runtime
+3. ./a.out
+
 # Hacking excel_to_code
 
 There are some how to guides in the doc folder. 
@@ -37,6 +42,6 @@ There are some how to guides in the doc folder.
 1. Not tested at all on Windows
 2. INDIRECT formula must be convertable at runtime into a standard formula
 3. Doesn't implement all functions (see doc/Which_functions_are_implemented.md)
-4. Doesn't implement references that involve range unions and lists
+4. Doesn't implement references that involve range unions and lists (but does implement standard ranges)
 5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
 6. The generated C version does not multithread and will give bad results if you try
