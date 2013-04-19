@@ -4,6 +4,7 @@
 
 - map_formulae_to_values now caches its results, which dramatically speeds up some edge-case long formulae
 - Fixed an error in the way the C version of excel's IF function was implemented. It no longer returns an error if the unused argument is an error.
+- Fixed an error in the way that the ruby shim for the C version handled functions that return ranges (appears when trying to access named reference ranges)
 
 # 0.1.4
 
