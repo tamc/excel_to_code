@@ -7,6 +7,9 @@
 #include <ctype.h>
 #include <math.h>
 
+// To run the tests at the end of this file
+// cc excel_to_c_runtime; ./a.out
+
 // FIXME: Extract a header file
 
 // I predefine an array of ExcelValues to store calculations
@@ -471,8 +474,6 @@ static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 
 static ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
 	CHECK_FOR_PASSED_ERROR(condition)
-	CHECK_FOR_PASSED_ERROR(true_case)
-	CHECK_FOR_PASSED_ERROR(false_case)
 	
 	switch (condition.type) {
   	  case ExcelBoolean:
@@ -1588,6 +1589,8 @@ int test_functions() {
 	assert(excel_if(FALSE,new_excel_number(10),new_excel_number(20)).type == ExcelNumber);
 	assert(excel_if(FALSE,new_excel_number(10),new_excel_number(20)).number == 20);
 	assert(excel_if(NA,new_excel_number(10),new_excel_number(20)).type == ExcelError);
+	assert(excel_if(TRUE,new_excel_number(10),NA).type == ExcelNumber);
+	assert(excel_if(TRUE,new_excel_number(10),NA).number == 10);
 	
 	// Test excel_match
 	ExcelValue excel_match_array_1[] = { new_excel_number(10), new_excel_number(100) };

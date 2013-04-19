@@ -24,7 +24,10 @@ class ExampleSpreadsheetShim
 
   def get(name)
     return 0 unless ExampleSpreadsheet.respond_to?(name)
-    excel_value = ExampleSpreadsheet.send(name)
+    ruby_value_from_excel_value(ExampleSpreadsheet.send(name))
+  end
+
+  def ruby_value_from_excel_value(excel_value)
     case excel_value[:type]
     when :ExcelNumber; excel_value[:number]
     when :ExcelString; excel_value[:string].read_string.force_encoding("utf-8")
@@ -38,7 +41,7 @@ class ExampleSpreadsheetShim
       a = Array.new(r) { Array.new(c) }
       (0...r).each do |row|
         (0...c).each do |column|
-          a[row][column] = ruby_from_excel_value(ExampleSpreadsheet::ExcelValue.new(p + (((row*c)+column)*s)))
+          a[row][column] = ruby_value_from_excel_value(ExampleSpreadsheet::ExcelValue.new(p + (((row*c)+column)*s)))
         end
       end 
       return a
