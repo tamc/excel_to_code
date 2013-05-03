@@ -39,6 +39,8 @@ class ExcelToX
   # To specify a named reference scoped to a worksheet, use ['worksheet', 'named reference'] instead
   # of a string.
   #
+  # Alternatively, can se to :where_possible to create setters for named references that point to setable cells
+  #
   # Each named reference then has a function in the resulting C code of the form
   # void set_named_reference_mangled_into_a_c_function(ExcelValue newValue)
   #
@@ -59,10 +61,13 @@ class ExcelToX
   attr_accessor :cells_to_keep
  
   # Optional attribute. Specifies which named references should be included in the output
+  #
   # Should be an array of strings. Each string is a named reference. Case sensitive.
   #
   # To specify a named reference scoped to a worksheet, use ['worksheet', 'named reference'] instead
   # of a string.
+  #
+  # Alternatively, can specify :all to keep all named references
   #
   # Each named reference then has a function in the resulting C code of the form
   # ExcelValue named_reference_mangled_into_a_c_function()
@@ -166,6 +171,10 @@ class ExcelToX
     if cells_that_can_be_set_at_runtime.empty?
       log.info "Creating a good set of cells that should be settable"
       create_a_good_set_of_cells_that_should_be_settable_at_runtime
+    end
+
+    if named_references_that_can_be_set_at_runtime == :where_possible
+      work_out_which_named_references_can_be_set_at_runtime
     end
 
     filter_named_references
@@ -396,7 +405,7 @@ class ExcelToX
   # Returns a hash of named references, and the ast of their links
   # where the named reference is global the key will be a string of
   # its name and case sensitive.
-  # where the named reference is coped to a worksheet, the key will be
+  # where the named reference is scoped to a worksheet, the key will be
   # a two element array. The first element will be the sheet name. The
   # second will be the name. 
   def named_references
@@ -416,6 +425,7 @@ class ExcelToX
   def transfer_named_references_to_keep_into_cells_to_keep
     log.debug "Started transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
+    @named_references_to_keep = named_references.keys if @named_references_to_keep == :all
     @cells_to_keep ||= {}
     all_named_references = named_references
     @named_references_to_keep.each do |name|
@@ -431,6 +441,7 @@ class ExcelToX
   def transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
     log.debug "Started transfering named references that can be set at runtime into cells that can be set at runtime"
     return unless @named_references_that_can_be_set_at_runtime
+    return if @named_references_that_can_be_set_at_runtime == :where_possible
     @cells_that_can_be_set_at_runtime ||= {}
     all_named_references = named_references
     @named_references_that_can_be_set_at_runtime.each do |name|
@@ -460,6 +471,35 @@ class ExcelToX
       end
     else
       log.error "Weird reference in named reference #{ref}"
+    end
+  end
+
+  def work_out_which_named_references_can_be_set_at_runtime
+    return unless @named_references_that_can_be_set_at_runtime
+    return unless @named_references_that_can_be_set_at_runtime == :where_possible
+    @named_references_that_can_be_set_at_runtime = []
+    all_named_references = named_references
+    @named_references_to_keep.each do |name|
+      ref = all_named_references[name]
+      if ref.first == :sheet_reference
+        sheet = ref[1]
+        cell = ref[2][1].gsub('$','')
+        s = @cells_that_can_be_set_at_runtime[sheet]
+        @named_references_that_can_be_set_at_runtime << name if s && s.include?(cell)
+      elsif ref.first.is_a?(Array)
+        ref = ref.first
+        p ref
+        settable = ref.all? do |row|
+          ref.all? do |column|
+            p column
+            sheet = column[1]
+            cell = column[2][1].gsub('$','')
+            s = @cells_that_can_be_set_at_runtime[sheet]
+            s && s.include?(cell)
+          end
+        end
+        @named_references_that_can_be_set_at_runtime << name if settable
+      end
     end
   end
 
