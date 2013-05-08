@@ -1,6 +1,6 @@
 module ExcelFunctions
   
-  def or(*args)
+  def excel_or(*args)
 
     args.each do |argument|
       return true if argument

@@ -35,7 +35,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MIN' => 'min',
     'MOD' => 'mod',
     'MONTH' => 'month',
-    'OR' => 'or',
+    'OR' => 'excel_or',
     'PI' => 'pi',
     'PMT' => 'pmt',
     'ROUND' => 'round',
