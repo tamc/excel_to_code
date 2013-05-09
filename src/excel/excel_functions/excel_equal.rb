@@ -10,7 +10,6 @@ module ExcelFunctions
     
     case a
     when String
-      p "-------------------------"
       a.to_s.downcase == b.to_s.downcase
     else
       a == b
