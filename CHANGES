@@ -1,5 +1,9 @@
 # Head
 
+# 0.1.7
+
+- Implemented the INT(number) excel function in C and in Ruby.
+
 # 0.1.6
 
 - named_references_to_keep can now be set to as :all to create getters for all named references
