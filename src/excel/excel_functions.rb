@@ -24,6 +24,7 @@ require_relative 'excel_functions/subtract'
 require_relative 'excel_functions/multiply'
 require_relative 'excel_functions/divide'
 require_relative 'excel_functions/power'
+require_relative 'excel_functions/negative'
 
 # More advanced arithmetic
 require_relative 'excel_functions/abs'
@@ -35,6 +36,18 @@ require_relative 'excel_functions/sum'
 require_relative 'excel_functions/average'
 require_relative 'excel_functions/max'
 require_relative 'excel_functions/min'
+require_relative 'excel_functions/subtotal'
+require_relative 'excel_functions/count'
+require_relative 'excel_functions/counta'
+require_relative 'excel_functions/sumif'
+require_relative 'excel_functions/sumifs'
+require_relative 'excel_functions/sumproduct'
+
+# Lookup functions
+require_relative 'excel_functions/index'
+require_relative 'excel_functions/excel_match'
+require_relative 'excel_functions/vlookup'
+require_relative 'excel_functions/choose'
 
 # Financial functions
 require_relative 'excel_functions/pmt'
@@ -44,41 +57,14 @@ require_relative 'excel_functions/cosh'
 
 # String functions
 require_relative 'excel_functions/string_join'
-require_relative 'excel_functions/excel_match'
 require_relative 'excel_functions/find'
+require_relative 'excel_functions/left'
 
-# Search functions
-require_relative 'excel_functions/choose'
+# Rounding functions
+require_relative 'excel_functions/round'
+require_relative 'excel_functions/roundup'
+require_relative 'excel_functions/rounddown'
+require_relative 'excel_functions/int'
 
 # Other functions
 
-
-
-
-
-
-require_relative 'excel_functions/round'
-
-require_relative 'excel_functions/subtotal'
-
-require_relative 'excel_functions/count'
-
-require_relative 'excel_functions/counta'
-
-require_relative 'excel_functions/sumif'
-
-require_relative 'excel_functions/sumifs'
-
-require_relative 'excel_functions/sumproduct'
-
-require_relative 'excel_functions/vlookup'
-
-require_relative 'excel_functions/index'
-
-require_relative 'excel_functions/left'
-
-require_relative 'excel_functions/roundup'
-
-require_relative 'excel_functions/rounddown'
-
-require_relative 'excel_functions/negative'
