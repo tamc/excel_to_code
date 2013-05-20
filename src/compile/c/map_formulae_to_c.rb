@@ -41,6 +41,7 @@ class MapFormulaeToC < MapValuesToC
     'IFERROR' => 'iferror',
     'INDEX2' => 'excel_index_2',
     'INDEX3' => 'excel_index',
+    'INT' => 'excel_int',
     'LEFT1' => 'left_1',
     'LEFT2' => 'left',
     'MATCH2' => 'excel_match_2',

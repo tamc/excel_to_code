@@ -217,7 +217,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * FACTDOUBLE -- Returns the double factorial of a number
 * FLOOR -- Rounds a number down, toward zero
 * GCD -- Returns the greatest common divisor
-* INT -- Rounds a number down to the nearest integer -- _R_
+* INT -- Rounds a number down to the nearest integer -- _R_ _C_
 * LCM -- Returns the least common multiple
 * LN -- Returns the natural logarithm of a number
 * LOG -- Returns the logarithm of a number to a specified base
