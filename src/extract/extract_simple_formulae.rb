@@ -11,7 +11,7 @@ class ExtractSimpleFormulae < ExtractFormulae
     return if @formula.empty?
     output.write @ref
     output.write "\t"
-    output.write @formula.join
+    output.write @formula.join.gsub(/[\r\n]+/,'')
     output.write "\n"
   end
 

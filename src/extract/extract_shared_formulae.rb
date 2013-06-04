@@ -16,7 +16,7 @@ class ExtractSharedFormulae < ExtractFormulae
     output.write "\t"
     output.write @shared_range
     output.write "\t"
-    output.write @formula.join
+    output.write @formula.join.gsub(/[\n\r]+/,'')
     output.write "\n"
   end
   
