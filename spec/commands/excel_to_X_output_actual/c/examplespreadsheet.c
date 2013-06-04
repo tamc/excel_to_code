@@ -71,6 +71,7 @@ static ExcelValue power(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
+static ExcelValue excel_int(ExcelValue number_v);
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
@@ -1063,6 +1064,15 @@ static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
 	return new_excel_number( ceil(number * multiple) / multiple );	
 }
 
+static ExcelValue excel_int(ExcelValue number_v) {
+	CHECK_FOR_PASSED_ERROR(number_v)
+		
+	NUMBER(number_v, number)
+	CHECK_FOR_CONVERSION_ERROR
+		
+	return new_excel_number(floor(number));
+}
+
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	int allocated_length = 100;
 	int used_length = 0;
@@ -1868,6 +1878,10 @@ int test_functions() {
     assert(rounddown(new_excel_number(1.5), new_excel_number(0)).number == 1.0);
     assert(rounddown(new_excel_number(1.56),new_excel_number(1)).number == 1.5);
     assert(rounddown(new_excel_number(-1.56),new_excel_number(1)).number == -1.5);	
+
+	// Test int
+    assert(excel_int(new_excel_number(8.9)).number == 8.0);
+    assert(excel_int(new_excel_number(-8.9)).number == -9.0);
 
 	// Test roundup
     assert(roundup(new_excel_number(1.1), new_excel_number(0)).number == 2.0);
