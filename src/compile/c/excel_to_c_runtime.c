@@ -58,6 +58,7 @@ static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_loo
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
+static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
 static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
@@ -173,6 +174,7 @@ const ExcelValue NAME = {.type = ExcelError, .number = 1};
 const ExcelValue DIV0 = {.type = ExcelError, .number = 2};
 const ExcelValue REF = {.type = ExcelError, .number = 3};
 const ExcelValue NA = {.type = ExcelError, .number = 4};
+const ExcelValue NUM = {.type = ExcelError, .number = 5};
 
 // This is the error flag
 static int conversion_error = 0;
@@ -224,6 +226,7 @@ static void inspect_excel_value(ExcelValue v) {
 			 case 2: printf("DIV0\n"); break;
 			 case 3: printf("REF\n"); break;
 			 case 4: printf("NA\n"); break;
+			 case 5: printf("NUM\n"); break;
 		 }
 		 break;
     default:
@@ -588,6 +591,61 @@ static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue offset) {
 	}
 	return REF;
 };
+
+int compare_doubles (const void *a, const void *b) {
+  const double *da = (const double *) a;
+  const double *db = (const double *) b;
+
+  return (*da > *db) - (*da < *db);
+}
+
+static ExcelValue large(ExcelValue range_v, ExcelValue k_v) {
+  CHECK_FOR_PASSED_ERROR(range_v)
+  CHECK_FOR_PASSED_ERROR(k_v)
+
+  int k = (int) number_from(k_v);
+  CHECK_FOR_CONVERSION_ERROR;
+
+  // Check for edge case where just a single number passed
+  if(range_v.type == ExcelNumber) {
+    if( k == 1 ) {
+      return range_v;
+    } else {
+      return NUM;
+    }
+  }
+
+  // Otherwise grumble if not a range
+  if(!range_v.type == ExcelRange) { return VALUE; }
+
+  // Check that our k is within bounds
+  if(k < 1) { return NUM; }
+  int range_size = range_v.rows * range_v.columns;
+
+  // OK this is a really naive implementation.
+  // FIXME: implement the BFPRT algorithm
+  double *sorted = malloc(sizeof(double)*range_size);
+  int sorted_size = 0;
+  ExcelValue *array_v = range_v.array;
+  ExcelValue x_v;
+  int i; 
+  for(i = 0; i < range_size; i++ ) {
+    x_v = array_v[i];
+    if(x_v.type == ExcelError) { return x_v; };
+    if(x_v.type == ExcelNumber) {
+      sorted[sorted_size] = x_v.number;
+      sorted_size++;
+    }
+  }
+  // Check other bound
+  if(k > sorted_size) { return NUM; }
+
+  qsort(sorted, sorted_size, sizeof (double), compare_doubles);
+
+  ExcelValue result = new_excel_number(sorted[sorted_size - k]);
+  free(sorted);
+  return result;
+}
 
 
 static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, ExcelValue match_type ) {
@@ -1554,6 +1612,20 @@ int test_functions() {
 	assert(count(4,array1).number == 2);
 	assert(count(3,array2).number == 3);
 	assert(count(4,array3).number == 3);
+
+  // Test Large
+  ExcelValue large_test_array_1[] = { new_excel_number(10), new_excel_number(100), new_excel_number(500), BLANK };
+  ExcelValue large_test_array_1_v = new_excel_range(large_test_array_1, 1, 4);
+  assert(large(large_test_array_1_v, new_excel_number(1)).number == 500);
+  assert(large(large_test_array_1_v, new_excel_number(2)).number == 100);
+  assert(large(large_test_array_1_v, new_excel_number(3)).number == 10);
+  assert(large(large_test_array_1_v, new_excel_number(4)).type == ExcelError);
+  assert(large(new_excel_number(500), new_excel_number(1)).number == 500);
+  ExcelValue large_test_array_2[] = { new_excel_number(10), new_excel_number(100), new_excel_number(500), VALUE };
+  ExcelValue large_test_array_2_v = new_excel_range(large_test_array_2, 1, 4);
+  assert(large(large_test_array_2_v,new_excel_number(2)).type == ExcelError);
+  assert(large(new_excel_number(500),VALUE).type == ExcelError);
+
 	
 	// Test COUNTA
 	ExcelValue count_a_test_array_1[] = { new_excel_number(10), new_excel_number(5), TRUE, FALSE, new_excel_string("Hello"), VALUE, BLANK};

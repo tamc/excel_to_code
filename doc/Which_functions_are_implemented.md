@@ -296,7 +296,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * HYPGEOMDIST -- Returns the hypergeometric distribution
 * INTERCEPT -- Returns the intercept of the linear regression line
 * KURT -- Returns the kurtosis of a data set
-* LARGE -- Returns the k-th largest value in a data set
+* LARGE -- Returns the k-th largest value in a data set -- _R_ _C_
 * LINEST -- Returns the parameters of a linear trend
 * LOGEST -- Returns the parameters of an exponential trend
 * LOGINV -- Returns the inverse of the lognormal distribution

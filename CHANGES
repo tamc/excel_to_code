@@ -3,6 +3,7 @@
 # 0.1.8
 
 - Remove newlines from excel formulae. This may turn out to be a bad idea (newlines in strings in formulae?) but needed for now.
+- Implemented the LARGE(array,k) excel function in C and in Ruby
 
 # 0.1.7
 

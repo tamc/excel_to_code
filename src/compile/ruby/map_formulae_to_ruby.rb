@@ -28,6 +28,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'IFERROR' => 'iferror',
     'INDEX' => 'index',
     'INT' => 'int',
+    'LARGE' => 'large',
     'LEFT' => 'left',
     'MATCH' => 'excel_match',
     'MAX' => 'max',

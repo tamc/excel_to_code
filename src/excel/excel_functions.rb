@@ -48,6 +48,7 @@ require_relative 'excel_functions/index'
 require_relative 'excel_functions/excel_match'
 require_relative 'excel_functions/vlookup'
 require_relative 'excel_functions/choose'
+require_relative 'excel_functions/large'
 
 # Financial functions
 require_relative 'excel_functions/pmt'
