@@ -1,5 +1,9 @@
 # Head
 
+# 0.1.9
+
+- Removed chartsheets from the list of worksheets
+
 # 0.1.8
 
 - Remove newlines from excel formulae. This may turn out to be a bad idea (newlines in strings in formulae?) but needed for now.

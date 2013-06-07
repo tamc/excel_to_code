@@ -10,11 +10,14 @@ class RewriteWorksheetNames
   # relationship_id\tfilename\n
   # Outputs worksheet names in the form:
   # name\tfilename\n
+  # Only includes actual worksheets (ignores chartsheets and the like)
   def rewrite(worksheet_names,relationships,output)
     relationships = Hash[relationships.readlines.map { |line| line.split("\t")}]
     worksheet_names.lines do |line|
       rid, name = line.split("\t")
-      output.puts "#{name.strip}\t#{relationships[rid].strip}"
+      filename = relationships[rid].strip
+      next unless filename =~ /^worksheets/i
+      output.puts "#{name.strip}\t#{filename}"
     end
   end
 end
