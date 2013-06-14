@@ -553,22 +553,23 @@ class ExcelToX
   # FIXME: This should work out how often it needs to operate, rather than having a hardwired 4
   def replace_formulae_with_their_results
     4.times do 
-      replace_indirects
+      replace_indirects_and_offsets
       replace_formulae_with_calculated_values
       replace_references_to_values_with_values
     end
   end
   
-  # There is no support for INDIRECT in the ruby or c runtime
+  # There is no support for INDIRECT or OFFSET in the ruby or c runtime
   # However, in many cases it isn't needed, because we can work
-  # out the value of the indirect at compile time and eliminate it
-  def replace_indirects
+  # out the value of the indirect or OFFSET at compile time and eliminate it
+  def replace_indirects_and_offsets
     worksheets do |name,xml_filename|
-      log.info "Replacing indirects in #{name}"
+      log.info "Replacing indirects and offsets in #{name}"
       
       # First of all we replace any indirects where their values can be calculated at compile time with those
-      # calculated values (e.g., INDIRECT("A"&1) can be turned into A1)
+      # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
       replace ReplaceIndirectsWithReferences, [name, 'Formulae'],  [name, 'Formulae']
+      replace ReplaceOffsetsWithReferences, [name, 'Formulae'],  [name, 'Formulae']
       
       # The result of the indirect might be a named reference, which we need to simplify
       r = ReplaceNamedReferences.new

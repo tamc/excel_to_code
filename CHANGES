@@ -1,5 +1,7 @@
 # Head
 
+- Now attempts to simplify OFFSET() functions out of the spreadsheet at compile time (the function is NOT supported at runtime)
+
 # 0.1.9
 
 - Removed chartsheets from the list of worksheets
