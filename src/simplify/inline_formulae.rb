@@ -16,6 +16,15 @@ class InlineFormulaeAst
       [operator,*ast[1..-1].map {|a| map(a) }]
     end
   end
+
+  def function(name,*args)
+    case name
+    when 'OFFSET'
+      [:function, name, args.shift, *args.map { |a| map(a) }]
+    else
+      [:function, name, *args.map { |a| map(a) }]
+    end
+  end
   
   def sheet_reference(sheet,reference)
     if inline_ast.call(sheet,reference.last.upcase.gsub('$',''),references)
