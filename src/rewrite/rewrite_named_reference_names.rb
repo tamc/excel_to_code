@@ -16,7 +16,7 @@ class RewriteNamedReferenceNames
     worksheet_names = Hash[worksheet_names.readlines.map { |line| line.strip.split("\t")}]
     c_names_assigned = worksheet_names.invert
 
-    named_references.lines do |line|
+    named_references.each_line do |line|
       sheet, name, reference = line.split("\t")
       sheet = worksheet_names[sheet]
       if sheet

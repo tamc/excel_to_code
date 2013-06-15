@@ -64,7 +64,7 @@ class InlineFormulae
   
   def replace(input,output)
     rewriter = InlineFormulaeAst.new(references, default_sheet_name, inline_ast)
-    input.lines do |line|
+    input.each_line do |line|
       # Looks to match lines with references
       if line =~ /\[:cell/
         ref, ast = line.split("\t")

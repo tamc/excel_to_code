@@ -74,7 +74,7 @@ class RewriteWholeRowColumnReferencesToAreas
   end
   
   def rewrite(input,output)
-    input.lines do |line|
+    input.each_line do |line|
       if line =~ /(:column_range|:row_range)/
         content = line.split("\t")
         ast = eval(content.pop)

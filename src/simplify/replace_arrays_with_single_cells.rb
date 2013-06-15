@@ -8,7 +8,7 @@ class ReplaceArraysWithSingleCells
   
   def replace(input,output)
   
-    input.lines do |line|
+    input.each_line do |line|
       # Looks to match shared string lines
       if line =~ /\[:array/
         content = line.split("\t")

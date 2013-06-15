@@ -39,7 +39,7 @@ class ReplaceRangesWithArrayLiterals
   def replace(input,output)
     rewriter = ReplaceRangesWithArrayLiteralsAst.new
   
-    input.lines do |line|
+    input.each_line do |line|
       # Looks to match shared string lines
       if line =~ /\[:area/
         content = line.split("\t")

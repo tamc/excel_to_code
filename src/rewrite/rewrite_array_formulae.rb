@@ -45,7 +45,7 @@ class RewriteArrayFormulae
   end
   
   def rewrite(input,output)
-    input.lines do |line|
+    input.each_line do |line|
       ref, array_range, formula = line.split("\t")
       array_formula(formula,array_range,output)
     end

@@ -12,7 +12,7 @@ class RewriteMergeFormulaeAndValues
     array_formula = Hash[array_formula.readlines.map { |line| [line[/(.*?)\t/,1],line]}]
     simple_formulae = Hash[simple_formulae.readlines.map { |line| [line[/(.*?)\t/,1],line]}]
         
-    values.lines do |line|
+    values.each_line do |line|
       ref = line[/(.*?)\t/,1]
       @references_to_add_if_they_are_not_already_present.delete(ref)
       output.puts simple_formulae[ref] || array_formula[ref] || shared_formulae[ref] || line

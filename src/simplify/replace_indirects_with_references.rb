@@ -31,7 +31,7 @@ class ReplaceIndirectsWithReferences
   
   def replace(input,output)
     rewriter = ReplaceIndirectsWithReferencesAst.new
-    input.lines do |line|
+    input.each_line do |line|
       # Looks to match lines with references
       if line =~ /"INDIRECT"/
         ref, ast = line.split("\t")

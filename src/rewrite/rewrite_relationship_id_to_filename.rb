@@ -7,7 +7,7 @@ class RewriteRelationshipIdToFilename
   def rewrite(input, relationships_file, output)
     relationships_file.rewind
     relationships = Hash[relationships_file.readlines.map { |line| line.split("\t")}]
-    input.lines do |line|
+    input.each_line do |line|
       parts = line.split("\t")
       rid = parts.pop.strip
       if relationships.has_key?(rid)

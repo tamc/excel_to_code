@@ -9,7 +9,7 @@ class RewriteFormulaeToAst
   # input should be in the form: 'thing\tthing\tformula\n' where the last field is always a forumla
   # output will be in the form 'thing\tthing\tast\n'
   def rewrite(input,output)
-    input.lines.with_index do |line,i|
+    input.each_line.with_index do |line,i|
       line =~ /^(.*\t)(.*?)$/
       output.write $1
       ast =  Formula.parse($2)

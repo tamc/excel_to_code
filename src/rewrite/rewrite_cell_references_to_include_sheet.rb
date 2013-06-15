@@ -42,7 +42,7 @@ class RewriteCellReferencesToIncludeSheet
   def rewrite(input,output)
     mapper = RewriteCellReferencesToIncludeSheetAst.new
     mapper.worksheet = worksheet
-    input.lines do |line|
+    input.each_line do |line|
       if line =~ /(:area|:cell)/
         content = line.split("\t")
         ast = eval(content.pop)

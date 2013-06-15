@@ -12,7 +12,7 @@ class ReplaceCommonElementsInFormulae
       ref, element = a.split("\t")
       @common_elements[element.strip] = [:cell, ref]
     end
-    input.lines do |line|
+    input.each_line do |line|
       ref, formula = line.split("\t")
       output.puts "#{ref}\t#{replace_repeated_formulae(eval(formula)).inspect}"
     end

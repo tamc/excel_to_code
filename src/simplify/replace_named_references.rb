@@ -68,7 +68,7 @@ class ReplaceNamedReferences
   def replace(values,named_references,output)
     named_references = NamedReferences.new(named_references.readlines)
     rewriter = ReplaceNamedReferencesAst.new(named_references,sheet_name)
-    values.lines do |line|
+    values.each_line do |line|
       # Looks to match shared string lines
       if line =~ /\[:named_reference/
         cols = line.split("\t")

@@ -36,7 +36,7 @@ class ReplaceSharedStrings
   # Rewrites ast with shared strings to strings
   def replace(values,shared_strings,output)
     rewriter = ReplaceSharedStringAst.new(shared_strings.readlines)
-    values.lines do |line|
+    values.each_line do |line|
       # Looks to match shared string lines
       if line =~ /\[:shared_string/
         ref, ast = line.split("\t")

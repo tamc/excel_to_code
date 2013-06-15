@@ -40,7 +40,7 @@ class SimplifyArithmetic
   
   def replace(input,output)
     rewriter = SimplifyArithmeticAst.new
-    input.lines do |line|
+    input.each_line do |line|
       # Looks to match lines with references
       if line =~ /:arithmetic/
         content = line.split("\t")

@@ -6,8 +6,8 @@ class RewriteSharedFormulae
   end
   
   def rewrite(input, shared_targets, output)
-    shared_targets = shared_targets.lines.map(&:strip).to_a
-    input.lines do |line|
+    shared_targets = shared_targets.each_line.map(&:strip).to_a
+    input.each_line do |line|
       ref, copy_range, formula = line.split("\t")
       share_formula(ref, formula, copy_range, shared_targets, output)
     end

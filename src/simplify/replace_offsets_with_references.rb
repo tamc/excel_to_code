@@ -43,7 +43,7 @@ class ReplaceOffsetsWithReferences
   
   def replace(input,output)
     rewriter = ReplaceOffsetsWithReferencesAst.new
-    input.lines do |line|
+    input.each_line do |line|
       # Looks to match lines with references
       if line =~ /"OFFSET"/
         ref, ast = line.split("\t")

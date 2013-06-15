@@ -49,7 +49,7 @@ class ReplaceTableReferences
         
     rewriter = ReplaceTableReferenceAst.new(tables,sheet_name)
   
-    input.lines do |line|
+    input.each_line do |line|
       # Looks to match shared string lines
       begin
         if line =~ /\[(:table_reference|:local_table_reference)/
