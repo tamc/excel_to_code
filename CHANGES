@@ -1,6 +1,7 @@
 # Head
 
 - Now attempts to simplify OFFSET() functions out of the spreadsheet at compile time (the function is NOT supported at runtime)
+- COUNT() functions are now replaced with their values if possible at compile time
 
 # 0.1.9
 

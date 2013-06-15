@@ -6,10 +6,12 @@ it "should work through formulae, calculating functions where all the arguments 
 
 input = <<END
 A1\t[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]
+A2\t[:function, "COUNT", [:array, [:row, [:cell, "B225"]], [:row, [:cell, "B226"]], [:row, [:cell, "B227"]], [:row, [:cell, "B228"]], [:row, [:cell, "B229"]], [:row, [:cell, "B230"]]]]
 END
 
 expected_output = <<END
 A1\t[:number, "2"]
+A2\t[:number, "6"]
 END
     
 input = StringIO.new(input)

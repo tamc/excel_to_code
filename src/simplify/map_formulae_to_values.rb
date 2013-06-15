@@ -82,6 +82,12 @@ class MapFormulaeToValues
       end
     end
   end
+
+  def map_count(range)
+    return [:function, "COUNT", range] unless [:array, :cell, :sheet_reference].include?(range.first)
+    range = array_as_values(range)
+    ast_for_value(range.size * range.first.size)
+  end
   
   def map_index(array,row_number,column_number = :not_specified)
     return map_index_with_only_two_arguments(array,row_number) if column_number == :not_specified
