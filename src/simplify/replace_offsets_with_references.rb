@@ -23,8 +23,8 @@ class ReplaceOffsetsWithReferencesAst
 
   def replace_offset(reference, row_offset, column_offset, height = 1, width = 1)
     reference = Reference.for(reference.gsub!("$",""))
-    start_reference = reference.offset(row_offset, column_offset)
-    end_reference = reference.offset(row_offset + height - 1, column_offset + width - 1)
+    start_reference = reference.offset(row_offset.to_i, column_offset.to_i)
+    end_reference = reference.offset(row_offset.to_i + height.to_i - 1, column_offset.to_i + width.to_i - 1)
     if start_reference == end_reference
       [:cell, start_reference]
     else
