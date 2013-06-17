@@ -21,7 +21,15 @@ examples/getsetranges.rb
 examples/test_getsetranges.rb
 examples/getsetranges/
 examples/offsets/
+examples/offsets.rb
+examples/test_offsets.rb
 spec/commands/excel_to_ruby_output_actual
 spec/test_data/ExampleSpreadsheet
 *.o
 *.dylib
+
+examples/offsets.rb
+
+examples/test_offsets.rb
+
+examples/test_offsets.rb

@@ -110,9 +110,11 @@ class ExcelToX
     self.cells_that_can_be_set_at_runtime ||= {}
     
     # Make sure that all the cell names are downcase and don't have any $ in them
-    cells_that_can_be_set_at_runtime.keys.each do |sheet|
-      next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
-      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').upcase }
+    if cells_that_can_be_set_at_runtime.is_a?(Hash)
+      cells_that_can_be_set_at_runtime.keys.each do |sheet|
+        next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
+        cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').upcase }
+      end
     end
 
     # Make sure that all the cell names are downcase and don't have any $ in them
@@ -168,9 +170,9 @@ class ExcelToX
     simplify_worksheets # Replacing shared strings and named references with their actual values, tidying arithmetic
 
     # In case this hasn't been set by the user
-    if cells_that_can_be_set_at_runtime.empty?
+    if @cells_that_can_be_set_at_runtime.empty?
       log.info "Creating a good set of cells that should be settable"
-      create_a_good_set_of_cells_that_should_be_settable_at_runtime
+      @cells_that_can_be_set_at_runtime = a_good_set_of_cells_that_should_be_settable_at_runtime
     end
 
     if named_references_that_can_be_set_at_runtime == :where_possible
@@ -477,6 +479,9 @@ class ExcelToX
   def work_out_which_named_references_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime == :where_possible
+    cells_that_can_be_set = @cells_that_can_be_set_at_runtime
+    cells_that_can_be_set = a_good_set_of_cells_that_should_be_settable_at_runtime if cells_that_can_be_set == :named_references_only
+    cells_that_can_be_set_due_to_named_reference = Hash.new { |h,k| h[k] = Array.new  }
     @named_references_that_can_be_set_at_runtime = []
     all_named_references = named_references
     @named_references_to_keep.each do |name|
@@ -484,22 +489,33 @@ class ExcelToX
       if ref.first == :sheet_reference
         sheet = ref[1]
         cell = ref[2][1].gsub('$','')
-        s = @cells_that_can_be_set_at_runtime[sheet]
-        @named_references_that_can_be_set_at_runtime << name if s && s.include?(cell)
+        s = cells_that_can_be_set[sheet]
+        if s && s.include?(cell)
+          @named_references_that_can_be_set_at_runtime << name 
+          cells_that_can_be_set_due_to_named_reference[sheet] << cell
+          cells_that_can_be_set_due_to_named_reference[sheet].uniq!
+        end
       elsif ref.first.is_a?(Array)
         ref = ref.first
-        p ref
-        settable = ref.all? do |row|
-          ref.all? do |column|
-            p column
-            sheet = column[1]
-            cell = column[2][1].gsub('$','')
-            s = @cells_that_can_be_set_at_runtime[sheet]
-            s && s.include?(cell)
+        settable = ref.all? do |r|
+          sheet = r[1]
+          cell = r[2][1].gsub('$','')
+          s = cells_that_can_be_set[sheet]
+          s && s.include?(cell)
+        end
+        if settable
+          @named_references_that_can_be_set_at_runtime << name 
+          ref.each do |r| 
+            sheet = r[1]
+            cell = r[2][1].gsub('$','')
+            cells_that_can_be_set_due_to_named_reference[sheet] << cell
+            cells_that_can_be_set_due_to_named_reference[sheet].uniq!
           end
         end
-        @named_references_that_can_be_set_at_runtime << name if settable
       end
+    end
+    if @cells_that_can_be_set_at_runtime == :named_references_only
+      @cells_that_can_be_set_at_runtime = cells_that_can_be_set_due_to_named_reference
     end
   end
 
@@ -774,10 +790,11 @@ class ExcelToX
   # or in cells_that_can_be_set_at_runtime, then we assume that
   # all value cells should be settable if they are referenced by
   # any other forumla.
-  def create_a_good_set_of_cells_that_should_be_settable_at_runtime
+  def a_good_set_of_cells_that_should_be_settable_at_runtime
     references = all_formulae
     counter = CountFormulaReferences.new
     count = counter.count(references)
+    settable_cells = {}
 
     count.each do |sheet,keys|
       keys.each do |ref,count|
@@ -785,11 +802,12 @@ class ExcelToX
         ast = references[sheet][ref]
         next unless ast
         if [:blank,:number,:null,:string,:shared_string,:constant,:percentage,:error,:boolean_true,:boolean_false].include?(ast.first)
-          @cells_that_can_be_set_at_runtime[sheet] ||= []
-          @cells_that_can_be_set_at_runtime[sheet] << ref.upcase
+          settable_cells[sheet] ||= []
+          settable_cells[sheet] << ref.upcase
         end
       end
-    end    
+    end
+    return settable_cells
   end
   
   # UTILITY FUNCTIONS
