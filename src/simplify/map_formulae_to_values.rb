@@ -33,7 +33,7 @@ class MapFormulaeToValues
       [operator,*ast[1..-1].map {|a| map(a) }]
     end
   end
-  
+
   def prefix(operator,argument)
     argument_value = value(map(argument))
     return [:prefix, operator, map(argument)] if argument_value == :not_a_value
@@ -52,7 +52,7 @@ class MapFormulaeToValues
   end
   
   alias :comparison :arithmetic
-  
+
   def percentage(number)
     ast_for_value(value([:percentage, number]))
   end
@@ -102,7 +102,7 @@ class MapFormulaeToValues
     return  [:function, "INDEX", array_mapped, map(row_number), map(column_number)] unless array_as_values
 
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
-    result = ast_for_value(result) unless result.is_a?(Array)
+    result = ast_for_value(result)
     result    
   end
   
@@ -113,7 +113,7 @@ class MapFormulaeToValues
     array_as_values = array_as_values(array)
     return  [:function, "INDEX", array_mapped, map(row_number)] unless array_as_values
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number)
-    result = ast_for_value(result) unless result.is_a?(Array)
+    result = ast_for_value(result)
     result
   end
   
@@ -131,8 +131,6 @@ class MapFormulaeToValues
       nil
     end
   end
-  
-
     
   def value(ast)
     return extract_values_from_array(ast) if ast.first == :array
@@ -156,6 +154,7 @@ class MapFormulaeToValues
   end
   
   def ast_for_value(value)
+    return value if value.is_a?(Array) && value.first.is_a?(Symbol)
     case value
     when Numeric; [:number,value.inspect]
     when true; [:boolean_true]

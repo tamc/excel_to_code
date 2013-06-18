@@ -1,5 +1,6 @@
 # Head
 
+- Fix bug in the treatment of array results when simplifying INDEX functions
 - Fixed a bug in replacing some table references with their values
 - Now attempts to simplify OFFSET() functions out of the spreadsheet at compile time (the function is NOT supported at runtime)
 - COUNT() functions are now replaced with their values if possible at compile time
