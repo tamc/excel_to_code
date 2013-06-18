@@ -10,10 +10,13 @@ A4\t[:string_join, [:table_reference, "FirstTable", "[#This Row],[ColA]"], [:tab
 A5\t[:function,"SUM",[:cell,"A1"],[:table_reference, "FirstTable", "[#This Row],[ColA]:[ColB]"]]
 C3\t[:table_reference, "MissingTable", "ColA"]
 C4\t[:table_reference, "FirstTable", "ColA"]
+C5\t[:table_reference, "FirstTable", ""]
+C6\t[:table_reference, "Global.Assumptions.Energy.Prices.High", ""]
 END
 
 tables = <<END
 FirstTable	Tables	B2:C5	1	ColA	ColB
+Global.Assumptions.Energy.Prices.High	Global assumptions	D84:N90	0	Fuel	Unit	2010	2015	2020	2025	2030	2035	2040	2045	2050
 END
 
 expected_output = <<END
@@ -22,6 +25,8 @@ A4\t[:string_join, [:sheet_reference, "Tables", [:cell, "B4"]], [:sheet_referenc
 A5\t[:function, "SUM", [:cell, "A1"], [:sheet_reference, "Tables", [:area, "B5", "C5"]]]
 C3\t[:error, "#REF!"]
 C4\t[:sheet_reference, "Tables", [:cell, "B4"]]
+C5\t[:sheet_reference, "Tables", [:area, "B3", "C4"]]
+C6\t[:sheet_reference, "Global assumptions", [:area, "D85", "N90"]]
 END
     
 input = StringIO.new(input)

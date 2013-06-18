@@ -9,6 +9,7 @@ class Table
     @name, @worksheet, @area, @number_of_total_rows, @column_name_array = name, worksheet, Area.for(reference), number_of_total_rows.to_i, column_name_array.map { |c| c.strip.downcase }
     @area.calculate_excel_variables    
     @data_area = Area.for("#{@area.excel_start.offset(1,0)}:#{@area.excel_finish.offset(-@number_of_total_rows,0)}")
+    @data_area.calculate_excel_variables
   end
   
   def reference_for(table_name,structured_reference,calling_worksheet,calling_cell)

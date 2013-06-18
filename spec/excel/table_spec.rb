@@ -95,3 +95,18 @@ describe Table do
     @table.includes?("sheet1","D8").should == false
   end
 end
+
+describe "Table bug, not returning reference for whole table" do
+  
+ before(:all) do
+    @table = Table.new("Global.Assumptions.Energy.Prices.High","Global assumptions","D84:N90","0","Fuel","Unit","2010", "2015", "2020", "2025", "2030", "2035", "2040", "2045", "2050")
+  end
+    
+
+ it "Should return the area of the data on the table when passed an empty structured reference" do
+    @table.reference_for("Global.Assumptions.Energy.Prices.High", "", "Sheet1", "A1").should == [:sheet_reference, "Global assumptions", [:area, "D85", "N90"]]
+
+ end
+ 
+
+end

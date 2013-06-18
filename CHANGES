@@ -1,5 +1,6 @@
 # Head
 
+- Fixed a bug in replacing some table references with their values
 - Now attempts to simplify OFFSET() functions out of the spreadsheet at compile time (the function is NOT supported at runtime)
 - COUNT() functions are now replaced with their values if possible at compile time
 - New option for cells_that_can_be_set_at_runtime = :named_references_only that only creates settable values for references that have been set in named_references_that_can_be_set_at_runtime.
