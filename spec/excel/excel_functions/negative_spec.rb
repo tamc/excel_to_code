@@ -19,6 +19,10 @@ describe "negative(function) should be equivalent to -function" do
   it "should treat nil as zero" do
     FunctionTest.negative(nil).should == 0
   end
+
+  it "should work on arrays of values" do
+    FunctionTest.negative([[1,-1,"10"],[true,false,"Asdf"]]).should == [[-1,1,-10],[-1,0,:value]]
+  end
   
   it "should return an error if an argument is an error" do
     FunctionTest.negative(:error).should == :error
