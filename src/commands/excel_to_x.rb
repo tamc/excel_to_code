@@ -580,12 +580,13 @@ class ExcelToX
   # out the value of the indirect or OFFSET at compile time and eliminate it
   def replace_indirects_and_offsets
     worksheets do |name,xml_filename|
-      log.info "Replacing indirects and offsets in #{name}"
+      log.info "Replacing INDIRECT, OFFSET and COLUMN functions in #{name}"
       
       # First of all we replace any indirects where their values can be calculated at compile time with those
       # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
       replace ReplaceIndirectsWithReferences, [name, 'Formulae'],  [name, 'Formulae']
       replace ReplaceOffsetsWithReferences, [name, 'Formulae'],  [name, 'Formulae']
+      replace ReplaceColumnWithColumnNumber, [name, 'Formulae'],  [name, 'Formulae']
       
       # The result of the indirect might be a named reference, which we need to simplify
       r = ReplaceNamedReferences.new
