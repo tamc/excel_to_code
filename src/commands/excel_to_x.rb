@@ -315,7 +315,7 @@ class ExcelToX
     table_filenames = input(name, "Worksheet tables")
     tables = intermediate(name, "Worksheet tables")
     table_extractor = ExtractTable.new(name)
-    table_filenames.lines.each do |line|
+    table_filenames.each_line do |line|
       table_xml = xml(File.join('worksheets',line.strip))
       table_extractor.extract(table_xml, tables)
     end
@@ -330,7 +330,7 @@ class ExcelToX
     worksheets do |name,xml_filename|
       log.info "Merging table files for #{name}"
       worksheet_table_file = input([name, "Worksheet tables"])
-      worksheet_table_file.lines do |line|
+      worksheet_table_file.each_line do |line|
         merged_table_file.puts line
       end
       close worksheet_table_file
@@ -526,7 +526,7 @@ class ExcelToX
 
     i = input('Named references')
     o = intermediate('Named references to keep')
-    i.lines.each do |line|
+    i.each_line do |line|
       sheet, name, ref = *line.split("\t")
       key = sheet.length != 0 ? [sheet, name] : name
       o.puts line if named_references_to_keep.include?(key) || named_references_that_can_be_set_at_runtime.include?(key)
@@ -535,7 +535,7 @@ class ExcelToX
 
     i.rewind
     o = intermediate('Named references to set')
-    i.lines.each do |line|
+    i.each_line do |line|
       sheet, name, ref = *line.split("\t")
       key = sheet.length != 0 ? [sheet, name] : name
       o.puts line if named_references_that_can_be_set_at_runtime.include?(key)
@@ -839,7 +839,7 @@ class ExcelToX
     worksheets do |name,xml_filename|
       r = references[name] = {}
       i = input([name,'Formulae'])
-      i.lines do |line|
+      i.each_line do |line|
         line =~ /^(.*?)\t(.*)$/
         ref, ast = $1, $2
         r[ref] = eval(ast)
@@ -860,7 +860,7 @@ class ExcelToX
   def worksheets(&block)
     unless @worksheet_filenames
       worksheet_names = input('Worksheet names')
-      @worksheet_filenames = worksheet_names.lines.map do |line|
+      @worksheet_filenames = worksheet_names.each_line.map do |line|
         name, filename = *line.split("\t")
         [name, filename.strip]
       end

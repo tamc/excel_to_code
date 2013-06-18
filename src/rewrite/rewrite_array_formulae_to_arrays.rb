@@ -8,7 +8,7 @@ class RewriteArrayFormulaeToArrays
   
   def rewrite(input,output)
     mapper = AstExpandArrayFormulae.new
-    input.lines do |line|
+    input.each_line do |line|
       content = line.split("\t")
       ast = eval(content.pop)
       output.puts "#{content.join("\t")}\t#{mapper.map(ast).inspect}"

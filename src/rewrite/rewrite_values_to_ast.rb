@@ -9,7 +9,7 @@ class RewriteValuesToAst
   # input should be in the form: 'thing\tthing\tformula\n' where the last field is always a forumla
   # output will be in the form 'thing\tthing\tast\n'
   def rewrite(input,output)
-    input.lines do |line|
+    input.each_line do |line|
       line =~ /^(.*?)\t(.*?)\t(.*)\n/
       ref, type, value = $1, $2, $3
       ast = case type

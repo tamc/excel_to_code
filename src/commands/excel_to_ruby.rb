@@ -66,7 +66,7 @@ class ExcelToRuby < ExcelToX
     o.puts "  # starting initializer"
     o.puts "  def initialize"
     d = input('Defaults')
-    d.lines do |line|
+    d.each_line do |line|
       o.puts line
     end
     o.puts "  end"

@@ -6,7 +6,7 @@ class MapSheetNamesToCNames
   
   def rewrite(input,output)
     c_names_assigned = {}
-    input.lines do |line|
+    input.each_line do |line|
       excel_worksheet_name = line.split("\t").first
       c_name = excel_worksheet_name.downcase.gsub(/[^a-z0-9]+/,'_')
       c_name = "s"+c_name if c_name[0] !~ /[a-z]/

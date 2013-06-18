@@ -17,7 +17,7 @@ class CompileToRubyUnitTest
   
   def rewrite(input, sloppy, c_name, refs_to_test, o)
     mapper = MapValuesToRuby.new
-    input.lines do |line|
+    input.each_line do |line|
       ref, formula = line.split("\t")
       next unless refs_to_test.include?(ref.upcase)
       ast = eval(formula)
