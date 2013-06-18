@@ -114,13 +114,11 @@ class AstExpandArrayFormulae
   
   private
   
-  def no_need_to_array?(args,ok_to_be_an_array)
+  def no_need_to_array?(args, ok_to_be_an_array)
     ok_to_be_an_array.each_with_index do |array_ok,i|
-      unless array_ok
-        if args[i].first == :array
-          return false
-        end
-      end
+      next if array_ok
+      break unless args[i]
+      return false if args[i].first == :array
     end
     true
   end
