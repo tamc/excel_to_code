@@ -73,3 +73,5 @@ require_relative 'excel_functions/int'
 require_relative 'excel_functions/cell'
 
 require_relative 'excel_functions/trim'
+
+require_relative 'excel_functions/mid'
