@@ -1,11 +1,14 @@
 module ExcelFunctions
   
-  def cell(a)
-    raise NotSupportedException.new("cell() function has not been implemented fully. Edit src/excel/excel_functions/cell.rb")
-    # return a if a.is_a?(Symbol)
-    # a ||= 0
-    # implement function
-    # return result
+  def cell(info_type, reference = nil)
+    return info_type if info_type.is_a?(Symbol)
+    return :value unless info_type.is_a?(String)
+    case info_type.downcase
+    when 'filename'
+      original_excel_filename
+    else
+      :value
+    end
   end
   
 end
