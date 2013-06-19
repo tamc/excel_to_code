@@ -69,4 +69,7 @@ require_relative 'excel_functions/int'
 
 # Other functions
 
+
 require_relative 'excel_functions/cell'
+
+require_relative 'excel_functions/trim'

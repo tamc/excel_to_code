@@ -368,7 +368,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * SUBSTITUTE -- Substitutes new text for old text in a text string
 * T -- Converts its arguments to text
 * TEXT -- Formats a number and converts it to text
-* TRIM -- Removes spaces from text
+* TRIM -- Removes spaces from text - _R_
 * UPPER -- Converts text to uppercase
 * VALUE -- Converts a text argument to a number
 
