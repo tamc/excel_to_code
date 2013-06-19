@@ -358,7 +358,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * LEFT, LEFTB -- Returns the leftmost characters from a text value -- _R_ _C_ (not LEFTB)
 * LEN, LENB -- Returns the number of characters in a text string
 * LOWER -- Converts text to lowercase
-* MID, MIDB -- Returns a specific number of characters from a text string starting at the position you specify
+* MID, MIDB -- Returns a specific number of characters from a text string starting at the position you specify - _R_
 * PHONETIC -- Extracts the phonetic (furigana) characters from a text string
 * PROPER -- Capitalizes the first letter in each word of a text value
 * REPLACE, REPLACEB -- Replaces characters within text

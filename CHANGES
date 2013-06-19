@@ -1,5 +1,6 @@
 # Head
 
+- Implemented TRIM(), MID() and partially implemented CELL() in ruby
 - The negative prefix can now operate on ranges
 - Now attempts to simplify COLUMN() functions out of the spreadsheet at compile time (the function is not supported at runtime)
 - Fix bug in the treatment of array results when simplifying INDEX functions
