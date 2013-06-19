@@ -79,9 +79,6 @@ File.open('src/compile/ruby/map_formulae_to_ruby.rb','w') do |f|
   f.puts map_formulae_to_ruby
 end
 
-
 # Add to git
-`git add  src/excel/excel_functions.rb src/compile/ruby/map_formulae_to_ruby.rb #{src_filename} #{spec_filename}`
-
-
-
+# Seems to cause problems with mac github client
+# `git add  src/excel/excel_functions.rb src/compile/ruby/map_formulae_to_ruby.rb #{src_filename} #{spec_filename}`
