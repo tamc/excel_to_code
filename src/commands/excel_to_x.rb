@@ -607,7 +607,9 @@ class ExcelToX
   # If a formula's value can be calculated at compile time, it is replaced with its calculated value (e.g., 1+1 gets replaced with 2)
   def replace_formulae_with_calculated_values    
     worksheets do |name,xml_filename|
-      replace ReplaceFormulaeWithCalculatedValues, [name, 'Formulae'],  [name, 'Formulae']
+      r = ReplaceFormulaeWithCalculatedValues.new
+      r.excel_file = excel_file
+      replace r, [name, 'Formulae'],  [name, 'Formulae']
     end
   end
 

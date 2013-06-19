@@ -4,9 +4,12 @@ require_relative '../util'
 
 class FormulaeCalculator
   include ExcelFunctions
+  attr_accessor :original_excel_filename
 end
 
 class MapFormulaeToValues
+  
+  attr_accessor :original_excel_filename
   
   def initialize
     @value_for_ast = MapValuesToRuby.new
@@ -21,6 +24,7 @@ class MapFormulaeToValues
   # FIXME: Caching works in the odd edge cases of long formula
   # but I really need to find the root cause of the problem
   def map(ast)
+    @calculator.original_excel_filename = original_excel_filename
     @cache[ast] ||= do_map(ast)
   end
 
