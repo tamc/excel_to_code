@@ -30,6 +30,7 @@ class ExcelToRuby < ExcelToX
     o.puts ""
     o.puts "class #{ruby_module_name}"
     o.puts "  include ExcelFunctions"
+    o.puts "  def original_excel_filename; #{excel_file.inspect}; end"
     
     o.puts  
     o.puts "  # Starting common elements"

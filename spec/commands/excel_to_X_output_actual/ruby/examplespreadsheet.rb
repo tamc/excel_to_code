@@ -4,6 +4,7 @@ require '/Users/tamc/Documents/github/excel_to_code/src/excel/excel_functions'
 
 class ExampleSpreadsheet
   include ExcelFunctions
+  def original_excel_filename; "/Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"; end
 
   # Starting common elements
   def common0; @common0 ||= add(referencing_a4,1); end

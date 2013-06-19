@@ -36,6 +36,7 @@ class ExcelToC < ExcelToX
     
     # Now we have to put all the initial definitions out
     o.puts "// definitions"
+    o.puts "static ExcelValue ORIGINAL_EXCEL_FILENAME = {.type = ExcelString, .string = #{excel_file.inspect} };"
 
     i = input("Common elements")
     c = CompileToCHeader.new

@@ -13,5 +13,6 @@ alias :test_data :excel_fragment
 
 class FunctionTest
   extend ExcelFunctions
+  def FunctionTest.original_excel_filename; "filename not specified"; end
 end
   
