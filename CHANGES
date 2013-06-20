@@ -1,5 +1,6 @@
 # Head
 
+- Inlining now copes with references to missing worksheets
 - Implement the PV() function in ruby and C
 - Implemented TRIM(), MID() and partially implemented CELL() in ruby
 - The negative prefix can now operate on ranges

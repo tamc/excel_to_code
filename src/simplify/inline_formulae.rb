@@ -27,6 +27,7 @@ class InlineFormulaeAst
   end
   
   def sheet_reference(sheet,reference)
+    return [:error, '#REF!'] unless references[sheet]
     if inline_ast.call(sheet,reference.last.upcase.gsub('$',''),references)
       ast = references[sheet][reference.last.upcase.gsub('$','')]
       if ast
