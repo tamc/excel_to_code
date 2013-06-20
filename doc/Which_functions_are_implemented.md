@@ -131,7 +131,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * PRICE -- Returns the price per $100 face value of a security that pays periodic interest
 * PRICEDISC -- Returns the price per $100 face value of a discounted security
 * PRICEMAT -- Returns the price per $100 face value of a security that pays interest at maturity
-* PV -- Returns the present value of an investment
+* PV -- Returns the present value of an investment - _R_ _C_
 * RATE -- Returns the interest rate per period of an annuity
 * RECEIVED -- Returns the amount received at maturity for a fully invested security
 * SLN -- Returns the straight-line depreciation of an asset for one period

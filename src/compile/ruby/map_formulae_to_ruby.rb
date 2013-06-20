@@ -38,6 +38,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MOD' => 'mod',
     'PI' => 'pi',
     'PMT' => 'pmt',
+    'PV' => 'pv',
     'ROUND' => 'round',
     'ROUNDDOWN' => 'rounddown',
     'ROUNDUP' => 'roundup',

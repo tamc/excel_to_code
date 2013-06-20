@@ -67,6 +67,9 @@ static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue negative(ExcelValue a_v);
 static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
 static ExcelValue power(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue pv_3(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v);
+static ExcelValue pv_4(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValue d_v);
+static ExcelValue pv_5(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValue d_v, ExcelValue e_v);
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
@@ -1070,6 +1073,57 @@ static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelVa
 	if(rate == 0) return new_excel_number(-(present_value / number_of_periods));
 	return new_excel_number(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
 }
+
+static ExcelValue pv_3(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v) {
+  return pv_4(rate_v, nper_v, pmt_v, ZERO);
+}
+
+static ExcelValue pv_4(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v, ExcelValue fv_v) {
+  return pv_5(rate_v, nper_v, pmt_v, fv_v, ZERO);
+}
+
+static ExcelValue pv_5(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v, ExcelValue fv_v, ExcelValue type_v ) {
+  CHECK_FOR_PASSED_ERROR(rate_v)
+  CHECK_FOR_PASSED_ERROR(nper_v)
+  CHECK_FOR_PASSED_ERROR(pmt_v)
+  CHECK_FOR_PASSED_ERROR(fv_v)
+  CHECK_FOR_PASSED_ERROR(type_v)
+
+  NUMBER(rate_v, rate)
+  NUMBER(nper_v, nper)
+  NUMBER(pmt_v, payment)
+  NUMBER(fv_v, fv)
+  NUMBER(type_v, start_of_period)
+  CHECK_FOR_CONVERSION_ERROR
+
+  if(rate< 0) {
+    return VALUE;
+  }
+
+  double present_value = 0;
+
+  // Sum up the payments
+  if(rate == 0) {
+    present_value = -payment * nper;
+  } else {
+    present_value = -payment * ((1-pow(1+rate,-nper))/rate);
+  }
+
+  // Adjust for beginning or end of period
+  if(start_of_period == 0) {
+   // Do Nothing
+  } else if(start_of_period == 1) {
+   present_value = present_value * (1+rate);
+  } else {
+   return VALUE;
+  } 
+
+  // Add on the final value
+  present_value = present_value - (fv/pow(1+rate,nper));
+  
+  return new_excel_number(present_value);
+}
+
 
 static ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
@@ -2165,6 +2219,11 @@ int test_functions() {
   ExcelValue sum_array_0_v = new_excel_range(sum_array_0,3,1);
   ExcelValue sum_array_1[] = {sum_array_0_v};
   assert(sum(1,sum_array_1).number == 1253.8718091935484);
+
+  // Test PV
+  assert((int) pv_3(new_excel_number(0.03), new_excel_number(12), new_excel_number(100)).number == -995);
+  assert((int) pv_4(new_excel_number(0.03), new_excel_number(12), new_excel_number(-100), new_excel_number(100)).number == 925);
+  assert((int) pv_5(new_excel_number(0.03), new_excel_number(12), new_excel_number(-100), new_excel_number(-100), new_excel_number(1)).number == 1095);
   
   // Release memory
   free_all_allocated_memory();

@@ -1,5 +1,6 @@
 # Head
 
+- Implement the PV() function in ruby and C
 - Implemented TRIM(), MID() and partially implemented CELL() in ruby
 - The negative prefix can now operate on ranges
 - Now attempts to simplify COLUMN() functions out of the spreadsheet at compile time (the function is not supported at runtime)
