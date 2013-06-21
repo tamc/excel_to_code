@@ -15,6 +15,8 @@ class ReplaceIndirectsWithReferencesAst
   def function(name,*args)
     if name == "INDIRECT" && args.size == 1 && args[0][0] == :string
       Formula.parse(args[0][1]).to_ast[1]
+    elsif name == "INDIRECT" && args.size == 1 && args[0][0] == :error
+      args[0]
     else
       puts "indirect #{[:function,name,*args.map { |a| map(a) }].inspect} not replaced" if name == "INDIRECT"
       [:function,name,*args.map { |a| map(a) }]

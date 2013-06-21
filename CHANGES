@@ -1,5 +1,6 @@
 # Head
 
+- Can now replace INDIRECT() functions where they argument is an error
 - Inlining now copes with references to missing worksheets
 - Implement the PV() function in ruby and C
 - Implemented TRIM(), MID() and partially implemented CELL() in ruby
