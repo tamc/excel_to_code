@@ -43,7 +43,7 @@ class ExcelToC < ExcelToX
     c.gettable = lambda { |ref| false }
     c.rewrite(i,w,o)
     i.rewind
-    number_of_refs += i.lines.to_a.size
+    number_of_refs += i.each_line.to_a.size
     close(i)
 
     worksheets do |name,xml_filename|
@@ -55,7 +55,7 @@ class ExcelToC < ExcelToX
       i = input([name,"Formulae"])
       c.rewrite(i,w,o)
       i.rewind
-      number_of_refs += i.lines.to_a.size
+      number_of_refs += i.each_line.to_a.size
       close(i)
     end
     
@@ -83,7 +83,7 @@ class ExcelToC < ExcelToX
     o.puts "// starting the value constants"
     mapper = MapValuesToCStructs.new
     i = input("Constants")
-    i.lines do |line|
+    i.each_line do |line|
       begin
         ref, formula = line.split("\t")
         ast = eval(formula)
@@ -345,7 +345,7 @@ END
 
     # Getters
     i = input('Named references to keep')
-    i.lines.each do |line|
+    i.each_line do |line|
       name = line.strip.split("\t").first
       o.puts "  attach_function '#{name}', [], ExcelValue.by_value"
     end
@@ -353,7 +353,7 @@ END
 
     # Setters
     i = input('Named references to set')
-    i.lines.each do |line|
+    i.each_line do |line|
       name = line.strip.split("\t").first
       o.puts "  attach_function 'set_#{name}', [ExcelValue.by_value], :void"
     end

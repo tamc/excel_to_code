@@ -74,7 +74,7 @@ class CompileNamedReferenceSetters
     mapper.sheet_names = Hash[sheet_names.readlines.map { |line| line.strip.split("\t")}]
     mapper.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
 
-    named_references.lines do |line|
+    named_references.each_line do |line|
       name, reference = line.split("\t")
       ast = eval(reference)
       output.puts "void set_#{name}(ExcelValue newValue) {"

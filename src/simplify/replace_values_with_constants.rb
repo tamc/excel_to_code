@@ -33,7 +33,7 @@ class ReplaceValuesWithConstants
   
   def replace(input,output)
     @rewriter ||= MapValuesToConstants.new
-    input.lines do |line|
+    input.each_line do |line|
       begin
         ref, ast = line.split("\t")
         output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"

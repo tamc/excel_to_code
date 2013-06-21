@@ -12,7 +12,7 @@ class CompileToCHeader
     c_name = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}][worksheet]
     self.gettable ||= lambda { |ref| true }
     self.settable ||= lambda { |ref| false }
-    input.lines do |line|
+    input.each_line do |line|
       begin
         ref, formula = line.split("\t")
         static_or_not = (gettable.call(ref) || settable.call(ref)) ? "" : "static "
