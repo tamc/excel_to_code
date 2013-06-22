@@ -77,3 +77,5 @@ require_relative 'excel_functions/trim'
 require_relative 'excel_functions/mid'
 
 require_relative 'excel_functions/pv'
+
+require_relative 'excel_functions/text'

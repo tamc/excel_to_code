@@ -47,6 +47,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'SUMIF' => 'sumif',
     'SUMIFS' => 'sumifs',
     'SUMPRODUCT' => 'sumproduct',
+    'TEXT' => 'text',
     'TRIM' => 'trim',
     'VLOOKUP' => 'vlookup',
     '^' => 'power'
