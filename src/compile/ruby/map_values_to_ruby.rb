@@ -45,7 +45,8 @@ class MapValuesToRuby
     "#VALUE!" => ":value",
     "#DIV/0!" => ":div0",
     "#REF!" => ":ref",
-    "#N/A" => ":na"
+    "#N/A" => ":na",
+    "#NUM!" => ":num"
   }
   
   REVERSE_ERRORS = ERRORS.invert

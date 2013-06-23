@@ -65,7 +65,8 @@ class MapValuesToC
     "#VALUE!" => "VALUE",
     "#DIV/0!" => "DIV0",
     "#REF!" => "REF",
-    "#N/A" => "NA"
+    "#N/A" => "NA",
+    "#NUM!" => "NUM"
   }
   
   REVERSE_ERRORS = ERRORS.invert
