@@ -82,6 +82,7 @@ static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelV
 static ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v );
 static ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v);
 static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue text(ExcelValue number_v, ExcelValue format_v);
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
 static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
 
@@ -127,7 +128,7 @@ static ExcelValue new_excel_number(double number) {
 static ExcelValue new_excel_string(char *string) {
 	cell_counter++;
 	HEAPCHECK
-	ExcelValue new_cell = 	cells[cell_counter];
+	ExcelValue new_cell = cells[cell_counter];
 	new_cell.type = ExcelString;
 	new_cell.string = string;
 	return new_cell;
@@ -1573,6 +1574,56 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   	return new_excel_number(sum);
 }
 
+static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
+  CHECK_FOR_PASSED_ERROR(number_v)
+  CHECK_FOR_PASSED_ERROR(format_v)
+
+	char *s;
+	char *p;
+	double n;
+  ExcelValue result;
+
+  if(number_v.type == ExcelEmpty) {
+    number_v = ZERO;
+  }
+
+  if(format_v.type == ExcelEmpty) {
+    return new_excel_string("");
+  }
+
+  if(number_v.type == ExcelString) {
+ 	 	s = number_v.string;
+		if (s == NULL || *s == '\0' || isspace(*s)) {
+			number_v = ZERO;
+		}	        
+		n = strtod (s, &p);
+		if(*p == '\0') {
+		  number_v = new_excel_number(n);
+		}
+  }
+
+  if(number_v.type != ExcelNumber) {
+    return number_v;
+  }
+
+  if(format_v.type != ExcelString) {
+    return format_v;
+  }
+
+  if(format_v.string == "0%") {
+    // FIXME: Too little? 
+    s = malloc(100);
+    free_later(s);
+    sprintf(s, "%d%%",(int) round(number_v.number*100));
+    result = new_excel_string(s);
+  } else {
+    return format_v;
+  }
+
+  // inspect_excel_value(result);
+  return result;
+}
+
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v) {
   return vlookup(lookup_value_v,lookup_table_v,column_number_v,TRUE);
 }
@@ -2227,6 +2278,12 @@ int test_functions() {
   assert((int) pv_4(new_excel_number(0.03), new_excel_number(12), new_excel_number(-100), new_excel_number(100)).number == 925);
   assert((int) pv_5(new_excel_number(0.03), new_excel_number(12), new_excel_number(-100), new_excel_number(-100), new_excel_number(1)).number == 1095);
   
+  // Test TEXT
+  assert(strcmp(text(new_excel_number(1.0), new_excel_string("0%")).string, "100%") == 0);
+  assert(strcmp(text(new_excel_string("1"), new_excel_string("0%")).string, "100%") == 0);
+  assert(strcmp(text(BLANK, new_excel_string("0%")).string, "0%") == 0);
+  assert(strcmp(text(new_excel_number(1.0), BLANK).string, "") == 0);
+  assert(strcmp(text(new_excel_string("ASGASD"), new_excel_string("0%")).string, "ASGASD") == 0);
   // Release memory
   free_all_allocated_memory();
   

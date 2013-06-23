@@ -63,7 +63,7 @@ class MapFormulaeToC < MapValuesToC
     'SUMIF2' => 'sumif_2',
     'SUMIF3' => 'sumif',
     'SUMIFS' => 'sumifs',
-    'TEXT2' => 'text'
+    'TEXT2' => 'text',
     'SUMPRODUCT' => 'sumproduct',
     'VLOOKUP3' => 'vlookup_3',
     'VLOOKUP4' => 'vlookup',
