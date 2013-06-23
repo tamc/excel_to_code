@@ -8,7 +8,7 @@ class RemoveCells
   end
   
   def rewrite(input,output)
-    input.lines do |line|
+    input.each_line do |line|
       ref = line[/^(.*?)\t/,1]
       if cells_to_keep.has_key?(ref)
         output.puts line
