@@ -1,5 +1,7 @@
 # Head
 
+# 0.1.10
+
 - Now replaces INDIRECT() functions that have a second argument (but note, excel_to_code only supports A1 refs, not R1C1).
 - Now repeats its passes to replace formulae with values until there is no more to be done
 - Partially implemented the TEXT() function (for '0%' format only at this stage)

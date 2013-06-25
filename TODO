@@ -19,7 +19,6 @@ See doc/How_to_add_a_missing_function.md
 
 * Optimize IF, CHOOSE, MATCH, VLOOKUP and similar functions so that they don't have to calculate all their arguments
 * Fix it so that cells that are being reported as empty, that excel would give a numeric value of zero, are fixed
-* Fix so that detects when it has finished replacing cells with values, rather than just doing a fixed number of cycles
 
 ## Things that are badly written
 
