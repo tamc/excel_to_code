@@ -19,10 +19,10 @@ class ReplaceIndirectsWithReferencesAst
   end
   
   def function(name,*args)
-    if name == "INDIRECT" && args.size == 1 && args[0][0] == :string
+    if name == "INDIRECT" && args[0][0] == :string
       @replacements_made_in_the_last_pass += 1
       Formula.parse(args[0][1]).to_ast[1]
-    elsif name == "INDIRECT" && args.size == 1 && args[0][0] == :error
+    elsif name == "INDIRECT" && args[0][0] == :error
       @replacements_made_in_the_last_pass += 1
       args[0]
     else
