@@ -1,5 +1,6 @@
 # Head
 
+- Now repeats its passes to replace formulae with values until there is no more to be done
 - Partially implemented the TEXT() function (for '0%' format only at this stage)
 - Can now replace INDIRECT() functions where they argument is an error
 - Inlining now copes with references to missing worksheets

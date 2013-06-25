@@ -566,13 +566,20 @@ class ExcelToX
     end
   end
     
-  # FIXME: This should work out how often it needs to operate, rather than having a hardwired 4
   def replace_formulae_with_their_results
-    4.times do 
+    number_of_passes = 0
+    begin 
+      number_of_passes += 1
+      @replacements_made_in_the_last_pass = 0
       replace_indirects_and_offsets
       replace_formulae_with_calculated_values
       replace_references_to_values_with_values
-    end
+      log.info "Pass #{number_of_passes}: Made #{@replacements_made_in_the_last_pass} replacements"
+      if number_of_passes > 20
+        log.warn "Made more than 20 passes, so aborting"
+        break
+      end
+    end while @replacements_made_in_the_last_pass > 0
   end
   
   # There is no support for INDIRECT or OFFSET in the ruby or c runtime
@@ -584,9 +591,10 @@ class ExcelToX
       
       # First of all we replace any indirects where their values can be calculated at compile time with those
       # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
-      replace ReplaceIndirectsWithReferences, [name, 'Formulae'],  [name, 'Formulae']
-      replace ReplaceOffsetsWithReferences, [name, 'Formulae'],  [name, 'Formulae']
-      replace ReplaceColumnWithColumnNumber, [name, 'Formulae'],  [name, 'Formulae']
+      [ReplaceIndirectsWithReferences.new, ReplaceOffsetsWithReferences.new, ReplaceColumnWithColumnNumber.new].each do |r|
+        replace r, [name, 'Formulae'],  [name, 'Formulae']
+        @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
+      end
       
       # The result of the indirect might be a named reference, which we need to simplify
       r = ReplaceNamedReferences.new
@@ -610,6 +618,7 @@ class ExcelToX
       r = ReplaceFormulaeWithCalculatedValues.new
       r.excel_file = excel_file
       replace r, [name, 'Formulae'],  [name, 'Formulae']
+      @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
     end
   end
 
@@ -643,6 +652,7 @@ class ExcelToX
       r.default_sheet_name = name
       replace r, [name, 'Formulae'],  [name, 'Formulae']
     end
+    @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
   end
   
   # If 'cells to keep' are specified, then other cells are removed, unless

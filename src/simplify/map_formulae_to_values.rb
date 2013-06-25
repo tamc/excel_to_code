@@ -10,10 +10,12 @@ end
 class MapFormulaeToValues
   
   attr_accessor :original_excel_filename
+  attr_accessor :replacements_made_in_the_last_pass
   
   def initialize
     @value_for_ast = MapValuesToRuby.new
     @calculator = FormulaeCalculator.new
+    @replacements_made_in_the_last_pass = 0
     @cache = {}
   end
 
@@ -159,6 +161,7 @@ class MapFormulaeToValues
   
   def ast_for_value(value)
     return value if value.is_a?(Array) && value.first.is_a?(Symbol)
+    @replacements_made_in_the_last_pass += 1
     case value
     when Numeric; [:number,value.inspect]
     when true; [:boolean_true]

@@ -7,6 +7,8 @@ class ReplaceFormulaeWithCalculatedValues
   def self.replace(*args)
     self.new.replace(*args)
   end
+
+  attr_accessor :replacements_made_in_the_last_pass
   
   def replace(input,output)
     rewriter = MapFormulaeToValues.new
@@ -21,5 +23,6 @@ class ReplaceFormulaeWithCalculatedValues
         raise
       end
     end
+    @replacements_made_in_the_last_pass = rewriter.replacements_made_in_the_last_pass
   end
 end

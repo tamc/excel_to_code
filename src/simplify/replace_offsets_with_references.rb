@@ -1,4 +1,10 @@
 class ReplaceOffsetsWithReferencesAst
+
+  attr_accessor :replacements_made_in_the_last_pass
+
+  def initialize
+    @replacements_made_in_the_last_pass = 0
+  end
     
   def map(ast)
     return ast unless ast.is_a?(Array)
@@ -22,6 +28,7 @@ class ReplaceOffsetsWithReferencesAst
   end
 
   def replace_offset(reference, row_offset, column_offset, height = 1, width = 1)
+    @replacements_made_in_the_last_pass += 1
     reference = Reference.for(reference.gsub!("$",""))
     start_reference = reference.offset(row_offset.to_i, column_offset.to_i)
     end_reference = reference.offset(row_offset.to_i + height.to_i - 1, column_offset.to_i + width.to_i - 1)
@@ -41,6 +48,8 @@ class ReplaceOffsetsWithReferences
     self.new.replace(*args)
   end
   
+  attr_accessor :replacements_made_in_the_last_pass
+  
   def replace(input,output)
     rewriter = ReplaceOffsetsWithReferencesAst.new
     input.each_line do |line|
@@ -52,5 +61,6 @@ class ReplaceOffsetsWithReferences
         output.puts line
       end
     end
+    @replacements_made_in_the_last_pass = rewriter.replacements_made_in_the_last_pass
   end
 end

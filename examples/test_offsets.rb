@@ -45,23 +45,23 @@ class TestOffsets < Test::Unit::TestCase
   def test_model_c120; assert_in_epsilon(40.352498288843265, worksheet.model_c120, 0.001); end
   def test_model_c121; assert_in_epsilon(63.72685714285714, worksheet.model_c121, 0.001); end
   def test_model_c124; assert_in_delta(0.25667351129363447, worksheet.model_c124, 0.001); end
-  def test_model_c126; assert_in_delta(0.7534104076659957, worksheet.model_c126, 0.001); end
+  def test_model_c126; assert_in_delta(0.7980911423648361, worksheet.model_c126, 0.001); end
   def test_model_c128; assert_in_delta(0.6332102365943555, worksheet.model_c128, 0.001); end
   def test_model_c131; assert_in_epsilon(15.749999999999998, worksheet.model_c131, 0.001); end
-  def test_model_c132; assert_in_epsilon(131.47518746421383, worksheet.model_c132, 0.001); end
-  def test_model_c133; assert_in_epsilon(147.22518746421383, worksheet.model_c133, 0.001); end
-  def test_model_c137; assert_in_epsilon(443.83783567231035, worksheet.model_c137, 0.001); end
-  def test_model_c139; assert_in_epsilon(156.99875761236635, worksheet.model_c139, 0.001); end
+  def test_model_c132; assert_in_epsilon(140.20632453790267, worksheet.model_c132, 0.001); end
+  def test_model_c133; assert_in_epsilon(155.95632453790267, worksheet.model_c133, 0.001); end
+  def test_model_c137; assert_in_epsilon(425.0721278219291, worksheet.model_c137, 0.001); end
+  def test_model_c139; assert_in_epsilon(150.360763774451, worksheet.model_c139, 0.001); end
   def test_model_c140; assert_in_epsilon(78, worksheet.model_c140, 0.001); end
-  def test_model_c141; assert_in_epsilon(234.99875761236635, worksheet.model_c141, 0.001); end
+  def test_model_c141; assert_in_epsilon(228.360763774451, worksheet.model_c141, 0.001); end
   def test_model_c142; assert_in_epsilon(246.6, worksheet.model_c142, 0.001); end
   def test_model_c143; assert_in_epsilon(246.6, worksheet.model_c143, 0.001); end
   def test_model_c1243; assert_in_delta(0.25667351129363447, worksheet.model_c1243, 0.001); end
-  def test_model_c1244; assert_in_delta(0.9807945480404743, worksheet.model_c1244, 0.001); end
-  def test_model_c1245; assert_in_delta(0.3525512343782234, worksheet.model_c1245, 0.001); end
+  def test_model_c1244; assert_in_epsilon(1.045928143247547, worksheet.model_c1244, 0.001); end
+  def test_model_c1245; assert_in_delta(0.3376451742479248, worksheet.model_c1245, 0.001); end
   def test_model_c1248; assert_in_epsilon(15.749999999999998, worksheet.model_c1248, 0.001); end
-  def test_model_c1249; assert_in_epsilon(131.47518746421383, worksheet.model_c1249, 0.001); end
-  def test_model_c1250; assert_in_epsilon(206.50481253578616, worksheet.model_c1250, 0.001); end
+  def test_model_c1249; assert_in_epsilon(140.20632453790267, worksheet.model_c1249, 0.001); end
+  def test_model_c1250; assert_in_epsilon(197.77367546209734, worksheet.model_c1250, 0.001); end
   def test_model_c1251; assert_in_epsilon(353.73, worksheet.model_c1251, 0.001); end
   def test_model_c1252; assert_in_delta(0, (worksheet.model_c1252||0), 0.001); end
 end
