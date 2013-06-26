@@ -36,6 +36,8 @@ class MapFormulaeToC < MapValuesToC
     'COUNTA' => 'counta',
     'FIND2' => 'find_2',
     'FIND3' => 'find',
+    'HLOOKUP3' => 'hlookup_3',
+    'HLOOKUP4' => 'hlookup',
     'IF2' => 'excel_if_2',
     'IF3' => 'excel_if',
     'IFERROR' => 'iferror',

@@ -55,6 +55,8 @@ static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
+static ExcelValue hlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v);
+static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v, ExcelValue match_type_v);
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
@@ -1671,6 +1673,54 @@ static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
   return NA;
 }
 
+static ExcelValue hlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v) {
+  return hlookup(lookup_value_v,lookup_table_v,row_number_v,TRUE);
+}
+
+static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v, ExcelValue match_type_v) {
+  CHECK_FOR_PASSED_ERROR(lookup_value_v)
+  CHECK_FOR_PASSED_ERROR(lookup_table_v)
+  CHECK_FOR_PASSED_ERROR(row_number_v)
+  CHECK_FOR_PASSED_ERROR(match_type_v)
+
+  if(lookup_value_v.type == ExcelEmpty) return NA;
+  if(lookup_table_v.type != ExcelRange) return NA;
+  if(row_number_v.type != ExcelNumber) return NA;
+  if(match_type_v.type != ExcelBoolean) return NA;
+    
+  int i;
+  int last_good_match = 0;
+  int rows = lookup_table_v.rows;
+  int columns = lookup_table_v.columns;
+  ExcelValue *array = lookup_table_v.array;
+  ExcelValue possible_match_v;
+  
+  if(row_number_v.number > rows) return REF;
+  if(row_number_v.number < 1) return VALUE;
+  
+  if(match_type_v.number == false) { // Exact match required
+    for(i=0; i< columns; i++) {
+      possible_match_v = array[i];
+      if(excel_equal(lookup_value_v,possible_match_v).number == true) {
+        return array[((((int) row_number_v.number)-1)*columns)+(i)];
+      }
+    }
+    return NA;
+  } else { // Highest value that is less than or equal
+    for(i=0; i< columns; i++) {
+      possible_match_v = array[i];
+      if(lookup_value_v.type != possible_match_v.type) continue;
+      if(more_than(possible_match_v,lookup_value_v).number == true) {
+        if(i == 0) return NA;
+        return array[((((int) row_number_v.number)-1)*columns)+(i-1)];
+      } else {
+        last_good_match = i;
+      }
+    }
+    return array[((((int) row_number_v.number)-1)*columns)+(last_good_match)];
+  }
+  return NA;
+}
 
 
 int test_functions() {
@@ -2265,6 +2315,33 @@ int test_functions() {
   assert(vlookup(new_excel_number(2.0),vlookup_a1_v,new_excel_number(2),VALUE).type == ExcelError);
   assert(vlookup(VALUE,VALUE,VALUE,VALUE).type == ExcelError);
 	
+  // Test HLOOKUP
+  ExcelValue hlookup_a1[] = {new_excel_number(1),new_excel_number(2),new_excel_number(3),new_excel_number(10),new_excel_number(20),new_excel_number(30)};
+  ExcelValue hlookup_a2[] = {new_excel_string("hello"),new_excel_number(2),new_excel_number(3),new_excel_number(10),new_excel_number(20),new_excel_number(30)};
+  ExcelValue hlookup_a3[] = {BLANK,new_excel_number(2),new_excel_number(3),new_excel_number(10),new_excel_number(20),new_excel_number(30)};
+  ExcelValue hlookup_a1_v = new_excel_range(hlookup_a1,2,3);
+  ExcelValue hlookup_a2_v = new_excel_range(hlookup_a2,2,3);
+  ExcelValue hlookup_a3_v = new_excel_range(hlookup_a3,2,3);
+  // ... should match the first argument against the first column of the table in the second argument, returning the value in the column specified by the third argument
+  assert(hlookup_3(new_excel_number(2.0),hlookup_a1_v,new_excel_number(2)).number == 20);
+  assert(hlookup_3(new_excel_number(1.5),hlookup_a1_v,new_excel_number(2)).number == 10);
+  assert(hlookup_3(new_excel_number(0.5),hlookup_a1_v,new_excel_number(2)).type == ExcelError);
+  assert(hlookup_3(new_excel_number(10),hlookup_a1_v,new_excel_number(2)).number == 30);
+  assert(hlookup_3(new_excel_number(2.6),hlookup_a1_v,new_excel_number(2)).number == 20);
+  // ... has a four argument variant that matches the lookup type
+  assert(hlookup(new_excel_number(2.6),hlookup_a1_v,new_excel_number(2),TRUE).number == 20);
+  assert(hlookup(new_excel_number(2.6),hlookup_a1_v,new_excel_number(2),FALSE).type == ExcelError);
+  assert(hlookup(new_excel_string("HELLO"),hlookup_a2_v,new_excel_number(2),FALSE).number == 10);
+  assert(hlookup(new_excel_string("HELMP"),hlookup_a2_v,new_excel_number(2),TRUE).number == 10);
+  // ... BLANK should not match with anything" do
+  assert(hlookup_3(BLANK,hlookup_a3_v,new_excel_number(2)).type == ExcelError);
+  // ... should return an error if an argument is an error" do
+  assert(hlookup(VALUE,hlookup_a1_v,new_excel_number(2),FALSE).type == ExcelError);
+  assert(hlookup(new_excel_number(2.0),VALUE,new_excel_number(2),FALSE).type == ExcelError);
+  assert(hlookup(new_excel_number(2.0),hlookup_a1_v,VALUE,FALSE).type == ExcelError);
+  assert(hlookup(new_excel_number(2.0),hlookup_a1_v,new_excel_number(2),VALUE).type == ExcelError);
+  assert(hlookup(VALUE,VALUE,VALUE,VALUE).type == ExcelError);
+
   // Test SUM
   ExcelValue sum_array_0[] = {new_excel_number(1084.4557258064517),new_excel_number(32.0516914516129),new_excel_number(137.36439193548387)};
   ExcelValue sum_array_0_v = new_excel_range(sum_array_0,3,1);

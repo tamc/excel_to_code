@@ -1,5 +1,7 @@
 # Head
 
+- Implementing the HLOOKUP function
+
 # 0.1.10
 
 - Now replaces INDIRECT() functions that have a second argument (but note, excel_to_code only supports A1 refs, not R1C1).

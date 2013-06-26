@@ -183,7 +183,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * COLUMN -- Returns the column number of a reference
 * COLUMNS -- Returns the number of columns in a reference
 * GETPIVOTDATA -- Returns data stored in a PivotTable
-* HLOOKUP -- Looks in the top row of an array and returns the value of the indicated cell
+* HLOOKUP -- Looks in the top row of an array and returns the value of the indicated cell -- _R_ _C_
 * HYPERLINK -- Creates a shortcut or jump that opens a document stored on a network server, an intranet, or the Internet
 * INDEX -- Uses an index to choose a value from a reference or array -- _R_ _C_ 
 * INDIRECT -- Returns a reference indicated by a text value -- _R_ _C_ only implemented for indirects that can be converted to formula at compile time
