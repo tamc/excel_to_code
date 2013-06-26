@@ -954,6 +954,7 @@ class ExcelToX
     filename = versioned_filename_write(intermediate_directory,*args)
     if run_in_memory
       @files ||= {}
+      remove_obsolete_versioned_filenames(intermediate_directory, *args)
       @files[filename] = StringIO.new("",'w')
     else
       FileUtils.mkdir_p(File.dirname(filename))
@@ -978,6 +979,15 @@ class ExcelToX
     @ruby_module_name = output_name.sub(/^[a-z\d]*/) { $&.capitalize }
     @ruby_module_name = @ruby_module_name.gsub(/(?:_|(\/))([a-z\d]*)/i) { "#{$1}#{$2.capitalize}" }.gsub('/', '::')
     @ruby_module_name
+  end
+
+  def remove_obsolete_versioned_filenames(*args)
+    return unless run_in_memory
+    standardised_name = standardise_name(args)
+    counter = @versioned_filenames[standardised_name] || 0
+    0.upto(counter-1).map do |c|
+      @files.delete(filename_with_counter(c, args))
+    end
   end
   
   def versioned_filename_read(*args)

@@ -1,6 +1,7 @@
 # Head
 
 - Implementing the HLOOKUP function
+- When running in memory mode, now allows old intermediate files to be garbage collected, reducing memory use
 
 # 0.1.10
 
