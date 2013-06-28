@@ -812,6 +812,7 @@ class ExcelToX
     count.each do |sheet,keys|
       keys.each do |ref,count|
         next unless count >= 1
+        next unless references[sheet]
         ast = references[sheet][ref]
         next unless ast
         if [:blank,:number,:null,:string,:shared_string,:constant,:percentage,:error,:boolean_true,:boolean_false].include?(ast.first)
