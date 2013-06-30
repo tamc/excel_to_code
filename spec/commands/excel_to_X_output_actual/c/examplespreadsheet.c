@@ -2916,10 +2916,7 @@ ExcelValue ranges_b4() {
 ExcelValue ranges_c4() {
   static ExcelValue result;
   if(variable_set[39] == 1) { return result;}
-  static ExcelValue array1[1];
-  array1[0] = valuetypes_a4();
-  ExcelValue array1_ev = new_excel_range(array1,1,1);
-  ExcelValue array0[] = {array1_ev};
+  ExcelValue array0[] = {valuetypes_a4()};
   result = sum(1, array0);
   variable_set[39] = 1;
   return result;

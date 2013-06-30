@@ -17,7 +17,12 @@ class ReplaceRangesWithArrayLiteralsAst
   def sheet_reference(sheet,reference)
     if reference.first == :area
       area = Area.for("#{reference[1]}:#{reference[2]}")
-      area.to_array_literal(sheet)
+      a = area.to_array_literal(sheet)
+      
+      # Don't convert single cell ranges
+      return a[1][1] if a.size == 2 && a[1].size == 2
+      a
+
     else
       [:sheet_reference,sheet,reference]
     end
@@ -25,7 +30,11 @@ class ReplaceRangesWithArrayLiteralsAst
   
   def area(start,finish)
     area = Area.for("#{start}:#{finish}")
-    area.to_array_literal
+    a = area.to_array_literal
+
+    # Don't convert single cell ranges
+    return a[1][1] if a.size == 2 && a[1].size == 2
+    a
   end
   
 end

@@ -1,5 +1,6 @@
 # Head
 
+- If a range points to a single cell, then that is used rather than a range
 - Fixed a bug where a nested sum would return 0 rather than an error in C code
 - Implementing the HLOOKUP function
 - When running in memory mode, now allows old intermediate files to be garbage collected, reducing memory use
