@@ -959,13 +959,19 @@ static ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
 static ExcelValue sum(int array_size, ExcelValue *array) {
 	double total = 0;
 	int i;
+  ExcelValue r;
 	for(i=0;i<array_size;i++) {
     switch(array[i].type) {
       case ExcelNumber:
         total += array[i].number;
         break;
       case ExcelRange:
-        total += number_from(sum( array[i].rows * array[i].columns, array[i].array ));
+        r = sum( array[i].rows * array[i].columns, array[i].array );
+        if(r.type == ExcelError) {
+          return r;
+        } else {
+          total += number_from(r);
+        }
         break;
       case ExcelError:
         return array[i];
