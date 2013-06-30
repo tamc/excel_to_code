@@ -1,6 +1,6 @@
 formula                         := space? expression+
 expression                       = string_join | comparison | arithmetic | thing
-thing                            = function | array | brackets | any_reference | string | percentage | number | boolean | prefix | named_reference 
+thing                            = function | array | brackets | any_reference | string | percentage | number | boolean | prefix | error | named_reference 
 argument                         = expression | null
 function                        := /[A-Z]+/ `'(' space argument? (space `',' space argument)* space `')'
 brackets                        := `'(' space expression+ space `')'
@@ -42,4 +42,5 @@ boolean_false                   := `'FALSE'
 prefix                          := /[-+]/ thing
 space                            = `/[ \n]*/
 null                            := &','
+error                           := '#REF!' | '#NAME?' | '#VALUE!' | '#DIV/0!' | '#N/A' | '#NUM!'
 

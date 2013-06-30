@@ -142,3 +142,11 @@ INDEX(INDIRECT("'"&XVI.a.Inputs[#Headers]&"'!Year.Matrix"), MATCH("Subtotal."&$A
 { 1 , 2 , 3 ; 4 , 5 , 6 }	[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]],[:row,[:number,"4"],[:number,"5"],[:number,"6"]]]
 SUM({1,2,3})	[:function,"SUM",[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]]]]
 {1,2,3}*{4,5,6}	[:arithmetic,[:array,[:row,[:number,"1"],[:number,"2"],[:number,"3"]]],[:operator,"*"],[:array,[:row,[:number,"4"],[:number,"5"],[:number,"6"]]]]
+
+# Parses errors
+#REF!/#REF!  [:arithmetic, [:error, "#REF!"], [:operator, "/"], [:error, "#REF!"]]
+#NAME?  [:error, "#NAME?"]
+#VALUE! [:error, "#VALUE!"]
+#DIV/0! [:error, "#DIV/0!"]
+#N/A  [:error, "#N/A"]
+#NUM! [:error, "#NUM!"]

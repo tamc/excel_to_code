@@ -18,7 +18,7 @@ class Formula < RubyPeg
   end
   
   def thing
-    function || array || brackets || any_reference || string || percentage || number || boolean || prefix || named_reference
+    function || array || brackets || any_reference || string || percentage || number || boolean || prefix || error || named_reference
   end
   
   def argument
@@ -232,6 +232,12 @@ class Formula < RubyPeg
   def null
     node :null do
       followed_by { terminal(",") }
+    end
+  end
+  
+  def error
+    node :error do
+      terminal("#REF!") || terminal("#NAME?") || terminal("#VALUE!") || terminal("#DIV/0!") || terminal("#N/A") || terminal("#NUM!")
     end
   end
   
