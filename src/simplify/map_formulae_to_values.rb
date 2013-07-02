@@ -108,6 +108,7 @@ class MapFormulaeToValues
     return  [:function, "INDEX", array_mapped, map(row_number), map(column_number)] unless array_as_values
 
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
+    result = [:number, 0] if result == [:blank]
     result = ast_for_value(result)
     result    
   end
@@ -119,6 +120,7 @@ class MapFormulaeToValues
     array_as_values = array_as_values(array)
     return  [:function, "INDEX", array_mapped, map(row_number)] unless array_as_values
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number)
+    result = [:number, 0] if result == [:blank]
     result = ast_for_value(result)
     result
   end

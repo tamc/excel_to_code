@@ -1,5 +1,6 @@
 # Head
 
+- INDEX now returns zero, not blank, when pointing to an empty cell
 - If a range points to a single cell, then that is used rather than a range
 - Fixed a bug where a nested sum would return 0 rather than an error in C code
 - Implementing the HLOOKUP function

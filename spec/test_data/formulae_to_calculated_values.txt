@@ -23,6 +23,7 @@
 [:arithmetic, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]], [:operator, "+"], [:number, "1"]]	[:number, "3"]
 [:arithmetic, [:function, "AVERAGE", [:number, "775"], [:number, "840"]], [:operator, "/"], [:number, "1000"]]	[:number, "0.8075"]
 # [:arithmetic, [:number, "1"], [:operator, "+"], [:array, [:row, [:number, "1"], [:number, "2"]]]]	[:array, [:row, [:number, "2"], [:number, "3"]]]
+[:arithmetic, [:blank], [:operator, "+"], [:blank]]	[:number, "0"]
 
 # Comparators
 [:comparison, [:number, "1"], [:comparator, "="], [:number, "8"]]	[:boolean_false]
@@ -66,4 +67,6 @@
 [:function, "INDEX", [:cell, "A1"], [:number, 1]]	[:cell, "A1"]
 [:function, "INDEX", [:sheet_reference, "A complicated sheet name", [:cell,"AAA27"]], [:number, 1]]	[:sheet_reference, "A complicated sheet name", [:cell, "AAA27"]]
 [:function, "INDEX", [:number, "2"], [:number, 1]]	[:number, "2"]
+# INDEX on blanks returns zeros. Go figure.
+[:function, "INDEX", [:array, [:row, [:blank]], [:row, [:blank]]], [:number, 1]]	[:number, 0]
 
