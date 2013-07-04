@@ -601,6 +601,9 @@ class ExcelToX
       r.sheet_name = name
       replace r, [name, 'Formulae'], 'Named references', [name, 'Formulae']
       
+      # The result of the indirect might contain arithmetic, which we need to simplify
+      replace SimplifyArithmetic,   [name, 'Formulae'], [name, 'Formulae']      
+
       # The result of the indirect might be a table reference, which we need to simplify
       r = ReplaceTableReferences.new
       r.sheet_name = name
