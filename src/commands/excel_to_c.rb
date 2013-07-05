@@ -372,10 +372,14 @@ END
     o.puts "# Test for #{name}"
     o.puts "require 'rubygems'"
     o.puts "gem 'minitest'"
-    o.puts  "require 'test/unit'"
+    o.puts  "require 'mintest/autorun'"
     o.puts  "require_relative '#{output_name.downcase}'"
     o.puts
-    o.puts "class Test#{ruby_module_name} < Test::Unit::TestCase"
+    o.puts "class Test#{ruby_module_name} < Mintest::Test"
+    o.puts "  def self.runnable_methods"
+    o.puts "    puts 'Overriding minitest to run tests in a defined order'"
+    o.puts "    methods = methods_matching(/^test_/)"
+    o.puts "  end" 
     o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.new end"
     
