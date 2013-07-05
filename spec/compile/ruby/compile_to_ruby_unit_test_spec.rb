@@ -5,19 +5,19 @@ describe CompileToRubyUnitTest do
   def compile(text, sloppy = false)
     input = StringIO.new(text)
     output = StringIO.new
-    CompileToRubyUnitTest.rewrite(input, sloppy, 'sheet1', ['A1','A2','A3','A4','A5','A6','A7','A8'] , output)
+    CompileToRubyUnitTest.rewrite(input, sloppy, output)
     output.string
   end
   
 it "should compile basic values and give precise tests when sloppy = false" do
 
 input = <<END
-A1\t[:number, "1"]
-A2\t[:string, "Hello"]
-A3\t[:error, "#NAME?"]
-A4\t[:boolean_true]
-A5\t[:boolean_false]
-A6\t[:blank]
+sheet1\tA1\t[:number, "1"]
+sheet1\tA2\t[:string, "Hello"]
+sheet1\tA3\t[:error, "#NAME?"]
+sheet1\tA4\t[:boolean_true]
+sheet1\tA5\t[:boolean_false]
+sheet1\tA6\t[:blank]
 END
 
 expected = <<END
@@ -35,14 +35,14 @@ end
 it "should compile basic values and give less precise tests when sloppy = true" do
 
 input = <<END
-A1\t[:number, "1000"]
-A2\t[:number, "0.1"]
-A3\t[:number, "0"]
-A4\t[:string, "Hello"]
-A5\t[:error, "#NAME?"]
-A6\t[:boolean_true]
-A7\t[:boolean_false]
-A8\t[:blank]
+sheet1\tA1\t[:number, "1000"]
+sheet1\tA2\t[:number, "0.1"]
+sheet1\tA3\t[:number, "0"]
+sheet1\tA4\t[:string, "Hello"]
+sheet1\tA5\t[:error, "#NAME?"]
+sheet1\tA6\t[:boolean_true]
+sheet1\tA7\t[:boolean_false]
+sheet1\tA8\t[:blank]
 END
 
 expected = <<END
@@ -60,7 +60,7 @@ compile(input, true).should == expected
 end
 
 it "should raise an exception when values types are not recognised" do
-  lambda { compile("A1\t[:unknown]")}.should raise_exception(NotSupportedException)
+  lambda { compile("sheet1\tA1\t[:unknown]")}.should raise_exception(NotSupportedException)
 end
 
 end

@@ -186,6 +186,7 @@ class ExcelToX
     inline_formulae_that_are_only_used_once
     separate_formulae_elements
     replace_values_with_constants
+    create_sorted_references_to_test
 
     # This actually creates the code (implemented in subclasses)
     write_code
@@ -737,6 +738,63 @@ class ExcelToX
     remove_any_cells_not_needed_for_outputs
   end
   
+  # This comes up with a list of references to test, in the form of a file called 'References to test'.
+  # It is structured to contain one reference per row:
+  # worksheet_c_name \t ref \t value_ast
+  # These will be sorted so that later refs depend on earlier refs. This should mean that the first test that 
+  # fails will be the root cause of the problem
+  #
+  # FIXME: We've taken a shortcut and are sorting by how often a cell is referenced
+  # rather than building a full dependency tree. This is usually ok, because
+  # spreadsheets are usually built left to right top to bottom. But a dependency
+  # tree would be better.
+  def create_sorted_references_to_test
+    all_formulae = all_formulae()
+    references_to_test = []
+
+    # First get the list of references we should test
+    worksheets do |name, xml_filename|
+      log.info "Workingout references to test for #{name}"
+
+      # Either keep all the cells on the sheet  
+      if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
+        keep = all_formulae[name].keys
+      else # Or just those specified as cells that will be kept
+        keep = cells_to_keep[name]
+      end
+
+      # Now go through and match the cells to keep with their values
+      i = input([name,"Values"])
+      i.each_line do |line|
+        ref, formula = line.split("\t")
+        next unless keep.include?(ref.upcase)
+        references_to_test << [name, ref, formula]
+      end
+      close(i)
+    end
+
+    # Then sort them into order, based on how often they are referenced
+    counter = CountFormulaReferences.new
+    count = counter.count(all_formulae)
+
+    references_to_test = references_to_test.sort_by do |row|
+      name = row[0]
+      ref = row[1]
+      [count[name][ref], name, ref]
+    end.reverse
+    # Do we need to reverse ? 
+
+    # Then write them out
+    references_to_test_file = intermediate("References to test")
+    references_to_test.each do |row|
+      row[0] = c_name_for_worksheet_name(row[0])
+      references_to_test_file.puts row.join("\t")
+    end
+
+    close references_to_test_file
+  end
+
+
   # This looks for repeated formula parts, and separates them out. It is the opposite of inlining:
   # e.g., A1 := (B1 + B3) + B10; A2 := (B1 + B3) + 3 gets transformed to: Common1 := B1 + B3 ; A1 := Common1 + B10 ; A2 := Common1 + 3
   def separate_formulae_elements

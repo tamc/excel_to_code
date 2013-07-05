@@ -379,27 +379,14 @@ END
     o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.new end"
     
-    all_formulae = all_formulae()
-    
-    worksheets do |name,xml_filename|
-      i = input([name,"Values"])
-      o.puts
-      o.puts "  # start of #{name}"  
-      c_name = c_name_for_worksheet_name(name)
-      if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
-        refs_to_test = all_formulae[name].keys
-      else
-        refs_to_test = cells_to_keep[name]
-      end
-      if refs_to_test && !refs_to_test.empty?
-        refs_to_test = refs_to_test.map(&:upcase)
-        CompileToCUnitTest.rewrite(i, sloppy_tests, c_name, refs_to_test, o)
-      end
-      close(i)
-    end
+    i = input("References to test")
+    CompileToCUnitTest.rewrite(i, sloppy_tests, o)
+    close(i)
+
     o.puts "end"
     close(o)
   end
+
   
   def compile_code
     return unless actually_compile_code || actually_run_tests

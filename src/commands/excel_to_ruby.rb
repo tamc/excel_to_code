@@ -90,27 +90,10 @@ class ExcelToRuby < ExcelToX
     o.puts
     o.puts "class Test#{ruby_module_name} < Test::Unit::TestCase"
     o.puts "  def worksheet; @worksheet ||= #{ruby_module_name}.new; end"
-    
-    c = CompileToRubyUnitTest.new
-    formulae = all_formulae()
-    
-    worksheets do |name,xml_filename|
-      i = input(name,"Values")
-      o.puts "  # Start of #{name}"
-      c_name = c_name_for_worksheet_name(name)
-      if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
-        refs_to_test = formulae[name].keys
-      else
-        refs_to_test = cells_to_keep[name]
-      end
-      if refs_to_test && !refs_to_test.empty?
-        refs_to_test = refs_to_test.map(&:upcase)
-        c.rewrite(i, sloppy_tests, c_name, refs_to_test, o)
-      end
-      o.puts "  # End of #{name}"
-      o.puts ""
-      close(i)
-    end 
+
+    i = input("References to test")
+    CompileToCUnitTest.rewrite(i, sloppy_tests, o)
+    close(i)
     o.puts "end"   
     close(o)
   end
