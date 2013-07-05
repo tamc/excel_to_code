@@ -758,9 +758,9 @@ class ExcelToX
 
       # Either keep all the cells on the sheet  
       if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
-        keep = all_formulae[name].keys
+        keep = all_formulae[name].keys || []
       else # Or just those specified as cells that will be kept
-        keep = cells_to_keep[name]
+        keep = cells_to_keep[name] || []
       end
 
       # Now go through and match the cells to keep with their values
