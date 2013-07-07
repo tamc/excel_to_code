@@ -372,10 +372,10 @@ END
     o.puts "# Test for #{name}"
     o.puts "require 'rubygems'"
     o.puts "gem 'minitest'"
-    o.puts  "require 'mintest/autorun'"
+    o.puts  "require 'minitest/autorun'"
     o.puts  "require_relative '#{output_name.downcase}'"
     o.puts
-    o.puts "class Test#{ruby_module_name} < Mintest::Test"
+    o.puts "class Test#{ruby_module_name} < Minitest::Test"
     o.puts "  def self.runnable_methods"
     o.puts "    puts 'Overriding minitest to run tests in a defined order'"
     o.puts "    methods = methods_matching(/^test_/)"

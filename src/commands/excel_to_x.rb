@@ -743,14 +743,9 @@ class ExcelToX
   # worksheet_c_name \t ref \t value_ast
   # These will be sorted so that later refs depend on earlier refs. This should mean that the first test that 
   # fails will be the root cause of the problem
-  #
-  # FIXME: We've taken a shortcut and are sorting by how often a cell is referenced
-  # rather than building a full dependency tree. This is usually ok, because
-  # spreadsheets are usually built left to right top to bottom. But a dependency
-  # tree would be better.
   def create_sorted_references_to_test
     all_formulae = all_formulae()
-    references_to_test = []
+    references_to_test = {}
 
     # First get the list of references we should test
     worksheets do |name, xml_filename|
@@ -768,27 +763,20 @@ class ExcelToX
       i.each_line do |line|
         ref, formula = line.split("\t")
         next unless keep.include?(ref.upcase)
-        references_to_test << [name, ref, formula]
+        references_to_test[[name, ref]] = formula
       end
       close(i)
     end
+    
+    # Now work out dependency tree
+    sorted_references = SortIntoCalculationOrder.new.sort(all_formulae)
 
-    # Then sort them into order, based on how often they are referenced
-    counter = CountFormulaReferences.new
-    count = counter.count(all_formulae)
-
-    references_to_test = references_to_test.sort_by do |row|
-      name = row[0]
-      ref = row[1]
-      [count[name][ref], name, ref]
-    end.reverse
-    # Do we need to reverse ? 
-
-    # Then write them out
     references_to_test_file = intermediate("References to test")
-    references_to_test.each do |row|
-      row[0] = c_name_for_worksheet_name(row[0])
-      references_to_test_file.puts row.join("\t")
+    sorted_references.each do |ref|
+      ast = references_to_test[ref]
+      next unless ast
+      c_name = c_name_for_worksheet_name(ref[0])
+      references_to_test_file.puts "#{c_name}\t#{ref[1]}\t#{ast}"
     end
 
     close references_to_test_file
