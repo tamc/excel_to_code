@@ -82,6 +82,7 @@ require_relative 'excel_functions/roundup'
 require_relative 'excel_functions/rounddown'
 
 require_relative 'excel_functions/negative'
+<<<<<<< HEAD
 
 require_relative 'excel_functions/exp'
 
@@ -92,3 +93,5 @@ require_relative 'excel_functions/month'
 require_relative 'excel_functions/excel_or'
 
 require_relative 'excel_functions/today'
+=======
+>>>>>>> parent of d46088e... Implemented EXP, INT, and MONTH functions

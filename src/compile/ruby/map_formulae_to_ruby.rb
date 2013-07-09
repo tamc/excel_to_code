@@ -23,19 +23,20 @@ class MapFormulaeToRuby < MapValuesToRuby
     'COSH' => 'cosh',
     'COUNT' => 'count',
     'COUNTA' => 'counta',
-    'EXP' => 'exp',
     'FIND' => 'find',
     'IF' => 'excel_if',
     'IFERROR' => 'iferror',
     'INDEX' => 'index',
-    'INT' => 'int',
     'LEFT' => 'left',
     'MATCH' => 'excel_match',
     'MAX' => 'max',
     'MIN' => 'min',
     'MOD' => 'mod',
+<<<<<<< HEAD
     'MONTH' => 'month',
     'OR' => 'excel_or',
+=======
+>>>>>>> parent of d46088e... Implemented EXP, INT, and MONTH functions
     'PI' => 'pi',
     'PMT' => 'pmt',
     'ROUND' => 'round',
