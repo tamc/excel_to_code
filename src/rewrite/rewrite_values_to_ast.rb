@@ -8,6 +8,7 @@ class RewriteValuesToAst
   
   # input should be in the form: 'thing\tthing\tformula\n' where the last field is always a forumla
   # output will be in the form 'thing\tthing\tast\n'
+  # FIXME: Removes newlines and other unprintables from str types. Should actually process them.
   def rewrite(input,output)
     input.each_line do |line|
       line =~ /^(.*?)\t(.*?)\t(.*)\n/
@@ -17,7 +18,7 @@ class RewriteValuesToAst
       when 's'; [:shared_string,value]
       when 'n'; [:number,value]
       when 'e'; [:error,value]
-      when 'str'; [:string,value]
+      when 'str'; [:string,value.gsub(/_x[0-9A-F]{4}_/,'')]
       else
         $stderr.puts "Type #{type} not known in #{line}"
         [:parse_error,line.inspect]
