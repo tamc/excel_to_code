@@ -33,8 +33,11 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MIN' => 'min',
     'MOD' => 'mod',
 <<<<<<< HEAD
+<<<<<<< HEAD
     'MONTH' => 'month',
     'OR' => 'excel_or',
+=======
+>>>>>>> parent of d46088e... Implemented EXP, INT, and MONTH functions
 =======
 >>>>>>> parent of d46088e... Implemented EXP, INT, and MONTH functions
     'PI' => 'pi',
