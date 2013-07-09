@@ -35,6 +35,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MIN' => 'min',
     'MOD' => 'mod',
     'MONTH' => 'month',
+    'OR' => 'excel_or',
     'PI' => 'pi',
     'PMT' => 'pmt',
     'ROUND' => 'round',
@@ -45,6 +46,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'SUMIF' => 'sumif',
     'SUMIFS' => 'sumifs',
     'SUMPRODUCT' => 'sumproduct',
+    'TODAY' => 'today',
     'VLOOKUP' => 'vlookup',
     '^' => 'power'
   }

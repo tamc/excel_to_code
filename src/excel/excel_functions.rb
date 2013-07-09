@@ -88,3 +88,7 @@ require_relative 'excel_functions/exp'
 require_relative 'excel_functions/int'
 
 require_relative 'excel_functions/month'
+
+require_relative 'excel_functions/excel_or'
+
+require_relative 'excel_functions/today'
