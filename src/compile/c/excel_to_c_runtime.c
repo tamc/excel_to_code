@@ -1695,6 +1695,9 @@ static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
   if(lookup_value_v.type == ExcelEmpty) return NA;
   if(lookup_table_v.type != ExcelRange) return NA;
   if(row_number_v.type != ExcelNumber) return NA;
+  if(match_type_v.type == ExcelNumber && match_type_v.number >= 0 && match_type_v.number <= 1) {
+    match_type_v.type = ExcelBoolean;
+  }
   if(match_type_v.type != ExcelBoolean) return NA;
     
   int i;
@@ -2345,6 +2348,11 @@ int test_functions() {
   assert(hlookup(new_excel_number(2.6),hlookup_a1_v,new_excel_number(2),FALSE).type == ExcelError);
   assert(hlookup(new_excel_string("HELLO"),hlookup_a2_v,new_excel_number(2),FALSE).number == 10);
   assert(hlookup(new_excel_string("HELMP"),hlookup_a2_v,new_excel_number(2),TRUE).number == 10);
+  // ... that four argument variant should accept 0 or 1 for the lookup type
+  assert(hlookup(new_excel_number(2.6),hlookup_a1_v,new_excel_number(2),ONE).number == 20);
+  assert(hlookup(new_excel_number(2.6),hlookup_a1_v,new_excel_number(2),ZERO).type == ExcelError);
+  assert(hlookup(new_excel_string("HELLO"),hlookup_a2_v,new_excel_number(2),ZERO).number == 10);
+  assert(hlookup(new_excel_string("HELMP"),hlookup_a2_v,new_excel_number(2),ONE).number == 10);
   // ... BLANK should not match with anything" do
   assert(hlookup_3(BLANK,hlookup_a3_v,new_excel_number(2)).type == ExcelError);
   // ... should return an error if an argument is an error" do
