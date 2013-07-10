@@ -1,5 +1,8 @@
 # Head
 
+- Tests are now output in dependency order, so the first test to fail is likely to be closest to the underlying problem.
+- VLOOKUP and HLOOKUP now accept 1 and 0 in place of TRUE and FALSE on their last argument
+- Inline strings now have newlines stripped to be consistent with shared strings (it would be better if they were stripped in neither)
 - INDEX now returns zero, not blank, when pointing to an empty cell
 - If a range points to a single cell, then that is used rather than a range
 - Fixed a bug where a nested sum would return 0 rather than an error in C code
