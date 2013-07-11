@@ -1,5 +1,6 @@
 # Head
 
+- C version Now returns NUM error when trying to do a non integer power of a negative number
 - Previously where shared formulae overlapped, the last would win. Now the correct one wins.
 - Tests are now output in dependency order, so the first test to fail is likely to be closest to the underlying problem.
 - VLOOKUP and HLOOKUP now accept 1 and 0 in place of TRUE and FALSE on their last argument

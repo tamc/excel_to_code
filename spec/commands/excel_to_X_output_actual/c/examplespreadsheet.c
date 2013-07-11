@@ -1143,7 +1143,12 @@ static ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
-	return new_excel_number(pow(a,b));
+  double result = pow(a,b);
+  if(isnan(result) == 1) {
+    return NUM;
+  } else {
+    return new_excel_number(result);
+  }
 }
 
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v) {
@@ -2102,9 +2107,10 @@ int test_functions() {
     assert((pmt(new_excel_number(0),new_excel_number(2),new_excel_number(10)).number - -5) < 0.01);
 
 	// Test power
-    // ... should return sum of its arguments
+    // ... should return power of its arguments
 	assert(power(new_excel_number(2),new_excel_number(3)).number == 8);
 	assert(power(new_excel_number(4.0),new_excel_number(0.5)).number == 2.0);
+	assert(power(new_excel_number(-4.0),new_excel_number(0.5)).type == ExcelError);
 	
 	// Test round
     assert(excel_round(new_excel_number(1.1), new_excel_number(0)).number == 1.0);
