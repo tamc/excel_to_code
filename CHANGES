@@ -1,5 +1,7 @@
 # Head
 
+# 0.1.11
+
 - C version Now returns NUM error when trying to do a non integer power of a negative number
 - Previously where shared formulae overlapped, the last would win. Now the correct one wins.
 - Tests are now output in dependency order, so the first test to fail is likely to be closest to the underlying problem.
