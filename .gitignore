@@ -20,6 +20,7 @@ examples/test_stringexample.rb
 examples/getsetranges.rb
 examples/test_getsetranges.rb
 examples/getsetranges/
+examples/utf8-strings/
 examples/offsets/
 examples/offsets.rb
 examples/test_offsets.rb
