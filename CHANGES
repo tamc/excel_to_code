@@ -1,5 +1,7 @@
 # Head
 
+# 0.1.12
+
 - Fixed bug in working out how many passes to carry out when trying to eliminate INDIRECT() and other functions
 
 # 0.1.11
