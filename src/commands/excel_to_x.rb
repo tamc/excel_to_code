@@ -655,8 +655,8 @@ class ExcelToX
     worksheets do |name,xml_filename|
       r.default_sheet_name = name
       replace r, [name, 'Formulae'],  [name, 'Formulae']
+      @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
     end
-    @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
   end
   
   # If 'cells to keep' are specified, then other cells are removed, unless

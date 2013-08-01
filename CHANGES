@@ -1,5 +1,7 @@
 # Head
 
+- Fixed bug in working out how many passes to carry out when trying to eliminate INDIRECT() and other functions
+
 # 0.1.11
 
 - C version Now returns NUM error when trying to do a non integer power of a negative number
