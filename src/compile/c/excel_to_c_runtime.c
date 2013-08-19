@@ -63,6 +63,8 @@ static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
+static ExcelValue excel_log(ExcelValue number);
+static ExcelValue excel_log_2(ExcelValue number, ExcelValue base);
 static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
@@ -85,6 +87,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue text(ExcelValue number_v, ExcelValue format_v);
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
 static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
+
 
 // My little heap for excel values
 ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
@@ -296,6 +299,23 @@ static ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(a + b);
+}
+
+static ExcelValue excel_log(ExcelValue number) {
+  return excel_log_2(number, TEN);
+}
+
+static ExcelValue excel_log_2(ExcelValue number_v, ExcelValue base_v) {
+	CHECK_FOR_PASSED_ERROR(number_v)
+	CHECK_FOR_PASSED_ERROR(base_v)
+	NUMBER(number_v, n)
+	NUMBER(base_v, b)
+	CHECK_FOR_CONVERSION_ERROR
+
+  if(n<=0) { return NUM; }
+  if(b<=0) { return NUM; }
+
+  return	new_excel_number(log(n)/log(b));
 }
 
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
@@ -2385,6 +2405,16 @@ int test_functions() {
   assert(strcmp(text(BLANK, new_excel_string("0%")).string, "0%") == 0);
   assert(strcmp(text(new_excel_number(1.0), BLANK).string, "") == 0);
   assert(strcmp(text(new_excel_string("ASGASD"), new_excel_string("0%")).string, "ASGASD") == 0);
+
+  // Test LOG
+  // One argument variant assumes LOG base 10
+	assert(excel_log(new_excel_number(10)).number == 1);
+	assert(excel_log(new_excel_number(100)).number == 2);
+	assert(excel_log(new_excel_number(0)).type == ExcelError);
+  // Two argument variant allows LOG base to be specified
+	assert(excel_log_2(new_excel_number(8),new_excel_number(2)).number == 3.0);
+	assert(excel_log_2(new_excel_number(8),new_excel_number(0)).type == ExcelError);
+
   // Release memory
   free_all_allocated_memory();
   
