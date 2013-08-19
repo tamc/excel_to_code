@@ -82,9 +82,7 @@ class AstExpandArrayFormulae
   end
   
   def map_match(*args)
-    $DEBUGN = true
     a = array_map args, 'MATCH', false, true, false
-    $DEBUGN = false
     a
   end
   
