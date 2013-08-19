@@ -230,7 +230,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * MULTINOMIAL -- Returns the multinomial of a set of numbers
 * ODD -- Rounds a number up to the nearest odd integer
 * PI -- Returns the value of pi
-* POWER -- Returns the result of a number raised to a power
+* POWER -- Returns the result of a number raised to a power -- _R_ _C_
 * PRODUCT -- Multiplies its arguments
 * QUOTIENT -- Returns the integer portion of a division
 * RADIANS -- Converts degrees to radians
