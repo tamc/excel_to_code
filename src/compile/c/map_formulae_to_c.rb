@@ -69,7 +69,8 @@ class MapFormulaeToC < MapValuesToC
     'SUMPRODUCT' => 'sumproduct',
     'VLOOKUP3' => 'vlookup_3',
     'VLOOKUP4' => 'vlookup',
-    '^' => 'power'
+    '^' => 'power',
+    'POWER' => 'power'
   }
   
   def prefix(symbol,ast)

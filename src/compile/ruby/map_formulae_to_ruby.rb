@@ -51,7 +51,8 @@ class MapFormulaeToRuby < MapValuesToRuby
     'TEXT' => 'text',
     'TRIM' => 'trim',
     'VLOOKUP' => 'vlookup',
-    '^' => 'power'
+    '^' => 'power',
+    'POWER' => 'power'
   }
   
   def prefix(symbol,ast)
