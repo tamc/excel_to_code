@@ -18,6 +18,10 @@ Add the function definition and implementation to src/compile/c/excel_to_c_runti
 
 The tests for that function go in the main body of that file.
 
+Run the tests with
+
+    gcc excel_to_c_runtime.c; ./a.out
+
 Add the function lookup to the FUNCTIONS hash in src/compile/c/map_formulae_to_c.rb
 
 Note that if a function can vary in its number of arguments, then the map_formulae_to_c.rb code has approaches to call different C functions based on the number of arguments. 
