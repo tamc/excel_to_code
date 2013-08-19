@@ -1,5 +1,6 @@
 # Head
 
+- Implemented LOG function in ruby
 - Now converts the POWER(10,2) function as well as 10^2
 
 # 0.1.12

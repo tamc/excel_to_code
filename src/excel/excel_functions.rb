@@ -81,3 +81,5 @@ require_relative 'excel_functions/pv'
 require_relative 'excel_functions/text'
 
 require_relative 'excel_functions/hlookup'
+
+require_relative 'excel_functions/log'

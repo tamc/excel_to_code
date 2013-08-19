@@ -32,6 +32,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'INT' => 'int',
     'LARGE' => 'large',
     'LEFT' => 'left',
+    'LOG' => 'log',
     'MATCH' => 'excel_match',
     'MAX' => 'max',
     'MID' => 'mid',
@@ -39,6 +40,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MOD' => 'mod',
     'PI' => 'pi',
     'PMT' => 'pmt',
+    'POWER' => 'power',
     'PV' => 'pv',
     'ROUND' => 'round',
     'ROUNDDOWN' => 'rounddown',
@@ -51,8 +53,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'TEXT' => 'text',
     'TRIM' => 'trim',
     'VLOOKUP' => 'vlookup',
-    '^' => 'power',
-    'POWER' => 'power'
+    '^' => 'power'
   }
   
   def prefix(symbol,ast)
