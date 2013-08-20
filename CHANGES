@@ -1,5 +1,7 @@
 # Head
 
+- Implementing the MMULT function in ruby and C (note only works when entered as an array formula)
+
 # 0.1.13
 
 - Implemented LOG function in ruby and C

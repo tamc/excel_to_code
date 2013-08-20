@@ -37,6 +37,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'MAX' => 'max',
     'MID' => 'mid',
     'MIN' => 'min',
+    'MMULT' => 'mmult',
     'MOD' => 'mod',
     'PI' => 'pi',
     'PMT' => 'pmt',

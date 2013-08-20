@@ -224,7 +224,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * LOG10 -- Returns the base-10 logarithm of a number
 * MDETERM -- Returns the matrix determinant of an array
 * MINVERSE -- Returns the matrix inverse of an array
-* MMULT -- Returns the matrix product of two arrays
+* MMULT -- Returns the matrix product of two arrays -- _R_ _C_ but posibly only when as array formula
 * MOD -- Returns the remainder from division -- _R_ _C_
 * MROUND -- Returns a number rounded to the desired multiple
 * MULTINOMIAL -- Returns the multinomial of a set of numbers

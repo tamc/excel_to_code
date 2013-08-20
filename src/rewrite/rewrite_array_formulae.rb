@@ -30,7 +30,7 @@ class ExtractArrayFormulaForCell
     ast[@row_offset+1][@column_offset+1] # plus ones to skip tthe [:array,[:row,"cell"]] symbols
   end
   
-  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = %w{INDEX}
+  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = %w{INDEX MMULT}
   
   def map_function(ast)
     return ast unless FUNCTIONS_THAT_CAN_RETURN_ARRAYS.include?(ast[1])

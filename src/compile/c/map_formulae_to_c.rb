@@ -53,6 +53,7 @@ class MapFormulaeToC < MapValuesToC
     'MATCH3' => 'excel_match',
     'MAX' => 'max',
     'MIN' => 'min',
+    'MMULT' => 'mmult',
     'MOD' => 'mod',
     'PMT' => 'pmt',
     'PV3' => 'pv_3',
