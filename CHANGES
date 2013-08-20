@@ -1,8 +1,10 @@
 # Head
 
+# 0.1.14 - 2013 August 20th
+
 - Implementing the MMULT function in ruby and C (note only works when entered as an array formula)
 
-# 0.1.13
+# 0.1.13 - 2013 August 19th
 
 - Implemented LOG function in ruby and C
 - Now converts the POWER(10,2) function as well as 10^2
