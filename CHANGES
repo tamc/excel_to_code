@@ -1,6 +1,8 @@
 # Head
 
-# 0.1.15 - 2013 August 2013
+- Now returns the correct answer when MMULT() is used outside of an array formula
+
+# 0.1.15 - 2013 August 21st
 
 - Now translates formulae that peform arithmetic on ranges, such as SUMPRODUCT(A1:A10, 1/B1:B10)
 

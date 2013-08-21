@@ -565,6 +565,8 @@ class ExcelToX
       
       replace ReplaceRangesWithArrayLiterals, [name, 'Formulae'],  [name, 'Formulae']
       replace ReplaceArithmeticOnRanges, [name, 'Formulae'],  [name, 'Formulae']
+      replace ReplaceArraysWithSingleCells, [name, 'Formulae'],  [name, 'Formulae']
+      replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
     end
   end
     
@@ -615,6 +617,7 @@ class ExcelToX
       replace ReplaceRangesWithArrayLiterals, [name, 'Formulae'],  [name, 'Formulae']
       replace ReplaceArithmeticOnRanges, [name, 'Formulae'],  [name, 'Formulae']
       replace ReplaceArraysWithSingleCells, [name, 'Formulae'],  [name, 'Formulae']
+      replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
     end
   end
   
