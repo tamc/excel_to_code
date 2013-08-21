@@ -1,5 +1,7 @@
 # Head
 
+# 0.1.16 - 2013 August 21st
+
 - Now returns the correct answer when MMULT() is used outside of an array formula
 
 # 0.1.15 - 2013 August 21st
