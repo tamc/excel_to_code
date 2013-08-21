@@ -1,5 +1,7 @@
 # Head
 
+# 0.1.15 - 2013 August 2013
+
 - Now translates formulae that peform arithmetic on ranges, such as SUMPRODUCT(A1:A10, 1/B1:B10)
 
 # 0.1.14 - 2013 August 20th
