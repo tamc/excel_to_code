@@ -69,6 +69,7 @@ static ExcelValue excel_log(ExcelValue number);
 static ExcelValue excel_log_2(ExcelValue number, ExcelValue base);
 static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue negative(ExcelValue a_v);
 static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
@@ -1071,6 +1072,57 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 		smallest_number_found = 0;
 	}
 	return new_excel_number(smallest_number_found);	
+}
+
+static ExcelValue mmult_error(ExcelValue a_v, ExcelValue b_v) {
+  int rows = a_v.rows > b_v.rows ? a_v.rows : b_v.rows;
+  int columns = a_v.columns > b_v.columns ? a_v.columns : b_v.columns;
+  int i, j;
+
+  ExcelValue *result = (ExcelValue*) new_excel_value_array(rows*columns);
+
+  for(i=0; i<rows; i++) {
+    for(j=0; j<columns; j++) {
+      result[(i*columns) + j] = VALUE;
+    }
+  }
+  return new_excel_range(result, rows, columns);
+}
+
+static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
+  if(a_v.type != ExcelRange) { return VALUE;}
+  if(b_v.type != ExcelRange) { return VALUE;}
+  if(a_v.columns != b_v.rows) { return mmult_error(a_v, b_v); }
+  int n = a_v.columns;
+  int a_rows = a_v.rows;
+  int a_columns = a_v.columns;
+  int b_rows = b_v.rows;
+  int b_columns = b_v.columns;
+  ExcelValue *result = (ExcelValue*) new_excel_value_array(a_rows*b_columns);
+  int i, j, k;
+  double sum; 
+  ExcelValue *array_a = a_v.array;
+  ExcelValue *array_b = b_v.array;
+
+  ExcelValue a;
+  ExcelValue b;
+  
+  for(i=0; i<a_rows; i++) {
+    for(j=0; j<b_columns; j++) {
+      sum = 0;
+      for(k=0; k<n; k++) {
+        a = array_a[(i*a_columns)+k];
+        b = array_b[(k*b_columns)+j];
+        if(a.type != ExcelNumber) { return mmult_error(a_v, b_v); }
+        if(b.type != ExcelNumber) { return mmult_error(a_v, b_v); }
+        sum = sum + (a.number * b.number);
+      }
+      result[(i*b_columns)+j] = new_excel_number(sum);
+    }
+  }
+  return new_excel_range(result, a_rows, b_columns);
 }
 
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
@@ -2416,6 +2468,64 @@ int test_functions() {
   // Two argument variant allows LOG base to be specified
 	assert(excel_log_2(new_excel_number(8),new_excel_number(2)).number == 3.0);
 	assert(excel_log_2(new_excel_number(8),new_excel_number(0)).type == ExcelError);
+  
+  // Test MMULT (Matrix multiplication)
+  ExcelValue mmult_1[] = { ONE, TWO, THREE, FOUR};
+  ExcelValue mmult_2[] = { FOUR, THREE, TWO, ONE};
+  ExcelValue mmult_3[] = { ONE, TWO};
+  ExcelValue mmult_4[] = { THREE, FOUR};
+  ExcelValue mmult_5[] = { ONE, BLANK, THREE, FOUR};
+
+  ExcelValue mmult_1_v = new_excel_range( mmult_1, 2, 2);
+  ExcelValue mmult_2_v = new_excel_range( mmult_2, 2, 2);
+  ExcelValue mmult_3_v = new_excel_range( mmult_3, 1, 2);
+  ExcelValue mmult_4_v = new_excel_range( mmult_4, 2, 1);
+  ExcelValue mmult_5_v = new_excel_range( mmult_5, 2, 2);
+
+  // Treat the ranges as matrices and multiply them
+  ExcelValue mmult_result_1_v = mmult(mmult_1_v, mmult_2_v);
+  assert(mmult_result_1_v.type == ExcelRange);
+  assert(mmult_result_1_v.rows == 2);
+  assert(mmult_result_1_v.columns == 2);
+  ExcelValue *mmult_result_1_a = mmult_result_1_v.array;
+  assert(mmult_result_1_a[0].number == 8);
+  assert(mmult_result_1_a[1].number == 5);
+  assert(mmult_result_1_a[2].number == 20);
+  assert(mmult_result_1_a[3].number == 13);
+  
+  ExcelValue mmult_result_2_v = mmult(mmult_3_v, mmult_4_v);
+  assert(mmult_result_2_v.type == ExcelRange);
+  assert(mmult_result_2_v.rows == 1);
+  assert(mmult_result_2_v.columns == 1);
+  ExcelValue *mmult_result_2_a = mmult_result_2_v.array;
+  assert(mmult_result_2_a[0].number == 11);
+
+  // Return an error if any cells are not numbers
+  ExcelValue mmult_result_3_v = mmult(mmult_5_v, mmult_2_v);
+  assert(mmult_result_3_v.type == ExcelRange);
+  assert(mmult_result_3_v.rows == 2);
+  assert(mmult_result_3_v.columns == 2);
+  ExcelValue *mmult_result_3_a = mmult_result_3_v.array;
+  assert(mmult_result_3_a[0].type == ExcelError);
+  assert(mmult_result_3_a[1].type == ExcelError);
+  assert(mmult_result_3_a[2].type == ExcelError);
+  assert(mmult_result_3_a[3].type == ExcelError);
+  
+  // Returns errors if arguments are not ranges
+  // FIXME: Should work in edge case where passed two numbers which excel treats as ranges with one row and column
+  ExcelValue mmult_result_4_v = mmult(ONE, mmult_2_v);
+  assert(mmult_result_4_v.type == ExcelError);
+  
+  // Returns errors if the ranges aren't the right size to multiply
+  ExcelValue mmult_result_5_v = mmult(mmult_1_v, mmult_3_v);
+  assert(mmult_result_5_v.type == ExcelRange);
+  assert(mmult_result_5_v.rows == 2);
+  assert(mmult_result_5_v.columns == 2);
+  ExcelValue *mmult_result_5_a = mmult_result_5_v.array;
+  assert(mmult_result_5_a[0].type == ExcelError);
+  assert(mmult_result_5_a[1].type == ExcelError);
+  assert(mmult_result_5_a[2].type == ExcelError);
+  assert(mmult_result_5_a[3].type == ExcelError);
 
   // Release memory
   free_all_allocated_memory();
