@@ -1,5 +1,7 @@
 # Head
 
+- Now translates formulae that peform arithmetic on ranges, such as SUMPRODUCT(A1:A10, 1/B1:B10)
+
 # 0.1.14 - 2013 August 20th
 
 - Implementing the MMULT function in ruby and C (note only works when entered as an array formula)
