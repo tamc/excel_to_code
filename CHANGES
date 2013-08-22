@@ -1,6 +1,8 @@
 # Head
 
-- Changed the way that shared targets are converted into a hash to avoid a stack overflow
+# 0.1.17 - 2013 August 22nd
+
+- Changed the way that shared targets are converted into a hash to avoid a stack overflow when there are very large numbers of shared formulae in a worksheet.
 
 # 0.1.16 - 2013 August 21st
 
