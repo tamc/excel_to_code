@@ -21,6 +21,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'AVERAGE' => 'average',
     'CELL' => 'cell',
     'CHOOSE' => 'choose',
+    'CONCATENATE' => 'string_join',
     'COSH' => 'cosh',
     'COUNT' => 'count',
     'COUNTA' => 'counta',
@@ -69,11 +70,11 @@ class MapFormulaeToRuby < MapValuesToRuby
   def arithmetic(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
-  
+
   def string_join(*strings)
     "string_join(#{strings.map {|a| map(a)}.join(',')})"
   end
-  
+
   def comparison(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
