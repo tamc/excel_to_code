@@ -5,8 +5,13 @@ class RewriteSharedFormulae
     new.rewrite(input, shared_targets, output)
   end
   
-  def rewrite(input, shared_targets, output)
-    shared_targets = Hash[*shared_targets.each_line.map { |l| l.split("\t").map(&:strip) }.flatten]
+  def rewrite(input, shared_target_file, output)
+    shared_targets = Hash.new
+    shared_target_file.each_line do |l| 
+      ref, number = *l.split("\t")
+      shared_targets[ref.strip] = number.strip
+    end
+
     input.each_line do |line|
       ref, copy_range,  shared_formula_identifier, formula = line.split("\t")
       share_formula(ref, formula, copy_range, shared_formula_identifier, shared_targets, output)

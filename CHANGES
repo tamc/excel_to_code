@@ -1,5 +1,7 @@
 # Head
 
+- Changed the way that shared targets are converted into a hash to avoid a stack overflow
+
 # 0.1.16 - 2013 August 21st
 
 - Now returns the correct answer when MMULT() is used outside of an array formula
