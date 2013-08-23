@@ -25,5 +25,5 @@ See doc/How_to_add_a_missing_function.md
 * Rewrite the excel_to_ruby command to use command line options
 * Refactor excel_to_c_runtime - split the functions? split the tests?
 * Tool for turning spreadsheets into tests
-* Option to reorder test output to make it easier to localise errors
 * Tool to create minimal failing example out of test run
+* The whole thing is slow. Could hold the whole excel AST in memory and apply transforms?
