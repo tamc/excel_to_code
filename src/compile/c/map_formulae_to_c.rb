@@ -60,6 +60,8 @@ class MapFormulaeToC < MapValuesToC
     'PV3' => 'pv_3',
     'PV4' => 'pv_4',
     'PV5' => 'pv_5',
+    'RANK2' => 'rank_2',
+    'RANK3' => 'rank',
     'ROUND' => 'excel_round',
     'ROUNDDOWN' => 'rounddown',
     'ROUNDUP' => 'roundup',

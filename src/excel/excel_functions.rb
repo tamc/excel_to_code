@@ -85,3 +85,5 @@ require_relative 'excel_functions/hlookup'
 require_relative 'excel_functions/log'
 
 require_relative 'excel_functions/mmult'
+
+require_relative 'excel_functions/rank'

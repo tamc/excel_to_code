@@ -1,5 +1,7 @@
 # Head
 
+- Implemented the RANK() function
+
 # 0.1.18 - 2013 August 23rd
 
 - Implemented the CONCATENATE() function

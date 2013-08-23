@@ -44,6 +44,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'PMT' => 'pmt',
     'POWER' => 'power',
     'PV' => 'pv',
+    'RANK' => 'rank',
     'ROUND' => 'round',
     'ROUNDDOWN' => 'rounddown',
     'ROUNDUP' => 'roundup',

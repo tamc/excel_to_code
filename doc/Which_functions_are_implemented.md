@@ -319,7 +319,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * POISSON -- Returns the Poisson distribution
 * PROB -- Returns the probability that values in a range are between two limits
 * QUARTILE -- Returns the quartile of a data set
-* RANK -- Returns the rank of a number in a list of numbers
+* RANK -- Returns the rank of a number in a list of numbers -- _R_ _C_
 * RSQ -- Returns the square of the Pearson product moment correlation coefficient
 * SKEW -- Returns the skewness of a distribution
 * SLOPE -- Returns the slope of the linear regression line

@@ -78,6 +78,8 @@ static ExcelValue pv_3(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v);
 static ExcelValue pv_4(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValue d_v);
 static ExcelValue pv_5(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValue d_v, ExcelValue e_v);
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
+static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order_v);
+static ExcelValue rank_2(ExcelValue number_v, ExcelValue range_v);
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue excel_int(ExcelValue number_v);
@@ -1221,6 +1223,50 @@ static ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
   } else {
     return new_excel_number(result);
   }
+}
+static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order_v) {
+  CHECK_FOR_PASSED_ERROR(number_v)
+  CHECK_FOR_PASSED_ERROR(range_v)
+  CHECK_FOR_PASSED_ERROR(order_v)
+
+  NUMBER(number_v, number)
+  NUMBER(order_v, order)
+
+  ExcelValue *array;
+  int size;
+
+	CHECK_FOR_CONVERSION_ERROR
+
+  if(range_v.type != ExcelRange) {
+    array = new_excel_value_array(1);
+    array[0] = range_v;
+    size = 1;
+  } else {
+    array = range_v.array;
+    size = range_v.rows * range_v.columns;
+  }
+
+  int ranked = 1;
+  int found = false;
+
+  int i;
+  ExcelValue cell;
+
+  for(i=0; i<size; i++) {
+    cell = array[i];
+    if(cell.type == ExcelError) { return cell; }
+    if(cell.type == ExcelNumber) {
+      if(cell.number == number) { found = true; }
+      if(order == 0) { if(cell.number > number) { ranked++; } }
+      if(order != 0) { if(cell.number < number) { ranked++; } }
+    }
+  }
+  if(found == false) { return NA; }
+  return new_excel_number(ranked);
+}
+
+static ExcelValue rank_2(ExcelValue number_v, ExcelValue range_v) {
+  return rank(number_v, range_v, ZERO);
 }
 
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v) {
@@ -2526,6 +2572,25 @@ int test_functions() {
   assert(mmult_result_5_a[1].type == ExcelError);
   assert(mmult_result_5_a[2].type == ExcelError);
   assert(mmult_result_5_a[3].type == ExcelError);
+
+  // Test the RANK() function
+  ExcelValue rank_1_a[] = { FIVE, BLANK, THREE, ONE, ONE, FOUR, FIVE, TRUE, SIX, new_excel_string("Hi")};
+  ExcelValue rank_2_a[] = { FIVE, BLANK, THREE, NA, ONE, FOUR, FIVE, TRUE, SIX, new_excel_string("Hi")};
+  ExcelValue rank_1_v = new_excel_range( rank_1_a, 2, 5);
+  ExcelValue rank_2_v = new_excel_range( rank_2_a, 2, 5);
+
+  // Basics
+  assert(rank(THREE, rank_1_v, ZERO).number == 5);
+  assert(rank_2(THREE, rank_1_v).number == 5);
+  assert(rank(THREE, rank_1_v, ONE).number == 3);
+  assert(rank(ONE, rank_1_v, ZERO).number == 6);
+  assert(rank(new_excel_string("3"), rank_1_v, ONE).number == 3);
+
+  // Errors
+  assert(rank(TEN, rank_1_v, ZERO).type == ExcelError);
+  assert(rank(THREE, rank_2_v, ZERO).type == ExcelError);
+
+
 
   // Release memory
   free_all_allocated_memory();
