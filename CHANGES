@@ -1,5 +1,7 @@
 # Head
 
+# 0.1.20 - 2013 August 28th
+
 - Fix compiler warnings relating to comparing a string literal
 
 # 0.1.19 - 2013 August 24th
