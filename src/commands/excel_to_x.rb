@@ -415,7 +415,7 @@ class ExcelToX
     return @named_references if @named_references
     @named_references = {}
     i = input('Named references')
-    i.lines.each do |line|
+    i.each_line do |line|
       sheet, name, ref = *line.split("\t")
       key = sheet.size != 0 ? [sheet, name] : name
       @named_references[key] = eval(ref)

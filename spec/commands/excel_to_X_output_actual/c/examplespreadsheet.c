@@ -1100,7 +1100,6 @@ static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v) {
   int n = a_v.columns;
   int a_rows = a_v.rows;
   int a_columns = a_v.columns;
-  int b_rows = b_v.rows;
   int b_columns = b_v.columns;
   ExcelValue *result = (ExcelValue*) new_excel_value_array(a_rows*b_columns);
   int i, j, k;
@@ -1741,7 +1740,7 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     return format_v;
   }
 
-  if(format_v.string == "0%") {
+  if(strcmp(format_v.string,"0%") == 0) {
     // FIXME: Too little? 
     s = malloc(100);
     free_later(s);
