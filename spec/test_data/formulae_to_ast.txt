@@ -107,6 +107,7 @@ INDEX(Global.Assumptions[Households], MATCH(F$321, Global.Assumptions[Year], 0))
 MAX(-SUM(I.a.Inputs[2007])-F$80, 0)"	[:function, "MAX", [:arithmetic, [:prefix, "-", [:function, "SUM", [:table_reference, "I.a.Inputs", "2007"]]], [:operator, "-"], [:cell, "F$80"]], [:number, "0"]]
 DeptSales_101[Sale Amount]"	[:table_reference, "DeptSales_101", "Sale Amount"]
 EF.I.a.PM10[2010]	[:table_reference, "EF.I.a.PM10", "2010"]
+G.40.levels.efficiency[[Description]:[Description]] [:table_reference, "G.40.levels.efficiency", "[Description]:[Description]"] 
 
 # parses local structured references (i.e., [column])
 [Sale Amount]"	[:local_table_reference, "Sale Amount"]
@@ -150,3 +151,4 @@ SUM({1,2,3})	[:function,"SUM",[:array,[:row,[:number,"1"],[:number,"2"],[:number
 #DIV/0! [:error, "#DIV/0!"]
 #N/A  [:error, "#N/A"]
 #NUM! [:error, "#NUM!"]
+

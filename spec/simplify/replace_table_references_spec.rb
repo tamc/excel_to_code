@@ -12,6 +12,7 @@ C3\t[:table_reference, "MissingTable", "ColA"]
 C4\t[:table_reference, "FirstTable", "ColA"]
 C5\t[:table_reference, "FirstTable", ""]
 C6\t[:table_reference, "Global.Assumptions.Energy.Prices.High", ""]
+C7\t[:table_reference, "FirstTable", "[ColA]:[ColB]"]
 END
 
 tables = <<END
@@ -27,6 +28,7 @@ C3\t[:error, "#REF!"]
 C4\t[:sheet_reference, "Tables", [:cell, "B4"]]
 C5\t[:sheet_reference, "Tables", [:area, "B3", "C4"]]
 C6\t[:sheet_reference, "Global assumptions", [:area, "D85", "N90"]]
+C7\t[:sheet_reference, "Tables", [:area, "B3", "C4"]]
 END
     
 input = StringIO.new(input)

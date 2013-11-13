@@ -14,17 +14,20 @@ class Table
   
   def reference_for(table_name,structured_reference,calling_worksheet,calling_cell)
     raise NotSupportedException.new("Local table reference not supported in #{structured_reference.inspect}") unless table_name
+
     case structured_reference
     when /\[#Headers\],\[(.*?)\]:\[(.*?)\]/io
       column_number_start = @column_name_array.find_index($1.strip.downcase)
       column_number_finish = @column_name_array.find_index($2.strip.downcase)
       return ref_error unless column_number_start && column_number_finish
       ast_for_area @area.excel_start.offset(0,column_number_start), @area.excel_start.offset(0,column_number_finish)
+
     when /\[#Totals\],\[(.*?)\]:\[(.*?)\]/io
       column_number_start = @column_name_array.find_index($1.strip.downcase)
       column_number_finish = @column_name_array.find_index($2.strip.downcase)
       return ref_error unless column_number_start && column_number_finish
       ast_for_area @area.excel_start.offset(@area.height,column_number_start), @area.excel_start.offset(@area.height,column_number_finish)
+
     when /\[#This Row\],\[(.*?)\]:\[(.*?)\]/io
       r = Reference.for(calling_cell)
       r.calculate_excel_variables
@@ -32,15 +35,24 @@ class Table
       column_number_start = @column_name_array.find_index($1.strip.downcase)
       column_number_finish = @column_name_array.find_index($2.strip.downcase)
       return ref_error unless column_number_start && column_number_finish
-      ast_for_area @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number_start), @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number_finish)      
+      ast_for_area @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number_start), @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number_finish)
+
+    when /\[(.*?)\]:\[(.*?)\]/io
+      column_number_start = @column_name_array.find_index($1.strip.downcase)
+      column_number_finish = @column_name_array.find_index($2.strip.downcase)
+      return ref_error unless column_number_start && column_number_finish
+      ast_for_area @area.excel_start.offset(1,column_number_start), @area.excel_start.offset(@area.height - @number_of_total_rows,column_number_finish)
+
     when /\[#Headers\],\[(.*?)\]/io
       column_number = @column_name_array.find_index($1.strip.downcase)
       return ref_error unless column_number      
       ast_for_cell @area.excel_start.offset(0,column_number)
+
     when /\[#Totals\],\[(.*?)\]/io
       column_number = @column_name_array.find_index($1.strip.downcase)
       return ref_error unless column_number
       ast_for_cell @area.excel_start.offset(@area.height,column_number)
+
     when /\[#This Row\],\[(.*?)\]/io
       r = Reference.for(calling_cell)
       r.calculate_excel_variables
@@ -48,6 +60,7 @@ class Table
       column_number = @column_name_array.find_index($1.strip.downcase)
       return ref_error unless column_number
       ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)      
+
     when /#Headers/io
       if calling_worksheet == @worksheet && @data_area.includes?(calling_cell)
         r = Reference.for(calling_cell)
@@ -56,6 +69,7 @@ class Table
       else
         ast_for_area @area.excel_start.offset(0,0), @area.excel_start.offset(0,@area.width)
       end
+
     when /#Totals/io
       if calling_worksheet == @worksheet && @data_area.includes?(calling_cell)
         r = Reference.for(calling_cell)
@@ -64,15 +78,19 @@ class Table
       else
         ast_for_area @area.excel_start.offset(@area.height,0), @area.excel_start.offset(@area.height,@area.width)
       end
+
     when /#Data/io, ""
       ast_for_area @data_area.excel_start, @data_area.excel_finish
+
     when /#All/io, ""
       ast_for_area @area.excel_start, @area.excel_finish
+
     when /#This Row/io
       r = Reference.for(calling_cell)
       r.calculate_excel_variables
       row = r.excel_row_number
       ast_for_area "#{@area.excel_start.excel_column}#{row}", "#{@area.excel_finish.excel_column}#{row}"
+
     else
       if calling_worksheet == @worksheet && @data_area.includes?(calling_cell)
         r = Reference.for(calling_cell)
