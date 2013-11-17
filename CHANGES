@@ -1,5 +1,6 @@
 # Head
 
+- Fixed bug in OFFSET replacement
 - Can now parse structured table references like this: G.40.levels.efficiency[[Description]:[Description]]
 - Fixed StringIO#lines is deprecated warning.
 

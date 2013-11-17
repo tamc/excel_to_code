@@ -29,7 +29,7 @@ class ReplaceOffsetsWithReferencesAst
 
   def replace_offset(reference, row_offset, column_offset, height = 1, width = 1)
     @replacements_made_in_the_last_pass += 1
-    reference = Reference.for(reference.gsub!("$",""))
+    reference = Reference.for(reference.gsub("$",""))
     start_reference = reference.offset(row_offset.to_i, column_offset.to_i)
     end_reference = reference.offset(row_offset.to_i + height.to_i - 1, column_offset.to_i + width.to_i - 1)
     if start_reference == end_reference
