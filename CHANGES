@@ -1,5 +1,6 @@
 # Head
 
+- String joins can now be done on excel ranges
 - Fixed bug in parsing of table references when they look like this: table.name[[column_name_inside_two_square_brackets]]
 - Fixed OFFSET to work with sheet as well as cell references
 - Implemented ISNUMBER function
