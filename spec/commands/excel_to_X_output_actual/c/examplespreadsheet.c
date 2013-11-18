@@ -62,6 +62,7 @@ static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
+static ExcelValue excel_isnumber(ExcelValue number);
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
@@ -503,6 +504,14 @@ static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 		return FALSE;
 	}
 	return result;
+}
+
+static ExcelValue excel_isnumber(ExcelValue potential_number) {
+  if(potential_number.type == ExcelNumber) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }
 
 static ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
@@ -2590,6 +2599,15 @@ int test_functions() {
   assert(rank(THREE, rank_2_v, ZERO).type == ExcelError);
 
 
+  // Test the ISNUMBER function
+  assert(excel_isnumber(ONE).type == ExcelBoolean);
+  assert(excel_isnumber(ONE).number == 1);
+  assert(excel_isnumber(BLANK).type == ExcelBoolean);
+  assert(excel_isnumber(BLANK).number == 0);
+  assert(excel_isnumber(new_excel_string("Hello")).type == ExcelBoolean);
+  assert(excel_isnumber(new_excel_string("Hello")).number == 0);
+  assert(excel_isnumber(TRUE).type == ExcelBoolean);
+  assert(excel_isnumber(TRUE).number == 0);
 
   // Release memory
   free_all_allocated_memory();

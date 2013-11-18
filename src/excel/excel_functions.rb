@@ -87,3 +87,5 @@ require_relative 'excel_functions/log'
 require_relative 'excel_functions/mmult'
 
 require_relative 'excel_functions/rank'
+
+require_relative 'excel_functions/isnumber'

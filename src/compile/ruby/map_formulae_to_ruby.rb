@@ -31,6 +31,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'IFERROR' => 'iferror',
     'INDEX' => 'index',
     'INT' => 'int',
+    'ISNUMBER' => 'isnumber',
     'LARGE' => 'large',
     'LEFT' => 'left',
     'LOG' => 'log',
