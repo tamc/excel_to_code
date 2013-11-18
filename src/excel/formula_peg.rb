@@ -117,7 +117,7 @@ class Formula < RubyPeg
   
   def table_reference
     node :table_reference do
-      table_name && ignore { terminal("[") } && (range_structured_reference || short_range_structured_reference || complex_structured_reference || simple_structured_reference) && ignore { terminal("]") }
+      table_name && ignore { terminal("[") } && (range_structured_reference || short_range_structured_reference || complex_structured_reference || overly_structured_reference || simple_structured_reference) && ignore { terminal("]") }
     end
   end
   
