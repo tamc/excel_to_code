@@ -17,17 +17,37 @@ class ReplaceOffsetsWithReferencesAst
   end
   
   def function(name,*args)
-    if name == "OFFSET" && args.size == 5 && args[0][0] == :cell && args[1][0] == :number && args[2][0] == :number && args[3][0] == :number && args[4][0] == :number 
-      replace_offset(args[0][1], args[1][1], args[2][1], args[3][1], args[4][1])
-    elsif name == "OFFSET" && args.size == 3 && args[0][0] == :cell && args[1][0] == :number && args[2][0] == :number
-      replace_offset(args[0][1], args[1][1], args[2][1])
+    if name == "OFFSET"
+      try_to_replace_offset(*args)
     else
-      puts "offset in #{[:function,name,*args.map { |a| map(a) }].inspect} not replaced" if name == "INDIRECT"
       [:function,name,*args.map { |a| map(a) }]
     end
   end
 
-  def replace_offset(reference, row_offset, column_offset, height = 1, width = 1)
+  def try_to_replace_offset(reference, row_offset, column_offset, height = [:number, 1], width = [:number, 1])
+    if [row_offset, column_offset, height, width].all? { |a| a.first == :number }
+      if reference.first == :cell
+        offset_cell(reference, row_offset, column_offset, height, width)
+      elsif reference.first == :sheet_reference && reference[2].first == :cell
+        [:sheet_reference, reference[1], offset_cell(reference[2], row_offset, column_offset, height, width)]
+      else
+        puts "#{[:function, "OFFSET", reference, row_offset, column_offset, height, width]} not replaced"
+        [:function, "OFFSET", reference, row_offset, column_offset, height, width]
+      end
+    else
+        puts "#{[:function, "OFFSET", reference, row_offset, column_offset, height, width]} not replaced"
+        [:function, "OFFSET", reference, row_offset, column_offset, height, width]
+    end
+  end
+
+  def offset_cell(reference, row_offset, column_offset, height, width)
+
+    reference = reference[1]
+    row_offset = row_offset[1].to_i
+    column_offset = column_offset[1].to_i
+    height = height[1].to_i
+    width = width[1].to_i
+
     @replacements_made_in_the_last_pass += 1
     reference = Reference.for(reference.gsub("$",""))
     start_reference = reference.offset(row_offset.to_i, column_offset.to_i)

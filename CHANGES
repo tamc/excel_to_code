@@ -1,5 +1,6 @@
 # Head
 
+- Fixed OFFSET to work with sheet as well as cell references
 - Implemented ISNUMBER function
 - Fixed bug in OFFSET replacement
 - Can now parse structured table references like this: G.40.levels.efficiency[[Description]:[Description]]
