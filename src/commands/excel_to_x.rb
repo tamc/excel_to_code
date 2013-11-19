@@ -616,6 +616,7 @@ class ExcelToX
       # The result of the indirect might be a range, which we need to simplify
       replace ReplaceRangesWithArrayLiterals, [name, 'Formulae'],  [name, 'Formulae']
       replace ReplaceArithmeticOnRanges, [name, 'Formulae'],  [name, 'Formulae']
+      replace ReplaceStringJoinOnRanges, [name, 'Formulae'],  [name, 'Formulae']
       replace ReplaceArraysWithSingleCells, [name, 'Formulae'],  [name, 'Formulae']
       replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
     end
