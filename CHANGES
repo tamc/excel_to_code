@@ -1,5 +1,8 @@
 # Head
 
+
+- Implemented the LEN function in ruby
+
 # 0.1.21 - 2013 November 19th
 
 - String joins can now be done on excel ranges

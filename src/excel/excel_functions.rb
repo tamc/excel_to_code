@@ -89,3 +89,5 @@ require_relative 'excel_functions/mmult'
 require_relative 'excel_functions/rank'
 
 require_relative 'excel_functions/isnumber'
+
+require_relative 'excel_functions/len'

@@ -356,7 +356,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * FIXED -- Formats a number as text with a fixed number of decimals
 * JIS -- Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters
 * LEFT, LEFTB -- Returns the leftmost characters from a text value -- _R_ _C_ (not LEFTB)
-* LEN, LENB -- Returns the number of characters in a text string
+* LEN, LENB -- Returns the number of characters in a text string -- _R_ (not LENB)
 * LOWER -- Converts text to lowercase
 * MID, MIDB -- Returns a specific number of characters from a text string starting at the position you specify - _R_
 * PHONETIC -- Extracts the phonetic (furigana) characters from a text string

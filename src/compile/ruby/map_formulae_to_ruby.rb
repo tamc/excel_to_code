@@ -34,6 +34,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'ISNUMBER' => 'isnumber',
     'LARGE' => 'large',
     'LEFT' => 'left',
+    'LEN' => 'len',
     'LOG' => 'log',
     'MATCH' => 'excel_match',
     'MAX' => 'max',
