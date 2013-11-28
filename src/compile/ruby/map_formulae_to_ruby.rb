@@ -50,6 +50,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     'ROUND' => 'round',
     'ROUNDDOWN' => 'rounddown',
     'ROUNDUP' => 'roundup',
+    'SUBSTITUTE' => 'substitute',
     'SUBTOTAL' => 'subtotal',
     'SUM' => 'sum',
     'SUMIF' => 'sumif',

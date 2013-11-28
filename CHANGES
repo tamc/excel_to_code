@@ -2,6 +2,7 @@
 
 
 - Implemented the LEN function in ruby
+- Implemented the SUBSTITUTE function in ruby
 
 # 0.1.21 - 2013 November 19th
 
