@@ -1,6 +1,6 @@
 # Head
 
-
+- Fixed a bug in = and != when comparing a string with a non string
 - Implemented the LEN function in ruby
 - Implemented the SUBSTITUTE function in ruby
 

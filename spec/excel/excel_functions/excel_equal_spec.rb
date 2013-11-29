@@ -16,6 +16,11 @@ describe "ExcelFunctions: = excel_equal?()" do
   it "should check the equality of strings, ignoring case" do
     FunctionTest.excel_equal?("HELLO","world").should == false
     FunctionTest.excel_equal?("HELLO","hello").should == true
+    FunctionTest.excel_equal?("hello","HELLO").should == true
+    FunctionTest.excel_equal?("hello",1).should == false
+    FunctionTest.excel_equal?(1,"HELLO").should == false
+    FunctionTest.excel_equal?(nil,"HELLO").should == false
+    FunctionTest.excel_equal?("hello",nil).should == false
   end
   
   it "should be able to check arrays" do

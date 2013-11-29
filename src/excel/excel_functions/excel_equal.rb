@@ -8,12 +8,8 @@ module ExcelFunctions
     return a if a.is_a?(Symbol)
     return b if b.is_a?(Symbol)
     
-    case a
-    when String
-      a.downcase == b.downcase
-    else
-      a == b
-    end
+    return a.downcase == b.downcase if a.is_a?(String) && b.is_a?(String)
+    a == b
     
   end
   
