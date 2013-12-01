@@ -1,10 +1,23 @@
-require_relative 'simple_extract_from_xml'
+require 'nokogiri'
 
-class ExtractRelationships < SimpleExtractFromXML
+class ExtractRelationships < Nokogiri::XML::SAX::Document 
+
+    attr_accessor :input, :output
+  
+    def self.extract(*args)
+      self.new.extract(*args)
+    end
+
+    def extract(input)
+      @input, @output = input, {}
+      parser = Nokogiri::XML::SAX::Parser.new(self)
+      parser.parse(input)
+      output
+    end
   
   def start_element(name,attributes)
     return false unless name == "Relationship"
-    output.puts "#{attributes.assoc('Id').last}\t#{attributes.assoc('Target').last}"
+    @output[attributes.assoc('Id').last] = attributes.assoc('Target').last
   end
   
 end

@@ -86,10 +86,10 @@ class RewriteWholeRowColumnReferencesToAreas
   end
   
   def worksheet_dimensions=(worksheet_dimensions)
-    @dimensions =  Hash[worksheet_dimensions.readlines.map do |line| 
-      worksheet_name, area = line.split("\t")
-      [worksheet_name,WorksheetDimension.new(area)]
-    end]
+    @dimensions = {}
+    worksheet_dimensions.each do |name, area|
+      @dimensions[name] = WorksheetDimension.new(area)
+    end
     @mapper = nil
   end
   

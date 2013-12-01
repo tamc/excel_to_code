@@ -4,8 +4,7 @@ describe ExtractRelationships do
   
   it "should return a series of relationships" do
     input = excel_fragment 'Relationships.xml'
-    output = StringIO.new
-    ExtractRelationships.extract(input,output)
-    output.string.should == "rId3\tworksheets/sheet3.xml\nrId4\ttheme/theme1.xml\n"
+    output = ExtractRelationships.extract(input)
+    output.should == { "rId3" => "worksheets/sheet3.xml", "rId4" => "theme/theme1.xml"}
   end
 end

@@ -179,7 +179,7 @@ class ExcelToX
       work_out_which_named_references_can_be_set_at_runtime
     end
 
-    filter_named_references
+    filter_named_references #FIXME: Not working?
 
     replace_formulae_with_their_results
     remove_any_cells_not_needed_for_outputs
@@ -229,11 +229,16 @@ class ExcelToX
   # In this method we also loop through each of the individual 
   # worksheet files to work out their dimensions
   def extract_data_from_workbook
-    # Excel keeps a central file of strings that appear in worksheet cells
-    @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
+    extract_shared_strings
     extract_named_references
     extract_worksheet_names
     extract_dimensions_from_worksheets
+  end
+
+  # @shared_strings is an array of strings
+  def extract_shared_strings
+    # Excel keeps a central file of strings that appear in worksheet cells
+    @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
   end
   
   # Excel keeps a central list of named references. This includes those
@@ -267,10 +272,25 @@ class ExcelToX
   # relationships files. We also need to mangle the name into something
   # that will work ok as a filesystem or program name
   def extract_worksheet_names
-    extract ExtractWorksheetNames, 'workbook.xml', 'Worksheet names'
-    extract ExtractRelationships, File.join('_rels','workbook.xml.rels'), 'Workbook relationships'
-    rewrite RewriteWorksheetNames, 'Worksheet names', 'Workbook relationships', 'Worksheet names'
-    rewrite MapSheetNamesToCNames, 'Worksheet names', 'Worksheet C names'
+    worksheet_rids = ExtractWorksheetNames.extract(xml('workbook.xml')) # {'worksheet_name' => 'rId3' ...}
+    xml_for_rids = ExtractRelationships.extract( xml('_rels','workbook.xml.rels')) #{ 'rId3' => "worlsheets/sheet1.xml" }
+    @worksheet_xmls = {}
+    worksheet_rids.each do |name, rid|
+      worksheet_xml = xml_for_rids[rid]
+      if worksheet_xml =~ /^worksheets/i # This gets rid of things that look like worksheets but aren't (e.g., chart sheets)
+        @worksheet_xmls[name] = worksheet_xml
+      end
+    end
+    @worksheet_c_names = {}
+    c_names_assigned = {}
+    worksheet_rids.keys.each do |excel_worksheet_name|
+      c_name = excel_worksheet_name.downcase.gsub(/[^a-z0-9]+/,'_') # Make it lowercase, replace anything that isn't a-z or 0-9 with underscores
+      c_name = "s"+c_name if c_name[0] !~ /[a-z]/ # Can't start with a number. If it does, but an 's' in front (so 2010 -> s2010)
+      c_name = c_name + "2" if c_names_assigned.has_key?(c_name) # Add a number at the end if the c_name has already been used
+      c_name.succ! while c_names_assigned.has_key?(c_name)
+      c_names_assigned[c_name] = excel_worksheet_name
+      @worksheet_c_names[excel_worksheet_name] = c_name
+    end
   end
 
   # We want a central list of the maximum extent of each worksheet
@@ -278,17 +298,12 @@ class ExcelToX
   # references into equivalent area references (e.g., C1:F30)
   def extract_dimensions_from_worksheets 
     log.info "Starting to extract dimensions from worksheets"  
-    dimension_file = intermediate('Worksheet dimensions')
+    @worksheets_dimensions = {}
     extractor = ExtractWorksheetDimensions.new
     worksheets do |name, xml_filename|
       log.info "Extracting dimensions for #{name}"
-      dimension_file.write name
-      dimension_file.write "\t"
-      
-      extractor.extract(xml(xml_filename), dimension_file)
-      close(xml_filename)
+      @worksheets_dimensions[name] = extractor.extract(xml(xml_filename))
     end
-    close(dimension_file)
   end
   
   # For each worksheet, this makes four passes through the xml
@@ -368,10 +383,8 @@ class ExcelToX
   # into more conventional references (e.g., A5:Z20) based on the maximum area that 
   # has been used on a worksheet
   def rewrite_row_and_column_references(name,xml_filename)
-    dimensions = input('Worksheet dimensions')
-    
     r = RewriteWholeRowColumnReferencesToAreas.new
-    r.worksheet_dimensions = dimensions
+    r.worksheet_dimensions = @worksheets_dimensions
     r.sheet_name = name
     
     apply_rewrite r, [name, 'Formulae (simple)']
@@ -916,26 +929,12 @@ class ExcelToX
   end
   
   def c_name_for_worksheet_name(name)
-    unless @worksheet_names
-      w = input('Worksheet C names')
-      @worksheet_names = Hash[w.readlines.map { |line| line.split("\t").map { |a| a.strip }}]
-      close(w)
-    end
-    @worksheet_names[name]
+    @worksheet_c_names[name]
   end
     
-  def worksheets(&block)
-    unless @worksheet_filenames
-      worksheet_names = input('Worksheet names')
-      @worksheet_filenames = worksheet_names.each_line.map do |line|
-        name, filename = *line.split("\t")
-        [name, filename.strip]
-      end
-      close(worksheet_names)
-    end
-    
-    @worksheet_filenames.each do |name, filename|
-      block.call(name, filename)
+  def worksheets
+    @worksheet_xmls.each do |name, filename|
+      yield name, filename
     end
   end
     
