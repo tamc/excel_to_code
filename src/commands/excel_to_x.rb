@@ -251,7 +251,7 @@ class ExcelToX
       if parsed
         @named_references[name] = parsed.to_ast[1]
       else
-        @stderr.puts "Named reference #{name} #{reference} not parsed"
+        $stderr.puts "Named reference #{name} #{reference} not parsed"
         exit
       end
     end
