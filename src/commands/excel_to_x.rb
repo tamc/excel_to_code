@@ -238,6 +238,7 @@ class ExcelToX
   # Excel keeps a central file of strings that appear in worksheet cells
   def extract_shared_strings
     @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
+    dump
   end
   
   # Excel keeps a central list of named references. This includes those
@@ -1074,6 +1075,25 @@ class ExcelToX
   
   def standardise_name(*args)
     File.expand_path(File.join(args))
+  end
+
+  def dump
+    dumpArray(@shared_strings, intermediate_directory, "Shared Strings")
+  end
+
+  def dumpArray(array, *filenames)
+    fn = File.join(*filenames)
+    FileUtils.mkdir_p(File.dirname(fn))
+    File.open(fn, 'w') do |f|
+      array.each do |line|
+        case line
+        when Array
+          f.puts line.join("\t")
+        else
+          f.puts line.to_s
+        end
+      end
+    end
   end
   
 end
