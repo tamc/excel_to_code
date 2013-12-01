@@ -44,7 +44,7 @@ class ExcelToX
   # Each named reference then has a function in the resulting C code of the form
   # void set_named_reference_mangled_into_a_c_function(ExcelValue newValue)
   #
-  # By default, no named references are output
+  # By default no named references are output
   attr_accessor :named_references_that_can_be_set_at_runtime
   
   # Optional attribute. Specifies which cells must appear in the final generated code.
@@ -229,22 +229,17 @@ class ExcelToX
   # In this method we also loop through each of the individual 
   # worksheet files to work out their dimensions
   def extract_data_from_workbook
-    extract_shared_strings
+    # Excel keeps a central file of strings that appear in worksheet cells
+    @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
     extract_named_references
     extract_worksheet_names
     extract_dimensions_from_worksheets
   end
   
-  # Excel keeps a central file of strings that appear in worksheet cells
-  def extract_shared_strings
-    @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
-    dump
-  end
-  
   # Excel keeps a central list of named references. This includes those
   # that are local to a specific worksheet.
   def extract_named_references
-    extract ExtractNamedReferences, 'workbook.xml', 'Named references'
+    @named_references = ExtractNamedReferences.extract('workbook.xml')
     apply_rewrite RewriteFormulaeToAst, 'Named references'
     replace ReplaceRangesWithArrayLiterals, 'Named references', 'Named references'
   end
@@ -1079,6 +1074,7 @@ class ExcelToX
 
   def dump
     dumpArray(@shared_strings, intermediate_directory, "Shared Strings")
+    dumpArray(@named_references_a, versioned_filename_write(intermediate_directory, "Named References"))
   end
 
   def dumpArray(array, *filenames)

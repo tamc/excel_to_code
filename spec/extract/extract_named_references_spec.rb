@@ -4,11 +4,10 @@ describe ExtractNamedReferences do
   
   it "should output the named references in the workbook in the form <worksheet>\\t<name>\\t<reference>" do
     input = excel_fragment 'Workbook.xml'
-    output = StringIO.new
-    ExtractNamedReferences.extract(input,output)
-    output.string.should == <<END
-\tIn_result\tInputs!$A$3
-Inputs\tLocal_named_reference\tInputs!$A$3
-END
+    output = ExtractNamedReferences.extract(input)
+    output.should == {
+      "In_result" =>  "Inputs!$A$3",
+      ["Inputs", "Local_named_reference"] => "Inputs!$A$3"
+    }
   end
 end
