@@ -3,22 +3,15 @@ class NamedReferences
   attr_accessor :named_references
   
   def initialize(refs)
-    @named_references = {}
-    refs.each do |line|
-      sheet, name, reference = line.split("\t")
-      @named_references[sheet.downcase] ||= {}
-      @named_references[sheet.downcase][name.downcase] = eval(reference)
-    end
+    @named_references = refs
   end
   
   def reference_for(sheet,named_reference)
     sheet = sheet.downcase
     named_reference = named_reference.downcase
-    if @named_references.has_key?(sheet)
-      @named_references[sheet][named_reference] || @named_references[""][named_reference] || [:error, "#NAME?"]
-    else
-      @named_references[""][named_reference] || [:error, "#NAME?"]
-    end
+    @named_references[[sheet, named_reference]] ||
+    @named_references[named_reference] ||
+    [:error, "#NAME?"]
   end
   
 end
@@ -58,15 +51,15 @@ end
 
 class ReplaceNamedReferences
   
-  attr_accessor :sheet_name
+  attr_accessor :sheet_name, :named_references
   
-  def self.replace(values,sheet_name,named_references,output)
-    self.new.replace(values,sheet_name,named_references,output)
+  def self.replace(*args)
+    self.new.replace(*args)
   end
   
   # Rewrites ast with named references
-  def replace(values,named_references,output)
-    named_references = NamedReferences.new(named_references.readlines)
+  def replace(values,output)
+    named_references = NamedReferences.new(@named_references)
     rewriter = ReplaceNamedReferencesAst.new(named_references,sheet_name)
     values.each_line do |line|
       # Looks to match shared string lines

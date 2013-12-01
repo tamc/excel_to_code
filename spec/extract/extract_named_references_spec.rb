@@ -6,8 +6,8 @@ describe ExtractNamedReferences do
     input = excel_fragment 'Workbook.xml'
     output = ExtractNamedReferences.extract(input)
     output.should == {
-      "In_result" =>  "Inputs!$A$3",
-      ["Inputs", "Local_named_reference"] => "Inputs!$A$3"
+      "in_result" =>  "Inputs!$A$3",
+      ["inputs", "local_named_reference"] => "Inputs!$A$3"
     }
   end
 end

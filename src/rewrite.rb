@@ -1,3 +1,4 @@
+require_relative "excel/formula_peg"
 require_relative "rewrite/rewrite_formulae_to_ast"
 require_relative "rewrite/rewrite_worksheet_names"
 require_relative "rewrite/rewrite_whole_row_column_references_to_areas"

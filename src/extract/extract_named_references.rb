@@ -19,16 +19,16 @@ class ExtractNamedReferences < Nokogiri::XML::SAX::Document
     @name = nil
     @reference = nil
     parser = Nokogiri::XML::SAX::Parser.new(self)
-    parser.parse(input)
-    output
+    parser.parse(@input)
+    @output
   end
 
   def start_element(name,attributes)
     if name == "sheet"
       @sheet_names << attributes.assoc('name').last
     elsif name == "definedName"
-      @sheet = attributes.assoc('localSheetId') && @sheet_names[attributes.assoc('localSheetId').last.to_i]
-      @name =  attributes.assoc('name').last
+      @sheet = attributes.assoc('localSheetId') && @sheet_names[attributes.assoc('localSheetId').last.to_i].downcase
+      @name =  attributes.assoc('name').last.downcase
       @reference = ""
     end
   end

@@ -238,10 +238,28 @@ class ExcelToX
   
   # Excel keeps a central list of named references. This includes those
   # that are local to a specific worksheet.
+  # They are put in a @named_references hash
+  # The hash value is the ast for the reference
+  # The hash key is either [sheet, name] or name
+  # Note that the sheet and the name are always stored lowercase
   def extract_named_references
-    @named_references = ExtractNamedReferences.extract('workbook.xml')
-    apply_rewrite RewriteFormulaeToAst, 'Named references'
-    replace ReplaceRangesWithArrayLiterals, 'Named references', 'Named references'
+    # First we get the references in raw form
+    @named_references = ExtractNamedReferences.extract(xml('workbook.xml'))
+    # Then we parse them
+    @named_references.each do |name, reference|
+      parsed = Formula.parse(reference)
+      if parsed
+        @named_references[name] = parsed.to_ast[1]
+      else
+        @stderr.puts "Named reference #{name} #{reference} not parsed"
+        exit
+      end
+    end
+    # Replace A1:B2 with [A1, A2, B1, B2]
+    rewriter = ReplaceRangesWithArrayLiteralsAst.new
+    @named_references.each do |name, reference|
+      @named_references[name] = rewriter.map(reference)
+    end
   end
 
   # Excel keeps a list of worksheet names. To get the mapping between
@@ -370,7 +388,8 @@ class ExcelToX
   def rewrite_array_formulae(name,xml_filename)
     r = ReplaceNamedReferences.new
     r.sheet_name = name
-    replace r, [name, 'Formulae (array)'], 'Named references', [name, 'Formulae (array)']
+    r.named_references = @named_references
+    replace r, [name, 'Formulae (array)'], [name, 'Formulae (array)']
 
     r = ReplaceTableReferences.new
     r.sheet_name = name    
@@ -401,34 +420,14 @@ class ExcelToX
     required_refs
   end
 
-  # Returns a hash of named references, and the ast of their links
-  # where the named reference is global the key will be a string of
-  # its name and case sensitive.
-  # where the named reference is scoped to a worksheet, the key will be
-  # a two element array. The first element will be the sheet name. The
-  # second will be the name. 
-  def named_references
-    return @named_references if @named_references
-    @named_references = {}
-    i = input('Named references')
-    i.each_line do |line|
-      sheet, name, ref = *line.split("\t")
-      key = sheet.size != 0 ? [sheet, name] : name
-      @named_references[key] = eval(ref)
-    end
-    close(i)
-    @named_references
-  end
-
   # This makes sure that cells_to_keep includes named_references_to_keep
   def transfer_named_references_to_keep_into_cells_to_keep
     log.debug "Started transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
-    @named_references_to_keep = named_references.keys if @named_references_to_keep == :all
+    @named_references_to_keep = @named_references.keys if @named_references_to_keep == :all
     @cells_to_keep ||= {}
-    all_named_references = named_references
     @named_references_to_keep.each do |name|
-      ref = all_named_references[name]
+      ref = @named_references[name]
       if ref
         add_ref_to_hash(ref, @cells_to_keep)
       else
@@ -442,9 +441,8 @@ class ExcelToX
     return unless @named_references_that_can_be_set_at_runtime
     return if @named_references_that_can_be_set_at_runtime == :where_possible
     @cells_that_can_be_set_at_runtime ||= {}
-    all_named_references = named_references
     @named_references_that_can_be_set_at_runtime.each do |name|
-      ref = all_named_references[name]
+      ref = @named_references[name]
       if ref
         add_ref_to_hash(ref, @cells_that_can_be_set_at_runtime)
       else
@@ -454,6 +452,7 @@ class ExcelToX
   end
 
   def add_ref_to_hash(ref, hash)
+    ref = ref.dup
     if ref.first == :sheet_reference
       sheet = ref[1]
       cell = ref[2][1].gsub('$','')
@@ -463,6 +462,7 @@ class ExcelToX
     elsif ref.first == :array
       ref.shift
       ref.each do |row|
+        row = row.dup
         row.shift
         row.each do |cell|
           add_ref_to_hash(cell, hash)
@@ -480,7 +480,7 @@ class ExcelToX
     cells_that_can_be_set = a_good_set_of_cells_that_should_be_settable_at_runtime if cells_that_can_be_set == :named_references_only
     cells_that_can_be_set_due_to_named_reference = Hash.new { |h,k| h[k] = Array.new  }
     @named_references_that_can_be_set_at_runtime = []
-    all_named_references = named_references
+    all_named_references = @named_references
     @named_references_to_keep.each do |name|
       ref = all_named_references[name]
       if ref.first == :sheet_reference
@@ -553,7 +553,8 @@ class ExcelToX
       
       r = ReplaceNamedReferences.new
       r.sheet_name = name
-      replace r, [name, 'Formulae'], 'Named references', [name, 'Formulae']
+      r.named_references = @named_references
+      replace r, [name, 'Formulae'], [name, 'Formulae']
 
       r = ReplaceTableReferences.new
       r.sheet_name = name
@@ -599,7 +600,8 @@ class ExcelToX
       # The result of the indirect might be a named reference, which we need to simplify
       r = ReplaceNamedReferences.new
       r.sheet_name = name
-      replace r, [name, 'Formulae'], 'Named references', [name, 'Formulae']
+      r.named_references = @named_references
+      replace r, [name, 'Formulae'], [name, 'Formulae']
       
       # The result of the indirect might contain arithmetic, which we need to simplify
       replace SimplifyArithmetic,   [name, 'Formulae'], [name, 'Formulae']      
@@ -850,7 +852,7 @@ class ExcelToX
     close(output)
   end
   
-  # If nothing has been specified in named_refernces_that_can_be_set_at_runtime 
+  # If nothing has been specified in named_references_that_can_be_set_at_runtime 
   # or in cells_that_can_be_set_at_runtime, then we assume that
   # all value cells should be settable if they are referenced by
   # any other forumla.
@@ -1074,7 +1076,7 @@ class ExcelToX
 
   def dump
     dumpArray(@shared_strings, intermediate_directory, "Shared Strings")
-    dumpArray(@named_references_a, versioned_filename_write(intermediate_directory, "Named References"))
+    dumpArray(@named_references.flatten, versioned_filename_write(intermediate_directory, "Named References"))
   end
 
   def dumpArray(array, *filenames)
