@@ -3,9 +3,7 @@ class ReplaceSharedStringAst
   attr_accessor :shared_strings
   
   def initialize(shared_strings)
-    @shared_strings = shared_strings.map do |s|
-      s[/^(.*?)\n$/,1]
-    end
+    @shared_strings = shared_strings
   end
   
   def map(ast)
@@ -35,7 +33,7 @@ class ReplaceSharedStrings
   
   # Rewrites ast with shared strings to strings
   def replace(values,shared_strings,output)
-    rewriter = ReplaceSharedStringAst.new(shared_strings.readlines)
+    rewriter = ReplaceSharedStringAst.new(shared_strings)
     values.each_line do |line|
       # Looks to match shared string lines
       if line =~ /\[:shared_string/

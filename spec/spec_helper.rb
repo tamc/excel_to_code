@@ -11,6 +11,12 @@ end
 
 alias :test_data :excel_fragment
 
+class StringIO
+  def to_ary
+    lines.to_a.map { |l| l.split("\t") }
+  end
+end
+
 class FunctionTest
   extend ExcelFunctions
   def FunctionTest.original_excel_filename; "filename not specified"; end

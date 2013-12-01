@@ -1,20 +1,33 @@
-require_relative 'simple_extract_from_xml'
+require 'nokogiri'
 
-class ExtractSharedStrings < SimpleExtractFromXML
+class ExtractSharedStrings < Nokogiri::XML::SAX::Document 
+
+    def self.extract(input)
+      self.new.extract(input)
+    end
+
+    def extract(input)
+      @input, @output = input, []
+      @current = nil
+      parser = Nokogiri::XML::SAX::Parser.new(self)
+      parser.parse(input)
+      @output
+    end
 
   def start_element(name,attributes)
-    self.parsing = true if name == "si"
+    @current = [] if name == "si"
   end
   
   def end_element(name)
     return unless name == "si"
-    self.parsing = false
-    output.putc "\n"
+    @output << @current.join
+    @current = nil
   end
   
   def characters(string)
-    return unless parsing
-    output.write string.gsub("\n","")
+    return unless @current
+    # FIXME: SHOULDN'T ELINMATE NEWLINES
+    @current << string.gsub("\n","")
   end
   
 end

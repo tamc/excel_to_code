@@ -237,7 +237,7 @@ class ExcelToX
   
   # Excel keeps a central file of strings that appear in worksheet cells
   def extract_shared_strings
-    extract ExtractSharedStrings, 'sharedStrings.xml', 'Shared strings'
+    @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
   end
   
   # Excel keeps a central list of named references. This includes those
@@ -550,10 +550,10 @@ class ExcelToX
     
   def simplify_worksheets
     worksheets do |name,xml_filename|
-      replace ReplaceSharedStrings, [name, 'Values'], 'Shared strings', File.join(name, 'Values')
+      ReplaceSharedStrings.replace(input([name, 'Values']), @shared_strings, intermediate(File.join(name, 'Values')))
       
-      replace SimplifyArithmetic,   [name, 'Formulae'], [name, 'Formulae']      
-      replace ReplaceSharedStrings, [name, 'Formulae'], 'Shared strings', [name, 'Formulae']
+      replace SimplifyArithmetic, [name, 'Formulae'], [name, 'Formulae']      
+      ReplaceSharedStrings.replace(input([name, 'Formulae']), @shared_strings, intermediate([name, 'Formulae']))
       
       r = ReplaceNamedReferences.new
       r.sheet_name = name

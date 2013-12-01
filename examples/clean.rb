@@ -6,7 +6,7 @@ exit unless File.expand_path(Dir.pwd) == File.expand_path(File.dirname(__FILE__)
 
 rm_f "Makefile"
 
-%w{offsets 2050Model 2050Model-html eu-html blank eu smallnumbers stringexample getsetranges excelspreadsheet utf8-strings}.each do |name|
+%w{offsets 2050Model 2050Model-html eu-html blank eu smallnumbers stringexample getsetranges excelspreadsheet utf8-strings utf8strings}.each do |name|
   rm_f "#{name}.c"
   rm_f "#{name}.o"
   rm_f "#{name}.rb"
