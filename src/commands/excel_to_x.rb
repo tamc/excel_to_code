@@ -321,6 +321,7 @@ class ExcelToX
     @formulae_shared = {}
     @formulae_shared_targets = {}
     @formulae_array = {}
+    # This one has a series of table references
     
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?
@@ -328,11 +329,8 @@ class ExcelToX
       @values.merge! ExtractValues.extract(name, xml(xml_filename))
       @formulae_simple.merge! ExtractSimpleFormulae.extract(name, xml(xml_filename))
       @formulae_shared.merge! ExtractSharedFormulae.extract(name, xml(xml_filename))
-
-      extract ExtractSharedFormulaeTargets, xml_filename, [name, 'Formulae (shared targets)']
-
-      extract ExtractArrayFormulae, xml_filename, [name, 'Formulae (array)']
-      apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (array)']
+      @formulae_shared_targets.merge! ExtractSharedFormulaeTargets.extract(name, xml(xml_filename))
+      @formulae_array.merge! ExtractArrayFormulae.extract(name, xml(xml_filename))
       
       extract_tables_for_worksheet(name,xml_filename)
     end

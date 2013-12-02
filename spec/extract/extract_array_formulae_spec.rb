@@ -2,14 +2,12 @@ require_relative '../spec_helper'
 
 describe ExtractArrayFormulae do
   
-  it "should create a flat file with one string per formula, in the format: reference\tarray range\tformula" do
+  it "should create a Hash like ['SheetName', 'B3'] => ['B6:B8', [ast..]]" do
     input = excel_fragment 'FormulaeTypes.xml'
-    output = StringIO.new
-    ExtractArrayFormulae.extract(input,output)
-    expected_output = <<END
-B5\tB5\tB1:B4
-B6\tB6:B8\tIF(B3:B5=8,"Eight","Not Eight")
-END
-    output.string.should == expected_output
+    output = ExtractArrayFormulae.extract("SheetName", input)
+    output.should == {
+      ["SheetName", "B5"] => ["B5", [:area, "B1", "B4"]],
+      ["SheetName", "B6"] => ["B6:B8", [:function, "IF", [:comparison, [:area, "B3", "B5"], [:comparator, "="], [:number, "8"]], [:string, "Eight"], [:string, "Not Eight"]]],
+    }
   end
 end
