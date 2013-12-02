@@ -1,9 +1,19 @@
-require_relative 'simple_extract_from_xml'
+require 'nokogiri'
 
-class ExtractFormulae < SimpleExtractFromXML
-  
-  attr_accessor :ref, :formula
-  
+class ExtractFormulae < Nokogiri::XML::SAX::Document 
+
+  def self.extract(*args)
+    self.new.extract(*args)
+  end
+
+  def extract(sheet_name, input)
+    @sheet_name = sheet_name
+    @output = {}
+    @parsing = false
+    Nokogiri::XML::SAX::Parser.new(self).parse(input)
+    @output
+  end
+
   def start_element(name,attributes)
     if name == 'c'
       @ref = attributes.assoc('r').last
@@ -13,24 +23,24 @@ class ExtractFormulae < SimpleExtractFromXML
       start_formula( type && type.last, attributes)
     end
   end
-  
-  def start_formula(type,attributes)
-    # Should be overriden in sub classes
-  end
-  
-  def write_formula
-    # Should be overriden in sub classes
-  end
-  
+
   def end_element(name)
-    return unless parsing && name == "f"
-    self.parsing = false
+    return unless @parsing && name == "f"
+    @parsing = false
     write_formula
   end
-  
+
   def characters(string)
-    return unless parsing
+    return unless @parsing
     @formula.push(string)
   end
-  
+
+  def start_formula(type,attributes)
+    # Override
+  end
+
+  def write_formula   
+    # Override
+  end
+
 end

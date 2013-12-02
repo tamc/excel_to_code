@@ -281,6 +281,7 @@ class ExcelToX
         @worksheet_xmls[name] = worksheet_xml
       end
     end
+    # FIXME: Extract this and put it at the end
     @worksheet_c_names = {}
     c_names_assigned = {}
     worksheet_rids.keys.each do |excel_worksheet_name|
@@ -307,23 +308,26 @@ class ExcelToX
   end
   
   # For each worksheet, this makes four passes through the xml
-  # 1. Extract the values of each cell
-  # 2. Extract all the cells which are simple formulae
+  # 1. Extract the values of each cell into @values
+  # 2. Extract all the cells which are simple formulae into @formulae_simple
   # 3. Extract all the cells which use shared formulae
   # 4. Extract all the cells which are part of array formulae
   # 
   # It then looks at the relationship file and extracts any tables
   def extract_data_from_worksheets
+    # All are hashes of the format ["SheetName", "A1"] => [:number, "1"]
+    @values = {}
+    @formulae_simple = {}
+    @formulae_shared = {}
+    @formulae_shared_targets = {}
+    @formulae_array = {}
+    
+    # Loop through the worksheets
+    # FIXME: make xml_filename be the IO object?
     worksheets do |name, xml_filename|
-      
-      extract ExtractValues, xml_filename, [name, 'Values']
-      apply_rewrite RewriteValuesToAst, [name, 'Values']
-      
-      extract ExtractSimpleFormulae, xml_filename, [name, 'Formulae (simple)']
-      apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (simple)']
-
-      extract ExtractSharedFormulae, xml_filename, [name, 'Formulae (shared)']
-      apply_rewrite RewriteFormulaeToAst, [name, 'Formulae (shared)']
+      @values.merge! ExtractValues.extract(name, xml(xml_filename))
+      @formulae_simple.merge! ExtractSimpleFormulae.extract(name, xml(xml_filename))
+      @formulae_shared.merge! ExtractSharedFormulae.extract(name, xml(xml_filename))
 
       extract ExtractSharedFormulaeTargets, xml_filename, [name, 'Formulae (shared targets)']
 
@@ -332,6 +336,7 @@ class ExcelToX
       
       extract_tables_for_worksheet(name,xml_filename)
     end
+    apply_rewrite RewriteValuesToAst, [name, 'Values']
   end
   
   # To extract a table we need to look in the worksheet for table references

@@ -2,14 +2,12 @@ require_relative '../spec_helper'
 
 describe ExtractSimpleFormulae do
   
-  it "should create a flat file with one string per formula, in the format: reference\tformula; it should skip blank formulae" do
+  it "should create a hash ['SheetName', 'A1'] => '1+1' ... " do
     input = excel_fragment 'FormulaeTypes.xml'
-    output = StringIO.new
-    ExtractSimpleFormulae.extract(input,output)
-    expected_output = <<END
-B1\t1+1
-B2\tCOSH(2*PI())
-END
-    output.string.should == expected_output
+    output = ExtractSimpleFormulae.extract("SheetName", input)
+    output.should == {
+      ["SheetName", "B1"] => [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]],
+      ["SheetName", "B2"] => [:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]
+    }
   end
 end
