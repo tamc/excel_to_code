@@ -13,20 +13,14 @@ A5\t[:sheet_reference,"sheet3",[:cell,"A5"]]
 A6\t[:function, "OFFSET", [:cell, "$A$2"], [:cell, "A3"], [:sheet_reference,"sheet2",[:cell,"A1"]]]
 END
 
-references = references = {
-  'sheet1' => {
-    'A1' => [:cell, "$A$2"],
-    'A2' => [:cell, "A3"],
-    'A3' => [:number, 1]
-  },
-  'sheet2' => {
-    'A1' => [:cell, "A2"],
-    'A2' => [:sheet_reference,'sheet3',[:cell,'A1']]
-  },
-  'sheet3' => {
-    'A1' => [:number, 5],
-    'A5' => [:number, 10]    
-  }
+references = {
+  ["sheet1", 'A1'] => [:cell, "$A$2"],
+  ["sheet1", 'A2'] => [:cell, "A3"],
+  ["sheet1", 'A3'] => [:number, 1],
+  ["sheet2", 'A1'] => [:cell, "A2"],
+  ["sheet2", 'A2'] => [:sheet_reference,'sheet3',[:cell,'A1']],
+  ["sheet3", 'A1'] => [:number, 5],
+  ["sheet3", 'A5'] => [:number, 10]    
 }
 
 expected_output = <<END
@@ -62,20 +56,14 @@ A8\t[:cell, "B8"]
 A9\t[:sheet_reference,"sheet2",[:cell, "$B$8"]]
 END
 
-references = references = {
-  'sheet1' => {
-    'A1' => [:cell, "$A$2"],
-    'A2' => [:cell, "A3"],
-    'A3' => [:number, 1]
-  },
-  'sheet2' => {
-    'A1' => [:cell, "A2"],
-    'A2' => [:sheet_reference,'sheet3',[:cell,'A1']]
-  },
-  'sheet3' => {
-    'A1' => [:number, 5],
-    'A5' => [:number, 10]
-  }
+references = {
+  ["sheet1", 'A1'] => [:cell, "$A$2"],
+  ["sheet1", 'A2'] => [:cell, "A3"],
+  ["sheet1", 'A3'] => [:number, 1],
+  ["sheet2", 'A1'] => [:cell, "A2"],
+  ["sheet2", 'A2'] => [:sheet_reference,'sheet3',[:cell,'A1']],
+  ["sheet3", 'A1'] => [:number, 5],
+  ["sheet3", 'A5'] => [:number, 10]    
 }
 
 inline_ast_decision = lambda do |sheet,cell,references|

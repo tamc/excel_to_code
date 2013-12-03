@@ -718,14 +718,13 @@ class ExcelToX
 
   # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
   def replace_references_to_values_with_values
-    references = all_formulae
     
-    inline_ast_decision = lambda do |sheet,cell,references|
+    inline_ast_decision = lambda do |sheet, cell, references|
       references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
         false
       else
-        ast = references[sheet][cell]
+        ast = references[[sheet,cell]]
         if ast
           if [:number,:string,:blank,:null,:error,:boolean_true,:boolean_false,:sheet_reference,:cell].include?(ast.first)
             true
@@ -738,15 +737,17 @@ class ExcelToX
       end
     end
     
-    r = InlineFormulae.new
-    r.references = references
+    r = InlineFormulaeAst.new
+    r.references = @formulae
     r.inline_ast = inline_ast_decision
     
-    worksheets do |name,xml_filename|
-      r.default_sheet_name = name
-      replace r, [name, 'Formulae'],  [name, 'Formulae']
-      @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
+    @formulae.each do |ref, ast|
+      # FIXME: Shouldn't need to wrap ref.fist in an array
+      r.current_sheet_name = [ref.first]
+      r.map(ast)
     end
+    
+    @replacements_made_in_the_last_pass += r.count_replaced
   end
   
   # If 'cells to keep' are specified, then other cells are removed, unless
