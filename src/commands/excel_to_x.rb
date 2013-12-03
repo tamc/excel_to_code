@@ -440,7 +440,7 @@ class ExcelToX
       expand_array_formulae_replacer.map(details.last)
     end
 
-    apply_rewrite RewriteArrayFormulae,           [name, 'Formulae (array)']
+    @formulae_array = RewriteArrayFormulae.rewrite(@formulae_array)
   end
   
   def combine_formulae_files(name,xml_filename)

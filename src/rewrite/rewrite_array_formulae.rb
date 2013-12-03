@@ -40,19 +40,22 @@ class ExtractArrayFormulaForCell
 end
 
 class RewriteArrayFormulae
-  def self.rewrite(input,output)
-    new.rewrite(input,output)
+  def self.rewrite(*args)
+    new.rewrite(*args)
   end
   
-  def rewrite(input,output)
-    input.each_line do |line|
-      ref, array_range, formula = line.split("\t")
-      array_formula(formula,array_range,output)
+  def rewrite(input)
+    @output = {}
+    input.each do |ref, details|
+      sheet = ref[0]
+      array_range = details[0]
+      ast = details[1]
+      array_formula(sheet, array_range, ast)
     end
+    @output
   end
   
-  def array_formula(formula,array_range,output)
-    array_ast = eval(formula)
+  def array_formula(sheet, array_range, array_ast)
     array_range = "#{array_range}:#{array_range}" unless array_range.include?(':')
     array_range = Area.for(array_range)
     array_range.calculate_excel_variables
@@ -64,7 +67,7 @@ class RewriteArrayFormulae
       mapper.row_offset = row
       mapper.column_offset = column
       ref = start_reference.offset(row,column)
-      output.puts "#{ref}\t#{mapper.map(array_ast).inspect}"
+      @output[[sheet, ref]] = mapper.map(array_ast)
     end
   end
   
