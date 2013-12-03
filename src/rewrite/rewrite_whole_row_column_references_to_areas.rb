@@ -20,6 +20,10 @@ class WorksheetDimension
   def map_column(start,finish)
     ["#{start}#{first_row}","#{finish}#{last_row}"]
   end
+
+  def inspect
+    area.inspect
+  end
   
 end
 
@@ -29,37 +33,36 @@ class MapColumnAndRowRangeAst
   
   def initialize(default_worksheet_name,worksheet_dimensions)
     @default_worksheet_name, @worksheet_dimensions = default_worksheet_name, worksheet_dimensions
+    @worksheet_names = []
   end
   
   def map(ast)
-    if ast.is_a?(Array)
-      operator = ast.shift
-      if respond_to?(operator)
-        send(operator,*ast)
-      else
-        [operator,*ast.map {|a| map(a) }]
-      end
-    else
-      return ast
+    return ast unless ast.is_a?(Array)
+    case ast[0]
+    when :sheet_reference; sheet_reference(ast)
+    when :row_range; row_range(ast)
+    when :column_range; column_range(ast)
     end
+    ast.each {|e| map(e)}
   end
   
-  def sheet_reference(sheet_name,reference)
-    if reference.first == :row_range
-      [:sheet_reference,sheet_name,[:area,*worksheet_dimensions[sheet_name].map_row(reference[1],reference[2])]]
-    elsif reference.first == :column_range
-      [:sheet_reference,sheet_name,[:area,*worksheet_dimensions[sheet_name].map_column(reference[1],reference[2])]]
-    else
-      [:sheet_reference,sheet_name,reference]
-    end
+  # Of the form [:sheet_reference, sheet_name, reference]
+  def sheet_reference(ast)
+    @worksheet_names.push(ast[1])
+    map(ast[2])
+    @worksheet_names.pop
   end
   
-  def row_range(start,finish)
-    [:area,*worksheet_dimensions[default_worksheet_name].map_row(start,finish)]
+  # Of the form [:row_range, start, finish]
+  def row_range(ast)
+    worksheet = @worksheet_names.last || @default_worksheet_name
+    ast.replace([:area,*worksheet_dimensions[worksheet].map_row(ast[1],ast[2])])
   end
   
-  def column_range(start,finish)
-    [:area,*worksheet_dimensions[default_worksheet_name].map_column(start,finish)]
+  # Of the form [:column_range, start, finish]
+  def column_range(ast)
+    worksheet = @worksheet_names.last || @default_worksheet_name
+    ast.replace([:area,*worksheet_dimensions[worksheet].map_column(ast[1],ast[2])])
   end
   
 end

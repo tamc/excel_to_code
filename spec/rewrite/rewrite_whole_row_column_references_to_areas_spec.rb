@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe RewriteWholeRowColumnReferencesToAreas do
   
-  it "should take a file with ast in its last column, and a file with worksheetname\\tdimensionrange\\n and map any row and column references in the ast to conventional area references" do
+  it "should take a hash with sheet names and row and column references and replace them with ranges" do
     input = test_data('RowAndColumnRanges.ast')
     default_worksheet_name = "Ranges"
     worksheet_dimensions = {'ValueTypes' => 'A1:A6', 'FormulaeTypes' => 'A1:B8', 'Ranges' => 'A1:G6'}

@@ -148,7 +148,6 @@ class ExcelToX
     # into a series of plain text files
     extract_data_from_workbook
     extract_data_from_worksheets
-    merge_table_files
     
     # This turns named references that are specified as getters and setters
     # into a series of required cell references
@@ -304,6 +303,7 @@ class ExcelToX
     worksheets do |name, xml_filename|
       log.info "Extracting dimensions for #{name}"
       @worksheets_dimensions[name] = extractor.extract(xml(xml_filename))
+      # FIXME: Should this actual return WorksheetDimension objects? rather than text ranges?
     end
   end
   
@@ -328,10 +328,16 @@ class ExcelToX
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?
     worksheets do |name, xml_filename|
+      # ast
       @values.merge! ExtractValues.extract(name, xml(xml_filename))
-      @formulae_simple.merge! ExtractSimpleFormulae.extract(name, xml(xml_filename))
+      # ast
+      @formulae_simple.merge! ExtractSimpleFormulae.extract(name, xml(xml_filename)) 
+      # [shared_range, shared_identifier, ast]
       @formulae_shared.merge! ExtractSharedFormulae.extract(name, xml(xml_filename))
+
+      # shared_identifier
       @formulae_shared_targets.merge! ExtractSharedFormulaeTargets.extract(name, xml(xml_filename))
+      #  [array_range, ast]
       @formulae_array.merge! ExtractArrayFormulae.extract(name, xml(xml_filename))
       
       extract_tables_for_worksheet(name,xml_filename)
@@ -347,50 +353,44 @@ class ExcelToX
     xml_for_rids = ExtractRelationships.extract(xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")))
     table_rids.each do |rid| 
       table_xml = xml(File.join('worksheets', xml_for_rids[rid]))
+      # FIXME: Extract actual Table objects?
       @tables.merge! ExtractTable.extract(name, table_xml)
     end
   end
   
-  # Tables are like named references in that they can be referred to from
-  # anywhere in the workbook. Therefore we consolidate all the tables from
-  # all the worksheets into a central table file.
-  def merge_table_files
-    merged_table_file = intermediate("Workbook tables")
-    worksheets do |name,xml_filename|
-      log.info "Merging table files for #{name}"
-      worksheet_table_file = input([name, "Worksheet tables"])
-      worksheet_table_file.each_line do |line|
-        merged_table_file.puts line
-      end
-      close worksheet_table_file
-    end
-    close merged_table_file
-  end
-  
   def rewrite_worksheets
-    worksheets do |name,xml_filename|
-      log.info "Rewriting worksheet #{name}"
-      rewrite_row_and_column_references(name,xml_filename)
-      rewrite_shared_formulae(name,xml_filename)
-      rewrite_array_formulae(name,xml_filename)
-      combine_formulae_files(name,xml_filename)
-    end
+    rewrite_row_and_column_references
+    #rewrite_shared_formulae(name,xml_filename)
+    #rewrite_array_formulae(name,xml_filename)
+    #combine_formulae_files(name,xml_filename)
   end
   
   # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
   # A to Z and all cells in rows 5 to 20 respectively. This function translates these
   # into more conventional references (e.g., A5:Z20) based on the maximum area that 
   # has been used on a worksheet
-  def rewrite_row_and_column_references(name,xml_filename)
-    r = RewriteWholeRowColumnReferencesToAreas.new
-    r.worksheet_dimensions = @worksheets_dimensions
-    r.sheet_name = name
-    
-    apply_rewrite r, [name, 'Formulae (simple)']
-    apply_rewrite r, [name, 'Formulae (shared)']
-    apply_rewrite r, [name, 'Formulae (array)']
-    
-    dimensions.close
+  def rewrite_row_and_column_references
+    # FIXME: Refactor
+    dimension_objects = {}
+    @worksheets_dimensions.map do |sheet_name, dimension| 
+      dimension_objects[sheet_name] = WorksheetDimension.new(dimension) 
+    end
+    mapper = MapColumnAndRowRangeAst.new(nil, dimension_objects)
+
+    @formulae_simple.each do |ref, ast|
+      mapper.default_worksheet_name = ref.first
+      mapper.map(ast)
+    end
+
+    @formulae_shared.each do |ref, ast|
+      mapper.default_worksheet_name = ref.first
+      mapper.map(ast.last)
+    end
+
+    @formulae_array.each do |ref, ast|
+      mapper.default_worksheet_name = ref.first
+      mapper.map(ast.last)
+    end
   end
   
   def rewrite_shared_formulae(name,xml_filename)
