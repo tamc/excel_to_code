@@ -425,8 +425,11 @@ class ExcelToX
       table_reference_replacer.map(details.last)
     end
       
+    simplify_arithmetic_replacer = SimplifyArithmeticAst.new
+    @formulae_array.each do |ref, details|
+      simplify_arithmetic_replacer.map(details.last)
+    end
     
-    replace SimplifyArithmetic,             [name, 'Formulae (array)'], [name, 'Formulae (array)']
     replace ReplaceRangesWithArrayLiterals, [name, 'Formulae (array)'], [name, 'Formulae (array)']
     apply_rewrite RewriteArrayFormulaeToArrays,   [name, 'Formulae (array)']
     apply_rewrite RewriteArrayFormulae,           [name, 'Formulae (array)']

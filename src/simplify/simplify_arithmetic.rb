@@ -2,31 +2,45 @@ class SimplifyArithmeticAst
     
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
+    case ast[0]
+    when :brackets; brackets(ast)
+    when :arithmetic; arithmetic(ast)
+    end
+    ast.each { |a| map(a) }
+    ast
+  end
+  
+  def brackets(ast)
+    raise NotSupportedException.new("Multiple arguments not supported in brackets #{args.inspect}") if ast.size > 2
+    ast.replace(map(ast[1]))
+  end
+  
+  def arithmetic(ast)
+    case ast.size
+    when 2; return map(ast[1]) # Not really arithmetic
+    when 4; # Normal arithmetic that doesn't need re-arranging
+      ast.each { |a| map(a) }
     else
-      [operator,*ast[1..-1].map {|a| map(a) }]
+      # This sets the operator precedence
+      i = nil
+      [['^'],['*','/'],['+','-']].each do |op|
+        i = ast.find_index { |a| a[0] == :operator && op.include?(a[1])}
+        break if i
+      end
+      if i
+        # Now we need to wrap that operation in its own arithmetic clause
+        old_clause = ast[(i-1)..(i+1)]
+        # Make sure we do any mapping
+        old_clause.each { |a| map(a) }
+        # Now create a new clause
+        new_clause = [:arithmetic, *old_clause]
+        # And insert it back into the ast
+        ast[(i-1)..(i+1)]  = [new_clause]
+        # Redo the mapping
+        map(ast)
+      end
     end
-  end
-  
-  def brackets(*args)
-    raise NotSupportedException.new("Multiple arguments not supported in brackets #{args.inspect}") if args.size > 1
-    map(args.first)
-  end
-  
-  def arithmetic(*args)
-    return map(args.first) if args.size == 1
-    return [:arithmetic,*args.map {|a| map(a) }] if args.size == 3
-    [['^'],['*','/'],['+','-']].each do |op|
-      i = args.find_index { |a| a[0] == :operator && op.include?(a[1])}
-      next unless i
-      pre_operation = i == 1 ? [] : args[0..(i-2)]
-      operation = args[(i-1)..(i+1)]
-      post_operation = (i + 2) > args.size ? [] : args[(i+2)..-1]
-      return arithmetic(*pre_operation.map {|a| map(a) },[:arithmetic,*operation],*post_operation.map {|a| map(a) })
-    end
-    return [:arithmetic,*args.map {|a| map(a) }]
+    ast.each { |a| map(a) }
   end
     
 end
