@@ -652,6 +652,11 @@ class ExcelToX
       replace_arrays_with_single_cells_replacer.map(ast)
     end
 
+    replace_string_joins_on_ranges_replacer = ReplaceStringJoinOnRangesAST.new
+    @formulae.each do |ref, ast|
+      replace_string_joins_on_ranges_replacer.map(ast)
+    end
+
       replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
   end
     

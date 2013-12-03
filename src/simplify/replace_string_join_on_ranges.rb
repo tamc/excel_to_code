@@ -2,17 +2,15 @@ class ReplaceStringJoinOnRangesAST
     
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
-    end
+    string_join(ast) if ast[0] == :string_join
+    ast.each { |a| map(a) }
+    ast
   end
   
-  def string_join(*strings)
+  def string_join(ast)
+    strings = ast[1..-1]
     # Make sure there is actually a conversion to do
-    return [:string_join, *strings] unless strings.any? { |s| s.first == :array }
+    return unless strings.any? { |s| s.first == :array }
     # Now work out the largest dimensions
     # Arrays look like this [:array, [:row, 1, 2, 3], [:row, 4, 5, 6]]
     max_rows = 0
@@ -37,7 +35,7 @@ class ReplaceStringJoinOnRangesAST
       end
       result << row
     end
-    result       
+    ast.replace(result)
   end
 
   def select_from(maybe_array, row_index, column_index)
