@@ -997,20 +997,6 @@ class ExcelToX
     end
   end
     
-  def all_formulae
-    references = {}
-    worksheets do |name,xml_filename|
-      r = references[name] = {}
-      i = input([name,'Formulae'])
-      i.each_line do |line|
-        line =~ /^(.*?)\t(.*)$/
-        ref, ast = $1, $2
-        r[ref] = eval(ast)
-      end
-    end 
-    references
-  end
-  
   def c_name_for_worksheet_name(name)
     @worksheet_c_names[name]
   end

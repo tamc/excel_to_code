@@ -14,16 +14,14 @@ class SortIntoCalculationOrder
     # First we find the references that are at the top of the tree
     references_with_counts = CountFormulaReferences.new.count(references)
     tops = []
-    references_with_counts.each do |sheet, references|
-      references.each do |cell, count|
-        next unless count == 0
-        tops << [sheet, cell]
-      end
+    references_with_counts.each do |reference, count|
+      next unless count == 0
+      tops << reference
     end
     # Then we have to work through those tops
     # recursively adding the cells that they depend on
-    tops.each do |ref|
-      add_ordered_references_for ref
+    tops.each do |reference|
+      add_ordered_references_for reference
     end
     @ordered_references
   end
@@ -32,10 +30,10 @@ class SortIntoCalculationOrder
     sheet = ref.first
     cell = ref.last
     current_sheet.push(sheet)
-    ast = @references[sheet][cell]
+    ast = @references[ref]
     map(ast)
     current_sheet.pop
-    ordered_references << ref
+    @ordered_references << ref
   end  
 
   def map(ast)
