@@ -646,8 +646,12 @@ class ExcelToX
     @formulae.each do |ref, ast|
       replace_arithmetic_on_ranges_replacer.map(ast)
     end
-      
-      replace ReplaceArraysWithSingleCells, [name, 'Formulae'],  [name, 'Formulae']
+
+    replace_arrays_with_single_cells_replacer = ReplaceArraysWithSingleCellsAst.new
+    @formulae.each do |ref, ast|
+      replace_arrays_with_single_cells_replacer.map(ast)
+    end
+
       replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
   end
     

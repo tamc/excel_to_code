@@ -1,5 +1,14 @@
 require_relative '../excel'
 
+class ReplaceArraysWithSingleCellsAst
+
+  def map(ast)
+    return ast unless ast.first == :array
+    ast[1][1]
+  end
+end
+
+
 class ReplaceArraysWithSingleCells
   
   def self.replace(*args)
@@ -8,16 +17,13 @@ class ReplaceArraysWithSingleCells
   
   def replace(input,output)
   
+    replacer = ReplaceArraysWithSingleCellsAst.new
     input.each_line do |line|
       # Looks to match shared string lines
       if line =~ /\[:array/
         content = line.split("\t")
         ast = eval(content.pop)
-        if ast.first == :array
-          output.puts "#{content.join("\t")}\t#{ast[1][1].inspect}"          
-        else
-          output.puts line
-        end
+        output.puts "#{content.join("\t")}\t#{replacer.map(ast).inspect}"          
       else
         output.puts line
       end
