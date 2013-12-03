@@ -406,14 +406,26 @@ class ExcelToX
     named_references = NamedReferences.new(@named_references)
     named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
 
-    @formulae_array.each do |ref, ast|
+    @formulae_array.each do |ref, details|
       named_reference_replacer.default_sheet_name = ref.first
-      named_reference_replacer.map(ast.last)
+      named_reference_replacer.map(details.last)
     end
     
-    r = ReplaceTableReferences.new
-    r.sheet_name = name    
-    replace r,                              [name, 'Formulae (array)'], "Workbook tables", [name, 'Formulae (array)']
+    # FIXME: Refactor
+    table_objects = {}
+    @tables.each do |name, details|
+      table_objects[name.downcase] = Table.new(name, *details)
+    end
+    
+    table_reference_replacer = ReplaceTableReferenceAst.new(table_objects)
+
+    @formulae_array.each do |ref, details|
+      table_reference_replacer.worksheet = ref.first
+      table_reference_replacer.referring_cell = ref.last
+      table_reference_replacer.map(details.last)
+    end
+      
+    
     replace SimplifyArithmetic,             [name, 'Formulae (array)'], [name, 'Formulae (array)']
     replace ReplaceRangesWithArrayLiterals, [name, 'Formulae (array)'], [name, 'Formulae (array)']
     apply_rewrite RewriteArrayFormulaeToArrays,   [name, 'Formulae (array)']

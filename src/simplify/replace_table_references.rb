@@ -8,25 +8,30 @@ class ReplaceTableReferenceAst
   
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
+    case ast[0]
+    when :table_reference; table_reference(ast)
+    when :local_table_reference; local_table_reference(ast)
     end
+    ast.each { |a| map(a) }
+    ast
   end
   
-  def table_reference(table_name,table_reference)
-    return [:error,"#REF!"] unless tables.has_key?(table_name.downcase)
-    tables[table_name.downcase].reference_for(table_name,table_reference,worksheet,referring_cell)
+  # Of the format [:table_reference, table_name, table_reference]
+  def table_reference(ast)
+    table_name = ast[1]
+    table_reference = ast[2]
+    return ast.replace([:error,"#REF!"]) unless tables.has_key?(table_name.downcase)
+    ast.replace(tables[table_name.downcase].reference_for(table_name,table_reference,worksheet,referring_cell))
   end
   
-  def local_table_reference(table_reference)
+  # Of the format [:local_table_reference, table_reference]
+  def local_table_reference(ast)
+    table_reference = ast[1]
     table = tables.values.find do |table|
       table.includes?(worksheet,referring_cell)
     end
-    return [:error,"#REF!"] unless table
-    table.reference_for(table.name,table_reference,worksheet,referring_cell)
+    return ast.replace([:error,"#REF!"]) unless table
+    ast.replace(table.reference_for(table.name,table_reference,worksheet,referring_cell))
   end
   
 end
