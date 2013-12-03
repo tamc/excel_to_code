@@ -360,7 +360,7 @@ class ExcelToX
   
   def rewrite_worksheets
     rewrite_row_and_column_references
-    #rewrite_shared_formulae(name,xml_filename)
+    rewrite_shared_formulae
     #rewrite_array_formulae(name,xml_filename)
     #combine_formulae_files(name,xml_filename)
   end
@@ -391,10 +391,12 @@ class ExcelToX
       mapper.default_worksheet_name = ref.first
       mapper.map(ast.last)
     end
+    # Could we now nil off the dimensions? Or do we need for indirects?
   end
   
-  def rewrite_shared_formulae(name,xml_filename)
-    rewrite RewriteSharedFormulae, [name, 'Formulae (shared)'], [name, 'Formulae (shared targets)'], [name, 'Formulae (shared)']
+  def rewrite_shared_formulae
+    @formulae_shared = RewriteSharedFormulae.rewrite( @formulae_shared, @formulae_shared_targets)
+    # Could now nil off the @formula_shared_targets ?
   end
   
   def rewrite_array_formulae(name,xml_filename)
