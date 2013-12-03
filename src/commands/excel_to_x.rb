@@ -282,15 +282,20 @@ class ExcelToX
     end
     # FIXME: Extract this and put it at the end
     @worksheet_c_names = {}
-    c_names_assigned = {}
     worksheet_rids.keys.each do |excel_worksheet_name|
-      c_name = excel_worksheet_name.downcase.gsub(/[^a-z0-9]+/,'_') # Make it lowercase, replace anything that isn't a-z or 0-9 with underscores
-      c_name = "s"+c_name if c_name[0] !~ /[a-z]/ # Can't start with a number. If it does, but an 's' in front (so 2010 -> s2010)
-      c_name = c_name + "2" if c_names_assigned.has_key?(c_name) # Add a number at the end if the c_name has already been used
-      c_name.succ! while c_names_assigned.has_key?(c_name)
-      c_names_assigned[c_name] = excel_worksheet_name
-      @worksheet_c_names[excel_worksheet_name] = c_name
+      @worksheet_c_names[excel_worksheet_name] = c_name_for(excel_worksheet_name)
     end
+  end
+
+  def c_name_for(name)
+    @c_names_assigned ||= {}
+    return @c_names_assigned.invert.fetch(name) if @c_names_assigned.has_value?(name)
+    c_name = name.downcase.gsub(/[^a-z0-9]+/,'_') # Make it lowercase, replace anything that isn't a-z or 0-9 with underscores
+    c_name = "s"+c_name if c_name[0] !~ /[a-z]/ # Can't start with a number. If it does, but an 's' in front (so 2010 -> s2010)
+    c_name = c_name + "2" if @c_names_assigned.has_key?(c_name) # Add a number at the end if the c_name has already been used
+    c_name.succ! while @c_names_assigned.has_key?(c_name)
+    @c_names_assigned[c_name] = name
+    c_name
   end
 
   # We want a central list of the maximum extent of each worksheet
@@ -575,32 +580,24 @@ class ExcelToX
   end
 
   # FIXME: Feels like a kludge
-  # FIXME: NOT CHECKED
+  # This works out which named references should appear in the generated code
   def filter_named_references
     @named_references_to_keep ||= []
     @named_references_that_can_be_set_at_runtime ||= []
 
-    i = input('Named references')
-    o = intermediate('Named references to keep')
-    i.each_line do |line|
-      sheet, name, ref = *line.split("\t")
-      key = sheet.length != 0 ? [sheet, name] : name
-      o.puts line if named_references_to_keep.include?(key) || named_references_that_can_be_set_at_runtime.include?(key)
+    @named_references.each do |name, ref|
+      if named_references_to_keep.include?(name) || named_references_that_can_be_set_at_runtime.include?(name)
+        # FIXME: Refactor the c_name_for to closer to the writing?
+        @named_references_to_keep << c_name_for(name)
+      end
     end
-    close(o)
 
-    i.rewind
     o = intermediate('Named references to set')
-    i.each_line do |line|
-      sheet, name, ref = *line.split("\t")
-      key = sheet.length != 0 ? [sheet, name] : name
-      o.puts line if named_references_that_can_be_set_at_runtime.include?(key)
+    @named_references.each do |name, ref|
+      if named_references_that_can_be_set_at_runtime.include?(name)
+        @named_references_that_can_be_set_at_runtime << c_name_for(name)
+      end
     end
-    close(o)
-
-    # FIXME: Might result in getter and setter having different names
-    rewrite RewriteNamedReferenceNames, 'Named references to keep', 'Worksheet C names', 'Named references to keep'
-    rewrite RewriteNamedReferenceNames, 'Named references to set', 'Worksheet C names', 'Named references to set'
   end
     
   def simplify_worksheets
