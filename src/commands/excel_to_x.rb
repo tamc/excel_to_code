@@ -953,22 +953,18 @@ class ExcelToX
   # all value cells should be settable if they are referenced by
   # any other forumla.
   def a_good_set_of_cells_that_should_be_settable_at_runtime
-    references = all_formulae
     counter = CountFormulaReferences.new
-    count = counter.count(references)
+    count = counter.count(@formulae)
     settable_cells = {}
+    settable_types = [:blank,:number,:null,:string,:shared_string,:constant,:percentage,:error,:boolean_true,:boolean_false]
 
-    count.each do |sheet,keys|
-      keys.each do |ref,count|
-        next unless count >= 1
-        next unless references[sheet]
-        ast = references[sheet][ref]
-        next unless ast
-        if [:blank,:number,:null,:string,:shared_string,:constant,:percentage,:error,:boolean_true,:boolean_false].include?(ast.first)
-          settable_cells[sheet] ||= []
-          settable_cells[sheet] << ref.upcase
-        end
-      end
+    count.each do |ref,count|
+      next unless count >= 1 # No point making a cell that isn't reference settable
+      ast = @formulae[ref]
+      next unless ast # Sometimes empty cells are referenced. 
+      next unless settable_types.include?(ast.first)
+      settable_cells[ref.first] ||= []
+      settable_cells[ref.first] << ref.last.upcase
     end
     return settable_cells
   end
