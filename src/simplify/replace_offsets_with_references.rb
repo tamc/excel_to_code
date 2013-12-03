@@ -1,42 +1,39 @@
 class ReplaceOffsetsWithReferencesAst
 
-  attr_accessor :replacements_made_in_the_last_pass
+  attr_accessor :count_replaced
+  attr_accessor :replacement_made
 
   def initialize
-    @replacements_made_in_the_last_pass = 0
+    @count_replaced = 0
   end
     
+  def replace(ast)
+    @replacement_made = false
+    map(ast)
+    @replacement_made
+  end
+   
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
-    end
+    function(ast) if ast[0] == :function
+    ast.each { |a| map(a) }
+    ast
   end
   
-  def function(name,*args)
-    if name == "OFFSET"
-      try_to_replace_offset(*args)
-    else
-      [:function,name,*args.map { |a| map(a) }]
-    end
-  end
-
-  def try_to_replace_offset(reference, row_offset, column_offset, height = [:number, 1], width = [:number, 1])
-    if [row_offset, column_offset, height, width].all? { |a| a.first == :number }
-      if reference.first == :cell
-        offset_cell(reference, row_offset, column_offset, height, width)
-      elsif reference.first == :sheet_reference && reference[2].first == :cell
-        [:sheet_reference, reference[1], offset_cell(reference[2], row_offset, column_offset, height, width)]
-      else
-        puts "#{[:function, "OFFSET", reference, row_offset, column_offset, height, width]} not replaced"
-        [:function, "OFFSET", reference, row_offset, column_offset, height, width]
-      end
-    else
-        puts "#{[:function, "OFFSET", reference, row_offset, column_offset, height, width]} not replaced"
-        [:function, "OFFSET", reference, row_offset, column_offset, height, width]
+  def function(ast)
+    name = ast[1]
+    args = ast[2..-1]
+    return unless ast[1] == "OFFSET"
+    reference = ast[2]
+    row_offset = ast[3]
+    column_offset = ast[4]
+    height = ast[5] || [:number, 1]
+    width = ast[6] || [:number, 1]
+    return unless [row_offset, column_offset, height, width].all? { |a| a.first == :number }
+    if reference.first == :cell
+      ast.replace(offset_cell(reference, row_offset, column_offset, height, width))
+    elsif reference.first == :sheet_reference && reference[2].first == :cell
+      ast.replace([:sheet_reference, reference[1], offset_cell(reference[2], row_offset, column_offset, height, width)])
     end
   end
 
@@ -48,7 +45,9 @@ class ReplaceOffsetsWithReferencesAst
     height = height[1].to_i
     width = width[1].to_i
 
-    @replacements_made_in_the_last_pass += 1
+    @count_replaced += 1
+    @replacement_made = true
+
     reference = Reference.for(reference.gsub("$",""))
     start_reference = reference.offset(row_offset.to_i, column_offset.to_i)
     end_reference = reference.offset(row_offset.to_i + height.to_i - 1, column_offset.to_i + width.to_i - 1)
@@ -68,7 +67,7 @@ class ReplaceOffsetsWithReferences
     self.new.replace(*args)
   end
   
-  attr_accessor :replacements_made_in_the_last_pass
+  attr_accessor :count_replaced
   
   def replace(input,output)
     rewriter = ReplaceOffsetsWithReferencesAst.new
@@ -81,6 +80,6 @@ class ReplaceOffsetsWithReferences
         output.puts line
       end
     end
-    @replacements_made_in_the_last_pass = rewriter.replacements_made_in_the_last_pass
+    @count_replaced = rewriter.count_replaced
   end
 end

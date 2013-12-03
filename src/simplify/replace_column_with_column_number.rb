@@ -1,34 +1,39 @@
 class ReplaceColumnWithColumnNumberAST
     
-  attr_accessor :replacements_made_in_the_last_pass
+  attr_accessor :count_replaced
+  attr_accessor :replacement_made
 
   def initialize
-    @replacements_made_in_the_last_pass = 0
+    @count_replaced = 0
+  end
+
+  def replace(ast)
+    @replacement_made = false
+    map(ast)
+    @replacement_made
   end
    
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
-    end
+    function(ast) if ast[0] == :function
+    ast.each { |a| map(a) }
+    ast
   end
   
-  def function(name,*args)
-    if name == "COLUMN" && args.size == 1 && [:cell, :sheet_reference].include?(args[0][0])
-      if args[0][0] == :cell
-        reference = Reference.for(args[0][1])
-      elsif args[0][0] == :sheet_reference
-        reference = Reference.for(args[0][2][1])
-      end
-      reference.calculate_excel_variables
-      @replacements_made_in_the_last_pass += 1
-      [:number, reference.excel_column_number.to_s]
-    else
-      [:function,name,*args.map { |a| map(a) }]
+  # Should be of the form [:function, "COLUMN", [:sheet_reference, sheet, ref]] 
+  def function(ast)
+    return unless ast[1] == "COLUMN"
+    return unless ast.size == 3
+    return unless [:cell, :sheet_reference].include?(ast[2][0])
+    if ast[2][0] == :cell
+      reference = Reference.for(ast[2][1])
+    elsif ast[2][0] == :sheet_reference
+      reference = Reference.for(ast[2][2][1])
     end
+    reference.calculate_excel_variables
+    @count_replaced += 1
+    @replacement_made = true
+    ast.replace( [:number, reference.excel_column_number.to_s])
   end
 
 end
@@ -40,7 +45,7 @@ class ReplaceColumnWithColumnNumber
     self.new.replace(*args)
   end
 
-  attr_accessor :replacements_made_in_the_last_pass
+  attr_accessor :count_replaced
   
   def replace(input,output)
     rewriter = ReplaceColumnWithColumnNumberAST.new
@@ -53,6 +58,6 @@ class ReplaceColumnWithColumnNumber
         output.puts line
       end
     end
-    @replacements_made_in_the_last_pass = rewriter.replacements_made_in_the_last_pass
+    @count_replaced = rewriter.count_replaced
   end
 end

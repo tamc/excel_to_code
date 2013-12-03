@@ -166,7 +166,7 @@ class ExcelToX
     # These perform a series of transformations to the information
     # with the intent of removing any redundant calculations
     # that are in the excel.
-    simplify_worksheets # Replacing shared strings and named references with their actual values, tidying arithmetic
+    simplify # Replacing shared strings and named references with their actual values, tidying arithmetic
 
     # In case this hasn't been set by the user
     if @cells_that_can_be_set_at_runtime.empty?
@@ -178,7 +178,7 @@ class ExcelToX
       work_out_which_named_references_can_be_set_at_runtime
     end
 
-    filter_named_references #FIXME: Not working?
+    filter_named_references
 
     replace_formulae_with_their_results
     remove_any_cells_not_needed_for_outputs
@@ -600,14 +600,14 @@ class ExcelToX
     end
   end
     
-  def simplify_worksheets
+  def simplify(cells = @formulae)
     r = ReplaceSharedStringAst.new(@shared_strings)
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       r.map(ast)
     end
 
     simplify_arithmetic_replacer = SimplifyArithmeticAst.new
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       simplify_arithmetic_replacer.map(ast)
     end
       
@@ -615,7 +615,7 @@ class ExcelToX
     named_references = NamedReferences.new(@named_references)
     named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
 
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       named_reference_replacer.default_sheet_name = ref.first
       named_reference_replacer.map(ast)
     end
@@ -628,34 +628,34 @@ class ExcelToX
     
     table_reference_replacer = ReplaceTableReferenceAst.new(table_objects)
 
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       table_reference_replacer.worksheet = ref.first
       table_reference_replacer.referring_cell = ref.last
       table_reference_replacer.map(ast)
     end
       
     replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       replace_ranges_with_array_literals_replacer.map(ast)
     end
 
     replace_arithmetic_on_ranges_replacer = ReplaceArithmeticOnRangesAst.new
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       replace_arithmetic_on_ranges_replacer.map(ast)
     end
 
     replace_arrays_with_single_cells_replacer = ReplaceArraysWithSingleCellsAst.new
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       replace_arrays_with_single_cells_replacer.map(ast)
     end
 
     replace_string_joins_on_ranges_replacer = ReplaceStringJoinOnRangesAST.new
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       replace_string_joins_on_ranges_replacer.map(ast)
     end
 
     wrap_formulae_that_return_arrays_replacer = WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
-    @formulae.each do |ref, ast|
+    cells.each do |ref, ast|
       wrap_formulae_that_return_arrays_replacer.map(ast)
     end
   end
@@ -679,38 +679,31 @@ class ExcelToX
   # There is no support for INDIRECT or OFFSET in the ruby or c runtime
   # However, in many cases it isn't needed, because we can work
   # out the value of the indirect or OFFSET at compile time and eliminate it
+  # First of all we replace any indirects where their values can be calculated at compile time with those
+  # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
   def replace_indirects_and_offsets
-    worksheets do |name,xml_filename|
-      log.info "Replacing INDIRECT, OFFSET and COLUMN functions in #{name}"
-      
-      # First of all we replace any indirects where their values can be calculated at compile time with those
-      # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
-      [ReplaceIndirectsWithReferences.new, ReplaceOffsetsWithReferences.new, ReplaceColumnWithColumnNumber.new].each do |r|
-        replace r, [name, 'Formulae'],  [name, 'Formulae']
-        @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
-      end
-      
-      # The result of the indirect might be a named reference, which we need to simplify
-      r = ReplaceNamedReferences.new
-      r.sheet_name = name
-      r.named_references = @named_references
-      replace r, [name, 'Formulae'], [name, 'Formulae']
-      
-      # The result of the indirect might contain arithmetic, which we need to simplify
-      replace SimplifyArithmetic,   [name, 'Formulae'], [name, 'Formulae']      
+    references_that_need_updating = {}
 
-      # The result of the indirect might be a table reference, which we need to simplify
-      r = ReplaceTableReferences.new
-      r.sheet_name = name
-      replace r, [name, 'Formulae'], "Workbook tables", [name, 'Formulae']
-      
-      # The result of the indirect might be a range, which we need to simplify
-      replace ReplaceRangesWithArrayLiterals, [name, 'Formulae'],  [name, 'Formulae']
-      replace ReplaceArithmeticOnRanges, [name, 'Formulae'],  [name, 'Formulae']
-      replace ReplaceStringJoinOnRanges, [name, 'Formulae'],  [name, 'Formulae']
-      replace ReplaceArraysWithSingleCells, [name, 'Formulae'],  [name, 'Formulae']
-      replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
+    indirect_replacement = ReplaceIndirectsWithReferencesAst.new
+    column_replacement = ReplaceColumnWithColumnNumberAST.new
+    offset_replacement = ReplaceOffsetsWithReferencesAst.new
+
+    @formulae.each do |ref, ast|
+      if column_replacement.replace(ast)
+        references_that_need_updating[ref] = ast
+      end
+      if offset_replacement.replace(ast)
+        references_that_need_updating[ref] = ast
+      end
+      if indirect_replacement.replace(ast)
+        references_that_need_updating[ref] = ast
+      end
     end
+    @replacements_made_in_the_last_pass += column_replacement.count_replaced
+    @replacements_made_in_the_last_pass += offset_replacement.count_replaced
+    @replacements_made_in_the_last_pass += indirect_replacement.count_replaced
+
+    simplify(references_that_need_updating)
   end
   
   # If a formula's value can be calculated at compile time, it is replaced with its calculated value (e.g., 1+1 gets replaced with 2)
