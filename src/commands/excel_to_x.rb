@@ -475,6 +475,7 @@ class ExcelToX
   end
 
   # This makes sure that cells_to_keep includes named_references_to_keep
+  # FIXME: NOT CHECKED
   def transfer_named_references_to_keep_into_cells_to_keep
     log.debug "Started transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
@@ -490,6 +491,7 @@ class ExcelToX
     end
   end
 
+  # FIXME: Not CHECKED
   def transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
     log.debug "Started transfering named references that can be set at runtime into cells that can be set at runtime"
     return unless @named_references_that_can_be_set_at_runtime
@@ -505,6 +507,7 @@ class ExcelToX
     end
   end
 
+  # FIXME: NOT CHECKED
   def add_ref_to_hash(ref, hash)
     ref = ref.dup
     if ref.first == :sheet_reference
@@ -527,6 +530,7 @@ class ExcelToX
     end
   end
 
+  # FIMXE: NOT CHECKED
   def work_out_which_named_references_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime == :where_possible
@@ -571,6 +575,7 @@ class ExcelToX
   end
 
   # FIXME: Feels like a kludge
+  # FIXME: NOT CHECKED
   def filter_named_references
     @named_references_to_keep ||= []
     @named_references_that_can_be_set_at_runtime ||= []
@@ -599,26 +604,51 @@ class ExcelToX
   end
     
   def simplify_worksheets
-    worksheets do |name,xml_filename|
-      ReplaceSharedStrings.replace(input([name, 'Values']), @shared_strings, intermediate(File.join(name, 'Values')))
-      
-      replace SimplifyArithmetic, [name, 'Formulae'], [name, 'Formulae']      
-      ReplaceSharedStrings.replace(input([name, 'Formulae']), @shared_strings, intermediate([name, 'Formulae']))
-      
-      r = ReplaceNamedReferences.new
-      r.sheet_name = name
-      r.named_references = @named_references
-      replace r, [name, 'Formulae'], [name, 'Formulae']
+    r = ReplaceSharedStringAst.new(@shared_strings)
+    @formulae.each do |ref, ast|
+      r.map(ast)
+    end
 
-      r = ReplaceTableReferences.new
-      r.sheet_name = name
-      replace r, [name, 'Formulae'], "Workbook tables", [name, 'Formulae']
+    simplify_arithmetic_replacer = SimplifyArithmeticAst.new
+    @formulae.each do |ref, ast|
+      simplify_arithmetic_replacer.map(ast)
+    end
       
-      replace ReplaceRangesWithArrayLiterals, [name, 'Formulae'],  [name, 'Formulae']
-      replace ReplaceArithmeticOnRanges, [name, 'Formulae'],  [name, 'Formulae']
+    # Replace the named references in the array formulae
+    named_references = NamedReferences.new(@named_references)
+    named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
+
+    @formulae.each do |ref, ast|
+      named_reference_replacer.default_sheet_name = ref.first
+      named_reference_replacer.map(ast)
+    end
+    
+    # FIXME: Refactor
+    table_objects = {}
+    @tables.each do |name, details|
+      table_objects[name.downcase] = Table.new(name, *details)
+    end
+    
+    table_reference_replacer = ReplaceTableReferenceAst.new(table_objects)
+
+    @formulae.each do |ref, ast|
+      table_reference_replacer.worksheet = ref.first
+      table_reference_replacer.referring_cell = ref.last
+      table_reference_replacer.map(ast)
+    end
+      
+    replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
+    @formulae.each do |ref, ast|
+      replace_ranges_with_array_literals_replacer.map(ast)
+    end
+
+    replace_arithmetic_on_ranges_replacer = ReplaceArithmeticOnRangesAst.new
+    @formulae.each do |ref, ast|
+      replace_arithmetic_on_ranges_replacer.map(ast)
+    end
+      
       replace ReplaceArraysWithSingleCells, [name, 'Formulae'],  [name, 'Formulae']
       replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
-    end
   end
     
   def replace_formulae_with_their_results

@@ -7,20 +7,15 @@ class ReplaceSharedStringAst
   end
   
   def map(ast)
-    if ast.is_a?(Array)
-      operator = ast.shift
-      if respond_to?(operator)
-        send(operator,*ast)
-      else
-        [operator,*ast.map {|a| map(a) }]
-      end
-    else
-      return ast
-    end
+    return ast unless ast.is_a?(Array)
+    shared_string(ast) if ast.first == :shared_string
+    ast.each { |a| map(a) }
+    ast
   end
   
-  def shared_string(string_id)
-    [:string,shared_strings[string_id.to_i]]
+  # Format [:shared_string, string_id]
+  def shared_string(ast)
+    ast.replace([:string,shared_strings[ast[1].to_i]])
   end
 end
   

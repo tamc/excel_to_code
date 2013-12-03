@@ -2,43 +2,57 @@ class ReplaceArithmeticOnRangesAst
     
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
-    end
+    arithmetic(ast) if ast.first == :arithmetic
+    ast.each { |a| map(a) }
+    ast
   end
   
-  def arithmetic(left, operator, right)
+  # Format [:artithmetic, left, operator, right] 
+  # should have removed arithmetic with more than one operator
+  # in an earlier transformation
+  def arithmetic(ast)
+    left, operator, right = ast[1], ast[2], ast[3]
+    # Three different options, array on the left, array on the right, or both
+    # array on the left first
     if left.first == :array && right.first != :array
-      mapped_right = map(right)
-      array_map(left) do |cell|
-        [:arithmetic, map(cell), operator, mapped_right]
-      end
+      map(right)
+      ast.replace(
+        array_map(left) do |cell|
+          [:arithmetic, map(cell), operator, right]
+        end
+      )
+
+    # array on the right next
     elsif left.first != :array && right.first == :array
-      mapped_left = map(left)
-      array_map(right) do |cell|
-        [:arithmetic, mapped_left, operator, map(cell)]
-      end
+      map(left)
+      ast.replace(
+        array_map(right) do |cell|
+          [:arithmetic, left, operator, map(cell)]
+        end
+      )
+    
+    # now array both sides
     elsif left.first == :array && right.first == :array 
-      left.map.with_index do |row, i|
-        if row == :array
-          row
-        else
-          row.map.with_index do |cell, j|
-            if cell == :row
-              cell
-            elsif i >= left.length || i >= right.length || j >= left.first.length || j >= right.first.length
-              [:error, "#VALUE!"]
-            else
-              [:arithmetic, map(left[i][j]), operator, map(right[i][j])]
+      ast.replace(
+        left.map.with_index do |row, i|
+          if row == :array
+            row
+          else
+            row.map.with_index do |cell, j|
+              if cell == :row
+                cell
+              elsif i >= left.length || i >= right.length || j >= left.first.length || j >= right.first.length
+                [:error, "#VALUE!"]
+              else
+                [:arithmetic, map(left[i][j]), operator, map(right[i][j])]
+              end
             end
           end
         end
-      end
+      )
     else
-      [:arithmetic, map(left), operator, map(right)]
+      map(left)
+      map(right)
     end
   end
 
