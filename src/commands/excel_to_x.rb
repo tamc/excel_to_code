@@ -322,6 +322,8 @@ class ExcelToX
     @formulae_shared_targets = {}
     @formulae_array = {}
     # This one has a series of table references
+    # FIXME: Should it actually have Table objects?
+    @tables = {}
     
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?
@@ -334,7 +336,6 @@ class ExcelToX
       
       extract_tables_for_worksheet(name,xml_filename)
     end
-    apply_rewrite RewriteValuesToAst, [name, 'Values']
   end
   
   # To extract a table we need to look in the worksheet for table references
@@ -342,17 +343,12 @@ class ExcelToX
   # reference and contains the table data. Then we consolidate all the data
   # from individual table files into a single table file for the worksheet.
   def extract_tables_for_worksheet(name, xml_filename)
-    extract ExtractWorksheetTableRelationships, xml_filename, [name, "Worksheet tables"]
-    extract ExtractRelationships, File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels"), [name, 'Relationships']
-    rewrite RewriteRelationshipIdToFilename, [name, "Worksheet tables"], [name, 'Relationships'], [name, "Worksheet tables"]
-    table_filenames = input(name, "Worksheet tables")
-    tables = intermediate(name, "Worksheet tables")
-    table_extractor = ExtractTable.new(name)
-    table_filenames.each_line do |line|
-      table_xml = xml(File.join('worksheets',line.strip))
-      table_extractor.extract(table_xml, tables)
+    table_rids = ExtractWorksheetTableRelationships.extract(xml(xml_filename))
+    xml_for_rids = ExtractRelationships.extract(xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")))
+    table_rids.each do |rid| 
+      table_xml = xml(File.join('worksheets', xml_for_rids[rid]))
+      @tables.merge! ExtractTable.extract(name, table_xml)
     end
-    close(tables,table_filenames)
   end
   
   # Tables are like named references in that they can be referred to from
