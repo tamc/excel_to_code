@@ -657,7 +657,10 @@ class ExcelToX
       replace_string_joins_on_ranges_replacer.map(ast)
     end
 
-      replace WrapFormulaeThatReturnArraysAndAReNotInArrays, [name, 'Formulae'],  [name, 'Formulae']
+    wrap_formulae_that_return_arrays_replacer = WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
+    @formulae.each do |ref, ast|
+      wrap_formulae_that_return_arrays_replacer.map(ast)
+    end
   end
     
   def replace_formulae_with_their_results
