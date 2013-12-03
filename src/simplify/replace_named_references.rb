@@ -20,30 +20,31 @@ class ReplaceNamedReferencesAst
   
   attr_accessor :named_references, :default_sheet_name
   
-  def initialize(named_references, default_sheet_name)
+  def initialize(named_references, default_sheet_name = nil)
     @named_references, @default_sheet_name = named_references, default_sheet_name
   end
   
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
+    case ast[0]
+    when :sheet_reference; sheet_reference(ast)
+    when :named_reference; named_reference(ast)
     end
+    ast.each { |a| map(a) }
+    ast
   end
   
-  def sheet_reference(sheet,reference)
-    if reference.first == :named_reference
-      named_references.reference_for(sheet,reference.last)
-    else
-      [:sheet_reference,sheet,reference]
-    end    
+  # Format [:sheet_reference, sheet,  reference]
+  def sheet_reference(ast)
+    reference = ast[2]
+    return unless reference.first == :named_reference
+    sheet = ast[1]
+    ast.replace(named_references.reference_for(sheet, reference.last))
   end
   
-  def named_reference(name)
-    named_references.reference_for(default_sheet_name,name)
+  # Format [:named_reference, name]
+  def named_reference(ast)
+    ast.replace(named_references.reference_for(default_sheet_name, ast[1]))
   end
   
 end

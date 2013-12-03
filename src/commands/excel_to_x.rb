@@ -361,7 +361,7 @@ class ExcelToX
   def rewrite_worksheets
     rewrite_row_and_column_references
     rewrite_shared_formulae
-    #rewrite_array_formulae(name,xml_filename)
+    rewrite_array_formulae
     #combine_formulae_files(name,xml_filename)
   end
   
@@ -391,20 +391,26 @@ class ExcelToX
       mapper.default_worksheet_name = ref.first
       mapper.map(ast.last)
     end
-    # Could we now nil off the dimensions? Or do we need for indirects?
+    # FIXME: Could we now nil off the dimensions? Or do we need for indirects?
   end
   
   def rewrite_shared_formulae
     @formulae_shared = RewriteSharedFormulae.rewrite( @formulae_shared, @formulae_shared_targets)
-    # Could now nil off the @formula_shared_targets ?
+    # FIXME: Could now nil off the @formula_shared_targets ?
   end
   
-  def rewrite_array_formulae(name,xml_filename)
-    r = ReplaceNamedReferences.new
-    r.sheet_name = name
-    r.named_references = @named_references
-    replace r, [name, 'Formulae (array)'], [name, 'Formulae (array)']
+  def rewrite_array_formulae
+    # FIMXE: Refactor this
 
+    # Replace the named references in the array formulae
+    named_references = NamedReferences.new(@named_references)
+    named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
+
+    @formulae_array.each do |ref, ast|
+      named_reference_replacer.default_sheet_name = ref.first
+      named_reference_replacer.map(ast.last)
+    end
+    
     r = ReplaceTableReferences.new
     r.sheet_name = name    
     replace r,                              [name, 'Formulae (array)'], "Workbook tables", [name, 'Formulae (array)']
