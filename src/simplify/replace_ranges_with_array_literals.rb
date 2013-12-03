@@ -2,39 +2,44 @@ require_relative '../excel'
 
 class ReplaceRangesWithArrayLiteralsAst
   def map(ast)
-    if ast.is_a?(Array)
-      operator = ast.shift
-      if respond_to?(operator)
-        send(operator,*ast)
-      else
-        [operator,*ast.map {|a| map(a) }]
-      end
+    return ast unless ast.is_a?(Array)
+    case ast[0]
+    when :sheet_reference; sheet_reference(ast)
+    when :area; area(ast)
+    end
+    ast.each {|a| map(a) }
+    ast
+  end
+  
+  # Of the form [:sheet_reference, sheet, reference]
+  def sheet_reference(ast)
+    sheet = ast[1]
+    reference = ast[2]
+    return unless reference.first == :area
+    area = Area.for("#{reference[1]}:#{reference[2]}")
+    a = area.to_array_literal(sheet)
+    
+    # Don't convert single cell ranges
+    if a.size == 2 && a[1].size == 2
+      ast.replace(a[1][1])
     else
-      return ast
+      ast.replace(a)
     end
   end
   
-  def sheet_reference(sheet,reference)
-    if reference.first == :area
-      area = Area.for("#{reference[1]}:#{reference[2]}")
-      a = area.to_array_literal(sheet)
-      
-      # Don't convert single cell ranges
-      return a[1][1] if a.size == 2 && a[1].size == 2
-      a
-
-    else
-      [:sheet_reference,sheet,reference]
-    end
-  end
-  
-  def area(start,finish)
+  # Of the form [:area, start, finish]
+  def area(ast)
+    start = ast[1]
+    finish = ast[2]
     area = Area.for("#{start}:#{finish}")
     a = area.to_array_literal
 
     # Don't convert single cell ranges
-    return a[1][1] if a.size == 2 && a[1].size == 2
-    a
+    if a.size == 2 && a[1].size == 2
+      ast.replace(a[1][1])
+    else
+      ast.replace(a)
+    end
   end
   
 end
