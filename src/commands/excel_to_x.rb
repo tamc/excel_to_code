@@ -362,7 +362,7 @@ class ExcelToX
     rewrite_row_and_column_references
     rewrite_shared_formulae
     rewrite_array_formulae
-    #combine_formulae_files(name,xml_filename)
+    combine_formulae_files
   end
   
   # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
@@ -443,22 +443,33 @@ class ExcelToX
     @formulae_array = RewriteArrayFormulae.rewrite(@formulae_array)
   end
   
-  def combine_formulae_files(name,xml_filename)
-    combiner = RewriteMergeFormulaeAndValues.new
-    combiner.references_to_add_if_they_are_not_already_present = required_references(name)
-    
-    rewrite combiner, [name, 'Values'], [name, 'Formulae (shared)'], [name, 'Formulae (array)'], [name, 'Formulae (simple)'], [name, 'Formulae']
+  def combine_formulae_files
+    @formulae = required_references
+    @formulae.merge! @values
+    @formulae.merge! @formulae_shared
+    @formulae.merge! @formulae_array
+    @formulae.merge! @formulae_simple
   end
   
   # This ensures that all gettable and settable values appear in the output
   # even if they are blank in the underlying excel
-  def required_references(worksheet_name)
-    required_refs = []
-    if @cells_that_can_be_set_at_runtime && @cells_that_can_be_set_at_runtime[worksheet_name] && @cells_that_can_be_set_at_runtime[worksheet_name] != :all
-      required_refs.concat(@cells_that_can_be_set_at_runtime[worksheet_name])
+  def required_references
+    required_refs = {}
+    if @cells_that_can_be_set_at_runtime
+      @cells_that_can_be_set_at_runtime.each do |worksheet, refs|
+        next if refs == :all
+        refs.each do |ref|
+          required_references[[worksheet, ref]] = [:blank]
+        end
+      end
     end
-    if @cells_to_keep && @cells_to_keep[worksheet_name] && @cells_to_keep[worksheet_name] != :all
-      required_refs.concat(@cells_to_keep[worksheet_name])
+    if @cells_to_keep
+      @cells_to_keep.each do |worksheet, refs|
+        next if regs == :all
+        refs.each do |ref|
+          required_references[[worksheet, ref]] = [:blank]
+        end
+      end
     end
     required_refs
   end
