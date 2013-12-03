@@ -797,11 +797,9 @@ class ExcelToX
   # If a cell is only referenced from one other cell, then it is inlined into that other cell
   # e.g., A1 := B3+B6 ; B1 := A1 + B3 becomes: B1 := (B3 + B6) + B3. A1 is removed.
   def inline_formulae_that_are_only_used_once
-    references = all_formulae
-    
     # First step is to calculate how many times each cell is referenced by another cell
     counter = CountFormulaReferences.new
-    count = counter.count(references)
+    count = counter.count(@formulae)
     
     # This takes the decision:
     # 1. If a cell is in the list of cells to keep, then it is never inlined
@@ -811,17 +809,16 @@ class ExcelToX
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
         false
       else
-        count[sheet][cell] == 1
+        count[[sheet,cell]] == 1 # i.e., inline if used only once
       end
     end
     
-    r = InlineFormulae.new
-    r.references = references
+    r = InlineFormulaeAst.new
+    r.references = @formulae
     r.inline_ast = inline_ast_decision
-    
-    worksheets do |name,xml_filename|
-      r.default_sheet_name = name
-      replace r, [name, 'Formulae'],  [name, 'Formulae']
+    @formulae.each do |ref, ast|
+      r.current_sheet_name = [ref.first]
+      r.map(ast)
     end
     
     # We need to do this again, to get rid of the cells that we have just inlined
