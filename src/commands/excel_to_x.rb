@@ -435,7 +435,11 @@ class ExcelToX
       replace_ranges_with_array_literals_replacer.map(details.last)
     end
 
-    apply_rewrite RewriteArrayFormulaeToArrays,   [name, 'Formulae (array)']
+    expand_array_formulae_replacer = AstExpandArrayFormulae.new
+    @formulae_array.each do |ref, details|
+      expand_array_formulae_replacer.map(details.last)
+    end
+
     apply_rewrite RewriteArrayFormulae,           [name, 'Formulae (array)']
   end
   

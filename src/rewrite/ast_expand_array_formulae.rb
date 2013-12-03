@@ -5,39 +5,44 @@ class AstExpandArrayFormulae
   def map(ast)
     return ast unless ast.is_a?(Array)
     operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
-    end
+    send(operator, ast) if respond_to?(operator)
+    ast.each {|a| map(a) }
+    ast
   end
 
-  def arithmetic(left,operator,right)
-    left = map(left)
-    right = map(right)
-    return [:arithmetic, left, operator, right] unless array?(left,right)
+  # Format [:arithmetic, left, operator, right]
+  def arithmetic(ast)
+    ast.each {|a| map(a) }
+    return unless array?(ast[1], ast[3])
     
-    map_arrays([left,right]) do |arrayed|
-      [:arithmetic,arrayed[0],operator,arrayed[1]]
-    end
+    ast.replace(
+      map_arrays([ast[1],ast[3]]) do |arrayed|
+        [:arithmetic,arrayed[0],ast[2],arrayed[1]]
+      end
+    )
   end
 
-  def comparison(left,operator,right)
-    left = map(left)
-    right = map(right)
-    return [:comparison, left, operator, right] unless array?(left,right)
-
-    map_arrays([left,right]) do |arrayed|
-      [:comparison,arrayed[0],operator,arrayed[1]]
-    end
+  # Format [:comparison, left, operator, right]
+  def comparison(ast)
+    ast.each {|a| map(a) }
+    return unless array?(ast[1], ast[3])
+    
+    ast.replace(
+      map_arrays([ast[1],ast[3]]) do |arrayed|
+        [:comparison,arrayed[0],ast[2],arrayed[1]]
+      end
+    )
   end
   
-  def string_join(*strings)
-    strings = strings.map { |s| map(s) }
-    return [:string_join, *strings] unless array?(*strings)
-    map_arrays(strings) do |arrayed_strings|
-      [:string_join, *arrayed_strings]
-    end
+  # Format [:string_join, stringA, stringB, ...]
+  def string_join(ast)
+    ast.each {|a| map(a) }
+    return unless array?(*ast[1..-1])
+    ast.replace(
+      map_arrays(ast[1..-1]) do |arrayed_strings|
+        [:string_join, *arrayed_strings]
+      end
+    )
   end
   
   def map_arrays(arrays, &block)
@@ -66,48 +71,54 @@ class AstExpandArrayFormulae
   
   FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS = %w{AVERAGE COUNT COUNTA MAX MIN SUM SUMPRODUCT MMULT}
   
-  def function(name,*arguments)
+  # Format [:function, function_name, arg1, arg2, ...]
+  def function(ast)
+    name = ast[1]
+    arguments = ast[2..-1]
     if FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS.include?(name)
-      [:function, name, *arguments.map { |a| map(a) }]
+      ast.each { |a| map(a) }
+      return # No need to alter anything
     elsif respond_to?("map_#{name.downcase}")
-      send("map_#{name.downcase}",*arguments)
+      # These typically have some arguments that accept ranges, but not all
+      send("map_#{name.downcase}",ast)
     else
-      function_that_does_not_accept_ranges(name,arguments)
+      function_that_does_not_accept_ranges(ast)
     end
   end
   
-  def function_that_does_not_accept_ranges(name,arguments)
-    return [:function, name] if arguments.empty?
-    array_map arguments, name, *Array.new(arguments.length,false)
+  def function_that_does_not_accept_ranges(ast)
+    return if ast.length == 2
+    name = ast[1]
+    arguments = ast[2..-1]
+    array_map(ast, *Array.new(arguments.length,false))
   end
   
-  def map_match(*args)
-    a = array_map args, 'MATCH', false, true, false
-    a
+  def map_match(ast)
+    array_map(ast, false, true, false)
   end
   
-  def map_subtotal(*args)
-    array_map args, 'SUBTOTAL', false, *Array.new(args.length-1,true)
+  def map_subtotal(ast)
+    array_map ast, false, *Array.new(ast.length-3,true)
   end
   
-  def map_index(*args)
-    array_map args, 'INDEX', true, false, false
+  def map_index(ast)
+    array_map ast, true, false, false
   end
   
-  def map_sumif(*args)
-    array_map args, 'SUMIF', true, false, true
+  def map_sumif(ast)
+    array_map ast, true, false, true
   end
   
-  def map_sumifs(*args)
-    if args.length > 3
-      array_map args, 'SUMIFS', true, true, false, *([true,false]*((args.length-3)/2))
+  def map_sumifs(ast)
+    if ast.length > 5
+      array_map ast, true, true, false, *([true,false]*((ast.length-5)/2))
     else
-      array_map args, 'SUMIFS', true, true, false
+      array_map ast, true, true, false
     end
   end
   
-  def map_vlookup(*args)
-    array_map args, "VLOOKUP", false, true, false, false
+  def map_vlookup(ast)
+    array_map ast, false, true, false, false
   end
   
   private
@@ -121,15 +132,16 @@ class AstExpandArrayFormulae
     true
   end
   
-  def array_map(args,function,*ok_to_be_an_array)
-    args = args.map { |a| map(a) }
-    return [:function, function, *args ] if no_need_to_array?(args,ok_to_be_an_array)
+  def array_map(ast,*ok_to_be_an_array)
+    ast.each { |a| map(a) }
+
+    return if no_need_to_array?(ast[2..-1],ok_to_be_an_array)
 
     # Turn the relevant arguments into ruby arrays and store the dimensions
     # Enumerable#max and Enumerable#min don't return Enumerators, so can't do it using those methods
     max_rows = 1
     max_columns = 1
-    args = args.map.with_index do |a,i| 
+    args = ast[2..-1].map.with_index do |a,i| 
       unless ok_to_be_an_array[i]
         a = array_ast_to_ruby_array(a)
         r = a.length
@@ -147,9 +159,9 @@ class AstExpandArrayFormulae
     args = args.map.with_index { |a,i| (!ok_to_be_an_array[i] && a.first.length == 1) ? Array.new(max_columns,a.flatten(1)).transpose : a }
     
     # Now iterate through
-    return [:array, *max_rows.times.map do |row|
+    ast.replace( [:array, *max_rows.times.map do |row|
       [:row, *max_columns.times.map do |column| 
-        [:function, function, *args.map.with_index do |a,i|
+        [:function, ast[1], *args.map.with_index do |a,i|
           if ok_to_be_an_array[i]
             a
           else
@@ -157,7 +169,7 @@ class AstExpandArrayFormulae
           end
         end]
       end]
-    end]
+    end])
   end
   
   def array?(*args)
