@@ -672,6 +672,8 @@ class ExcelToX
       replace_string_joins_on_ranges_replacer.map(ast)
     end
 
+    replace_all_simple_references_with_sheet_references # So we can be sure which references are repeating and which references are distinct
+
     wrap_formulae_that_return_arrays_replacer = WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
     cells.each do |ref, ast|
       wrap_formulae_that_return_arrays_replacer.map(ast)
@@ -886,7 +888,6 @@ class ExcelToX
   def separate_formulae_elements
     log.info "Looking for repeated bits of formulae"
     
-    replace_all_simple_references_with_sheet_references # So we can be sure which references are repeating and which references are distinct
     
     identifier = IdentifyRepeatedFormulaElements.new
     repeated_elements = identifier.count(@formulae)
