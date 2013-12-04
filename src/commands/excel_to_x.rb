@@ -3,6 +3,10 @@ require 'fileutils'
 require 'logger'
 require_relative '../excel_to_code'
 
+# FIXME: Correct case for all worksheet references
+# FIXME: Correct case and $ stripping from all cell references
+# FIXME: Replacing with c compatible names everywhere
+
 # Used to throw normally fatal errors
 class ExcelToCodeException < Exception; end
 class VersionedFileNotFoundException < Exception; end
@@ -832,42 +836,27 @@ class ExcelToX
   # These will be sorted so that later refs depend on earlier refs. This should mean that the first test that 
   # fails will be the root cause of the problem
   def create_sorted_references_to_test
-    all_formulae = all_formulae()
     references_to_test = {}
 
     # First get the list of references we should test
-    worksheets do |name, xml_filename|
-      log.info "Workingout references to test for #{name}"
-
-      # Either keep all the cells on the sheet  
-      if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
-        keep = all_formulae[name].keys || []
-      else # Or just those specified as cells that will be kept
-        keep = cells_to_keep[name] || []
+    @values.each do |ref, value|
+      if !cells_to_keep || 
+          cells_to_keep.empty? || 
+          cells_to_keep[ref.first] == :all ||
+          cells_to_keep[ref.first].include?(ref.last)
+        references_to_test[ref] = value
       end
-
-      # Now go through and match the cells to keep with their values
-      i = input([name,"Values"])
-      i.each_line do |line|
-        ref, formula = line.split("\t")
-        next unless keep.include?(ref.upcase)
-        references_to_test[[name, ref]] = formula
-      end
-      close(i)
     end
-    
+
     # Now work out dependency tree
-    sorted_references = SortIntoCalculationOrder.new.sort(all_formulae)
+    sorted_references = SortIntoCalculationOrder.new.sort(@formulae)
 
-    references_to_test_file = intermediate("References to test")
+    @references_to_test_array = []
     sorted_references.each do |ref|
-      ast = references_to_test[ref]
-      next unless ast
-      c_name = c_name_for_worksheet_name(ref[0])
-      references_to_test_file.puts "#{c_name}\t#{ref[1]}\t#{ast}"
+      next unless references_to_test.include?(ref)
+      @references_to_test_array << [ref, references_to_test[ref]]
     end
-
-    close references_to_test_file
+    # FIXME: CNAMES
   end
 
 
@@ -896,6 +885,9 @@ class ExcelToX
 
     # FIXME: This means that some common elements won't ever be called, becuase they are replaced by a longer common element. Should the common elements be merged first?
     ReplaceCommonElementsInFormulae.replace(@formulae, repeated_element_ast)
+
+    # FIXME: Is this best? Seems to work
+    @formulae.merge! repeated_element_ast.invert
   end
 
   # We add the sheet name to all references, so that we can then look for common elements accross worksheets
@@ -953,23 +945,43 @@ class ExcelToX
   
   # UTILITY FUNCTIONS
 
-  def settable(name)
-    settable_refs = @cells_that_can_be_set_at_runtime[name]    
+  def settable
+    settable_refs = @cells_that_can_be_set_at_runtime
     if settable_refs
-      lambda { |ref| (settable_refs == :all) ? true : settable_refs.include?(ref.upcase) } 
+      lambda { |ref| 
+        sheet = ref.first
+        cell = ref.last
+        if settable_refs[sheet]
+          if settable_refs[sheet] == :all || settable_refs[sheet].include?(cell.upcase)
+            true
+          else
+            false
+          end
+        else
+          false
+        end
+      }
     else
       lambda { |ref| false }
     end
   end
   
-  def gettable(name)
+  def gettable
     if @cells_to_keep
-      gettable_refs = @cells_to_keep[name]
-      if gettable_refs
-        lambda { |ref| (gettable_refs == :all) ? true : gettable_refs.include?(ref.upcase) }
-      else
-        lambda { |ref| false }
-      end
+      gettable_refs = @cells_to_keep
+      lambda { |ref| 
+        sheet = ref.first
+        cell = ref.last
+        if gettable_refs[sheet]
+          if gettable_refs[sheet] == :all | gettable_refs[sheet].include?(cell.upcase)
+            true
+          else
+            false
+          end
+        else
+          false
+        end
+      }
     else
       lambda { |ref| true }
     end

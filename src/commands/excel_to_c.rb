@@ -18,12 +18,9 @@ class ExcelToC < ExcelToX
     
   def write_out_excel_as_code
         
-    all_refs = all_formulae
-    
-    number_of_refs = 0
+    number_of_refs = @formulae.size
         
     # Output the workbook preamble
-    w = input('Worksheet C names')
     o = output("#{output_name.downcase}.c")
     o.puts "// #{excel_file} approximately translated into C"
 
@@ -38,29 +35,13 @@ class ExcelToC < ExcelToX
     o.puts "// definitions"
     o.puts "static ExcelValue ORIGINAL_EXCEL_FILENAME = {.type = ExcelString, .string = #{excel_file.inspect} };"
 
-    i = input("Common elements")
     c = CompileToCHeader.new
-    c.gettable = lambda { |ref| false }
-    c.rewrite(i,w,o)
-    i.rewind
-    number_of_refs += i.each_line.to_a.size
-    close(i)
-
-    worksheets do |name,xml_filename|
-      w.rewind
-      c = CompileToCHeader.new
-      c.settable = settable(name)
-      c.gettable = gettable(name)
-      c.worksheet = name
-      i = input([name,"Formulae"])
-      c.rewrite(i,w,o)
-      i.rewind
-      number_of_refs += i.each_line.to_a.size
-      close(i)
-    end
+    c.settable = settable
+    c.gettable = gettable
+    c.rewrite(@formulae, @worksheet_c_names, o)
     
     # Need to make sure there are enough refs for named references as well
-    number_of_refs += named_references_to_keep.size
+    number_of_refs += @named_references_to_keep.size
 
     o.puts "// end of definitions"
     o.puts
@@ -80,82 +61,50 @@ class ExcelToC < ExcelToX
     o.puts
     
     # Output the value constants
-    o.puts "// starting the value constants"
-    mapper = MapValuesToCStructs.new
-    i = input("Constants")
-    i.each_line do |line|
-      begin
-        ref, formula = line.split("\t")
-        ast = eval(formula)
-        calculation = mapper.map(ast)
-        o.puts "static ExcelValue #{ref} = #{calculation};"
-      rescue Exception => e
-        puts "Exception at line #{line}"
-        raise
-      end
-    end          
-    close(i)
-    o.puts "// ending the value constants"
-    o.puts
+    #o.puts "// starting the value constants"
+    #mapper = MapValuesToCStructs.new
+    #i = input("Constants")
+    #i.each_line do |line|
+    #  begin
+    #    ref, formula = line.split("\t")
+    #    ast = eval(formula)
+    #    calculation = mapper.map(ast)
+    #    o.puts "static ExcelValue #{ref} = #{calculation};"
+    #  rescue Exception => e
+    #    puts "Exception at line #{line}"
+    #    raise
+    #  end
+    #end          
+    #close(i)
+    #o.puts "// ending the value constants"
+    #o.puts
     
     variable_set_counter = 0
-    
-    # output the common elements
-    o.puts "// starting common elements"
-    w.rewind
-    c = CompileToC.new
-    c.variable_set_counter = variable_set_counter
-    c.gettable = lambda { |ref| false }
-    c.worksheet = ""
-    i = input("Common elements")
-    c.rewrite(i,w,o)
-    close(i)
-    o.puts "// ending common elements"
-    o.puts
-    
-    variable_set_counter = c.variable_set_counter
     
     c = CompileToC.new
     c.variable_set_counter = variable_set_counter
     # Output the elements from each worksheet in turn
-    worksheets do |name,xml_filename|
-      w.rewind
-      c.settable = settable(name)
-      c.gettable = gettable(name)
-      c.worksheet = name
-
-      i = input([name,"Formulae"])
-      o.puts "// start #{name}"
-      c.rewrite(i,w,o)
-      o.puts "// end #{name}"
-      o.puts
-      close(i)
-    end
+    c.settable = settable
+    c.gettable = gettable
+    c.rewrite(@formulae, @worksheet_c_names, o)
 
     # Output the named references
 
     # Getters
     o.puts "// Start of named references"
-    i = input('Named references to keep')
-    w.rewind
     c.gettable = lambda { |ref| true }
     c.settable = lambda { |ref| false }
-    c.worksheet = nil
-    c.rewrite(i,w,o)
-    close(i)
+    c.rewrite(@named_references_to_keep, @worksheet_c_names, o)
 
     # Setters
-    i = input('Named references to set')
-    w.rewind # Worksheet C names
-    
-    c = CompileNamedReferenceSetters.new
-    c.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
-    c.rewrite(i,w,o)
+    # c = CompileNamedReferenceSetters.new
+    # c.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
+    # c.rewrite(i,w,o)
 
-    close(i)
-    o.puts "// End of named references"
+    # close(i)
+    # o.puts "// End of named references"
 
-    close(w,o)
+    # close(w,o)
   end
   
   # FIXME: Should make a Rakefile, especially in order to make sure the dynamic library name
@@ -184,7 +133,6 @@ class ExcelToC < ExcelToX
   end
   
   def write_fuby_ffi_interface
-    all_formulae = all_formulae()
     name = output_name.downcase
     o = output("#{name}.rb")
       
@@ -310,9 +258,7 @@ END
     o.puts "  # use this function to reset all cell values"
     o.puts "  attach_function 'reset', [], :void"
 
-    worksheets do |name,xml_filename|
-      o.puts
-      o.puts "  # start of #{name}"  
+    @formulae.each do |ref, ast|
       c_name = c_name_for_worksheet_name(name)
 
       # Put in place the setters, if any
@@ -341,28 +287,28 @@ END
     end
 
     # Now put in place the getters and setters for the named references
-    o.puts "  # Start of named references"
+    # o.puts "  # Start of named references"
 
-    # Getters
-    i = input('Named references to keep')
-    i.each_line do |line|
-      name = line.strip.split("\t").first
-      o.puts "  attach_function '#{name}', [], ExcelValue.by_value"
-    end
-    close(i)
+    # # Getters
+    # i = input('Named references to keep')
+    # i.each_line do |line|
+    #   name = line.strip.split("\t").first
+    #   o.puts "  attach_function '#{name}', [], ExcelValue.by_value"
+    # end
+    # close(i)
 
-    # Setters
-    i = input('Named references to set')
-    i.each_line do |line|
-      name = line.strip.split("\t").first
-      o.puts "  attach_function 'set_#{name}', [ExcelValue.by_value], :void"
-    end
+    # # Setters
+    # i = input('Named references to set')
+    # i.each_line do |line|
+    #   name = line.strip.split("\t").first
+    #   o.puts "  attach_function 'set_#{name}', [ExcelValue.by_value], :void"
+    # end
 
-    close(i)
-    o.puts "  # End of named references"
+    # close(i)
+    # o.puts "  # End of named references"
 
-    o.puts "end"  
-    close(o)
+    # o.puts "end"  
+    # close(o)
   end
   
   def write_tests

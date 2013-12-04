@@ -1,6 +1,5 @@
 class CompileToCHeader
   
-  attr_accessor :worksheet
   attr_accessor :gettable
   attr_accessor :settable
   
@@ -8,17 +7,17 @@ class CompileToCHeader
     self.new.rewrite(*args)
   end
   
-  def rewrite(input,sheet_names_file,output,defaults = nil)
-    c_name = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}][worksheet]
+  def rewrite(formulae, c_name_for_worksheet_name, output)
     self.gettable ||= lambda { |ref| true }
     self.settable ||= lambda { |ref| false }
-    input.each_line do |line|
+    formulae.each do |ref, ast|
       begin
-        ref, formula = line.split("\t")
         static_or_not = (gettable.call(ref) || settable.call(ref)) ? "" : "static "
-        output.puts "#{static_or_not}ExcelValue #{c_name}_#{ref.downcase}();"
+        worksheet = c_name_for_worksheet_name[ref.first]
+        ref = ref.last.downcase
+        output.puts "#{static_or_not}ExcelValue #{worksheet}_#{ref}();"
       rescue Exception => e
-        puts "Exception at line #{line}"
+        puts "Exception at  #{ref} #{ast}"
         raise
       end      
     end
