@@ -489,15 +489,15 @@ class ExcelToX
       @cells_that_can_be_set_at_runtime.each do |worksheet, refs|
         next if refs == :all
         refs.each do |ref|
-          required_references[[worksheet, ref]] = [:blank]
+          required_refs[[worksheet, ref]] = [:blank]
         end
       end
     end
     if @cells_to_keep
       @cells_to_keep.each do |worksheet, refs|
-        next if regs == :all
+        next if refs == :all
         refs.each do |ref|
-          required_references[[worksheet, ref]] = [:blank]
+          required_refs[[worksheet, ref]] = [:blank]
         end
       end
     end
@@ -1006,7 +1006,7 @@ class ExcelToX
         sheet = ref.first
         cell = ref.last
         if gettable_refs[sheet]
-          if gettable_refs[sheet] == :all | gettable_refs[sheet].include?(cell.upcase)
+          if gettable_refs[sheet] == :all || gettable_refs[sheet].include?(cell.upcase)
             true
           else
             false
