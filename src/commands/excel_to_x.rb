@@ -371,6 +371,7 @@ class ExcelToX
     rewrite_row_and_column_references
     rewrite_shared_formulae
     rewrite_array_formulae
+    rewrite_values
     combine_formulae_files
   end
   
@@ -451,10 +452,20 @@ class ExcelToX
 
     @formulae_array = RewriteArrayFormulae.rewrite(@formulae_array)
   end
+
+  def rewrite_values
+    r = ReplaceSharedStringAst.new(@shared_strings)
+    @values.each do |ref, ast|
+      r.map(ast)
+    end
+  end
   
   def combine_formulae_files
     @formulae = required_references
-    @formulae.merge! @values
+    # We dup this to avoid the values being replaced when manipulating formulae
+    @values.each do |ref, value|
+      @formulae[ref] = value.dup
+    end
     @formulae.merge! @formulae_shared
     @formulae.merge! @formulae_array
     @formulae.merge! @formulae_simple
@@ -853,7 +864,7 @@ class ExcelToX
     @references_to_test_array = []
     sorted_references.each do |ref|
       next unless references_to_test.include?(ref)
-      @references_to_test_array << [ref, references_to_test[ref]]
+      @references_to_test_array << [ref, @values[ref]]
     end
     # FIXME: CNAMES
   end
@@ -909,7 +920,7 @@ class ExcelToX
       r.map(ast)
     end
 
-    @constants = r.constants
+    @constants = r.constants.invert
   end
   
   # If nothing has been specified in named_references_that_can_be_set_at_runtime 

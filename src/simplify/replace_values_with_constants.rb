@@ -14,7 +14,7 @@ class MapValuesToConstants
     return ast unless ast.is_a?(Array)
     operator = ast[0]
     if [:number,:percentage,:string].include?(operator)
-      ast.replace([:constant, constants[ast]])
+      ast.replace([:constant, constants[ast.dup]])
     else
       ast.each { |a| map(a) }
     end

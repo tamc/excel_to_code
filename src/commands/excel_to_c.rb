@@ -61,23 +61,19 @@ class ExcelToC < ExcelToX
     o.puts
     
     # Output the value constants
-    #o.puts "// starting the value constants"
-    #mapper = MapValuesToCStructs.new
-    #i = input("Constants")
-    #i.each_line do |line|
-    #  begin
-    #    ref, formula = line.split("\t")
-    #    ast = eval(formula)
-    #    calculation = mapper.map(ast)
-    #    o.puts "static ExcelValue #{ref} = #{calculation};"
-    #  rescue Exception => e
-    #    puts "Exception at line #{line}"
-    #    raise
-    #  end
-    #end          
-    #close(i)
-    #o.puts "// ending the value constants"
-    #o.puts
+    o.puts "// starting the value constants"
+    mapper = MapValuesToCStructs.new
+    @constants.each do |ref, ast|
+      begin
+        calculation = mapper.map(ast)
+        o.puts "static ExcelValue #{ref} = #{calculation};"
+      rescue Exception => e
+        puts "Exception at #{ref} #{ast}"
+        raise
+      end
+    end          
+    o.puts "// ending the value constants"
+    o.puts
     
     variable_set_counter = 0
     
@@ -258,7 +254,8 @@ END
     o.puts "  # use this function to reset all cell values"
     o.puts "  attach_function 'reset', [], :void"
 
-    @formulae.each do |ref, ast|
+
+    worksheets do |name, xml_filename|
       c_name = c_name_for_worksheet_name(name)
 
       # Put in place the setters, if any
@@ -272,7 +269,7 @@ END
 
       # Put in place the getters
       if !cells_to_keep || cells_to_keep.empty? || cells_to_keep[name] == :all
-        getable_refs = all_formulae[name].keys
+        getable_refs = @formulae.keys.select { |ref| ref.first == name }.map { |ref| ref.last } 
       elsif !cells_to_keep[name] && settable_refs
         getable_refs = settable_refs
       else
@@ -307,8 +304,8 @@ END
     # close(i)
     # o.puts "  # End of named references"
 
-    # o.puts "end"  
-    # close(o)
+    o.puts "end"  
+    close(o)
   end
   
   def write_tests
@@ -329,10 +326,7 @@ END
     o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.new end"
     
-    i = input("References to test")
-    CompileToCUnitTest.rewrite(i, sloppy_tests, o)
-    close(i)
-
+    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, o)
     o.puts "end"
     close(o)
   end
