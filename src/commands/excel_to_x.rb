@@ -284,7 +284,7 @@ class ExcelToX
         @worksheet_xmls[name] = worksheet_xml
       end
     end
-    # FIXME: Extract this and put it at the end
+    # FIXME: Extract this and put it at the end ?
     @worksheet_c_names = {}
     worksheet_rids.keys.each do |excel_worksheet_name|
       @worksheet_c_names[excel_worksheet_name] = c_name_for(excel_worksheet_name)
@@ -484,9 +484,7 @@ class ExcelToX
   end
 
   # This makes sure that cells_to_keep includes named_references_to_keep
-  # FIXME: NOT CHECKED
   def transfer_named_references_to_keep_into_cells_to_keep
-    log.debug "Started transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
     @named_references_to_keep = @named_references.keys if @named_references_to_keep == :all
     @cells_to_keep ||= {}
@@ -500,11 +498,10 @@ class ExcelToX
     end
   end
 
-  # FIXME: Not CHECKED
+  # This makes sure that there are cell setter methods for any named references that can be set
   def transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
-    log.debug "Started transfering named references that can be set at runtime into cells that can be set at runtime"
     return unless @named_references_that_can_be_set_at_runtime
-    return if @named_references_that_can_be_set_at_runtime == :where_possible
+    return if @named_references_that_can_be_set_at_runtime == :where_possible # in this case will be done in #work_out_which_named_references_can_be_set_at_runtime
     @cells_that_can_be_set_at_runtime ||= {}
     @named_references_that_can_be_set_at_runtime.each do |name|
       ref = @named_references[name]
@@ -516,7 +513,9 @@ class ExcelToX
     end
   end
 
-  # FIXME: NOT CHECKED
+  # The reference passed may be a sheet reference or an area reference
+  # in which case we need to expand out the ref so that the hash contains
+  # one reference per cell
   def add_ref_to_hash(ref, hash)
     ref = ref.dup
     if ref.first == :sheet_reference
@@ -539,7 +538,7 @@ class ExcelToX
     end
   end
 
-  # FIMXE: NOT CHECKED
+  # This just checks which named references refer to cells that we have already declared as settable
   def work_out_which_named_references_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime == :where_possible
@@ -548,6 +547,7 @@ class ExcelToX
     cells_that_can_be_set_due_to_named_reference = Hash.new { |h,k| h[k] = Array.new  }
     @named_references_that_can_be_set_at_runtime = []
     all_named_references = @named_references
+    # FIXME can this be refactored with #add_ref_to_hash
     @named_references_to_keep.each do |name|
       ref = all_named_references[name]
       if ref.first == :sheet_reference
@@ -712,12 +712,13 @@ class ExcelToX
   
   # If a formula's value can be calculated at compile time, it is replaced with its calculated value (e.g., 1+1 gets replaced with 2)
   def replace_formulae_with_calculated_values    
-    worksheets do |name,xml_filename|
-      r = ReplaceFormulaeWithCalculatedValues.new
-      r.excel_file = excel_file
-      replace r, [name, 'Formulae'],  [name, 'Formulae']
-      @replacements_made_in_the_last_pass += r.replacements_made_in_the_last_pass
+    value_replacer = MapFormulaeToValues.new
+    value_replacer.original_excel_filename = excel_file
+    @formulae.each do |ref, ast|
+      value_replacer.map(ast)
+      reset
     end
+    @replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
   end
 
   # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)

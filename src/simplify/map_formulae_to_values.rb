@@ -32,97 +32,97 @@ class MapFormulaeToValues
 
   def do_map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
-    if respond_to?(operator)
-      send(operator,*ast[1..-1])
-    else
-      [operator,*ast[1..-1].map {|a| map(a) }]
-    end
+    ast.each { |a| map(a) } # Depth first best in this case?
+    send(ast[0], ast) if respond_to?(ast[0])
+    ast
   end
 
-  def prefix(operator,argument)
-    argument_value = value(map(argument))
-    return [:prefix, operator, map(argument)] if argument_value == :not_a_value
-    return ast_for_value(argument_value || 0) if operator == "+"
-    ast_for_value(@calculator.negative(argument_value))
+  # [:prefix, operator, argument]
+  def prefix(ast)
+    operator, argument = ast[1], ast[2]
+    argument_value = value(argument)
+    return if argument_value == :not_a_value
+    return ast.replace(ast_for_value(argument_value || 0)) if operator == "+"
+    ast.replace(ast_for_value(@calculator.negative(argument_value)))
   end
   
-  def arithmetic(left,operator,right)
-    l = value(map(left))
-    r = value(map(right))
-    if (l != :not_a_value) && (r != :not_a_value)
-      formula_value(operator.last,l,r)
-    else
-      [:arithmetic,map(left),operator,map(right)]
-    end
+  # [:arithmetic, left, operator, right]
+  def arithmetic(ast)
+    left, operator, right = ast[1], ast[2], ast[3]
+    l = value(left)
+    r = value(right)
+    return if (l == :not_a_value) || (r == :not_a_value)
+    ast.replace(formula_value(operator.last,l,r))
   end
   
   alias :comparison :arithmetic
 
-  def percentage(number)
-    ast_for_value(value([:percentage, number]))
+  # [:percentage, number]
+  def percentage(ast)
+    ast.replace(ast_for_value(value([:percentage, ast[1]])))
   end
   
-  def string_join(*args)
-    values = args.map { |a| value(map(a)) } # FIXME: These eval statements are really bugging me. Must find a better solution
-    if values.any? { |a| a == :not_a_value }
-      [:string_join,*args.map { |a| map(a) }]
-    else
-      ast_for_value(@calculator.string_join(*values))
-    end
+  # [:string_join, stringA, stringB, ...]
+  def string_join(ast)
+    values = ast[1..-1].map { |a| value(a) } 
+    return if values.any? { |a| a == :not_a_value }
+    ast.replace(ast_for_value(@calculator.string_join(*values)))
   end
   
   FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED = %w{TODAY RAND RANDBETWEEN INDIRECT}
   
-  def function(name,*args)
-    if FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED.include?(name)
-      [:function,name,*args.map { |a| map(a) }]
-    elsif respond_to?("map_#{name.downcase}")
-      send("map_#{name.downcase}",*args)
+  # [:function, function_name, arg1, arg2, ...]
+  def function(ast)
+    name = ast[1]
+    return if FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED.include?(name)
+    if respond_to?("map_#{name.downcase}")
+      send("map_#{name.downcase}",ast)
     else
-      values = args.map { |a| value(map(a)) }
-      if values.any? { |a| a == :not_a_value }
-        [:function,name,*args.map { |a| map(a) }]
-      else
-        formula_value(name,*values)
-      end
+      values = ast[2..-1].map { |a| value(a) }
+      return if values.any? { |a| a == :not_a_value }
+      ast.replace(formula_value(name,*values))
     end
   end
 
-  def map_count(range)
-    return [:function, "COUNT", range] unless [:array, :cell, :sheet_reference].include?(range.first)
+  # [:function, "COUNT", range]
+  def map_count(ast)
+    range = ast[2]
+    return unless [:array, :cell, :sheet_reference].include?(range.first)
     range = array_as_values(range)
-    ast_for_value(range.size * range.first.size)
+    ast.replace(ast_for_value(range.size * range.first.size))
   end
   
-  def map_index(array,row_number,column_number = :not_specified)
-    return map_index_with_only_two_arguments(array,row_number) if column_number == :not_specified
+  # [:function, "INDEX", array, row_number, column_number]
+  def map_index(ast)
+    return map_index_with_only_two_arguments(ast) if ast.length == 4
 
-    array_mapped = map(array)
-    row_as_number = value(map(row_number))
-    column_as_number = value(map(column_number))
+    array_mapped = ast[2] 
+    row_as_number = value(ast[3])
+    column_as_number = value(ast[4])
 
-    return [:function, "INDEX", array_mapped, map(row_number), map(column_number)] if row_as_number == :not_a_value || column_as_number == :not_a_value
+    return if row_as_number == :not_a_value 
+    return if column_as_number == :not_a_value
 
-    array_as_values = array_as_values(array)
-    return  [:function, "INDEX", array_mapped, map(row_number), map(column_number)] unless array_as_values
+    array_as_values = array_as_values(array_mapped)
+    return unless array_as_values
 
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
     result = [:number, 0] if result == [:blank]
     result = ast_for_value(result)
-    result    
+    ast.replace(result)
   end
   
-  def map_index_with_only_two_arguments(array,row_number)
-    array_mapped = map(array)
-    row_as_number = value(map(row_number))
-    return [:function, "INDEX", array_mapped, map(row_number)] if row_as_number == :not_a_value
+  # [:function, "INDEX", array, row_number]
+  def map_index_with_only_two_arguments(ast)
+    array_mapped = ast[2]
+    row_as_number = value(ast[3])
+    return if row_as_number == :not_a_value
     array_as_values = array_as_values(array)
-    return  [:function, "INDEX", array_mapped, map(row_number)] unless array_as_values
+    return unless array_as_values
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number)
     result = [:number, 0] if result == [:blank]
     result = ast_for_value(result)
-    result
+    ast.replace(result)
   end
   
   def array_as_values(array_mapped)
