@@ -1,12 +1,10 @@
 # Head
 
-<<<<<<< HEAD
+- A lot of changes: no longer generates intermediate files, hopefully faster, but perhaps not
+
 # 0.1.23 - 2013 December 4th
 
 - Implemented the RIGHT function in ruby
-=======
-- A lot of changes: no longer generates intermediate files, hopefully faster, but perhaps not
->>>>>>> Updated CHANGES
 
 # 0.1.22 - 2013 December 4th
 
