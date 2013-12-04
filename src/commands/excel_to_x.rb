@@ -240,6 +240,7 @@ class ExcelToX
 
   # @shared_strings is an array of strings
   def extract_shared_strings
+    log.info "Extracting shared strings"
     # Excel keeps a central file of strings that appear in worksheet cells
     @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
   end
@@ -251,6 +252,7 @@ class ExcelToX
   # The hash key is either [sheet, name] or name
   # Note that the sheet and the name are always stored lowercase
   def extract_named_references
+    log.info "Extracting named references"
     # First we get the references in raw form
     @named_references = ExtractNamedReferences.extract(xml('workbook.xml'))
     # Then we parse them
@@ -275,6 +277,7 @@ class ExcelToX
   # relationships files. We also need to mangle the name into something
   # that will work ok as a filesystem or program name
   def extract_worksheet_names
+    log.info "Extracting worksheet names"
     worksheet_rids = ExtractWorksheetNames.extract(xml('workbook.xml')) # {'worksheet_name' => 'rId3' ...}
     xml_for_rids = ExtractRelationships.extract( xml('_rels','workbook.xml.rels')) #{ 'rId3' => "worlsheets/sheet1.xml" }
     @worksheet_xmls = {}
@@ -310,7 +313,6 @@ class ExcelToX
     @worksheets_dimensions = {}
     extractor = ExtractWorksheetDimensions.new
     worksheets do |name, xml_filename|
-      log.info "Extracting dimensions for #{name}"
       @worksheets_dimensions[name] = extractor.extract(xml(xml_filename))
       # FIXME: Should this actual return WorksheetDimension objects? rather than text ranges?
     end
@@ -337,6 +339,7 @@ class ExcelToX
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?
     worksheets do |name, xml_filename|
+      log.info "Extracting data from #{name}"
       # ast
       @values.merge! ExtractValues.extract(name, xml(xml_filename))
       # ast
@@ -380,6 +383,7 @@ class ExcelToX
   # into more conventional references (e.g., A5:Z20) based on the maximum area that 
   # has been used on a worksheet
   def rewrite_row_and_column_references
+    log.info "Rewriting row and column references"
     # FIXME: Refactor
     dimension_objects = {}
     @worksheets_dimensions.map do |sheet_name, dimension| 
@@ -405,11 +409,13 @@ class ExcelToX
   end
   
   def rewrite_shared_formulae
+    log.info "Rewriting shared formulae"
     @formulae_shared = RewriteSharedFormulae.rewrite( @formulae_shared, @formulae_shared_targets)
     # FIXME: Could now nil off the @formula_shared_targets ?
   end
   
   def rewrite_array_formulae
+    log.info "Rewriting array formulae"
     # FIMXE: Refactor this
 
     # Replace the named references in the array formulae
@@ -454,6 +460,7 @@ class ExcelToX
   end
 
   def rewrite_values
+    log.info "Rewriting values"
     r = ReplaceSharedStringAst.new(@shared_strings)
     @values.each do |ref, ast|
       r.map(ast)
@@ -461,6 +468,8 @@ class ExcelToX
   end
   
   def combine_formulae_files
+    log.info "Combining formula files"
+
     @formulae = required_references
     # We dup this to avoid the values being replaced when manipulating formulae
     @values.each do |ref, value|
@@ -474,6 +483,7 @@ class ExcelToX
   # This ensures that all gettable and settable values appear in the output
   # even if they are blank in the underlying excel
   def required_references
+    log.info "Checking required references"
     required_refs = {}
     if @cells_that_can_be_set_at_runtime
       @cells_that_can_be_set_at_runtime.each do |worksheet, refs|
@@ -496,6 +506,7 @@ class ExcelToX
 
   # This makes sure that cells_to_keep includes named_references_to_keep
   def transfer_named_references_to_keep_into_cells_to_keep
+    log.info "Transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
     @named_references_to_keep = @named_references.keys if @named_references_to_keep == :all
     @cells_to_keep ||= {}
@@ -511,6 +522,7 @@ class ExcelToX
 
   # This makes sure that there are cell setter methods for any named references that can be set
   def transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
+    log.info "Making sure there are setter methods for named references that can be set"
     return unless @named_references_that_can_be_set_at_runtime
     return if @named_references_that_can_be_set_at_runtime == :where_possible # in this case will be done in #work_out_which_named_references_can_be_set_at_runtime
     @cells_that_can_be_set_at_runtime ||= {}
@@ -551,6 +563,7 @@ class ExcelToX
 
   # This just checks which named references refer to cells that we have already declared as settable
   def work_out_which_named_references_can_be_set_at_runtime
+    log.info "Working out which named references can be set at runtime"
     return unless @named_references_that_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime == :where_possible
     cells_that_can_be_set = @cells_that_can_be_set_at_runtime
@@ -597,6 +610,7 @@ class ExcelToX
   # FIXME: Feels like a kludge
   # This works out which named references should appear in the generated code
   def filter_named_references
+    log.info "Filtering named refernces to keep"
     @named_references_to_keep ||= []
     @named_references_that_can_be_set_at_runtime ||= []
 
@@ -615,6 +629,7 @@ class ExcelToX
   end
     
   def simplify(cells = @formulae)
+    log.info "Simplifying cells"
     r = ReplaceSharedStringAst.new(@shared_strings)
     cells.each do |ref, ast|
       r.map(ast)
@@ -696,6 +711,8 @@ class ExcelToX
   # First of all we replace any indirects where their values can be calculated at compile time with those
   # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
   def replace_indirects_and_offsets
+    log.info "Replacing indirects and offsets"
+
     references_that_need_updating = {}
 
     indirect_replacement = ReplaceIndirectsWithReferencesAst.new
@@ -722,6 +739,8 @@ class ExcelToX
   
   # If a formula's value can be calculated at compile time, it is replaced with its calculated value (e.g., 1+1 gets replaced with 2)
   def replace_formulae_with_calculated_values    
+    log.info "Replacing formulae with calculated values"
+
     value_replacer = MapFormulaeToValues.new
     value_replacer.original_excel_filename = excel_file
     @formulae.each do |ref, ast|
@@ -733,6 +752,7 @@ class ExcelToX
 
   # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
   def replace_references_to_values_with_values
+    log.info "Replacing references to values with values"
     
     inline_ast_decision = lambda do |sheet, cell, references|
       references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
@@ -768,6 +788,7 @@ class ExcelToX
   # If 'cells to keep' are specified, then other cells are removed, unless
   # they are required to calculate the value of a cell in 'cells to keep'.
   def remove_any_cells_not_needed_for_outputs
+    log.info "Removing cells not needed for outputs"
 
     # If 'cells to keep' isn't specified, then ALL cells are kept
     return unless cells_to_keep && !cells_to_keep.empty?
@@ -811,6 +832,8 @@ class ExcelToX
   # If a cell is only referenced from one other cell, then it is inlined into that other cell
   # e.g., A1 := B3+B6 ; B1 := A1 + B3 becomes: B1 := (B3 + B6) + B3. A1 is removed.
   def inline_formulae_that_are_only_used_once
+    log.info "Inlining formulae"
+
     # First step is to calculate how many times each cell is referenced by another cell
     counter = CountFormulaReferences.new
     count = counter.count(@formulae)
@@ -846,6 +869,8 @@ class ExcelToX
   # These will be sorted so that later refs depend on earlier refs. This should mean that the first test that 
   # fails will be the root cause of the problem
   def create_sorted_references_to_test
+    log.info "Creating references to test"
+
     references_to_test = {}
 
     # First get the list of references we should test
@@ -873,6 +898,7 @@ class ExcelToX
   # This looks for repeated formula parts, and separates them out. It is the opposite of inlining:
   # e.g., A1 := (B1 + B3) + B10; A2 := (B1 + B3) + 3 gets transformed to: Common1 := B1 + B3 ; A1 := Common1 + B10 ; A2 := Common1 + 3
   def separate_formulae_elements
+    log.info "Looking for repeated bits of formulae"
     
     replace_all_simple_references_with_sheet_references # So we can be sure which references are repeating and which references are distinct
     
@@ -905,6 +931,7 @@ class ExcelToX
   # We add the sheet name to all references, so that we can then look for common elements accross worksheets
   # e.g., A1 := A2 gets transformed to A1 := Sheet1!A2  
   def replace_all_simple_references_with_sheet_references
+    log.info "Adding sheet references to all cell references"
     r = RewriteCellReferencesToIncludeSheetAst.new
     @formulae.each do |ref, ast|
       r.worksheet = ref.first
@@ -915,6 +942,7 @@ class ExcelToX
   # This puts back in an optimisation that excel carries out by making sure that
   # two copies of the same value actually refer to the same underlying spot in memory
   def replace_values_with_constants
+    log.info "Replacing values with constants"
     
     # First do it in the formulae
     r = MapValuesToConstants.new
@@ -930,6 +958,8 @@ class ExcelToX
   # all value cells should be settable if they are referenced by
   # any other forumla.
   def a_good_set_of_cells_that_should_be_settable_at_runtime
+    log.info "Generating a good set of cells that should be settable"
+
     counter = CountFormulaReferences.new
     count = counter.count(@formulae)
     settable_cells = {}
