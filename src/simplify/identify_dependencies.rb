@@ -15,9 +15,9 @@ class IdentifyDependencies
   
   def add_depedencies_for(sheet,cell = :all)
     if cell == :all
-      return unless references.has_key?(sheet)
-      references[sheet].each do |ref,ast|
-        recursively_add_dependencies_for(sheet,ref)
+      references.each do |ref,ast|
+        next unless ref.first == sheet
+        recursively_add_dependencies_for(sheet,ref.last)
       end
     else
       recursively_add_dependencies_for(sheet,cell)
@@ -27,8 +27,7 @@ class IdentifyDependencies
   def recursively_add_dependencies_for(sheet,cell)
     return if dependencies[sheet].has_key?(cell)
     dependencies[sheet][cell] = true
-    return unless references.has_key?(sheet)
-    ast = references[sheet][cell]
+    ast = references[[sheet,cell]]
     return unless ast
     current_sheet.push(sheet)
     map(ast)
@@ -41,7 +40,7 @@ class IdentifyDependencies
     if respond_to?(operator)
       send(operator,*ast[1..-1])
     else
-      [operator,*ast[1..-1].map {|a| map(a) }]
+      ast.each {|a| map(a) }
     end
   end
   

@@ -185,8 +185,8 @@ class ExcelToX
     filter_named_references
 
     replace_formulae_with_their_results
-    remove_any_cells_not_needed_for_outputs
     inline_formulae_that_are_only_used_once
+    remove_any_cells_not_needed_for_outputs
     separate_formulae_elements
     replace_values_with_constants
     create_sorted_references_to_test
@@ -606,13 +606,13 @@ class ExcelToX
     @named_references.each do |name, ref|
       if named_references_to_keep.include?(name) || named_references_that_can_be_set_at_runtime.include?(name)
         # FIXME: Refactor the c_name_for to closer to the writing?
-        @named_references_to_keep << c_name_for(name)
+        @named_references_to_keep << name
       end
     end
 
     @named_references.each do |name, ref|
       if named_references_that_can_be_set_at_runtime.include?(name)
-        @named_references_that_can_be_set_at_runtime << c_name_for(name)
+        @named_references_that_can_be_set_at_runtime << name
       end
     end
   end
@@ -809,6 +809,7 @@ class ExcelToX
         end
       end
     end
+    p identifier.dependencies["Model"]["C154"]
     
     # Now we actually go ahead and remove the cells
     r = RemoveCells.new
@@ -846,10 +847,6 @@ class ExcelToX
       r.current_sheet_name = [ref.first]
       r.map(ast)
     end
-    
-    # We need to do this again, to get rid of the cells that we have just inlined
-    # FIXME: This could be done more efficiently, given we know which cells were removed
-    remove_any_cells_not_needed_for_outputs
   end
   
   # This comes up with a list of references to test, in the form of a file called 'References to test'.

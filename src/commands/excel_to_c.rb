@@ -93,7 +93,7 @@ class ExcelToC < ExcelToX
     c.settable = lambda { |ref| false }
     named_references_ast = {}
     @named_references_to_keep.each do |ref|
-      c_name = ref.is_a?(Array) ? ref : ["", ref]
+      c_name = ref.is_a?(Array) ? c_name_for(ref) : ["", c_name_for(ref)]
       named_references_ast[c_name] = @named_references[ref]
     end
 
@@ -104,7 +104,7 @@ class ExcelToC < ExcelToX
     c.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
     named_references_ast = {}
     @named_references_that_can_be_set_at_runtime.each do |ref|
-      named_references_ast[ref] = @named_references[ref]
+      named_references_ast[c_name_for(ref)] = @named_references[ref]
     end
     c.rewrite(named_references_ast, @worksheet_c_names, o)
     o.puts "// End of named references"
