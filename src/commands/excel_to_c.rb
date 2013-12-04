@@ -17,6 +17,7 @@ class ExcelToC < ExcelToX
   end
     
   def write_out_excel_as_code
+    log.info "Writing C code"
         
     number_of_refs = @formulae.size
         
@@ -90,12 +91,22 @@ class ExcelToC < ExcelToX
     o.puts "// Start of named references"
     c.gettable = lambda { |ref| true }
     c.settable = lambda { |ref| false }
-    c.rewrite(@named_references_to_keep, @worksheet_c_names, o)
+    named_references_ast = {}
+    @named_references_to_keep.each do |ref|
+      c_name = ref.is_a?(Array) ? ref : ["", ref]
+      named_references_ast[c_name] = @named_references[ref]
+    end
+
+    c.rewrite(named_references_ast, @worksheet_c_names, o)
 
     # Setters
     c = CompileNamedReferenceSetters.new
     c.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
-    c.rewrite(@named_references_that_can_be_set_at_runtime, @worksheet_c_names, o)
+    named_references_ast = {}
+    @named_references_that_can_be_set_at_runtime.each do |ref|
+      named_references_ast[ref] = @named_references[ref]
+    end
+    c.rewrite(named_references_ast, @worksheet_c_names, o)
     o.puts "// End of named references"
 
     close(o)
@@ -104,6 +115,8 @@ class ExcelToC < ExcelToX
   # FIXME: Should make a Rakefile, especially in order to make sure the dynamic library name
   # is set properly
   def write_build_script
+    log.info "Writing Build script"
+
     o = output("Makefile")
     name = output_name.downcase
     
@@ -127,6 +140,8 @@ class ExcelToC < ExcelToX
   end
   
   def write_fuby_ffi_interface
+    log.info "Writing ruby FFI code"
+
     name = output_name.downcase
     o = output("#{name}.rb")
       
@@ -307,6 +322,8 @@ END
   end
   
   def write_tests
+    log.info "Writing tests" 
+
     name = output_name.downcase
     o = output("test_#{name}.rb")    
     o.puts "# coding: utf-8"

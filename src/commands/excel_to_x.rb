@@ -194,17 +194,6 @@ class ExcelToX
     # This actually creates the code (implemented in subclasses)
     write_code
     
-    # clear some memory here, before trying to compile
-    if run_in_memory
-      @files = nil
-      @cells_to_keep = nil
-      @cells_that_can_be_set_at_runtime = nil
-      # now do garbage collection, because what we've just done will have freed a lot of memory
-      GC.enable
-      GC.start
-      # TODO I think there's still another 500MB that could be freed here, when compiling decc_model
-    end
-        
     # These compile and run the code version of the excel (implemented in subclasses)
     compile_code
     run_tests
