@@ -474,7 +474,7 @@ class ExcelToX
   def required_references
     log.info "Checking required references"
     required_refs = {}
-    if @cells_that_can_be_set_at_runtime
+    if @cells_that_can_be_set_at_runtime && @cells_that_can_be_set_at_runtime != :named_references_only
       @cells_that_can_be_set_at_runtime.each do |worksheet, refs|
         next if refs == :all
         refs.each do |ref|
