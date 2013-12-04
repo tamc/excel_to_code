@@ -116,8 +116,6 @@ module ExampleSpreadsheet
 
   # use this function to reset all cell values
   attach_function 'reset', [], :void
-
-  # start of ValueTypes
   attach_function 'set_valuetypes_a1', [ExcelValue.by_value], :void
   attach_function 'set_valuetypes_a2', [ExcelValue.by_value], :void
   attach_function 'set_valuetypes_a3', [ExcelValue.by_value], :void
@@ -131,8 +129,6 @@ module ExampleSpreadsheet
   attach_function 'valuetypes_a5', [], ExcelValue.by_value
   attach_function 'valuetypes_a6', [], ExcelValue.by_value
   # end of ValueTypes
-
-  # start of FormulaeTypes
   attach_function 'formulaetypes_a1', [], ExcelValue.by_value
   attach_function 'formulaetypes_b1', [], ExcelValue.by_value
   attach_function 'formulaetypes_a2', [], ExcelValue.by_value
@@ -150,8 +146,6 @@ module ExampleSpreadsheet
   attach_function 'formulaetypes_a8', [], ExcelValue.by_value
   attach_function 'formulaetypes_b8', [], ExcelValue.by_value
   # end of FormulaeTypes
-
-  # start of Ranges
   attach_function 'set_ranges_f4', [ExcelValue.by_value], :void
   attach_function 'set_ranges_f5', [ExcelValue.by_value], :void
   attach_function 'set_ranges_f6', [ExcelValue.by_value], :void
@@ -174,8 +168,6 @@ module ExampleSpreadsheet
   attach_function 'ranges_g5', [], ExcelValue.by_value
   attach_function 'ranges_f6', [], ExcelValue.by_value
   # end of Ranges
-
-  # start of Referencing
   attach_function 'set_referencing_a4', [ExcelValue.by_value], :void
   attach_function 'referencing_a1', [], ExcelValue.by_value
   attach_function 'referencing_a2', [], ExcelValue.by_value
@@ -188,8 +180,6 @@ module ExampleSpreadsheet
   attach_function 'referencing_b11', [], ExcelValue.by_value
   attach_function 'referencing_c11', [], ExcelValue.by_value
   # end of Referencing
-
-  # start of Tables
   attach_function 'set_tables_b2', [ExcelValue.by_value], :void
   attach_function 'set_tables_c2', [ExcelValue.by_value], :void
   attach_function 'set_tables_d2', [ExcelValue.by_value], :void
@@ -236,10 +226,6 @@ module ExampleSpreadsheet
   attach_function 'tables_c13', [], ExcelValue.by_value
   attach_function 'tables_c14', [], ExcelValue.by_value
   # end of Tables
-
-  # start of (innapropriate) sheet name!
   attach_function 's_innapropriate_sheet_name__c4', [], ExcelValue.by_value
   # end of (innapropriate) sheet name!
-  # Start of named references
-  # End of named references
 end

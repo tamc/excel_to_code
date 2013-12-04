@@ -93,14 +93,12 @@ class ExcelToC < ExcelToX
     c.rewrite(@named_references_to_keep, @worksheet_c_names, o)
 
     # Setters
-    # c = CompileNamedReferenceSetters.new
-    # c.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
-    # c.rewrite(i,w,o)
+    c = CompileNamedReferenceSetters.new
+    c.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
+    c.rewrite(@named_references_that_can_be_set_at_runtime, @worksheet_c_names, o)
+    o.puts "// End of named references"
 
-    # close(i)
-    # o.puts "// End of named references"
-
-    # close(w,o)
+    close(o)
   end
   
   # FIXME: Should make a Rakefile, especially in order to make sure the dynamic library name

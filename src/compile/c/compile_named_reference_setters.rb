@@ -71,12 +71,10 @@ class CompileNamedReferenceSetters
 
   def rewrite(named_references, sheet_names, output)
     mapper = MapNamedReferenceToCSetter.new
-    mapper.sheet_names = Hash[sheet_names.readlines.map { |line| line.strip.split("\t")}]
+    mapper.sheet_names = sheet_names
     mapper.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
 
-    named_references.each_line do |line|
-      name, reference = line.split("\t")
-      ast = eval(reference)
+    named_references.each do |name, ast|
       output.puts "void set_#{name}(ExcelValue newValue) {"
       output.puts mapper.map(ast)
       output.puts "}"

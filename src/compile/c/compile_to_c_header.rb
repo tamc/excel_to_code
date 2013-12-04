@@ -15,7 +15,8 @@ class CompileToCHeader
         static_or_not = (gettable.call(ref) || settable.call(ref)) ? "" : "static "
         worksheet = c_name_for_worksheet_name[ref.first]
         ref = ref.last.downcase
-        output.puts "#{static_or_not}ExcelValue #{worksheet}_#{ref}();"
+        name =  "#{worksheet}_#{ref}"
+        output.puts "#{static_or_not}ExcelValue #{name}();"
       rescue Exception => e
         puts "Exception at  #{ref} #{ast}"
         raise

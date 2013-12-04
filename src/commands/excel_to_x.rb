@@ -897,7 +897,9 @@ class ExcelToX
     ReplaceCommonElementsInFormulae.replace(@formulae, repeated_element_ast)
 
     # FIXME: Is this best? Seems to work
-    @formulae.merge! repeated_element_ast.invert
+    repeated_element_ast.each do |repeated_ast, common_ast|
+      @formulae[["", common_ast[1]]] = repeated_ast
+    end
   end
 
   # We add the sheet name to all references, so that we can then look for common elements accross worksheets
