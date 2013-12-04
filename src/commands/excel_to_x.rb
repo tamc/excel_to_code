@@ -736,7 +736,6 @@ class ExcelToX
     value_replacer.original_excel_filename = excel_file
     @formulae.each do |ref, ast|
       value_replacer.map(ast)
-      value_replacer.reset # FIXME: Do I need to do this each time?
     end
     @replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
   end
