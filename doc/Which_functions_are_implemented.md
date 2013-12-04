@@ -363,7 +363,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * PROPER -- Capitalizes the first letter in each word of a text value
 * REPLACE, REPLACEB -- Replaces characters within text
 * REPT -- Repeats text a given number of times
-* RIGHT, RIGHTB -- Returns the rightmost characters from a text value
+* RIGHT, RIGHTB -- Returns the rightmost characters from a text value -- _R_
 * SEARCH, SEARCHB -- Finds one text value within another (not case-sensitive)
 * SUBSTITUTE -- Substitutes new text for old text in a text string -- _R_
 * T -- Converts its arguments to text

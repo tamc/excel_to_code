@@ -1,5 +1,9 @@
 # Head
 
+# 0.1.23 - 2013 December 4th
+
+- Implemented the RIGHT function in ruby
+
 # 0.1.22 - 2013 December 4th
 
 - Fixed a bug in = and != when comparing a string with a non string

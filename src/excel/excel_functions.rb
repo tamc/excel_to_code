@@ -60,6 +60,7 @@ require_relative 'excel_functions/cosh'
 require_relative 'excel_functions/string_join'
 require_relative 'excel_functions/find'
 require_relative 'excel_functions/left'
+require_relative 'excel_functions/right'
 
 # Rounding functions
 require_relative 'excel_functions/round'
