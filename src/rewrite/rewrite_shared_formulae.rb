@@ -2,7 +2,6 @@ require_relative 'ast_copy_formula'
 
 class RewriteSharedFormulae
   def self.rewrite(*args)
-    p args
     new.rewrite(*args)
   end
   
