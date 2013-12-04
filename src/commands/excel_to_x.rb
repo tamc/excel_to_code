@@ -877,31 +877,25 @@ class ExcelToX
     
     replace_all_simple_references_with_sheet_references # So we can be sure which references are repeating and which references are distinct
     
-    references = all_formulae
     identifier = IdentifyRepeatedFormulaElements.new
-    repeated_elements = identifier.count(references)
+    repeated_elements = identifier.count(@formulae)
     
     # We apply a threshold that something needs to be used twice for us to bother separating it out. 
     # FIXME: This threshold is arbitrary
     repeated_elements.delete_if do |element,count|
       count < 2
     end
-    
-    # Dump our selected common elements into a separate file of formulae
-    o = intermediate('Common elements')
-    i = 0
-    repeated_elements.each do |element,count|
-      o.puts "common#{i}\t#{element}"
-      i = i + 1
+
+    # Translate the repeated elements into a code of the form [:cell, "common#{1}"]
+    index = 0
+    repeated_element_ast = {}
+    repeated_elements.each do |ast, count|
+      repeated_element_ast[ast] = [:cell, "common#{index}"]
+      index +=1 
     end
-    close(o)
-    
-    # Replace common elements in formulae with references to otherw
-    worksheets do |name,xml_filename|
-      replace ReplaceCommonElementsInFormulae, [name, 'Formulae'], "Common elements", [name, 'Formulae']
-    end
-    # FIXME: This means that some common elements won't ever be called, becuase they are replaced by a longer common element
-    # Should the common elements be merged first?
+
+    # FIXME: This means that some common elements won't ever be called, becuase they are replaced by a longer common element. Should the common elements be merged first?
+    ReplaceCommonElementsInFormulae.replace(@formulae, repeated_element_ast)
   end
 
   # We add the sheet name to all references, so that we can then look for common elements accross worksheets
