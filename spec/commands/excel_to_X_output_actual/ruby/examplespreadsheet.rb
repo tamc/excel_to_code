@@ -5,27 +5,12 @@ require '/Users/tamc/Documents/github/excel_to_code/src/excel/excel_functions'
 class ExampleSpreadsheet
   include ExcelFunctions
   def original_excel_filename; "/Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"; end
-
-  # Starting common elements
-  def common0; @common0 ||= add(referencing_a4,1); end
-  def common1; @common1 ||= sum([[tables_b5,tables_c5,nil]]); end
-  def common2; @common2 ||= [[tables_b5,tables_c5,nil]]; end
-  def common3; @common3 ||= sum([[tables_b3],[tables_b4]]); end
-  def common4; @common4 ||= [[tables_b3],[tables_b4]]; end
-  def common5; @common5 ||= sum([[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]); end
-  def common6; @common6 ||= [[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]; end
-  # Ending common elements
-
-  # Start of ValueTypes
   attr_accessor :valuetypes_a1 # Default: true
   attr_accessor :valuetypes_a2 # Default: "Hello"
   attr_accessor :valuetypes_a3 # Default: 1
   attr_accessor :valuetypes_a4 # Default: 3.1415
   attr_accessor :valuetypes_a5 # Default: :name
   attr_accessor :valuetypes_a6 # Default: "Hello"
-  # End of ValueTypes
-
-  # Start of FormulaeTypes
   def formulaetypes_a1; @formulaetypes_a1 ||= "Simple"; end
   def formulaetypes_b1; @formulaetypes_b1 ||= 2; end
   def formulaetypes_a2; @formulaetypes_a2 ||= "Sharing"; end
@@ -42,9 +27,6 @@ class ExampleSpreadsheet
   def formulaetypes_b7; @formulaetypes_b7 ||= "Not Eight"; end
   def formulaetypes_a8; @formulaetypes_a8 ||= "Arrayed (multiple)"; end
   def formulaetypes_b8; @formulaetypes_b8 ||= "Not Eight"; end
-  # End of FormulaeTypes
-
-  # Start of Ranges
   def ranges_b1; @ranges_b1 ||= "This sheet"; end
   def ranges_c1; @ranges_c1 ||= "Other sheet"; end
   def ranges_a2; @ranges_a2 ||= "Standard"; end
@@ -61,9 +43,6 @@ class ExampleSpreadsheet
   attr_accessor :ranges_f5 # Default: 2
   attr_accessor :ranges_g5 # Default: 3
   attr_accessor :ranges_f6 # Default: 3
-  # End of Ranges
-
-  # Start of Referencing
   def referencing_a1; @referencing_a1 ||= referencing_c4; end
   def referencing_a2; @referencing_a2 ||= referencing_c4; end
   attr_accessor :referencing_a4 # Default: 10
@@ -74,9 +53,6 @@ class ExampleSpreadsheet
   def referencing_b9; @referencing_b9 ||= common1; end
   def referencing_b11; @referencing_b11 ||= "Named"; end
   def referencing_c11; @referencing_c11 ||= "Reference"; end
-  # End of Referencing
-
-  # Start of Tables
   def tables_a1; @tables_a1 ||= nil; end
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
@@ -115,11 +91,14 @@ class ExampleSpreadsheet
   def tables_c12; @tables_c12 ||= tables_b5; end
   def tables_c13; @tables_c13 ||= common5; end
   def tables_c14; @tables_c14 ||= common5; end
-  # End of Tables
-
-  # Start of (innapropriate) sheet name!
   def s_innapropriate_sheet_name__c4; @s_innapropriate_sheet_name__c4 ||= valuetypes_a3; end
-  # End of (innapropriate) sheet name!
+  def common0; @common0 ||= add(referencing_a4,1); end
+  def common1; @common1 ||= sum([[tables_b5,tables_c5,nil]]); end
+  def common2; @common2 ||= [[tables_b5,tables_c5,nil]]; end
+  def common3; @common3 ||= sum([[tables_b3],[tables_b4]]); end
+  def common4; @common4 ||= [[tables_b3],[tables_b4]]; end
+  def common5; @common5 ||= sum([[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]); end
+  def common6; @common6 ||= [[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]; end
 
 
   # starting initializer

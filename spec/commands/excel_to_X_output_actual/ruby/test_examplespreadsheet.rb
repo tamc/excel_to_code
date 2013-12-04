@@ -46,7 +46,6 @@ class TestExampleSpreadsheet < Test::Unit::TestCase
   def test_referencing_c4; assert_in_epsilon(12, worksheet.referencing_c4, 0.001); end
   def test_referencing_a1; assert_in_epsilon(12, worksheet.referencing_a1, 0.001); end
   def test_referencing_a2; assert_in_epsilon(12, worksheet.referencing_a2, 0.001); end
-  def test_referencing_a4; assert_in_epsilon(10, worksheet.referencing_a4, 0.001); end
   def test_referencing_b4; assert_in_epsilon(11, worksheet.referencing_b4, 0.001); end
   def test_referencing_a5; assert_in_epsilon(3, worksheet.referencing_a5, 0.001); end
   def test_referencing_b8; assert_in_epsilon(12, worksheet.referencing_b8, 0.001); end
@@ -92,4 +91,5 @@ class TestExampleSpreadsheet < Test::Unit::TestCase
   def test_tables_c13; assert_in_epsilon(3, worksheet.tables_c13, 0.001); end
   def test_tables_c14; assert_in_epsilon(3, worksheet.tables_c14, 0.001); end
   def test_s_innapropriate_sheet_name__c4; assert_in_delta(1, worksheet.s_innapropriate_sheet_name__c4, 0.001); end
+  def test_referencing_a4; assert_in_epsilon(10, worksheet.referencing_a4, 0.001); end
 end

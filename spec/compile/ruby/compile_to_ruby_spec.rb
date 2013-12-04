@@ -3,9 +3,7 @@ require_relative '../../spec_helper'
 describe CompileToRuby do
 
   
-  def compile(text, sheet_names = "", settable = nil)    
-    input = StringIO.new(text)
-    sheet_names = StringIO.new(sheet_names)
+  def compile(input, sheet_names = {}, settable = nil)    
     output = StringIO.new
     c = CompileToRuby.new
     c.settable = settable
@@ -14,14 +12,14 @@ describe CompileToRuby do
   end
   
 it "should compile simple arithmetic" do
-input = <<END
-A1\t[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]
-A2\t[:arithmetic, [:number, "1"], [:operator, "-"], [:number, "1"]]
-A3\t[:arithmetic, [:number, "1"], [:operator, "*"], [:number, "1"]]
-A4\t[:arithmetic, [:number, "1"], [:operator, "/"], [:number, "1"]]
-A5\t[:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]]
-A6\t[:arithmetic, [:number, "1.1"], [:operator, "+"], [:number, "-1E12"]]
-END
+  input = {
+    ["sheet1", "A1"] => [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]],
+    ["sheet1", "A2"] => [:arithmetic, [:number, "1"], [:operator, "-"], [:number, "1"]],
+    ["sheet1", "A3"] => [:arithmetic, [:number, "1"], [:operator, "*"], [:number, "1"]],
+    ["sheet1", "A4"] => [:arithmetic, [:number, "1"], [:operator, "/"], [:number, "1"]],
+    ["sheet1", "A5"] => [:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]],
+    ["sheet1", "A6"] => [:arithmetic, [:number, "1.1"], [:operator, "+"], [:number, "-1E12"]]
+  }
 
 expected = <<END
   def a1; @a1 ||= add(1,1); end
@@ -36,13 +34,13 @@ compile(input).should == expected
 end
 
 it "should compile references, mapping sheet references appropriately" do
-input = <<END
-A1\t[:sheet_reference, "A complicated sheet name",[:cell, "A2"]]
-END
+  input = {
+    ["sheet1", "A1"] => [:sheet_reference, "A complicated sheet name",[:cell, "A2"]]
+  }
 
-sheet_names = <<END
-A complicated sheet name\ta_complicated_sheet_name
-END
+  sheet_names = {
+    "A complicated sheet name" => "a_complicated_sheet_name"
+  }
 
 expected = <<END
   def a1; @a1 ||= a_complicated_sheet_name_a2; end
@@ -52,22 +50,15 @@ compile(input,sheet_names).should == expected
 end
 
 it "should compile references that are 'settable' as accessors" do
-input = <<END
-A1\t[:number,1]
-A2\t[:number,2]
-A3\t[:number,3]
-END
+  input = {
+    ["sheet1", "A1"] => [:number,1],
+    ["sheet1", "A2"] => [:number,2],
+    ["sheet1", "A3"] => [:number,3]
+  }
 
-sheet_names = <<END
-END
+sheet_names = {}
 
-settable = lambda do |reference|
-  if reference == 'A2'
-    true
-  else
-    false
-  end
-end
+settable = lambda { |reference| reference == ["sheet1", "A2"] }
 
 expected = <<END
   def a1; @a1 ||= 1; end
@@ -79,22 +70,15 @@ compile(input,sheet_names,settable).should == expected
 end
 
 it "If has 'settable' accessors, and given a defaults file, should dump the default values to that file" do
-input = <<END
-A1\t[:number,1]
-A2\t[:number,2]
-A3\t[:number,3]
-END
+input = {
+["sheet1", "A1"] => [:number,1],
+["sheet1", "A2"] => [:number,2],
+["sheet1", "A3"] => [:number,3]
+}
 
-sheet_names = <<END
-END
+sheet_names = {}
 
-settable = lambda do |reference|
-  if reference == 'A2'
-    true
-  else
-    false
-  end
-end
+settable = lambda { |reference| reference == ["sheet1", "A2"] }
 
 expected_main = <<END
   def a1; @a1 ||= 1; end
@@ -102,20 +86,14 @@ expected_main = <<END
   def a3; @a3 ||= 3; end
 END
 
-expected_defaults = <<END
-    @a2 = 2
-END
+expected_defaults = [ "    @a2 = 2" ]
 
-i = StringIO.new(input)
-s = StringIO.new(sheet_names)
 o = StringIO.new
-d = StringIO.new
 c = CompileToRuby.new
 c.settable = settable
-c.rewrite(i,s,o,d)
-
+c.rewrite(input, sheet_names, o)
 o.string.should == expected_main
-d.string.should == expected_defaults
+c.defaults.should == expected_defaults
 end
 
 end

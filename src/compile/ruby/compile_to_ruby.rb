@@ -4,29 +4,32 @@ class CompileToRuby
   
   attr_accessor :settable
   attr_accessor :worksheet
+  attr_accessor :defaults
   
   def self.rewrite(*args)
     self.new.rewrite(*args)
   end
   
-  def rewrite(input,sheet_names_file,output,defaults = nil)
+  def rewrite(input, sheet_names, output)
     self.settable ||= lambda { |ref| false }
+    self.defaults ||= []
     mapper = MapFormulaeToRuby.new
-    mapper.worksheet = worksheet
-    mapper.sheet_names = Hash[sheet_names_file.readlines.map { |line| line.strip.split("\t")}]
-    c_name = mapper.sheet_names[worksheet]
-    input.each_line do |line|
+    mapper.sheet_names = sheet_names
+    input.each do |ref, ast|
       begin
-        ref, formula = line.split("\t")
-        name = c_name ? "#{c_name}_#{ref.downcase}" : ref.downcase
+        worksheet = ref.first
+        cell = ref.last
+        mapper.worksheet = worksheet
+        c_name = mapper.sheet_names[worksheet]
+        name = c_name ? "#{c_name}_#{cell.downcase}" : cell.downcase
         if settable.call(ref)
-          output.puts "  attr_accessor :#{name} # Default: #{mapper.map(eval(formula))}"
-          defaults.puts "    @#{name} = #{mapper.map(eval(formula))}" if defaults
+          output.puts "  attr_accessor :#{name} # Default: #{mapper.map(ast)}"
+          defaults << "    @#{name} = #{mapper.map(ast)}"
         else
-          output.puts "  def #{name}; @#{name} ||= #{mapper.map(eval(formula))}; end"
+          output.puts "  def #{name}; @#{name} ||= #{mapper.map(ast)}; end"
         end
       rescue Exception => e
-        puts "Exception at line #{line}"
+        puts "Exception at #{ref} => #{ast}"
         raise
       end      
     end

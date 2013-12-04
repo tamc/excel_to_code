@@ -21,8 +21,8 @@ class ExcelToRuby < ExcelToX
   def write_out_excel_as_code
     log.info "Starting to write out code"
     
-    w = input('Worksheet C names')
     o = output("#{output_name.downcase}.rb")
+
     o.puts "# coding: utf-8"
     o.puts "# Compiled version of #{excel_file}"
     # FIXME: Should include the ruby files as part of the output, so don't have any dependencies
@@ -32,51 +32,26 @@ class ExcelToRuby < ExcelToX
     o.puts "  include ExcelFunctions"
     o.puts "  def original_excel_filename; #{excel_file.inspect}; end"
     
-    o.puts  
-    o.puts "  # Starting common elements"
-    log.info "Starting to write code for common elements"
     c = CompileToRuby.new
-    i = input("Common elements")
-    w.rewind    
-    c.rewrite(i,w,o)
-    o.puts "  # Ending common elements"
+    c.settable = settable
+
+    c.rewrite(@formulae, @worksheet_c_names, o)
     o.puts
-    close(i)
-    log.info "Finished writing code for common elements"
-    
-    d = intermediate('Defaults')
-    
-    worksheets do |name,xml_filename|
-      log.info "Starting to write code for worksheet #{name}"
-      c.settable = settable(name)
-      c.worksheet = name
-      i = input([name,"Formulae"])
-      w.rewind
-      o.puts "  # Start of #{name}"
-      c.rewrite(i,w,o,d)
-      o.puts "  # End of #{name}"
-      o.puts ""
-      close(i)
-      log.info "Finished writing code for worksheet #{name}"
-    end   
-     
-    close(d)
     
     log.info "Starting to write initializer"
     o.puts
     o.puts "  # starting initializer"
     o.puts "  def initialize"
-    d = input('Defaults')
-    d.each_line do |line|
+    d = c.defaults
+    d.each do |line|
       o.puts line
     end
     o.puts "  end"
     o.puts ""
-    close(d)
     log.info "Finished writing initializer"
               
     o.puts "end"
-    close(w,o)
+    close(o)
     log.info "Finished writing code"
   end
 
@@ -91,9 +66,8 @@ class ExcelToRuby < ExcelToX
     o.puts "class Test#{ruby_module_name} < Test::Unit::TestCase"
     o.puts "  def worksheet; @worksheet ||= #{ruby_module_name}.new; end"
 
-    i = input("References to test")
-    CompileToCUnitTest.rewrite(i, sloppy_tests, o)
-    close(i)
+    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names,  o)
+
     o.puts "end"   
     close(o)
   end

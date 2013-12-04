@@ -18,7 +18,7 @@ describe ExcelToRuby do
     #}
     command.run_in_memory = true
     command.go!
-    require_relative File.join(actual,'c','test_examplespreadsheet')
+    require_relative File.join(actual,'ruby','test_examplespreadsheet')
     Minitest::Unit.new.run.should == 0
   end
 end

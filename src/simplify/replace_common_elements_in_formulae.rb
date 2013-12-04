@@ -6,7 +6,7 @@ class ReplaceCommonElementsInFormulae
   
   attr_accessor :common_elements
   
-  def replace(input,common_elements)
+  def replace(input, common_elements)
     @common_elements = common_elements
     input.each do |ref, ast|
       replace_repeated_formulae(ast)

@@ -596,7 +596,6 @@ class ExcelToX
       end
     end
 
-    o = intermediate('Named references to set')
     @named_references.each do |name, ref|
       if named_references_that_can_be_set_at_runtime.include?(name)
         @named_references_that_can_be_set_at_runtime << c_name_for(name)
@@ -874,12 +873,12 @@ class ExcelToX
     repeated_elements.delete_if do |element,count|
       count < 2
     end
-
+    
     # Translate the repeated elements into a code of the form [:cell, "common#{1}"]
     index = 0
     repeated_element_ast = {}
     repeated_elements.each do |ast, count|
-      repeated_element_ast[ast] = [:cell, "common#{index}"]
+      repeated_element_ast[ast.dup] = [:cell, "common#{index}"]
       index +=1 
     end
 
@@ -905,21 +904,12 @@ class ExcelToX
   def replace_values_with_constants
     
     # First do it in the formulae
-    r = ReplaceValuesWithConstants.new
-    worksheets do |name,xml_filename|
-      replace r, [name, 'Formulae'],  [name, 'Formulae']
+    r = MapValuesToConstants.new
+    @formulae.each do |ref, ast|
+      r.map(ast)
     end
-    
-    # Then do it in the common elements
-    replace r, "Common elements", "Common elements"
-    
-    # Then write out the constants
-    output = intermediate("Constants")
-    # FIXME: This looks bad!
-    r.rewriter.constants.each do |ast,constant|
-      output.puts "#{constant}\t#{ast}"
-    end
-    close(output)
+
+    @constants = r.constants
   end
   
   # If nothing has been specified in named_references_that_can_be_set_at_runtime 
@@ -996,38 +986,6 @@ class ExcelToX
       yield name, filename
     end
   end
-    
-  def extract(klass,xml_name,output_name)
-    log.debug "Started using #{klass} to extract xml: #{xml_name} to #{output_name}"
-    
-    i = xml(xml_name)
-    o = intermediate(output_name)
-    klass.extract(i,o)
-    close(i,o)
-
-    log.info "Finished using #{klass} to extract xml: #{xml_name} to #{output_name}"
-  end
-  
-  def apply_rewrite(klass,filename)
-    rewrite klass, filename, filename
-  end
-  
-  def rewrite(klass, *args)
-    execute klass, :rewrite, *args
-  end
-  
-  def replace(klass, *args)
-    execute klass, :replace, *args
-  end
-  
-  def execute(klass, method, *args)
-    log.debug "Started executing #{klass}.#{method} with #{args.inspect}"
-    inputs = args[0..-2].map { |name| input(name) }
-    output = intermediate(args.last)
-    klass.send(method,*inputs,output)
-    close(*inputs,output)
-    log.info "Finished executing #{klass}.#{method} with #{args.inspect}"
-  end
   
   def xml(*args)
     args.flatten!
@@ -1037,40 +995,6 @@ class ExcelToX
     else
       log.warn("#{filename} does not exist in xml(#{args.inspect}), using blank instead")
       StringIO.new
-    end
-  end
-  
-  def input(*args)
-    args.flatten!
-    filename = versioned_filename_read(intermediate_directory,*args)
-    if run_in_memory
-      existing_file = @files[filename]
-      if existing_file
-        StringIO.new(existing_file.string,'r')
-      else
-        log.warn("#{filename} does not exist in input(#{args.inspect}), using blank instead")
-        StringIO.new
-      end
-    else
-      if File.exists?(filename)
-        File.open(filename,'r')
-      else
-        log.warn("#{filename} does not exist in input(#{args.inspect}), using blank instead")
-        StringIO.new
-      end
-    end
-  end
-  
-  def intermediate(*args)
-    args.flatten!
-    filename = versioned_filename_write(intermediate_directory,*args)
-    if run_in_memory
-      @files ||= {}
-      remove_obsolete_versioned_filenames(intermediate_directory, *args)
-      @files[filename] = StringIO.new("",'w')
-    else
-      FileUtils.mkdir_p(File.dirname(filename))
-      File.open(filename,'w')
     end
   end
   
@@ -1093,63 +1017,8 @@ class ExcelToX
     @ruby_module_name
   end
 
-  def remove_obsolete_versioned_filenames(*args)
-    return unless run_in_memory
-    standardised_name = standardise_name(args)
-    counter = @versioned_filenames[standardised_name] || 0
-    0.upto(counter-1).map do |c|
-      @files.delete(filename_with_counter(c, args))
-    end
-  end
-  
-  def versioned_filename_read(*args)
-    @versioned_filenames ||= {}
-    standardised_name = standardise_name(args)
-    counter = @versioned_filenames[standardised_name]
-    filename_with_counter counter, args
-  end
-  
-  def versioned_filename_write(*args)
-    @versioned_filenames ||= {}
-    standardised_name = standardise_name(args)
-    if @versioned_filenames.has_key?(standardised_name)
-      counter =  @versioned_filenames[standardised_name] + 1
-    else
-      counter = 0
-    end
-    @versioned_filenames[standardised_name] = counter
-    filename_with_counter(counter, args)
-  end
-  
-  def filename_with_counter(counter, args)
-    counter ||= 0
-    last_name = args.last
-    last_name = last_name + sprintf(" %03d", counter)
-    File.join(*args[0..-2], last_name)    
-  end  
-  
   def standardise_name(*args)
     File.expand_path(File.join(args))
   end
 
-  def dump
-    dumpArray(@shared_strings, intermediate_directory, "Shared Strings")
-    dumpArray(@named_references.flatten, versioned_filename_write(intermediate_directory, "Named References"))
-  end
-
-  def dumpArray(array, *filenames)
-    fn = File.join(*filenames)
-    FileUtils.mkdir_p(File.dirname(fn))
-    File.open(fn, 'w') do |f|
-      array.each do |line|
-        case line
-        when Array
-          f.puts line.join("\t")
-        else
-          f.puts line.to_s
-        end
-      end
-    end
-  end
-  
 end

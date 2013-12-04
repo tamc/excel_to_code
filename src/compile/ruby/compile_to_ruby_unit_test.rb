@@ -15,14 +15,14 @@ class CompileToRubyUnitTest
     self.new.rewrite(*args)
   end
   
-  def rewrite(input, sloppy, o)
+  def rewrite(input, sloppy, sheet_names,  o)
     mapper = MapValuesToRuby.new
-    input.each_line do |line|
-      c_name, ref, formula = line.split("\t")
-      ast = eval(formula)
+    input.each do |ref, ast|
+      c_name = sheet_names[ref.first] || ref.first #FIXME: Need to make it the actual c_name
+      cell = ref.last
       value = mapper.map(ast)
-      full_reference = "worksheet.#{c_name}_#{ref.downcase}"
-      test_name = "test_#{c_name}_#{ref.downcase}"
+      full_reference = "worksheet.#{c_name}_#{cell.downcase}"
+      test_name = "test_#{c_name}_#{cell.downcase}"
       case ast.first
       when :blank
         if sloppy
