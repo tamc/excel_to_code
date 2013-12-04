@@ -1,31 +1,29 @@
 require_relative '../spec_helper'
 
 describe RemoveCells do
-  
-it "should remove any cells whose references are NOT in the given array" do
-input = <<END
-A1\t[:boolean_true]
-A2\t[:shared_string, "0"]
-A3\t[:number, "1"]
-A4\t[:number, "3.1415000000000002"]
-A5\t[:error, "#NAME?"]
-A6\t[:string, "Hello    "]
-END
 
-cells_to_keep = {'A1' => true,'A2' => true, 'A6' => true}
+  it "should remove any cells whose references are NOT in the given array" do
+    input = {
+      ['sheet1', 'A1'] => [:boolean_true],
+      ['sheet1', 'A2'] => [:shared_string, "0"],
+      ['sheet1', 'A3'] => [:number, "1"],
+      ['sheet1', 'A4'] => [:number, "3.1415000000000002"],
+      ['sheet1', 'A5'] => [:error, "#NAME?"],
+      ['sheet1', 'A6'] => [:string, "Hello    "],
+    }
 
-expected_output = <<END
-A1\t[:boolean_true]
-A2\t[:shared_string, "0"]
-A6\t[:string, "Hello    "]
-END
+    cells_to_keep = {'sheet1' => {'A1' => true,'A2' => true, 'A6' => true}}
 
-output = StringIO.new
-r = RemoveCells.new
-r.cells_to_keep = cells_to_keep
-r.rewrite(input,output)
-output.string.should == expected_output
+    expected_output = {
+      ['sheet1', 'A1'] => [:boolean_true],
+      ['sheet1', 'A2'] => [:shared_string, "0"],
+      ['sheet1', 'A6'] => [:string, "Hello    "],
+    }
 
-end # / it
+    r = RemoveCells.new
+    r.cells_to_keep = cells_to_keep
+    r.rewrite(input).should == expected_output
+
+  end # / it
 
 end # /describe

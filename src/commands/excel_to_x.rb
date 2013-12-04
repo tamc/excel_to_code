@@ -716,7 +716,7 @@ class ExcelToX
     value_replacer.original_excel_filename = excel_file
     @formulae.each do |ref, ast|
       value_replacer.map(ast)
-      reset
+      value_replacer.reset # FIXME: Do I need to do this each time?
     end
     @replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
   end
@@ -765,7 +765,7 @@ class ExcelToX
     # Work out what cells the cells in 'cells to keep' need 
     # in order to be able to calculate their values
     identifier = IdentifyDependencies.new
-    identifier.references = all_formulae
+    identifier.references = @formulae
     cells_to_keep.each do |sheet_to_keep,cells_to_keep|
       if cells_to_keep == :all
         identifier.add_depedencies_for(sheet_to_keep)
@@ -791,12 +791,11 @@ class ExcelToX
     end
     
     # Now we actually go ahead and remove the cells
-    worksheets do |name,xml_filename|
-      r = RemoveCells.new
-      r.cells_to_keep = identifier.dependencies[name]
-      rewrite r, [name, 'Formulae'],  [name, 'Formulae']
-      rewrite r, [name, 'Values'],  [name, 'Values'] # Must remove the values as well, to avoid any tests being generated for cells that don't exist
-    end
+    r = RemoveCells.new
+    r.cells_to_keep = identifier.dependencies
+    r.rewrite(@formulae)
+    # Must remove the values as well, to avoid any tests being generated for cells that don't exist
+    r.rewrite(@values)
   end
   
   # If a cell is only referenced from one other cell, then it is inlined into that other cell

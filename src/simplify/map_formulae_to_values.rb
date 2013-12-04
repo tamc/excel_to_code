@@ -117,7 +117,7 @@ class MapFormulaeToValues
     array_mapped = ast[2]
     row_as_number = value(ast[3])
     return if row_as_number == :not_a_value
-    array_as_values = array_as_values(array)
+    array_as_values = array_as_values(array_mapped)
     return unless array_as_values
     result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number)
     result = [:number, 0] if result == [:blank]
