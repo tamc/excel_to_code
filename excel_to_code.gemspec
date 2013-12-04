@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "excel_to_code"
-  s.version = '0.1.21'
+  s.version = '0.1.22'
   s.license = "MIT"
   s.add_dependency('rubypeg')
   s.add_dependency('nokogiri','>= 1.5.0')
