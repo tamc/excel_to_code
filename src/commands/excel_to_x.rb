@@ -907,10 +907,10 @@ class ExcelToX
   # We add the sheet name to all references, so that we can then look for common elements accross worksheets
   # e.g., A1 := A2 gets transformed to A1 := Sheet1!A2  
   def replace_all_simple_references_with_sheet_references
-    r = RewriteCellReferencesToIncludeSheet.new
-    worksheets do |name,xml_filename|
-      r.worksheet = name
-      rewrite r, [name, 'Formulae'],  [name, 'Formulae']
+    r = RewriteCellReferencesToIncludeSheetAst.new
+    @formulae.each do |ref, ast|
+      r.worksheet = ref.first
+      r.map(ast)
     end
   end  
   

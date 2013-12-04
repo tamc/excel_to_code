@@ -15,10 +15,8 @@ class IdentifyRepeatedFormulaElements
   
   def count(references)
     @references = references
-    references.each do |sheet,cells|
-      cells.each do |ref,ast|
-        identify_repeated_formulae(ast)
-      end
+    references.each do |ref,ast|
+      identify_repeated_formulae(ast)
     end
     return @counted_elements
   end
@@ -29,7 +27,7 @@ class IdentifyRepeatedFormulaElements
     return unless ast.is_a?(Array)
     return if [:number,:string,:blank,:null,:error,:boolean_true,:boolean_false,:sheet_reference,:cell, :row].include?(ast.first)
     return if string.length < bothered_threshold
-    @counted_elements[string] += 1
+    @counted_elements[ast] += 1
     ast.each do |a|
       identify_repeated_formulae(a)
     end

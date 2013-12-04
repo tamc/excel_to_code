@@ -5,28 +5,25 @@ class RewriteCellReferencesToIncludeSheetAst
   attr_accessor :worksheet
     
   def map(ast)
-    if ast.is_a?(Array)
-      operator = ast.shift
-      if respond_to?(operator)
-        send(operator,*ast)
-      else
-        [operator,*ast.map {|a| map(a) }]
-      end
-    else
-      return ast
+    return ast unless ast.is_a?(Array)
+    if respond_to?(ast[0])
+      send(ast[0], ast)    
+    else 
+      ast.each { |a| map(a) }
     end
+    ast
   end
   
-  def cell(ref)
-    [:sheet_reference, worksheet, [:cell, ref]]
+  def cell(ast)
+    ast.replace([:sheet_reference, worksheet, ast.dup])
   end
   
-  def area(start,finish)
-    [:sheet_reference, worksheet, [:area, start, finish]]    
+  def area(ast)
+    ast.replace([:sheet_reference, worksheet, ast.dup])
   end
   
-  def sheet_reference(sheet_name,reference)
-    [:sheet_reference, sheet_name, reference]
+  def sheet_reference(ast)
+    # Leave alone, don't map futher
   end
 
 end
