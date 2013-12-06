@@ -40,7 +40,7 @@ class ExcelToC < ExcelToX
     c.settable = settable
     c.gettable = gettable
     c.rewrite(@formulae, @worksheet_c_names, o)
-    
+
     # Need to make sure there are enough refs for named references as well
     number_of_refs += @named_references_to_keep.size
 
@@ -296,26 +296,18 @@ END
       o.puts "  # end of #{name}"
     end
 
-    # Now put in place the getters and setters for the named references
-    # o.puts "  # Start of named references"
+    o.puts "  # Start of named references"
+    # Getters
+    @named_references_to_keep.each do |name|
+      o.puts "  attach_function '_#{c_name_for(name)}', [], ExcelValue.by_value"
+    end
 
-    # # Getters
-    # i = input('Named references to keep')
-    # i.each_line do |line|
-    #   name = line.strip.split("\t").first
-    #   o.puts "  attach_function '#{name}', [], ExcelValue.by_value"
-    # end
-    # close(i)
+    # Setters
+    @named_references_that_can_be_set_at_runtime.each do |name|
+      o.puts "  attach_function 'set_#{c_name_for(name)}', [ExcelValue.by_value], :void"
+    end
 
-    # # Setters
-    # i = input('Named references to set')
-    # i.each_line do |line|
-    #   name = line.strip.split("\t").first
-    #   o.puts "  attach_function 'set_#{name}', [ExcelValue.by_value], :void"
-    # end
-
-    # close(i)
-    # o.puts "  # End of named references"
+    o.puts "  # End of named references"
 
     o.puts "end"  
     close(o)
