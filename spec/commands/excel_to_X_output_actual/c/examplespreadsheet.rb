@@ -228,4 +228,6 @@ module ExampleSpreadsheet
   # end of Tables
   attach_function 's_innapropriate_sheet_name__c4', [], ExcelValue.by_value
   # end of (innapropriate) sheet name!
+  # Start of named references
+  # End of named references
 end

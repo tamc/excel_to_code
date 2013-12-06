@@ -757,7 +757,7 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 }
 
 static ExcelValue excel_match_2(ExcelValue lookup_value, ExcelValue lookup_array ) {
-	return excel_match(lookup_value,lookup_array,new_excel_number(0));
+	return excel_match(lookup_value, lookup_array, ZERO);
 }
 
 static ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue start_number_v) {
@@ -3525,7 +3525,7 @@ ExcelValue _common2() {
   array0[0] = tables_b5();
   array0[1] = tables_c5();
   array0[2] = BLANK;
-  ExcelValue array0_ev = new_excel_range(array0,1,2);
+  ExcelValue array0_ev = new_excel_range(array0,1,3);
   result = array0_ev;
   variable_set[89] = 1;
   return result;
@@ -3550,7 +3550,7 @@ ExcelValue _common4() {
   static ExcelValue array0[2];
   array0[0] = tables_b3();
   array0[1] = tables_b4();
-  ExcelValue array0_ev = new_excel_range(array0,2,0);
+  ExcelValue array0_ev = new_excel_range(array0,2,1);
   result = array0_ev;
   variable_set[91] = 1;
   return result;
@@ -3583,7 +3583,7 @@ ExcelValue _common6() {
   array0[3] = tables_b4();
   array0[4] = tables_c4();
   array0[5] = tables_d4();
-  ExcelValue array0_ev = new_excel_range(array0,2,2);
+  ExcelValue array0_ev = new_excel_range(array0,2,3);
   result = array0_ev;
   variable_set[93] = 1;
   return result;
