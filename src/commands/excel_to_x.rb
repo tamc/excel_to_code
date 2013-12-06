@@ -868,8 +868,10 @@ class ExcelToX
     @values.each do |ref, value|
       if !cells_to_keep || 
           cells_to_keep.empty? || 
-          cells_to_keep[ref.first] == :all ||
-          cells_to_keep[ref.first].include?(ref.last)
+          (cells_to_keep[ref.first] && (
+            cells_to_keep[ref.first] == :all ||
+            cells_to_keep[ref.first].include?(ref.last)
+          ))
         references_to_test[ref] = value
       end
     end
