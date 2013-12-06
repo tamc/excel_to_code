@@ -171,22 +171,21 @@ class MapFormulaeToC < MapValuesToC
   def array(*rows)
     # Make sure we get the right dimensions
     number_of_rows = rows.size
-    number_of_columns = rows.max { |r| r.size }.size - 1
-    
+    number_of_columns = rows[0].size - 1
+    size = number_of_rows * number_of_columns
+
     # First we have to create an excel array
     array_name = "array#{@counter}"
     @counter +=1
 
-    cells = rows.map do |r|
-      r.shift if r.first == :row
-      r.map do |c| 
-        map(c)
+    initializers << "static ExcelValue #{array_name}[#{size}];"
+    i = 0
+    rows.each do |row|
+      row.each do |cell|
+        next if cell.is_a?(Symbol)
+        initializers << "#{array_name}[#{i}] = #{map(cell)};"
+        i += 1
       end
-    end.flatten
-    
-    initializers << "static ExcelValue #{array_name}[#{cells.size}];"
-    cells.each_with_index do |c,i|
-      initializers << "#{array_name}[#{i}] = #{c};"
     end
     
     # Then we need to assign it to an excel value
