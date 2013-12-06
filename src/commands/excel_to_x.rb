@@ -672,7 +672,11 @@ class ExcelToX
       replace_string_joins_on_ranges_replacer.map(ast)
     end
 
-    replace_all_simple_references_with_sheet_references # So we can be sure which references are repeating and which references are distinct
+    r = RewriteCellReferencesToIncludeSheetAst.new
+    cells.each do |ref, ast|
+      r.worksheet = ref.first
+      r.map(ast)
+    end
 
     wrap_formulae_that_return_arrays_replacer = WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
     cells.each do |ref, ast|
@@ -912,18 +916,8 @@ class ExcelToX
     repeated_element_ast.each do |repeated_ast, common_ast|
       @formulae[["", common_ast[1]]] = repeated_ast
     end
-  end
 
-  # We add the sheet name to all references, so that we can then look for common elements accross worksheets
-  # e.g., A1 := A2 gets transformed to A1 := Sheet1!A2  
-  def replace_all_simple_references_with_sheet_references
-    log.info "Adding sheet references to all cell references"
-    r = RewriteCellReferencesToIncludeSheetAst.new
-    @formulae.each do |ref, ast|
-      r.worksheet = ref.first
-      r.map(ast)
-    end
-  end  
+  end
   
   # This puts back in an optimisation that excel carries out by making sure that
   # two copies of the same value actually refer to the same underlying spot in memory
