@@ -877,7 +877,7 @@ class ExcelToX
     end
 
     # Now work out dependency tree
-    sorted_references = SortIntoCalculationOrder.new.sort(@formulae)
+    sorted_references = @formulae.keys #SortIntoCalculationOrder.new.sort(@formulae)
 
     @references_to_test_array = []
     sorted_references.each do |ref|
