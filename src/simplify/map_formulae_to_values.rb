@@ -16,23 +16,26 @@ class MapFormulaeToValues
     @value_for_ast = MapValuesToRuby.new
     @calculator = FormulaeCalculator.new
     @replacements_made_in_the_last_pass = 0
-    @cache = {}
+  end
+
+  def original_excel_filename=(new_filename)
+    @original_excel_filename = new_filename
+    @calculator.original_excel_filename = new_filename
   end
 
   def reset
-    @cache = {}
+    # Not used any more
+    # FIXME: Remove references to this method
   end
 
-  # FIXME: Caching works in the odd edge cases of long formula
-  # but I really need to find the root cause of the problem
+  DO_NOT_MAP = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true}
+
   def map(ast)
-    @calculator.original_excel_filename = original_excel_filename
-    @cache[ast] ||= do_map(ast)
-  end
-
-  def do_map(ast)
-    return ast unless ast.is_a?(Array)
-    ast.each { |a| map(a) } # Depth first best in this case?
+    ast[1..-1].each do |a| 
+      next unless a.is_a?(Array)
+      next if DO_NOT_MAP[(a[0])]
+      map(a)
+    end # Depth first best in this case?
     send(ast[0], ast) if respond_to?(ast[0])
     ast
   end
@@ -69,12 +72,10 @@ class MapFormulaeToValues
     ast.replace(ast_for_value(@calculator.string_join(*values)))
   end
   
-  FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED = %w{TODAY RAND RANDBETWEEN INDIRECT}
-  
   # [:function, function_name, arg1, arg2, ...]
   def function(ast)
     name = ast[1]
-    return if FUNCTIONS_THAT_SHOULD_NOT_BE_CONVERTED.include?(name)
+    return if name == "INDIRECT"
     if respond_to?("map_#{name.downcase}")
       send("map_#{name.downcase}",ast)
     else

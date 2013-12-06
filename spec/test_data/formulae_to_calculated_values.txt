@@ -8,8 +8,8 @@
 [:boolean_false]	[:boolean_false]
 
 # Replacement should only happen if all the arguments can be replaced with values
-[:arithmetic, [:function, "TODAY"], [:operator, "+"], [:number, "1"]]	[:arithmetic, [:function, "TODAY"], [:operator, "+"], [:number, "1"]]
-[:function, "SUM", [:function, "TODAY"], [:number, "1"], [:number, "1"]]	[:function, "SUM", [:function, "TODAY"], [:number, "1"], [:number, "1"]]
+[:arithmetic, [:function, "INDIRECT"], [:operator, "+"], [:number, "1"]]	[:arithmetic, [:function, "INDIRECT"], [:operator, "+"], [:number, "1"]]
+[:function, "SUM", [:function, "INDIRECT"], [:number, "1"], [:number, "1"]]	[:function, "SUM", [:function, "INDIRECT"], [:number, "1"], [:number, "1"]]
 [:prefix, "-", [:number, "1"]]	[:number, "-1"]
 [:prefix, "-", [:blank]]	[:number, "0"]
 [:prefix, "-", [:error, "#N/A"]]	[:error, "#N/A"]
@@ -32,11 +32,6 @@
 [:comparison, [:number, "1"], [:comparator, "<="], [:number, "8"]]	[:boolean_true]
 [:comparison, [:number, "1"], [:comparator, ">="], [:number, "8"]]	[:boolean_false]
 [:comparison, [:number, "1"], [:comparator, "<>"], [:number, "8"]]	[:boolean_true]
-
-# Functions whose value changes at runtime
-[:function, "TODAY"]	[:function, "TODAY"]
-[:function, "RAND"]	[:function, "RAND"]
-[:function, "RANDBETWEEN"]	[:function, "RANDBETWEEN"]
 
 # Functions
 [:function, "PI"]	[:number, "3.141592653589793"]
