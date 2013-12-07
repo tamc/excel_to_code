@@ -9,6 +9,7 @@ class SortIntoCalculationOrder
   def sort(references)
     @current_sheet = []
     @ordered_references = []
+    @counted = {}
     @references = references
 
     # First we find the references that are at the top of the tree
@@ -34,6 +35,7 @@ class SortIntoCalculationOrder
     map(ast)
     current_sheet.pop
     @ordered_references << ref
+    @counted[ref] = true
   end  
 
   def map(ast)
@@ -50,13 +52,13 @@ class SortIntoCalculationOrder
   
   def sheet_reference(sheet,reference)
     ref = [sheet, reference.last.gsub('$','')]
-    return if @ordered_references.include?(ref)
+    return if @counted.has_key?(ref)
     add_ordered_references_for(ref)
   end
   
   def cell(reference)
     ref = [current_sheet.last, reference.gsub('$','')]
-    return if @ordered_references.include?(ref)
+    return if @counted.has_key?(ref)
     add_ordered_references_for(ref)
   end
    

@@ -21,10 +21,13 @@ class ReplaceColumnWithColumnNumberAST
   end
   
   # Should be of the form [:function, "COLUMN", [:sheet_reference, sheet, ref]] 
+  
+  REF_TYPES = {:cell => true, :sheet_reference => true}
+
   def function(ast)
     return unless ast[1] == "COLUMN"
     return unless ast.size == 3
-    return unless [:cell, :sheet_reference].include?(ast[2][0])
+    return unless REF_TYPES.has_key?(ast[2][0])
     if ast[2][0] == :cell
       reference = Reference.for(ast[2][1])
     elsif ast[2][0] == :sheet_reference

@@ -21,11 +21,12 @@ class IdentifyRepeatedFormulaElements
     return @counted_elements
   end
 
+  IGNORE_TYPES = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true,  :row => true}
   
   def identify_repeated_formulae(ast)
     string = ast.to_s
     return unless ast.is_a?(Array)
-    return if [:number,:string,:blank,:null,:error,:boolean_true,:boolean_false,:sheet_reference,:cell, :row].include?(ast.first)
+    return if IGNORE_TYPES.has_key?(ast.first)
     return if string.length < bothered_threshold
     @counted_elements[ast] += 1
     ast.each do |a|

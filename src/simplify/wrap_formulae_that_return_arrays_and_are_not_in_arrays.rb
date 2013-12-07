@@ -8,10 +8,10 @@ class WrapFormulaeThatReturnArraysAndAReNotInArraysAst
   end
 
   # Only does MMULT at the moment
-  FORMULAE_THAT_RETURN_ARRAYS = %w{ MMULT }
+  FORMULAE_THAT_RETURN_ARRAYS = { "MMULT" => true }
   
   def function(ast)
-    return unless FORMULAE_THAT_RETURN_ARRAYS.include?(ast[1])
+    return unless FORMULAE_THAT_RETURN_ARRAYS.has_key?(ast[1])
     ast.replace( [:function, "INDEX", ast.dup,  [:number, "1"], [:number, "1"]])
   end
 end

@@ -69,13 +69,13 @@ class AstExpandArrayFormulae
     end]
   end
   
-  FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS = %w{AVERAGE COUNT COUNTA MAX MIN SUM SUMPRODUCT MMULT}
+  FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS = {'AVERAGE' => true, 'COUNT' => true, 'COUNTA' => true, 'MAX' => true, 'MIN' => true, 'SUM' => true, 'SUMPRODUCT' => true, 'MMULT' => true}
   
   # Format [:function, function_name, arg1, arg2, ...]
   def function(ast)
     name = ast[1]
     arguments = ast[2..-1]
-    if FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS.include?(name)
+    if FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS.has_key?(name)
       ast.each { |a| map(a) }
       return # No need to alter anything
     elsif respond_to?("map_#{name.downcase}")

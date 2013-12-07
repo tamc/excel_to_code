@@ -30,10 +30,10 @@ class ExtractArrayFormulaForCell
     ast[@row_offset+1][@column_offset+1] # plus ones to skip tthe [:array,[:row,"cell"]] symbols
   end
   
-  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = %w{INDEX MMULT}
+  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = { 'INDEX' => true,  'MMULT' => true}
   
   def map_function(ast)
-    return ast unless FUNCTIONS_THAT_CAN_RETURN_ARRAYS.include?(ast[1])
+    return ast unless FUNCTIONS_THAT_CAN_RETURN_ARRAYS.has_key?(ast[1])
     [:function, "INDEX", ast, [:number, (@row_offset+1).to_s], [:number, (column_offset+1).to_s]]
   end
   

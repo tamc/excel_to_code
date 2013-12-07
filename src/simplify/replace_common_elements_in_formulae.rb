@@ -14,11 +14,11 @@ class ReplaceCommonElementsInFormulae
     input
   end
 
-  VALUES = [:number,:string,:blank,:null,:error,:boolean_true,:boolean_false,:sheet_reference,:cell, :row]
+  VALUES = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true, :row => true}
   
   def replace_repeated_formulae(ast)
     return ast unless ast.is_a?(Array)
-    return ast if VALUES.include?(ast.first)    
+    return ast if VALUES.has_key?(ast.first)    
     replacement = @common_elements[ast]
     if replacement
       ast.replace(replacement)
