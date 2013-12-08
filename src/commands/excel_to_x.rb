@@ -370,6 +370,7 @@ class ExcelToX
       end
       
       extract_tables_for_worksheet(name,xml_filename)
+      GC.start
     end
   end
   
@@ -402,6 +403,7 @@ class ExcelToX
     rewrite_array_formulae
     rewrite_values
     combine_formulae_files
+    GC.start
   end
   
   # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
@@ -658,69 +660,44 @@ class ExcelToX
     
   def simplify(cells = @formulae)
     log.info "Simplifying cells"
-    r = ReplaceSharedStringAst.new(@shared_strings)
-    cells.each do |ref, ast|
-      r.map(ast)
-    end
-
+    shared_string_replacer = ReplaceSharedStringAst.new(@shared_strings)
     simplify_arithmetic_replacer = SimplifyArithmeticAst.new
-    cells.each do |ref, ast|
-      simplify_arithmetic_replacer.map(ast)
-    end
-      
+
     # Replace the named references in the array formulae
     named_references = NamedReferences.new(@named_references)
     named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
 
-    cells.each do |ref, ast|
-      named_reference_replacer.default_sheet_name = ref.first
-      named_reference_replacer.map(ast)
-    end
-    
     # FIXME: Refactor
     table_objects = {}
     @tables.each do |name, details|
       table_objects[name.downcase] = Table.new(name, *details)
     end
-    
     table_reference_replacer = ReplaceTableReferenceAst.new(table_objects)
+    replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
+    replace_arithmetic_on_ranges_replacer = ReplaceArithmeticOnRangesAst.new
+    replace_arrays_with_single_cells_replacer = ReplaceArraysWithSingleCellsAst.new
+    replace_string_joins_on_ranges_replacer = ReplaceStringJoinOnRangesAST.new
+    sheetless_cell_reference_replacer = RewriteCellReferencesToIncludeSheetAst.new
+    wrap_formulae_that_return_arrays_replacer = WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
 
     cells.each do |ref, ast|
+      shared_string_replacer.map(ast)
+      simplify_arithmetic_replacer.map(ast)
+      named_reference_replacer.default_sheet_name = ref.first
+      named_reference_replacer.map(ast)
       table_reference_replacer.worksheet = ref.first
       table_reference_replacer.referring_cell = ref.last
       table_reference_replacer.map(ast)
-    end
-      
-    replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
-    cells.each do |ref, ast|
       replace_ranges_with_array_literals_replacer.map(ast)
-    end
-
-    replace_arithmetic_on_ranges_replacer = ReplaceArithmeticOnRangesAst.new
-    cells.each do |ref, ast|
       replace_arithmetic_on_ranges_replacer.map(ast)
-    end
-
-    replace_arrays_with_single_cells_replacer = ReplaceArraysWithSingleCellsAst.new
-    cells.each do |ref, ast|
       replace_arrays_with_single_cells_replacer.map(ast)
-    end
-
-    replace_string_joins_on_ranges_replacer = ReplaceStringJoinOnRangesAST.new
-    cells.each do |ref, ast|
       replace_string_joins_on_ranges_replacer.map(ast)
-    end
-
-    r = RewriteCellReferencesToIncludeSheetAst.new
-    cells.each do |ref, ast|
-      r.worksheet = ref.first
-      r.map(ast)
-    end
-
-    wrap_formulae_that_return_arrays_replacer = WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
-    cells.each do |ref, ast|
+      sheetless_cell_reference_replacer.worksheet = ref.first
+      sheetless_cell_reference_replacer.map(ast)
       wrap_formulae_that_return_arrays_replacer.map(ast)
     end
+
+    GC.start
   end
 
   # These types of cells don't conatain formulae and can therefore be skipped
@@ -728,76 +705,13 @@ class ExcelToX
     
   def replace_formulae_with_their_results
     number_of_passes = 0
-    @potential_for_recalculation = @formulae.dup
-    @potential_for_recalculation.each do |ref, ast|
-      @potential_for_recalculation.delete(ref) if VALUE_TYPE[ast[0]]
+
+    cells_with_formulae = @formulae.dup
+    cells_with_formulae.each do |ref, ast|
+      cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
     end
 
-    begin 
-      log.info "Potential cells for recalculation #{@potential_for_recalculation.size}"
-      number_of_passes += 1
-      @replacements_made_in_the_last_pass = 0
-      replace_references_to_values_with_values
-      replace_formulae_with_calculated_values
-      replace_indirects_and_offsets
-      log.info "Pass #{number_of_passes}: Made #{@replacements_made_in_the_last_pass} replacements"
-      if number_of_passes > 20
-        log.warn "Made more than 20 passes, so aborting"
-        break
-      end
-    end while @replacements_made_in_the_last_pass > 0
-  end
-
-  
-  # There is no support for INDIRECT or OFFSET in the ruby or c runtime
-  # However, in many cases it isn't needed, because we can work
-  # out the value of the indirect or OFFSET at compile time and eliminate it
-  # First of all we replace any indirects where their values can be calculated at compile time with those
-  # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
-  def replace_indirects_and_offsets
-    log.info "Replacing indirects and offsets"
-
-    references_that_need_updating = {}
-
-    indirect_replacement = ReplaceIndirectsWithReferencesAst.new
-    column_replacement = ReplaceColumnWithColumnNumberAST.new
-    offset_replacement = ReplaceOffsetsWithReferencesAst.new
-
-    @potential_for_recalculation.each do |ref, ast|
-      if column_replacement.replace(ast)
-        references_that_need_updating[ref] = ast
-      end
-      if offset_replacement.replace(ast)
-        references_that_need_updating[ref] = ast
-      end
-      if indirect_replacement.replace(ast)
-        references_that_need_updating[ref] = ast
-      end
-    end
-    @replacements_made_in_the_last_pass += column_replacement.count_replaced
-    @replacements_made_in_the_last_pass += offset_replacement.count_replaced
-    @replacements_made_in_the_last_pass += indirect_replacement.count_replaced
-
-    simplify(references_that_need_updating)
-  end
-  
-  # If a formula's value can be calculated at compile time, it is replaced with its calculated value (e.g., 1+1 gets replaced with 2)
-  def replace_formulae_with_calculated_values    
-    log.info "Replacing formulae with calculated values"
-
-    value_replacer = MapFormulaeToValues.new
-    value_replacer.original_excel_filename = excel_file
-    @potential_for_recalculation.each do |ref, ast|
-      value_replacer.map(ast)
-      @potential_for_recalculation.delete(ref) if VALUE_TYPE[ast[0]]
-    end
-    @replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
-  end
-
-  # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
-  def replace_references_to_values_with_values
-    log.info "Replacing references to values with values"
-    
+    # Set up for replacing references to cells with the cell
     inline_ast_decision = lambda do |sheet, cell, references|
       references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
@@ -816,18 +730,67 @@ class ExcelToX
       end
     end
     
-    r = InlineFormulaeAst.new
-    r.references = @formulae
-    r.inline_ast = inline_ast_decision
+    inline_replacer = InlineFormulaeAst.new
+    inline_replacer.references = @formulae
+    inline_replacer.inline_ast = inline_ast_decision
+
+
+    value_replacer = MapFormulaeToValues.new
+    value_replacer.original_excel_filename = excel_file
+
+    # There is no support for INDIRECT or OFFSET in the ruby or c runtime
+    # However, in many cases it isn't needed, because we can work
+    # out the value of the indirect or OFFSET at compile time and eliminate it
+    # First of all we replace any indirects where their values can be calculated at compile time with those
+    # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
+    indirect_replacement = ReplaceIndirectsWithReferencesAst.new
+    column_replacement = ReplaceColumnWithColumnNumberAST.new
+    offset_replacement = ReplaceOffsetsWithReferencesAst.new
+
+    begin 
+      number_of_passes += 1
+      log.info "Starting pass #{number_of_passes} on #{cells_with_formulae.size} cells"
+      replacements_made_in_the_last_pass = 0
+      inline_replacer.count_replaced = 0
+      value_replacer.replacements_made_in_the_last_pass = 0
+      column_replacement.count_replaced = 0
+      offset_replacement.count_replaced = 0
+      indirect_replacement.count_replaced = 0
+      references_that_need_updating = {}
     
-    @potential_for_recalculation.each do |ref, ast|
-      # FIXME: Shouldn't need to wrap ref.fist in an array
-      r.current_sheet_name = [ref.first]
-      r.map(ast)
-    end
-    
-    @replacements_made_in_the_last_pass += r.count_replaced
+      cells_with_formulae.each do |ref, ast|
+        # FIXME: Shouldn't need to wrap ref.fist in an array
+        inline_replacer.current_sheet_name = [ref.first]
+        inline_replacer.map(ast)
+        # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
+        value_replacer.map(ast)
+        if column_replacement.replace(ast)
+          references_that_need_updating[ref] = ast
+        end
+        if offset_replacement.replace(ast)
+          references_that_need_updating[ref] = ast
+        end
+        if indirect_replacement.replace(ast)
+          references_that_need_updating[ref] = ast
+        end
+        cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
+      end
+
+      simplify(references_that_need_updating)
+
+      replacements_made_in_the_last_pass += inline_replacer.count_replaced
+      replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
+      replacements_made_in_the_last_pass += column_replacement.count_replaced
+      replacements_made_in_the_last_pass += offset_replacement.count_replaced
+      replacements_made_in_the_last_pass += indirect_replacement.count_replaced
+
+      log.info "Pass #{number_of_passes}: Made #{replacements_made_in_the_last_pass} replacements"
+      GC.start
+    end while replacements_made_in_the_last_pass > 0 && number_of_passes < 20
+    GC.start
   end
+
+  
   
   # If 'cells to keep' are specified, then other cells are removed, unless
   # they are required to calculate the value of a cell in 'cells to keep'.
