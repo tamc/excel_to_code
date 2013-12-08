@@ -231,7 +231,9 @@ class ExcelToX
   def extract_shared_strings
     log.info "Extracting shared strings"
     # Excel keeps a central file of strings that appear in worksheet cells
-    @shared_strings = ExtractSharedStrings.extract(xml('sharedStrings.xml'))
+    xml('sharedStrings.xml') do |i|
+      @shared_strings = ExtractSharedStrings.extract(i)
+    end
   end
   
   # Excel keeps a central list of named references. This includes those
@@ -243,7 +245,9 @@ class ExcelToX
   def extract_named_references
     log.info "Extracting named references"
     # First we get the references in raw form
-    @named_references = ExtractNamedReferences.extract(xml('workbook.xml'))
+    xml('workbook.xml') do |i|
+      @named_references = ExtractNamedReferences.extract(i)
+    end
     # Then we parse them
     @named_references.each do |name, reference|
       parsed = Formula.parse(reference)
@@ -267,8 +271,18 @@ class ExcelToX
   # that will work ok as a filesystem or program name
   def extract_worksheet_names
     log.info "Extracting worksheet names"
-    worksheet_rids = ExtractWorksheetNames.extract(xml('workbook.xml')) # {'worksheet_name' => 'rId3' ...}
-    xml_for_rids = ExtractRelationships.extract( xml('_rels','workbook.xml.rels')) #{ 'rId3' => "worlsheets/sheet1.xml" }
+    
+    worksheet_rids = {}
+
+    xml('workbook.xml') do |i|
+      worksheet_rids = ExtractWorksheetNames.extract(i) # {'worksheet_name' => 'rId3' ...}
+    end
+    
+    xml_for_rids = {}
+    xml('_rels','workbook.xml.rels') do |i|
+      xml_for_rids = ExtractRelationships.extract(i) #{ 'rId3' => "worlsheets/sheet1.xml" }
+    end
+
     @worksheet_xmls = {}
     worksheet_rids.each do |name, rid|
       worksheet_xml = xml_for_rids[rid]
@@ -302,7 +316,9 @@ class ExcelToX
     @worksheets_dimensions = {}
     extractor = ExtractWorksheetDimensions.new
     worksheets do |name, xml_filename|
-      @worksheets_dimensions[name] = extractor.extract(xml(xml_filename))
+      xml(xml_filename) do |i| 
+        @worksheets_dimensions[name] = extractor.extract(i)
+      end
       # FIXME: Should this actual return WorksheetDimension objects? rather than text ranges?
     end
   end
@@ -329,17 +345,29 @@ class ExcelToX
     # FIXME: make xml_filename be the IO object?
     worksheets do |name, xml_filename|
       log.info "Extracting data from #{name}"
+      
       # ast
-      @values.merge! ExtractValues.extract(name, xml(xml_filename))
-      # ast
-      @formulae_simple.merge! ExtractSimpleFormulae.extract(name, xml(xml_filename)) 
+      xml(xml_filename) do |i|
+        @values.merge! ExtractValues.extract(name, i)
+      end
+      
+       # ast
+      xml(xml_filename) do |i| 
+        @formulae_simple.merge! ExtractSimpleFormulae.extract(name, i) 
+      end
+      
       # [shared_range, shared_identifier, ast]
-      @formulae_shared.merge! ExtractSharedFormulae.extract(name, xml(xml_filename))
-
+      xml(xml_filename) do |i| 
+        @formulae_shared.merge! ExtractSharedFormulae.extract(name, i) 
+      end
       # shared_identifier
-      @formulae_shared_targets.merge! ExtractSharedFormulaeTargets.extract(name, xml(xml_filename))
+      xml(xml_filename) do |i| 
+        @formulae_shared_targets.merge! ExtractSharedFormulaeTargets.extract(name, i)
+      end
       #  [array_range, ast]
-      @formulae_array.merge! ExtractArrayFormulae.extract(name, xml(xml_filename))
+      xml(xml_filename) do |i| 
+        @formulae_array.merge! ExtractArrayFormulae.extract(name, i)
+      end
       
       extract_tables_for_worksheet(name,xml_filename)
     end
@@ -350,12 +378,21 @@ class ExcelToX
   # reference and contains the table data. Then we consolidate all the data
   # from individual table files into a single table file for the worksheet.
   def extract_tables_for_worksheet(name, xml_filename)
-    table_rids = ExtractWorksheetTableRelationships.extract(xml(xml_filename))
-    xml_for_rids = ExtractRelationships.extract(xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")))
+    table_rids = []
+    xml(xml_filename) do |i| 
+      table_rids = ExtractWorksheetTableRelationships.extract(i)
+    end
+
+    xml_for_rids = {}
+    xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")) do |i|
+      xml_for_rids = ExtractRelationships.extract(i)
+    end
+
     table_rids.each do |rid| 
-      table_xml = xml(File.join('worksheets', xml_for_rids[rid]))
       # FIXME: Extract actual Table objects?
-      @tables.merge! ExtractTable.extract(name, table_xml)
+      xml(File.join('worksheets', xml_for_rids[rid])) do |i|
+        @tables.merge! ExtractTable.extract(name, i)
+      end
     end
   end
   
@@ -1012,14 +1049,20 @@ class ExcelToX
     end
   end
   
-  def xml(*args)
+  def xml(*args, &block)
     args.flatten!
     filename = File.join(xml_directory,'xl',*args)
     if File.exists?(filename)
-      File.open(filename,'r')
+      f = File.open(filename,'r')
     else
       log.warn("#{filename} does not exist in xml(#{args.inspect}), using blank instead")
-      StringIO.new
+      f = StringIO.new
+    end
+    if block
+      yield f
+      f.close if f.respond_to?(:close)
+    else
+      f
     end
   end
   
@@ -1040,10 +1083,6 @@ class ExcelToX
     @ruby_module_name = output_name.sub(/^[a-z\d]*/) { $&.capitalize }
     @ruby_module_name = @ruby_module_name.gsub(/(?:_|(\/))([a-z\d]*)/i) { "#{$1}#{$2.capitalize}" }.gsub('/', '::')
     @ruby_module_name
-  end
-
-  def standardise_name(*args)
-    File.expand_path(File.join(args))
   end
 
 end
