@@ -76,6 +76,8 @@ class MapFormulaeToValues
   def function(ast)
     name = ast[1]
     return if name == "INDIRECT"
+    return if name == "OFFSET"
+    return if name == "COLUMN"
     if respond_to?("map_#{name.downcase}")
       send("map_#{name.downcase}",ast)
     else
