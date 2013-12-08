@@ -504,6 +504,8 @@ class ExcelToX
     @formulae.merge! @formulae_shared
     @formulae.merge! @formulae_array
     @formulae.merge! @formulae_simple
+
+    log.info "Sheet contains #{@formulae.size} cells"
   end
   
   # This ensures that all gettable and settable values appear in the output
@@ -720,10 +722,19 @@ class ExcelToX
       wrap_formulae_that_return_arrays_replacer.map(ast)
     end
   end
+
+  # These types of cells don't conatain formulae and can therefore be skipped
+  VALUE_TYPE = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true}
     
   def replace_formulae_with_their_results
     number_of_passes = 0
+    @potential_for_recalculation = @formulae.dup
+    @potential_for_recalculation.each do |ref, ast|
+      @potential_for_recalculation.delete(ref) if VALUE_TYPE[ast[0]]
+    end
+
     begin 
+      log.info "Potential cells for recalculation #{@potential_for_recalculation.size}"
       number_of_passes += 1
       @replacements_made_in_the_last_pass = 0
       replace_references_to_values_with_values
@@ -736,6 +747,7 @@ class ExcelToX
       end
     end while @replacements_made_in_the_last_pass > 0
   end
+
   
   # There is no support for INDIRECT or OFFSET in the ruby or c runtime
   # However, in many cases it isn't needed, because we can work
@@ -751,7 +763,7 @@ class ExcelToX
     column_replacement = ReplaceColumnWithColumnNumberAST.new
     offset_replacement = ReplaceOffsetsWithReferencesAst.new
 
-    @formulae.each do |ref, ast|
+    @potential_for_recalculation.each do |ref, ast|
       if column_replacement.replace(ast)
         references_that_need_updating[ref] = ast
       end
@@ -775,8 +787,9 @@ class ExcelToX
 
     value_replacer = MapFormulaeToValues.new
     value_replacer.original_excel_filename = excel_file
-    @formulae.each do |ref, ast|
+    @potential_for_recalculation.each do |ref, ast|
       value_replacer.map(ast)
+      @potential_for_recalculation.delete(ref) if VALUE_TYPE[ast[0]]
     end
     @replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
   end
@@ -807,7 +820,7 @@ class ExcelToX
     r.references = @formulae
     r.inline_ast = inline_ast_decision
     
-    @formulae.each do |ref, ast|
+    @potential_for_recalculation.each do |ref, ast|
       # FIXME: Shouldn't need to wrap ref.fist in an array
       r.current_sheet_name = [ref.first]
       r.map(ast)
