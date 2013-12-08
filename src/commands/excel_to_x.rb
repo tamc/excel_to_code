@@ -689,9 +689,9 @@ class ExcelToX
     begin 
       number_of_passes += 1
       @replacements_made_in_the_last_pass = 0
-      replace_indirects_and_offsets
-      replace_formulae_with_calculated_values
       replace_references_to_values_with_values
+      replace_formulae_with_calculated_values
+      replace_indirects_and_offsets
       log.info "Pass #{number_of_passes}: Made #{@replacements_made_in_the_last_pass} replacements"
       if number_of_passes > 20
         log.warn "Made more than 20 passes, so aborting"
