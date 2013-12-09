@@ -707,24 +707,17 @@ class ExcelToX
 
   # These types of cells don't conatain formulae and can therefore be skipped
   VALUE_TYPE = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true}
-    
-  def replace_formulae_with_their_results
-    number_of_passes = 0
-
-    cells_with_formulae = @formulae.dup
-    cells_with_formulae.each do |ref, ast|
-      cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
-    end
-
-    # Set up for replacing references to cells with the cell
-    inline_ast_decision = lambda do |sheet, cell, references|
+  INLINE_TYPE = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true}
+  
+  def inline_ast_decision  
+    @inline_ast_decision ||= lambda do |sheet, cell, references|
       references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
       if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
         false
       else
         ast = references[[sheet,cell]]
         if ast
-          if [:number,:string,:blank,:null,:error,:boolean_true,:boolean_false,:sheet_reference,:cell].include?(ast.first)
+          if INLINE_TYPE[ast.first]
             true
           else
             false
@@ -734,11 +727,20 @@ class ExcelToX
         end
       end
     end
-    
+  end
+
+  def replace_formulae_with_their_results
+    number_of_passes = 0
+
+    cells_with_formulae = @formulae.dup
+    cells_with_formulae.each do |ref, ast|
+      cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
+    end
+
+    # Set up for replacing references to cells with the cell
     inline_replacer = InlineFormulaeAst.new
     inline_replacer.references = @formulae
     inline_replacer.inline_ast = inline_ast_decision
-
 
     value_replacer = MapFormulaeToValues.new
     value_replacer.original_excel_filename = excel_file
