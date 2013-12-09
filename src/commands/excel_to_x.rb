@@ -350,7 +350,6 @@ class ExcelToX
     @formulae_shared_targets = {}
     @formulae_array = {}
     # This one has a series of table references
-    # FIXME: Should it actually have Table objects?
     @tables = {}
     
     # Loop through the worksheets
@@ -406,7 +405,9 @@ class ExcelToX
     table_rids.each do |rid| 
       # FIXME: Extract actual Table objects?
       xml(File.join('worksheets', xml_for_rids[rid])) do |i|
-        @tables.merge! ExtractTable.extract(name, i)
+        ExtractTable.extract(name, i).each do |name, details|
+          @tables[name.downcase] = Table.new(name, *details)
+        end
       end
     end
   end
@@ -469,13 +470,7 @@ class ExcelToX
       named_reference_replacer.map(details.last)
     end
     
-    # FIXME: Refactor
-    table_objects = {}
-    @tables.each do |name, details|
-      table_objects[name.downcase] = Table.new(name, *details)
-    end
-    
-    table_reference_replacer = ReplaceTableReferenceAst.new(table_objects)
+    table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
 
     @formulae_array.each do |ref, details|
       table_reference_replacer.worksheet = ref.first
@@ -681,12 +676,7 @@ class ExcelToX
     named_references = NamedReferences.new(@named_references)
     named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
 
-    # FIXME: Refactor
-    table_objects = {}
-    @tables.each do |name, details|
-      table_objects[name.downcase] = Table.new(name, *details)
-    end
-    table_reference_replacer = ReplaceTableReferenceAst.new(table_objects)
+    table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
     replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
     replace_arithmetic_on_ranges_replacer = ReplaceArithmeticOnRangesAst.new
     replace_arrays_with_single_cells_replacer = ReplaceArraysWithSingleCellsAst.new
