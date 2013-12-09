@@ -16,6 +16,7 @@ class CachingFormulaParser
     @string_cache = {}
     @percentage_cache = {}
     @error_cache = {}
+    @operator_cache = {}
   end
 
   def parse(text)
@@ -86,6 +87,14 @@ class CachingFormulaParser
 
   def blank(ast)
     BLANK
+  end
+
+  def operator(ast)
+    @operator_cache[ast] ||= ast
+  end
+
+  def comparator(ast)
+    @operator_cache[ast] ||= ast
   end
 
 end

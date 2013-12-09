@@ -12,7 +12,7 @@ describe CachingFormulaParser do
     CachingFormulaParser.parse("10%").should == [:percentage, 10]
   end
 
-  it "should cache numbers and strings and booleans and blanks and errors" do
+  it "should cache numbers and strings and booleans and blanks and errors and operators and comparators" do
     first = CachingFormulaParser.parse("1.31")
     second = CachingFormulaParser.parse("1.31")
     first.object_id.should == second.object_id
@@ -32,6 +32,18 @@ describe CachingFormulaParser do
     first = CachingFormulaParser.parse('#DIV/0!')
     second = CachingFormulaParser.parse('#DIV/0!')
     first.object_id.should == second.object_id
+
+    first = CachingFormulaParser.parse('1 + 1')
+    second = CachingFormulaParser.parse('1 + 1')
+    first[1].object_id.should == second[1].object_id
+    first[2].object_id.should == second[2].object_id
+    first[3].object_id.should == second[3].object_id
+
+    first = CachingFormulaParser.parse('1 < 1')
+    second = CachingFormulaParser.parse('1 < 1')
+    first[1].object_id.should == second[1].object_id
+    first[2].object_id.should == second[2].object_id
+    first[3].object_id.should == second[3].object_id
   end
 
   it "should turn function names into symbols" do 
