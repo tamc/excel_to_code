@@ -7,8 +7,8 @@ class CompileToRubyUnitTest
   attr_accessor :delta
 
   def initialize
-    @epsilon = 0.001
-    @delta = 0.001
+    @epsilon = 0.002
+    @delta = 0.002
   end
 
   def self.rewrite(*args)
@@ -18,7 +18,7 @@ class CompileToRubyUnitTest
   def rewrite(input, sloppy, sheet_names,  o)
     mapper = MapValuesToRuby.new
     input.each do |ref, ast|
-      c_name = sheet_names[ref.first] || ref.first #FIXME: Need to make it the actual c_name
+      c_name = sheet_names[ref.first.to_s] || ref.first.to_s #FIXME: Need to make it the actual c_name
       cell = ref.last
       value = mapper.map(ast)
       full_reference = "worksheet.#{c_name}_#{cell.downcase}"

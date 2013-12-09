@@ -44,14 +44,14 @@ class CountFormulaReferences
   def sheet_reference(ast)
     sheet = ast[1]
     reference = ast[2]
-    ref = reference.last.gsub('$','')
+    ref = reference.last.to_s.gsub('$','').to_sym
     @dependencies[[sheet, ref]] += 1
   end
   
   # Format [:cell, reference]
   def cell(ast)
     reference = ast[1]
-    ref = reference.gsub('$','')
+    ref = reference.to_s.gsub('$','').to_sym
     @dependencies[[current_sheet.last, ref]] += 1
   end
    

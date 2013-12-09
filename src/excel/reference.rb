@@ -1,3 +1,4 @@
+# FIXME Make this a subclass of symbol
 class Reference < String
   
   # This is so that we only have one instance for a given reference
@@ -8,7 +9,7 @@ class Reference < String
     
   # This is so that we only have one instance of a given reference specified by its variables
   def Reference.for(text)
-     @@references_for_text[text]
+     @@references_for_text[text.to_s]
   end
     
   # This caches the calculation for turning column letters (e.g., AAB) into column numbers (e.g., 127)
@@ -46,7 +47,7 @@ class Reference < String
     calculate_excel_variables
     new_column = @excel_fixed_column ? @excel_column :  @@column_letters_for_column_number[@excel_column_number + columns]
     new_row = @excel_fixed_row ? @excel_row : @excel_row_number + rows
-    Reference.new([@excel_fixed_column,new_column,@excel_fixed_row,new_row].join)
+    [@excel_fixed_column,new_column,@excel_fixed_row,new_row].join.to_sym
   end
   
   def unfix

@@ -6,7 +6,7 @@ class Table
   attr_accessor :name
   
   def initialize(name,worksheet,reference,number_of_total_rows,*column_name_array)
-    @name, @worksheet, @area, @number_of_total_rows, @column_name_array = name, worksheet, Area.for(reference), number_of_total_rows.to_i, column_name_array.map { |c| c.strip.downcase }
+    @name, @worksheet, @area, @number_of_total_rows, @column_name_array = name, worksheet.to_sym, Area.for(reference), number_of_total_rows.to_i, column_name_array.map { |c| c.strip.downcase }
     @area.calculate_excel_variables    
     @data_area = Area.for("#{@area.excel_start.offset(1,0)}:#{@area.excel_finish.offset(-@number_of_total_rows,0)}")
     @data_area.calculate_excel_variables
@@ -82,7 +82,7 @@ class Table
     when /#Data/io, ""
       ast_for_area @data_area.excel_start, @data_area.excel_finish
 
-    when /#All/io, ""
+    when /#All/io
       ast_for_area @area.excel_start, @area.excel_finish
 
     when /#This Row/io
@@ -108,11 +108,11 @@ class Table
   end
   
   def ast_for_area(start,finish)
-    [:sheet_reference,@worksheet,[:area,start,finish]]
+    [:sheet_reference,@worksheet,[:area,start.to_sym,finish.to_sym]]
   end
   
   def ast_for_cell(ref)
-    [:sheet_reference,@worksheet,[:cell,ref]]
+    [:sheet_reference,@worksheet,[:cell,ref.to_sym]]
   end
   
   def ref_error

@@ -10,11 +10,15 @@ class AstCopyFormula
     self.columns_to_move = 0
   end
   
+  DO_NOT_MAP = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :operator => true, :comparator => true}
+
   def copy(ast)
     return ast unless ast.is_a?(Array)
     operator = ast[0]
     if respond_to?(operator)
       send(operator,*ast[1..-1])
+    elsif DO_NOT_MAP[operator]
+      return ast
     else
       [operator,*ast[1..-1].map {|a| copy(a) }]
     end

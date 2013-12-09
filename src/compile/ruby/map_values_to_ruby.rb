@@ -22,7 +22,7 @@ class MapValuesToRuby
   alias :null :blank
     
   def number(text)
-    case text
+    case text.to_s
     when /\./
       text.to_f.to_s
     when /e/i
@@ -46,7 +46,13 @@ class MapValuesToRuby
     "#DIV/0!" => ":div0",
     "#REF!" => ":ref",
     "#N/A" => ":na",
-    "#NUM!" => ":num"
+    "#NUM!" => ":num",
+    :"#NAME?" => ":name",
+    :"#VALUE!" => ":value",
+    :"#DIV/0!" => ":div0",
+    :"#REF!" => ":ref",
+    :"#N/A" => ":na",
+    :"#NUM!" => ":num"
   }
   
   REVERSE_ERRORS = ERRORS.invert

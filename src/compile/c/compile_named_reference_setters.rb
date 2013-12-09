@@ -25,7 +25,7 @@ class MapNamedReferenceToCSetter
   end
 
   def cell(reference)
-    reference.downcase.gsub('$','')
+    Reference.for(reference).unfix.downcase.to_s
   end
 
   def sheet_reference(sheet,reference)

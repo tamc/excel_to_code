@@ -4,8 +4,8 @@ describe RewriteWholeRowColumnReferencesToAreas do
   
   it "should take a hash with sheet names and row and column references and replace them with ranges" do
     input = test_data('RowAndColumnRanges.ast')
-    default_worksheet_name = "Ranges"
-    worksheet_dimensions = {'ValueTypes' => 'A1:A6', 'FormulaeTypes' => 'A1:B8', 'Ranges' => 'A1:G6'}
+    default_worksheet_name = :Ranges
+    worksheet_dimensions = {:ValueTypes => 'A1:A6', :FormulaeTypes => 'A1:B8', :Ranges => 'A1:G6'}
     output = StringIO.new
     r = RewriteWholeRowColumnReferencesToAreas.new
     r.sheet_name = default_worksheet_name

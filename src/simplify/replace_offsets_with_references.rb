@@ -48,7 +48,7 @@ class ReplaceOffsetsWithReferencesAst
     @count_replaced += 1
     @replacement_made = true
 
-    reference = Reference.for(reference.gsub("$",""))
+    reference = Reference.for(reference).unfix
     start_reference = reference.offset(row_offset.to_i, column_offset.to_i)
     end_reference = reference.offset(row_offset.to_i + height.to_i - 1, column_offset.to_i + width.to_i - 1)
     if start_reference == end_reference

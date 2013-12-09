@@ -7,7 +7,7 @@ class ExtractFormulae < Nokogiri::XML::SAX::Document
   end
 
   def extract(sheet_name, input)
-    @sheet_name = sheet_name
+    @sheet_name = sheet_name.to_sym
     @output = {}
     @parsing = false
     Nokogiri::XML::SAX::Parser.new(self).parse(input)
@@ -16,7 +16,7 @@ class ExtractFormulae < Nokogiri::XML::SAX::Document
 
   def start_element(name,attributes)
     if name == 'c'
-      @ref = attributes.assoc('r').last
+      @ref = attributes.assoc('r').last.to_sym
     elsif name == "f"
       type = attributes.assoc('t')
       @formula = []

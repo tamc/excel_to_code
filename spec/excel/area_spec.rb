@@ -10,7 +10,7 @@ describe Area do
     Area.for("A1").should == "A1"
     Area.for("A1").width.should == 0
     Area.for("A1").height.should == 0
-    Area.for("A1").to_array_literal.should == [:array,[:row,[:cell,'A1']]]
+    Area.for("A1").to_array_literal.should == [:array,[:row,[:cell,:A1]]]
     
   end
   
@@ -51,10 +51,10 @@ describe Area do
   end
   
   it "should be able to return an equivalent array literal (e.g., {A1,B1;A2,B2})" do
-    Area.for("A1:A1").to_array_literal.should == [:array,[:row,[:cell,'A1']]]
-    Area.for("A1:A2").to_array_literal.should == [:array,[:row,[:cell,'A1']],[:row,[:cell,'A2']]]
-    Area.for("A$1:A$2").to_array_literal.should == [:array,[:row,[:cell,'A1']],[:row,[:cell,'A2']]]
-    Area.for("A1:A1").to_array_literal('worksheet').should == [:array,[:row,[:sheet_reference,'worksheet',[:cell,'A1']]]]
+    Area.for("A1:A1").to_array_literal.should == [:array,[:row,[:cell,:A1]]]
+    Area.for("A1:A2").to_array_literal.should == [:array,[:row,[:cell,:A1]],[:row,[:cell,:A2]]]
+    Area.for("A$1:A$2").to_array_literal.should == [:array,[:row,[:cell,:A1]],[:row,[:cell,:A2]]]
+    Area.for("A1:A1").to_array_literal(:worksheet).should == [:array,[:row,[:sheet_reference,:worksheet,[:cell,:A1]]]]
   end
   
   it "should be able to say whether a particular reference falls within the area" do

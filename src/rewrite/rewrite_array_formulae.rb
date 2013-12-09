@@ -67,7 +67,7 @@ class RewriteArrayFormulae
       mapper.row_offset = row
       mapper.column_offset = column
       ref = start_reference.offset(row,column)
-      @output[[sheet, ref]] = mapper.map(array_ast)
+      @output[[sheet.to_sym, ref.to_sym]] = mapper.map(array_ast)
     end
   end
   

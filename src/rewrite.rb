@@ -10,3 +10,5 @@ require_relative "rewrite/rewrite_relationship_id_to_filename"
 require_relative "rewrite/rewrite_merge_formulae_and_values"
 require_relative "rewrite/rewrite_cell_references_to_include_sheet"
 require_relative "rewrite/rewrite_named_reference_names"
+require_relative "rewrite/caching_formula_parser"
+

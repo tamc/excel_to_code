@@ -13,7 +13,7 @@ class CompileToCHeader
     formulae.each do |ref, ast|
       begin
         static_or_not = (gettable.call(ref) || settable.call(ref)) ? "" : "static "
-        worksheet = c_name_for_worksheet_name[ref.first]
+        worksheet = c_name_for_worksheet_name[ref.first.to_s]
         ref = ref.last.downcase
         name =  "#{worksheet}_#{ref}"
         output.puts "#{static_or_not}ExcelValue #{name}();"

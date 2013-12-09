@@ -6,8 +6,8 @@ describe ExtractSimpleFormulae do
     input = excel_fragment 'FormulaeTypes.xml'
     output = ExtractSimpleFormulae.extract("SheetName", input)
     output.should == {
-      ["SheetName", "B1"] => [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]],
-      ["SheetName", "B2"] => [:function, "COSH", [:arithmetic, [:number, "2"], [:operator, "*"], [:function, "PI"]]]
+      [:SheetName, :B1] => [:arithmetic, [:number, 1.0], [:operator, "+"], [:number, 1.0]],
+      [:SheetName, :B2] => [:function, "COSH", [:arithmetic, [:number, 2.0], [:operator, "*"], [:function, "PI"]]]
     }
   end
 end

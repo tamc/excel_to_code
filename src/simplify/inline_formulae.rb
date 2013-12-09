@@ -1,4 +1,6 @@
 class InlineFormulaeAst
+
+  BLANK = [:number, 0]
   
   attr_accessor :references, :current_sheet_name, :inline_ast
   attr_accessor :count_replaced
@@ -33,14 +35,14 @@ class InlineFormulaeAst
   # FIXME: Can we rely on reference always being a [:cell, ref] at this stage?
   def sheet_reference(ast)
     return unless ast[2][0] == :cell
-    sheet = ast[1]
-    ref = ast[2][1].upcase.gsub('$','')
+    sheet = ast[1].to_sym
+    ref = ast[2][1].to_s.upcase.gsub('$','').to_sym
     # FIXME: Need to check if valid worksheet and return [:error, "#REF!"] if not
     # Now check user preference on this
     return unless inline_ast.call(sheet,ref, references)
     @count_replaced += 1
     ast_to_inline = references[[sheet, ref]]
-    return ast.replace([:blank]) unless ast_to_inline
+    return ast.replace(BLANK) unless ast_to_inline
     current_sheet_name.push(sheet)
     map(ast_to_inline)
     current_sheet_name.pop
@@ -50,11 +52,11 @@ class InlineFormulaeAst
   # Format [:cell, ref]
   def cell(ast)
     sheet = current_sheet_name.last
-    ref = ast[1].upcase.gsub('$', '')
+    ref = ast[1].to_s.upcase.gsub('$', '').to_sym
     if inline_ast.call(sheet, ref, references)
       @count_replaced += 1
       ast_to_inline = references[[sheet, ref]]
-      return ast.replace([:blank]) unless ast_to_inline
+      return ast.replace(BLANK) unless ast_to_inline
       map(ast_to_inline)
       ast.replace(ast_to_inline)
     # FIXME: Check - is this right? does it work recursively enough?

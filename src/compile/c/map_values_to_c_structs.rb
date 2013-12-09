@@ -16,7 +16,7 @@ class MapValuesToCStructs
   end
   
   def number(text)
-    n = case text
+    n = case text.to_s
     when /\./
       text.to_f.to_s
     when /e/i

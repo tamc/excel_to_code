@@ -11,7 +11,7 @@ class NamedReferences
     named_reference = named_reference.downcase
     @named_references[[sheet, named_reference]] ||
     @named_references[named_reference] ||
-    [:error, "#NAME?"]
+    [:error, :"#NAME?"]
   end
   
 end

@@ -115,9 +115,16 @@ class ExcelToX
     
     # Make sure that all the cell names are downcase and don't have any $ in them
     if cells_that_can_be_set_at_runtime.is_a?(Hash)
+  
+      # Make sure the sheet names are symbols
+      cells_that_can_be_set_at_runtime.keys.each do |sheet|
+        next if sheet.is_a?(Symbol)
+        cells_that_can_be_set_at_runtime[sheet.to_sym] = cells_that_can_be_set_at_runtime.delete(sheet)
+      end
+
       cells_that_can_be_set_at_runtime.keys.each do |sheet|
         next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
-        cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').upcase }
+        cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
       end
     end
 
@@ -125,7 +132,7 @@ class ExcelToX
     if cells_to_keep
       cells_to_keep.keys.each do |sheet|
         next unless cells_to_keep[sheet].is_a?(Array)
-        cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase }
+        cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
       end
     end  
     
@@ -250,9 +257,9 @@ class ExcelToX
     end
     # Then we parse them
     @named_references.each do |name, reference|
-      parsed = Formula.parse(reference)
+      parsed = CachingFormulaParser.parse(reference)
       if parsed
-        @named_references[name] = parsed.to_ast[1]
+        @named_references[name] = parsed
       else
         $stderr.puts "Named reference #{name} #{reference} not parsed"
         exit
@@ -287,13 +294,13 @@ class ExcelToX
     worksheet_rids.each do |name, rid|
       worksheet_xml = xml_for_rids[rid]
       if worksheet_xml =~ /^worksheets/i # This gets rid of things that look like worksheets but aren't (e.g., chart sheets)
-        @worksheet_xmls[name] = worksheet_xml
+        @worksheet_xmls[name.to_sym] = worksheet_xml
       end
     end
     # FIXME: Extract this and put it at the end ?
     @worksheet_c_names = {}
     worksheet_rids.keys.each do |excel_worksheet_name|
-      @worksheet_c_names[excel_worksheet_name] = c_name_for(excel_worksheet_name)
+      @worksheet_c_names[excel_worksheet_name] = @worksheet_c_names[excel_worksheet_name.to_sym] = c_name_for(excel_worksheet_name)
     end
   end
 
@@ -575,10 +582,10 @@ class ExcelToX
     ref = ref.dup
     if ref.first == :sheet_reference
       sheet = ref[1]
-      cell = ref[2][1].gsub('$','')
+      cell = Reference.for(ref[2][1]).unfix.to_sym
       hash[sheet] ||= []
       return if hash[sheet] == :all
-      hash[sheet] << cell unless hash[sheet].include?(cell)
+      hash[sheet] << cell.to_sym unless hash[sheet].include?(cell.to_sym)
     elsif ref.first == :array
       ref.shift
       ref.each do |row|
@@ -608,11 +615,11 @@ class ExcelToX
       ref = all_named_references[name]
       if ref.first == :sheet_reference
         sheet = ref[1]
-        cell = ref[2][1].gsub('$','')
+        cell = Reference.for(ref[2][1]).unfix.to_sym
         s = cells_that_can_be_set[sheet]
         if s && s.include?(cell)
           @named_references_that_can_be_set_at_runtime << name 
-          cells_that_can_be_set_due_to_named_reference[sheet] << cell
+          cells_that_can_be_set_due_to_named_reference[sheet] << cell.to_sym
           cells_that_can_be_set_due_to_named_reference[sheet].uniq!
         end
       elsif ref.first.is_a?(Array)
@@ -628,7 +635,7 @@ class ExcelToX
           ref.each do |r| 
             sheet = r[1]
             cell = r[2][1].gsub('$','')
-            cells_that_can_be_set_due_to_named_reference[sheet] << cell
+            cells_that_can_be_set_due_to_named_reference[sheet] << cell.to_sym
             cells_that_can_be_set_due_to_named_reference[sheet].uniq!
           end
         end
@@ -1018,7 +1025,7 @@ class ExcelToX
   end
     
   def c_name_for_worksheet_name(name)
-    @worksheet_c_names[name]
+    @worksheet_c_names[name.to_s]
   end
     
   def worksheets

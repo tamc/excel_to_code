@@ -17,7 +17,7 @@ class CompileToRuby
     mapper.sheet_names = sheet_names
     input.each do |ref, ast|
       begin
-        worksheet = ref.first
+        worksheet = ref.first.to_s
         cell = ref.last
         mapper.worksheet = worksheet
         c_name = mapper.sheet_names[worksheet]

@@ -7,7 +7,7 @@ class ExtractValues < Nokogiri::XML::SAX::Document
   end
 
   def extract(sheet_name, input)
-    @sheet_name = sheet_name
+    @sheet_name = sheet_name.to_sym
     @output = {}
     @parsing = false
     Nokogiri::XML::SAX::Parser.new(self).parse(input)
@@ -21,7 +21,7 @@ class ExtractValues < Nokogiri::XML::SAX::Document
       @parsing = true 
       @value = []
     elsif name == "c"
-      @ref = attributes.assoc('r').last
+      @ref = attributes.assoc('r').last.to_sym
       type = attributes.assoc('t')
       @type = type ? type.last : "n"
     end
@@ -33,10 +33,10 @@ class ExtractValues < Nokogiri::XML::SAX::Document
     value = @value.join
     ast = case @type
     when 'b'; value == "1" ? [:boolean_true] : [:boolean_false]
-    when 's'; [:shared_string,value]
-    when 'n'; [:number,value]
-    when 'e'; [:error,value]
-    when 'str'; [:string,value.gsub(/_x[0-9A-F]{4}_/,'')]
+    when 's'; [:shared_string,value.to_i]
+    when 'n'; [:number,value.to_f]
+    when 'e'; [:error,value.to_sym]
+    when 'str'; [:string,value.gsub(/_x[0-9A-F]{4}_/,'').freeze]
     else
       $stderr.puts "Type #{type} not known #{@sheet_name} #{@ref}"
       exit

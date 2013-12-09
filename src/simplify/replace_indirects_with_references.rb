@@ -28,7 +28,7 @@ class ReplaceIndirectsWithReferencesAst
     if args[0][0] == :string
       @count_replaced += 1
       @replacement_made = true
-      ast.replace(Formula.parse(args[0][1]).to_ast[1])
+      ast.replace(CachingFormulaParser.parse(args[0][1]))
     elsif args[0][0] == :error
       @count_replaced += 1
       @replacement_made = true

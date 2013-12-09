@@ -6,8 +6,8 @@ describe ExtractSharedFormulaeTargets do
     input = excel_fragment 'FormulaeTypes.xml'
     output = ExtractSharedFormulaeTargets.extract('SheetName', input)
     output.should == {
-      ["SheetName", "B3"] => "0",
-      ["SheetName", "B4"] => "0",
+      [:SheetName, :B3] => "0",
+      [:SheetName, :B4] => "0",
     }
   end
 end

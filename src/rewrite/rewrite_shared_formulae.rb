@@ -32,7 +32,7 @@ class RewriteSharedFormulae
     offset_from_formula_to_start_columns = start_reference.excel_column_number - r.excel_column_number
     
     copy_range.offsets.each do |row,column|
-      new_ref = [ref.first, start_reference.offset(row,column)]
+      new_ref = [ref.first.to_sym, start_reference.offset(row,column).to_sym]
       next unless @formula_shared_targets.include?(new_ref)
       next unless shared_formula_identifier == @formula_shared_targets[new_ref]
       copier.rows_to_move = row + offset_from_formula_to_start_rows

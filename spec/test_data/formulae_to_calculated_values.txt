@@ -3,7 +3,7 @@
 [:number, "1"]	[:number, "1"]
 [:percentage, "36"]	[:number, "0.36"]
 [:string, "Hello world"]	[:string, "Hello world"]
-[:error, "#NAME?"]	[:error, "#NAME?"]
+[:error, :"#NAME?"]	[:error, :"#NAME?"]
 [:boolean_true]	[:boolean_true]
 [:boolean_false]	[:boolean_false]
 
@@ -12,7 +12,7 @@
 [:function, "SUM", [:function, "INDIRECT"], [:number, "1"], [:number, "1"]]	[:function, "SUM", [:function, "INDIRECT"], [:number, "1"], [:number, "1"]]
 [:prefix, "-", [:number, "1"]]	[:number, "-1"]
 [:prefix, "-", [:blank]]	[:number, "0"]
-[:prefix, "-", [:error, "#N/A"]]	[:error, "#N/A"]
+[:prefix, "-", [:error, :"#N/A"]]	[:error, :"#N/A"]
 
 # Arithmetic
 [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]	[:number, "2"]
@@ -44,7 +44,7 @@
 [:function, "INDIRECT", [:string_join, [:string, "Named"], [:string, "_"], [:string, "Reference"]]]	[:function, "INDIRECT", [:string, "Named_Reference"]]
 [:function, "INDIRECT", [:string_join, [:string, "2007"], [:string, "!Year.Matrix"]]]	[:function, "INDIRECT", [:string, "2007!Year.Matrix"]]
 [:function, "SUM", [:array, [:row, [:boolean_true]], [:row, [:string, "Hello"]], [:row, [:number, "1"]], [:row, [:number, "3.1415000000000002"]], [:row, [:string, "Hello"]]]]	[:number, "4.141500000000001"]
-[:function, "SUM", [:error, "#NAME?"]]	[:error, "#NAME?"]
+[:function, "SUM", [:error, :"#NAME?"]]	[:error, :"#NAME?"]
 [:function, "IF",[:boolean_true],[:blank],[:number, "8"]]	[:blank]
 
 # Edge cases
@@ -56,7 +56,7 @@
 [:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:cell, "A2"]]	[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:cell, "A2"]]
 # But we can still index if the array is not a number
 [:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 2]]	[:cell, "A2"]
-[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 20]]	[:error, "#REF!"]
+[:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 20]]	[:error, :"#REF!"]
 [:function, "INDEX", [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]], [:number, 1], [:number, 2]]	[:cell, "A2"]
 [:function, "INDEX", [:function, "INDIRECT", "area_reference"], [:number, 1], [:number, 2]]	[:function, "INDEX", [:function, "INDIRECT", "area_reference"], [:number, 1], [:number, 2]]
 [:function, "INDEX", [:cell, "A1"], [:number, 1]]	[:cell, "A1"]

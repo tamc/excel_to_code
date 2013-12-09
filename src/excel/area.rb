@@ -10,7 +10,7 @@ class Area < String
     
   # This is so that we only have one instance of a given reference specified by its variables
   def Area.for(text)
-     @@areas_for_text[text]
+     @@areas_for_text[text.to_s]
   end
   
   attr_reader :excel_start, :excel_finish

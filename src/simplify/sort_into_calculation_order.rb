@@ -51,13 +51,13 @@ class SortIntoCalculationOrder
   end
   
   def sheet_reference(sheet,reference)
-    ref = [sheet, reference.last.gsub('$','')]
+    ref = [sheet, reference.last.to_s.gsub('$','').to_sym]
     return if @counted.has_key?(ref)
     add_ordered_references_for(ref)
   end
   
   def cell(reference)
-    ref = [current_sheet.last, reference.gsub('$','')]
+    ref = [current_sheet.last, reference.to_s.gsub('$','').to_sym]
     return if @counted.has_key?(ref)
     add_ordered_references_for(ref)
   end

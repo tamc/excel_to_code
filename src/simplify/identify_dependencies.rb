@@ -45,11 +45,11 @@ class IdentifyDependencies
   end
   
   def sheet_reference(sheet,reference)
-    recursively_add_dependencies_for(sheet,reference.last.gsub('$',''))
+    recursively_add_dependencies_for(sheet,Reference.for(reference.last).unfix.to_sym)
   end
   
   def cell(reference)
-    recursively_add_dependencies_for(current_sheet.last,reference.gsub('$',''))
+    recursively_add_dependencies_for(current_sheet.last,Reference.for(reference).unfix.to_sym)
   end
    
 end

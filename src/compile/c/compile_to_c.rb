@@ -22,7 +22,7 @@ class CompileToC
         worksheet = ref.first
         cell = ref.last
         mapper.worksheet = worksheet
-        c_name = mapper.sheet_names[worksheet] || worksheet
+        c_name = mapper.sheet_names[worksheet.to_s] || worksheet.to_s
         calculation = mapper.map(ast)
         name = c_name ? "#{c_name}_#{cell.downcase}" : cell.downcase
         static_or_not = gettable.call(ref) ? "" : "static "

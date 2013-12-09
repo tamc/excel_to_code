@@ -160,12 +160,12 @@ class MapFormulaeToC < MapValuesToC
     if reference =~ /common\d+/
       "_#{reference}()"
     else
-      reference.downcase.gsub('$','')
+      reference.to_s.downcase.gsub('$','')
     end
   end
   
   def sheet_reference(sheet,reference)
-    "#{sheet_names[sheet]}_#{map(reference).downcase}()"
+    "#{sheet_names[sheet]}_#{map(reference).to_s.downcase}()"
   end
 
   def array(*rows)

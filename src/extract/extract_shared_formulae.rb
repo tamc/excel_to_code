@@ -12,13 +12,13 @@ class ExtractSharedFormulae < ExtractFormulae
   def write_formula
     return if @formula.empty?
     formula_text = @formula.join.gsub(/[\r\n]+/,'')
-    ast = Formula.parse(formula_text)
+    ast = CachingFormulaParser.parse(formula_text)
     unless ast
       $stderr.puts "Could not parse #{@sheet_name} #{@ref} #{formula_text}"
       exit
     end
     # FIXME: Should leave in original form rather than converting to ast?
-    @output[[@sheet_name, @ref]] = [@shared_range, @shared_formula_identifier, ast.to_ast[1]]
+    @output[[@sheet_name, @ref]] = [@shared_range, @shared_formula_identifier, ast]
   end
   
 end

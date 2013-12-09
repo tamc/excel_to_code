@@ -48,7 +48,7 @@ class MapColumnAndRowRangeAst
   
   # Of the form [:sheet_reference, sheet_name, reference]
   def sheet_reference(ast)
-    @worksheet_names.push(ast[1])
+    @worksheet_names.push(ast[1].to_sym) #FIXME: Remove once all symbols
     map(ast[2])
     @worksheet_names.pop
   end
