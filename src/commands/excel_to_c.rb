@@ -333,7 +333,7 @@ END
     o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.new end"
     
-    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, o)
+    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
     o.puts "end"
     close(o)
   end

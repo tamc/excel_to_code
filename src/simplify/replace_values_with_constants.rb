@@ -6,7 +6,7 @@ class MapValuesToConstants
     count = 0
     @constants = Hash.new do |hash,key|
       count += 1
-      hash[key] = "C#{count}"
+      hash[key] = "constant#{count}"
     end
   end
   

@@ -2,6 +2,8 @@ require_relative '../../util/not_supported_exception'
 
 class MapValuesToRuby
 
+  attr_accessor :constants
+
   def map(ast)
     if ast.is_a?(Array)
       operator = ast[0]
@@ -17,6 +19,10 @@ class MapValuesToRuby
   
   def blank
     "nil"
+  end
+  
+  def constant(constant)
+    map(constants[constant])
   end
   
   alias :null :blank

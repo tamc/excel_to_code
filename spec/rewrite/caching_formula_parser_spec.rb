@@ -46,6 +46,12 @@ describe CachingFormulaParser do
     first[3].object_id.should == second[3].object_id
   end
 
+  it "should cache sheet references" do 
+    first = CachingFormulaParser.parse("Sheet1!B$1")
+    second = CachingFormulaParser.parse("Sheet1!B$1")
+    first.object_id.should == second.object_id
+  end
+
   it "should turn function names into symbols" do 
     CachingFormulaParser.parse('INDIRECT("A1")').should == [:function, :INDIRECT, [:string, "A1"]]
 

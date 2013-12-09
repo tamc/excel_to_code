@@ -10,6 +10,7 @@ class ExtractValues < Nokogiri::XML::SAX::Document
     @sheet_name = sheet_name.to_sym
     @output = {}
     @parsing = false
+    @fp = CachingFormulaParser.instance
     Nokogiri::XML::SAX::Parser.new(self).parse(input)
     @output
   end
@@ -41,7 +42,7 @@ class ExtractValues < Nokogiri::XML::SAX::Document
       $stderr.puts "Type #{type} not known #{@sheet_name} #{@ref}"
       exit
     end
-    @output[[@sheet_name, @ref]] = ast
+    @output[[@sheet_name, @ref]] = @fp.map(ast)
   end
   
   def characters(string)

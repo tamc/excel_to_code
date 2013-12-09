@@ -4,7 +4,7 @@ describe CompileToRubyUnitTest do
   
   def compile(input, sloppy = false, sheet_names = {})
     output = StringIO.new
-    CompileToRubyUnitTest.rewrite(input, sloppy, sheet_names,  output)
+    CompileToRubyUnitTest.rewrite(input, sloppy, sheet_names, {},  output)
     output.string
   end
   
@@ -18,6 +18,7 @@ it "should compile basic values and give precise tests when sloppy = false" do
     ["sheet1", "A5"] => [:boolean_false],
     ["sheet1", "A6"] => [:blank]
   }
+
 
 expected = <<END
   def test_sheet1_a1; assert_equal(1, worksheet.sheet1_a1); end

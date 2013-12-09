@@ -707,7 +707,7 @@ class ExcelToX
       replace_arrays_with_single_cells_replacer.map(ast)
       replace_string_joins_on_ranges_replacer.map(ast)
       sheetless_cell_reference_replacer.worksheet = ref.first
-      sheetless_cell_reference_replacer.map(ast)
+      cells[ref] = sheetless_cell_reference_replacer.map(ast)
       wrap_formulae_that_return_arrays_replacer.map(ast)
     end
 
@@ -841,7 +841,6 @@ class ExcelToX
         end
       end
     end
-    p identifier.dependencies["Model"]["C154"]
     
     # Now we actually go ahead and remove the cells
     r = RemoveCells.new

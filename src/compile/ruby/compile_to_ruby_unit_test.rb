@@ -15,8 +15,9 @@ class CompileToRubyUnitTest
     self.new.rewrite(*args)
   end
   
-  def rewrite(input, sloppy, sheet_names,  o)
+  def rewrite(input, sloppy, sheet_names, constants,  o)
     mapper = MapValuesToRuby.new
+    mapper.constants = constants
     input.each do |ref, ast|
       c_name = sheet_names[ref.first.to_s] || ref.first.to_s #FIXME: Need to make it the actual c_name
       cell = ref.last

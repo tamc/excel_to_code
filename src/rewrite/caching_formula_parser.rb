@@ -17,6 +17,7 @@ class CachingFormulaParser
     @percentage_cache = {}
     @error_cache = {}
     @operator_cache = {}
+    @sheet_reference_cache = {}
   end
 
   def parse(text)
@@ -41,7 +42,7 @@ class CachingFormulaParser
   def sheet_reference(ast)
     ast[1] = ast[1].to_sym
     ast[2] = map(ast[2])
-    ast
+    @sheet_reference_cache[ast] ||= ast
   end
 
   def cell(ast)

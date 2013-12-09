@@ -3,27 +3,42 @@ require_relative '../excel'
 class RewriteCellReferencesToIncludeSheetAst 
   
   attr_accessor :worksheet
+
+  def initialize
+    @fp = CachingFormulaParser.instance
+  end
     
   def map(ast)
     return ast unless ast.is_a?(Array)
-    if respond_to?(ast[0])
-      send(ast[0], ast)    
-    else 
-      ast.each { |a| map(a) }
+    return cell(ast) if ast[0] == :cell
+    return area(ast) if ast[0] == :area
+    return sheet_reference(ast) if ast[0] == :sheet_reference
+    ast.each.with_index do |a,i|
+      next unless a.is_a?(Array)
+      case a[0]
+      when :cell
+        ast[i] = cell(a)
+      when :area
+        ast[i] = area(a)
+      when :sheet_reference
+        ast[i] = sheet_reference(a)
+      else
+        map(a)
+      end
     end
     ast
   end
   
   def cell(ast)
-    ast.replace([:sheet_reference, worksheet, ast.dup])
+    @fp.map([:sheet_reference, worksheet, ast.dup])
   end
   
   def area(ast)
-    ast.replace([:sheet_reference, worksheet, ast.dup])
+    @fp.map([:sheet_reference, worksheet, ast.dup])
   end
   
   def sheet_reference(ast)
-    # Leave alone, don't map futher
+    @fp.map(ast)
   end
 
 end
