@@ -23,7 +23,7 @@ class ReplaceOffsetsWithReferencesAst
   def function(ast)
     name = ast[1]
     args = ast[2..-1]
-    return unless ast[1] == "OFFSET"
+    return unless ast[1] == :OFFSET
     reference = ast[2]
     row_offset = ast[3]
     column_offset = ast[4]
@@ -73,7 +73,7 @@ class ReplaceOffsetsWithReferences
     rewriter = ReplaceOffsetsWithReferencesAst.new
     input.each_line do |line|
       # Looks to match lines with references
-      if line =~ /"OFFSET"/
+      if line =~ /:OFFSET/
         ref, ast = line.split("\t")
         output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
       else

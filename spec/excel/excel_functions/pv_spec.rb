@@ -23,7 +23,7 @@ describe "ExcelFunctions: PV(rate, nper, pmt, fv, type)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['PV'].should == 'pv'
+    MapFormulaeToRuby::FUNCTIONS[:'PV'].should == 'pv'
   end
   
 end

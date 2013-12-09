@@ -13,7 +13,7 @@ describe "ExcelFunctions: TRIM" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['TRIM'].should == 'trim'
+    MapFormulaeToRuby::FUNCTIONS[:'TRIM'].should == 'trim'
   end
   
 end

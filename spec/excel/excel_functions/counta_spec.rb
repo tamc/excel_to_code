@@ -15,7 +15,7 @@ describe "ExcelFunctions: COUNTA(arg1,[arg2],..)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['COUNTA'].should == 'counta'
+    MapFormulaeToRuby::FUNCTIONS[:'COUNTA'].should == 'counta'
   end
   
 end

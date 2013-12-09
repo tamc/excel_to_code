@@ -25,7 +25,7 @@ class ReplaceColumnWithColumnNumberAST
   REF_TYPES = {:cell => true, :sheet_reference => true}
 
   def function(ast)
-    return unless ast[1] == "COLUMN"
+    return unless ast[1] == :COLUMN
     return unless ast.size == 3
     return unless REF_TYPES.has_key?(ast[2][0])
     if ast[2][0] == :cell
@@ -36,7 +36,7 @@ class ReplaceColumnWithColumnNumberAST
     reference.calculate_excel_variables
     @count_replaced += 1
     @replacement_made = true
-    ast.replace( [:number, reference.excel_column_number.to_s])
+    ast.replace( CachingFormulaParser.map([:number, reference.excel_column_number]))
   end
 
 end
@@ -54,7 +54,7 @@ class ReplaceColumnWithColumnNumber
     rewriter = ReplaceColumnWithColumnNumberAST.new
     input.each_line do |line|
       # Looks to match lines with references
-      if line =~ /"COLUMN"/
+      if line =~ /:COLUMN/
         ref, ast = line.split("\t")
         output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
       else

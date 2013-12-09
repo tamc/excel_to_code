@@ -28,7 +28,7 @@ describe "ExcelFunctions: ROUND" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['ROUND'].should == 'round'
+    MapFormulaeToRuby::FUNCTIONS[:'ROUND'].should == 'round'
   end
   
 end

@@ -17,6 +17,7 @@ class CachingFormulaParser
     @percentage_cache = {}
     @error_cache = {}
     @operator_cache = {}
+    @comparator_cache = {}
     @sheet_reference_cache = {}
   end
 
@@ -31,10 +32,15 @@ class CachingFormulaParser
 
   def map(ast)
     return ast unless ast.is_a?(Array)
+    ast[1] = ast[1].to_sym if ast[0] == :function
     if respond_to?(ast[0])
       ast = send(ast[0], ast) 
     else
-      ast.map! { |a| map(a) }
+      ast.each.with_index do |a,i| 
+        next unless a.is_a?(Array)
+        a[1] = a[1].to_sym if a[0] == :function
+        ast[i] = map(a)
+      end
     end
     ast
   end
@@ -91,11 +97,13 @@ class CachingFormulaParser
   end
 
   def operator(ast)
+    ast[1] = ast[1].to_sym
     @operator_cache[ast] ||= ast
   end
 
   def comparator(ast)
-    @operator_cache[ast] ||= ast
+    ast[1] = ast[1].to_sym
+    @comparator_cache[ast] ||= ast
   end
 
 end

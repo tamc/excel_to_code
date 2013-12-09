@@ -22,7 +22,7 @@ describe "ExcelFunctions: LOG" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['LOG'].should == 'log'
+    MapFormulaeToRuby::FUNCTIONS[:'LOG'].should == 'log'
   end
   
 end

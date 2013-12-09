@@ -31,7 +31,7 @@ describe "ExcelFunctions: SUBTOTAL" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['SUBTOTAL'].should == 'subtotal'
+    MapFormulaeToRuby::FUNCTIONS[:'SUBTOTAL'].should == 'subtotal'
   end
   
 end

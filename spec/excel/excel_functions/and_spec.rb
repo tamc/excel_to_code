@@ -29,7 +29,7 @@ describe "ExcelFunctions: AND (implemented as excel_and)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['AND'].should == 'excel_and'
+    MapFormulaeToRuby::FUNCTIONS[:'AND'].should == 'excel_and'
   end
   
 end

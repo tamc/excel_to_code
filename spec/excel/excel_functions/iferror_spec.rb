@@ -17,7 +17,7 @@ describe "ExcelFunctions: IFERROR(value,value_if_error)" do
   end
     
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['IFERROR'].should == 'iferror'
+    MapFormulaeToRuby::FUNCTIONS[:'IFERROR'].should == 'iferror'
   end
   
 end

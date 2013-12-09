@@ -14,7 +14,7 @@
 [:prefix, "+", [:number, "3"]]	3
 
 [:brackets]	()
-[:brackets, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]]	(add(1,1))
+[:brackets, [:arithmetic, [:number, "1"], [:operator, :+], [:number, "1"]]]	(add(1,1))
 
 # Strings
 [:string, "Hello world"]	"Hello world"
@@ -28,29 +28,29 @@
 [:boolean_false]	false
 
 # Arithmetic
-[:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]]	add(1,1)
-[:arithmetic, [:number, "1"], [:operator, "-"], [:number, "1"]]	subtract(1,1)
-[:arithmetic, [:number, "1"], [:operator, "*"], [:number, "1"]]	multiply(1,1)
-[:arithmetic, [:number, "1"], [:operator, "/"], [:number, "1"]]	divide(1,1)
-[:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]]	power(1,1)
+[:arithmetic, [:number, "1"], [:operator, :+], [:number, "1"]]	add(1,1)
+[:arithmetic, [:number, "1"], [:operator, :-], [:number, "1"]]	subtract(1,1)
+[:arithmetic, [:number, "1"], [:operator, :*], [:number, "1"]]	multiply(1,1)
+[:arithmetic, [:number, "1"], [:operator, :/], [:number, "1"]]	divide(1,1)
+[:arithmetic, [:number, "1"], [:operator, :^], [:number, "1"]]	power(1,1)
 
 # Comparators
-[:comparison, [:number, "1"], [:comparator, "="], [:number, "8"]]	excel_equal?(1,8)
-[:comparison, [:number, "1"], [:comparator, "<"], [:number, "8"]]	less_than?(1,8)
-[:comparison, [:number, "1"], [:comparator, ">"], [:number, "8"]]	more_than?(1,8)
-[:comparison, [:number, "1"], [:comparator, "<="], [:number, "8"]]	less_than_or_equal?(1,8)
-[:comparison, [:number, "1"], [:comparator, ">="], [:number, "8"]]	more_than_or_equal?(1,8)
-[:comparison, [:number, "1"], [:comparator, "<>"], [:number, "8"]]	not_equal?(1,8)
+[:comparison, [:number, "1"], [:comparator, :"="], [:number, "8"]]	excel_equal?(1,8)
+[:comparison, [:number, "1"], [:comparator, :<], [:number, "8"]]	less_than?(1,8)
+[:comparison, [:number, "1"], [:comparator, :>], [:number, "8"]]	more_than?(1,8)
+[:comparison, [:number, "1"], [:comparator, :"<="], [:number, "8"]]	less_than_or_equal?(1,8)
+[:comparison, [:number, "1"], [:comparator, :">="], [:number, "8"]]	more_than_or_equal?(1,8)
+[:comparison, [:number, "1"], [:comparator, :"<>"], [:number, "8"]]	not_equal?(1,8)
 
 # Functions
-[:function, "COSH", [:number, "1"]]	cosh(1)
-[:function, "IF",[:boolean_true],[:number, "1"],[:number, "8"]]	excel_if(true,1,8)
-[:function, "PI"]	pi()
-[:function, "SUM", [:number, "1"], [:number, "1"], [:number, "1"]]	sum(1,1,1)
+[:function, :COSH, [:number, "1"]]	cosh(1)
+[:function, :IF,[:boolean_true],[:number, "1"],[:number, "8"]]	excel_if(true,1,8)
+[:function, :PI]	pi()
+[:function, :SUM, [:number, "1"], [:number, "1"], [:number, "1"]]	sum(1,1,1)
 
 # String functions
 [:string_join,[:number,"1"],[:string,"Two"]]	string_join(1,"Two")
-[:function,"MATCH",[:number,"1"],[:array, [:row, [:cell, "F4"],[:cell, "G4"]]],[:boolean_true]]	excel_match(1,[[f4,g4]],true)
+[:function, :MATCH,[:number,"1"],[:array, [:row, [:cell, "F4"],[:cell, "G4"]]],[:boolean_true]]	excel_match(1,[[f4,g4]],true)
 
 # References
 [:cell,"A1"]	a1

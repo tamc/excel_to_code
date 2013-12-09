@@ -29,7 +29,7 @@ describe "ExcelFunctions: LEFT(string,[characters])" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['LEFT'].should == 'left'
+    MapFormulaeToRuby::FUNCTIONS[:'LEFT'].should == 'left'
   end
   
 end

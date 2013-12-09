@@ -20,7 +20,7 @@ describe "ExcelFunctions: COUNT(arg1,[arg2],..)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['COUNT'].should == 'count'
+    MapFormulaeToRuby::FUNCTIONS[:'COUNT'].should == 'count'
   end
   
 end

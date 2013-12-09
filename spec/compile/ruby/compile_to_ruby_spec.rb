@@ -13,12 +13,12 @@ describe CompileToRuby do
   
 it "should compile simple arithmetic" do
   input = {
-    ["sheet1", "A1"] => [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "1"]],
-    ["sheet1", "A2"] => [:arithmetic, [:number, "1"], [:operator, "-"], [:number, "1"]],
-    ["sheet1", "A3"] => [:arithmetic, [:number, "1"], [:operator, "*"], [:number, "1"]],
-    ["sheet1", "A4"] => [:arithmetic, [:number, "1"], [:operator, "/"], [:number, "1"]],
-    ["sheet1", "A5"] => [:arithmetic, [:number, "1"], [:operator, "^"], [:number, "1"]],
-    ["sheet1", "A6"] => [:arithmetic, [:number, "1.1"], [:operator, "+"], [:number, "-1E12"]]
+    ["sheet1", "A1"] => [:arithmetic, [:number, "1"], [:operator, :+], [:number, "1"]],
+    ["sheet1", "A2"] => [:arithmetic, [:number, "1"], [:operator, :-], [:number, "1"]],
+    ["sheet1", "A3"] => [:arithmetic, [:number, "1"], [:operator, :*], [:number, "1"]],
+    ["sheet1", "A4"] => [:arithmetic, [:number, "1"], [:operator, :/], [:number, "1"]],
+    ["sheet1", "A5"] => [:arithmetic, [:number, "1"], [:operator, :^], [:number, "1"]],
+    ["sheet1", "A6"] => [:arithmetic, [:number, "1.1"], [:operator, :+], [:number, "-1E12"]]
   }
 
 expected = <<END

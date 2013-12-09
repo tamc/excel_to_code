@@ -23,7 +23,7 @@ class ReplaceIndirectsWithReferencesAst
   end
   
   def function(ast)
-    return unless ast[1] == "INDIRECT"
+    return unless ast[1] == :INDIRECT
     args = ast[2..-1]
     if args[0][0] == :string
       @count_replaced += 1
@@ -50,7 +50,7 @@ class ReplaceIndirectsWithReferences
     rewriter = ReplaceIndirectsWithReferencesAst.new
     input.each_line do |line|
       # Looks to match lines with references
-      if line =~ /"INDIRECT"/
+      if line =~ /:INDIRECT/
         ref, ast = line.split("\t")
         output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
       else

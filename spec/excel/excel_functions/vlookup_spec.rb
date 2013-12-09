@@ -27,7 +27,7 @@ describe "ExcelFunctions: VLOOKUP" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['VLOOKUP'].should == 'vlookup'
+    MapFormulaeToRuby::FUNCTIONS[:'VLOOKUP'].should == 'vlookup'
   end
   
 end

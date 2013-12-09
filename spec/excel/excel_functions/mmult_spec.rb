@@ -21,7 +21,7 @@ describe "ExcelFunctions: MMULT" do
   end
 
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['MMULT'].should == 'mmult'
+    MapFormulaeToRuby::FUNCTIONS[:'MMULT'].should == 'mmult'
   end
   
 end

@@ -28,7 +28,7 @@ describe "ExcelFunctions: PMT(rate,number_of_periods,present_value) - optional a
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['PMT'].should == 'pmt'
+    MapFormulaeToRuby::FUNCTIONS[:'PMT'].should == 'pmt'
   end
   
 end

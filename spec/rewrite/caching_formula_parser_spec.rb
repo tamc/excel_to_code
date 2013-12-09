@@ -12,6 +12,11 @@ describe CachingFormulaParser do
     CachingFormulaParser.parse("10%").should == [:percentage, 10]
   end
 
+  it "should turn operators and comparators into symbols" do
+    CachingFormulaParser.parse("1+1").should == [:arithmetic, [:number, 1], [:operator, :+], [:number, 1]]
+    CachingFormulaParser.parse("1>=1").should == [:comparison, [:number, 1], [:comparator, :'>='], [:number, 1]]
+  end
+
   it "should cache numbers and strings and booleans and blanks and errors and operators and comparators" do
     first = CachingFormulaParser.parse("1.31")
     second = CachingFormulaParser.parse("1.31")

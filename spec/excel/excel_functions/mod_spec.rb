@@ -35,7 +35,7 @@ describe "ExcelFunctions: MOD" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['MOD'].should == 'mod'
+    MapFormulaeToRuby::FUNCTIONS[:'MOD'].should == 'mod'
   end
   
 end

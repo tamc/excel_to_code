@@ -17,67 +17,67 @@ class MapFormulaeToC < MapValuesToC
   end
   
   FUNCTIONS = {
-    '*' => 'multiply',
-    '+' => 'add',
-    '-' => 'subtract',
-    '/' => 'divide',
-    '<' => 'less_than',
-    '<=' => 'less_than_or_equal',
-    '<>' => 'not_equal',
-    '=' => 'excel_equal',
-    '>' => 'more_than',
-    '>=' => 'more_than_or_equal',
-    'ABS' => 'excel_abs',
-    'AND' => 'excel_and',
-    'AVERAGE' => 'average',
-    'CHOOSE' => 'choose',
-    'CONCATENATE' => 'string_join',
-    'COSH' => 'cosh',
-    'COUNT' => 'count',
-    'COUNTA' => 'counta',
-    'FIND2' => 'find_2',
-    'FIND3' => 'find',
-    'HLOOKUP3' => 'hlookup_3',
-    'HLOOKUP4' => 'hlookup',
-    'IF2' => 'excel_if_2',
-    'IF3' => 'excel_if',
-    'IFERROR' => 'iferror',
-    'INDEX2' => 'excel_index_2',
-    'INDEX3' => 'excel_index',
-    'INT' => 'excel_int',
-    'ISNUMBER' => 'excel_isnumber',
-    'LARGE' => 'large',
-    'LEFT1' => 'left_1',
-    'LEFT2' => 'left',
-    'LOG1' => 'excel_log',
-    'LOG2' => 'excel_log_2',
-    'MATCH2' => 'excel_match_2',
-    'MATCH3' => 'excel_match',
-    'MAX' => 'max',
-    'MIN' => 'min',
-    'MMULT' => 'mmult',
-    'MOD' => 'mod',
-    'PMT' => 'pmt',
-    'PV3' => 'pv_3',
-    'PV4' => 'pv_4',
-    'PV5' => 'pv_5',
-    'RANK2' => 'rank_2',
-    'RANK3' => 'rank',
-    'ROUND' => 'excel_round',
-    'ROUNDDOWN' => 'rounddown',
-    'ROUNDUP' => 'roundup',
-    'string_join' => 'string_join',
-    'SUBTOTAL' => 'subtotal',
-    'SUM' => 'sum',
-    'SUMIF2' => 'sumif_2',
-    'SUMIF3' => 'sumif',
-    'SUMIFS' => 'sumifs',
-    'TEXT2' => 'text',
-    'SUMPRODUCT' => 'sumproduct',
-    'VLOOKUP3' => 'vlookup_3',
-    'VLOOKUP4' => 'vlookup',
-    '^' => 'power',
-    'POWER' => 'power'
+    :'*' => 'multiply',
+    :'+' => 'add',
+    :'-' => 'subtract',
+    :'/' => 'divide',
+    :'<' => 'less_than',
+    :'<=' => 'less_than_or_equal',
+    :'<>' => 'not_equal',
+    :'=' => 'excel_equal',
+    :'>' => 'more_than',
+    :'>=' => 'more_than_or_equal',
+    :'ABS' => 'excel_abs',
+    :'AND' => 'excel_and',
+    :'AVERAGE' => 'average',
+    :'CHOOSE' => 'choose',
+    :'CONCATENATE' => 'string_join',
+    :'COSH' => 'cosh',
+    :'COUNT' => 'count',
+    :'COUNTA' => 'counta',
+    :'FIND2' => 'find_2',
+    :'FIND3' => 'find',
+    :'HLOOKUP3' => 'hlookup_3',
+    :'HLOOKUP4' => 'hlookup',
+    :'IF2' => 'excel_if_2',
+    :'IF3' => 'excel_if',
+    :'IFERROR' => 'iferror',
+    :'INDEX2' => 'excel_index_2',
+    :'INDEX3' => 'excel_index',
+    :'INT' => 'excel_int',
+    :'ISNUMBER' => 'excel_isnumber',
+    :'LARGE' => 'large',
+    :'LEFT1' => 'left_1',
+    :'LEFT2' => 'left',
+    :'LOG1' => 'excel_log',
+    :'LOG2' => 'excel_log_2',
+    :'MATCH2' => 'excel_match_2',
+    :'MATCH3' => 'excel_match',
+    :'MAX' => 'max',
+    :'MIN' => 'min',
+    :'MMULT' => 'mmult',
+    :'MOD' => 'mod',
+    :'PMT' => 'pmt',
+    :'PV3' => 'pv_3',
+    :'PV4' => 'pv_4',
+    :'PV5' => 'pv_5',
+    :'RANK2' => 'rank_2',
+    :'RANK3' => 'rank',
+    :'ROUND' => 'excel_round',
+    :'ROUNDDOWN' => 'rounddown',
+    :'ROUNDUP' => 'roundup',
+    :'string_join' => 'string_join',
+    :'SUBTOTAL' => 'subtotal',
+    :'SUM' => 'sum',
+    :'SUMIF2' => 'sumif_2',
+    :'SUMIF3' => 'sumif',
+    :'SUMIFS' => 'sumifs',
+    :'TEXT2' => 'text',
+    :'SUMPRODUCT' => 'sumproduct',
+    :'VLOOKUP3' => 'vlookup_3',
+    :'VLOOKUP4' => 'vlookup',
+    :'^' => 'power',
+    :'POWER' => 'power'
   }
   
   def prefix(symbol,ast)
@@ -103,19 +103,19 @@ class MapFormulaeToC < MapValuesToC
   
   def function(function_name,*arguments)
     # Some functions are special cases
-    if self.respond_to?("function_#{function_name.downcase}")
-      send("function_#{function_name.downcase}",*arguments)
+    if self.respond_to?("function_#{function_name.to_s.downcase}")
+      send("function_#{function_name.to_s.downcase}",*arguments)
     # Some arguments can take any number of arguments, which we need to treat separately
-    elsif FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS.include?(function_name)
+    elsif FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS.include?(function_name.to_s)
       any_number_of_argument_function(function_name,arguments)
 
     # Check for whether this function has variants based on the number of arguments
-    elsif FUNCTIONS.has_key?("#{function_name}#{arguments.size}")
-      "#{FUNCTIONS["#{function_name}#{arguments.size}"]}(#{arguments.map { |a| map(a) }.join(",")})"
+    elsif FUNCTIONS.has_key?("#{function_name.to_s}#{arguments.size}".to_sym)
+      "#{FUNCTIONS["#{function_name.to_s}#{arguments.size}".to_sym]}(#{arguments.map { |a| map(a) }.join(",")})"
 
     # Then check for whether it is just a standard type
-    elsif FUNCTIONS.has_key?(function_name)
-      "#{FUNCTIONS[function_name]}(#{arguments.map { |a| map(a) }.join(",")})"
+    elsif FUNCTIONS.has_key?(function_name.to_sym)
+      "#{FUNCTIONS[function_name.to_sym]}(#{arguments.map { |a| map(a) }.join(",")})"
 
     else
       raise NotSupportedException.new("Function #{function_name} with #{arguments.size} arguments not supported")
@@ -129,20 +129,20 @@ class MapFormulaeToC < MapValuesToC
   end
   
   def function_choose(index,*arguments)
-    "#{FUNCTIONS["CHOOSE"]}(#{map(index)}, #{map_arguments_to_array(arguments)})"
+    "#{FUNCTIONS[:CHOOSE]}(#{map(index)}, #{map_arguments_to_array(arguments)})"
   end
   
   def function_subtotal(type,*arguments)
-    "#{FUNCTIONS["SUBTOTAL"]}(#{map(type)}, #{map_arguments_to_array(arguments)})"
+    "#{FUNCTIONS[:SUBTOTAL]}(#{map(type)}, #{map_arguments_to_array(arguments)})"
   end
 
   def function_sumifs(sum_range,*criteria)
-    "#{FUNCTIONS["SUMIFS"]}(#{map(sum_range)}, #{map_arguments_to_array(criteria)})"
+    "#{FUNCTIONS[:SUMIFS]}(#{map(sum_range)}, #{map_arguments_to_array(criteria)})"
   end
 
   
   def any_number_of_argument_function(function_name,arguments)    
-    "#{FUNCTIONS[function_name]}(#{map_arguments_to_array(arguments)})"
+    "#{FUNCTIONS[function_name.to_sym]}(#{map_arguments_to_array(arguments)})"
   end
   
   def map_arguments_to_array(arguments)

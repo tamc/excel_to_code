@@ -24,7 +24,7 @@ describe "ExcelFunctions: MIN" do
 
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['MIN'].should == 'min'
+    MapFormulaeToRuby::FUNCTIONS[:'MIN'].should == 'min'
   end
   
 end

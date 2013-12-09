@@ -46,7 +46,7 @@ describe "ExcelFunctions: FIND(text,within_text,[start_num])" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['FIND'].should == 'find'
+    MapFormulaeToRuby::FUNCTIONS[:'FIND'].should == 'find'
   end
   
 end

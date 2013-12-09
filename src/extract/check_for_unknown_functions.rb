@@ -11,8 +11,8 @@ class CheckForUnknownFunctions
   def check(input,output)
     self.settable ||= lambda { |ref| false }
     input.each_line do |line|
-      line.scan(/\[:function, "(.*?)"/).each do |match|
-        output.puts $1 unless MapFormulaeToRuby::FUNCTIONS.has_key?($1)
+      line.scan(/\[:function, :["']?([A-Z ]+)['"]?/).each do |match|
+        output.puts $1 unless MapFormulaeToRuby::FUNCTIONS.has_key?($1.to_sym)
       end
     end
   end

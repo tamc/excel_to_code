@@ -24,7 +24,7 @@ describe "ExcelFunctions: MAX" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['MAX'].should == 'max'
+    MapFormulaeToRuby::FUNCTIONS[:'MAX'].should == 'max'
   end
   
 end

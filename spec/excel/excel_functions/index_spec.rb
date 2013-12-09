@@ -34,7 +34,7 @@ describe "ExcelFunctions: INDEX(array,row_number,[column_number])" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['INDEX'].should == 'index'
+    MapFormulaeToRuby::FUNCTIONS[:'INDEX'].should == 'index'
   end
   
 end

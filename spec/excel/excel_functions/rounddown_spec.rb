@@ -26,7 +26,7 @@ describe "ExcelFunctions: ROUNDDOWN(number,decimal places)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['ROUNDDOWN'].should == 'rounddown'
+    MapFormulaeToRuby::FUNCTIONS[:'ROUNDDOWN'].should == 'rounddown'
   end
   
 end

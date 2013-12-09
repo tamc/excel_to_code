@@ -30,7 +30,7 @@ describe "ExcelFunctions: add(number,number)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['+'].should == 'add'
+    MapFormulaeToRuby::FUNCTIONS[:'+'].should == 'add'
   end
   
 end

@@ -19,7 +19,7 @@ describe "ExcelFunctions: LARGE(range, k)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['LARGE'].should == 'large'
+    MapFormulaeToRuby::FUNCTIONS[:'LARGE'].should == 'large'
   end
   
 end

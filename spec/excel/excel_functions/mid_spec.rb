@@ -27,7 +27,7 @@ describe "ExcelFunctions: MID" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['MID'].should == 'mid'
+    MapFormulaeToRuby::FUNCTIONS[:'MID'].should == 'mid'
   end
   
 end

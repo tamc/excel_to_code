@@ -23,7 +23,7 @@ class SimplifyArithmeticAst
     else
       # This sets the operator precedence
       i = nil
-      [{'^' => 1},{'*' => 2,'/' => 2},{'+' => 3,'-' => 3}].each do |op|
+      [{:'^' => 1},{:'*' => 2,:'/' => 2},{:'+' => 3,:'-' => 3}].each do |op|
         i = ast.find_index { |a| a[0] == :operator && op.has_key?(a[1])}
         break if i
       end

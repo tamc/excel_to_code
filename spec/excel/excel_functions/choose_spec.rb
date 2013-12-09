@@ -24,7 +24,7 @@ describe "ExcelFunctions: CHOOSE(index,arg1,arg2,arg3)" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['CHOOSE'].should == 'choose'
+    MapFormulaeToRuby::FUNCTIONS[:'CHOOSE'].should == 'choose'
   end
   
 end

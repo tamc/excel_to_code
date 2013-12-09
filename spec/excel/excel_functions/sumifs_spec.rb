@@ -30,7 +30,7 @@ describe "ExcelFunctions: SUMIFS" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['SUMIFS'].should == 'sumifs'
+    MapFormulaeToRuby::FUNCTIONS[:'SUMIFS'].should == 'sumifs'
   end
   
 end

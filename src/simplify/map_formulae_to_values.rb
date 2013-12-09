@@ -75,11 +75,11 @@ class MapFormulaeToValues
   # [:function, function_name, arg1, arg2, ...]
   def function(ast)
     name = ast[1]
-    return if name == "INDIRECT"
-    return if name == "OFFSET"
-    return if name == "COLUMN"
-    if respond_to?("map_#{name.downcase}")
-      send("map_#{name.downcase}",ast)
+    return if name == :INDIRECT
+    return if name == :OFFSET
+    return if name == :COLUMN
+    if respond_to?("map_#{name.to_s.downcase}")
+      send("map_#{name.to_s.downcase}",ast)
     else
       values = ast[2..-1].map { |a| value(a) }
       return if values.any? { |a| a == :not_a_value }
@@ -109,7 +109,7 @@ class MapFormulaeToValues
     array_as_values = array_as_values(array_mapped)
     return unless array_as_values
 
-    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number,column_as_number)
+    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS[:INDEX],array_as_values,row_as_number,column_as_number)
     result = [:number, 0] if result == [:blank]
     result = ast_for_value(result)
     ast.replace(result)
@@ -122,7 +122,7 @@ class MapFormulaeToValues
     return if row_as_number == :not_a_value
     array_as_values = array_as_values(array_mapped)
     return unless array_as_values
-    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS["INDEX"],array_as_values,row_as_number)
+    result = @calculator.send(MapFormulaeToRuby::FUNCTIONS[:INDEX],array_as_values,row_as_number)
     result = [:number, 0] if result == [:blank]
     result = ast_for_value(result)
     ast.replace(result)
@@ -178,7 +178,7 @@ class MapFormulaeToValues
   end
   
   def formula_value(ast_name,*arguments)
-    raise NotSupportedException.new("#{ast_name.inspect} function not recognised in #{MapFormulaeToRuby::FUNCTIONS.inspect}") unless MapFormulaeToRuby::FUNCTIONS.has_key?(ast_name)
+    raise NotSupportedException.new("#{ast_name} function not recognised in #{MapFormulaeToRuby::FUNCTIONS.inspect}") unless MapFormulaeToRuby::FUNCTIONS.has_key?(ast_name)
     ast_for_value(@calculator.send(MapFormulaeToRuby::FUNCTIONS[ast_name],*arguments))
   end
   
