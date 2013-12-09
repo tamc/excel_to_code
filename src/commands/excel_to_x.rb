@@ -622,6 +622,7 @@ class ExcelToX
           cells_that_can_be_set_due_to_named_reference[sheet] << cell.to_sym
           cells_that_can_be_set_due_to_named_reference[sheet].uniq!
         end
+        #FIXME: Is this righ?
       elsif ref.first.is_a?(Array)
         ref = ref.first
         settable = ref.all? do |r|
