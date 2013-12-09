@@ -654,7 +654,7 @@ class ExcelToX
   # FIXME: Feels like a kludge
   # This works out which named references should appear in the generated code
   def filter_named_references
-    log.info "Filtering named refernces to keep"
+    log.info "Filtering named references to keep"
     @named_references_to_keep ||= []
     @named_references_that_can_be_set_at_runtime ||= []
 
