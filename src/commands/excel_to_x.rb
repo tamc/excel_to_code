@@ -131,6 +131,11 @@ class ExcelToX
     # Make sure that all the cell names are downcase and don't have any $ in them
     if cells_to_keep
       cells_to_keep.keys.each do |sheet|
+        next if sheet.is_a?(Symbol)
+        cells_to_keep[sheet.to_sym] = cells_to_keep.delete(sheet)
+      end
+
+      cells_to_keep.keys.each do |sheet|
         next unless cells_to_keep[sheet].is_a?(Array)
         cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
       end
