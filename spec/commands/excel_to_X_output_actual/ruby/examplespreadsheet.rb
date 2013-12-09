@@ -33,10 +33,10 @@ class ExampleSpreadsheet
   def ranges_b2; @ranges_b2 ||= sum([[ranges_f4],[ranges_f5],[ranges_f6]]); end
   def ranges_c2; @ranges_c2 ||= sum([[valuetypes_a3],[valuetypes_a4]]); end
   def ranges_a3; @ranges_a3 ||= "Column"; end
-  def ranges_b3; @ranges_b3 ||= sum([[0],[0],[0],[ranges_f4],[ranges_f5],[ranges_f6]]); end
+  def ranges_b3; @ranges_b3 ||= sum([[nil],[nil],[nil],[ranges_f4],[ranges_f5],[ranges_f6]]); end
   def ranges_c3; @ranges_c3 ||= sum([[valuetypes_a1],[valuetypes_a2],[valuetypes_a3],[valuetypes_a4],[valuetypes_a5],[valuetypes_a6]]); end
   def ranges_a4; @ranges_a4 ||= "Row"; end
-  def ranges_b4; @ranges_b4 ||= sum([[0,0,0,0,ranges_e5,ranges_f5,ranges_g5]]); end
+  def ranges_b4; @ranges_b4 ||= sum([[nil,nil,nil,nil,ranges_e5,ranges_f5,ranges_g5]]); end
   def ranges_c4; @ranges_c4 ||= sum(valuetypes_a4); end
   attr_accessor :ranges_f4 # Default: 1.0
   attr_accessor :ranges_e5 # Default: 1.0
@@ -53,7 +53,7 @@ class ExampleSpreadsheet
   def referencing_b9; @referencing_b9 ||= common1; end
   def referencing_b11; @referencing_b11 ||= "Named"; end
   def referencing_c11; @referencing_c11 ||= "Reference"; end
-  def tables_a1; @tables_a1 ||= 0; end
+  def tables_a1; @tables_a1 ||= nil; end
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
   attr_accessor :tables_d2 # Default: "Column1"
@@ -73,7 +73,7 @@ class ExampleSpreadsheet
   def tables_g6; @tables_g6 ||= tables_d2; end
   def tables_e7; @tables_e7 ||= tables_b5; end
   def tables_f7; @tables_f7 ||= tables_c5; end
-  def tables_g7; @tables_g7 ||= 0; end
+  def tables_g7; @tables_g7 ||= nil; end
   def tables_e8; @tables_e8 ||= tables_b2; end
   def tables_f8; @tables_f8 ||= tables_c2; end
   def tables_g8; @tables_g8 ||= tables_d2; end
@@ -87,14 +87,14 @@ class ExampleSpreadsheet
   def tables_c11; @tables_c11 ||= common3; end
   def tables_e11; @tables_e11 ||= tables_b5; end
   def tables_f11; @tables_f11 ||= tables_c5; end
-  def tables_g11; @tables_g11 ||= 0; end
+  def tables_g11; @tables_g11 ||= nil; end
   def tables_c12; @tables_c12 ||= tables_b5; end
   def tables_c13; @tables_c13 ||= common5; end
   def tables_c14; @tables_c14 ||= common5; end
   def s_innapropriate_sheet_name__c4; @s_innapropriate_sheet_name__c4 ||= valuetypes_a3; end
   def common0; @common0 ||= add(referencing_a4,1.0); end
-  def common1; @common1 ||= sum([[tables_b5,tables_c5,0]]); end
-  def common2; @common2 ||= [[tables_b5,tables_c5,0]]; end
+  def common1; @common1 ||= sum([[tables_b5,tables_c5,nil]]); end
+  def common2; @common2 ||= [[tables_b5,tables_c5,nil]]; end
   def common3; @common3 ||= sum([[tables_b3],[tables_b4]]); end
   def common4; @common4 ||= [[tables_b3],[tables_b4]]; end
   def common5; @common5 ||= sum([[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]); end

@@ -60,7 +60,7 @@ class TestExampleSpreadsheet < Minitest::Test
   def test_referencing_b9; assert_in_epsilon(3.0, worksheet.referencing_b9, 0.002); end
   def test_referencing_b11; assert_equal("Named", worksheet.referencing_b11); end
   def test_referencing_c11; assert_equal("Reference", worksheet.referencing_c11); end
-  def test_tables_a1; assert_in_delta(0.0, worksheet.tables_a1, 0.002); end
+  def test_tables_a1; assert_in_delta(0.0, (worksheet.tables_a1||0), 0.002); end
   def test_tables_b2; assert_equal("ColA", worksheet.tables_b2); end
   def test_tables_c2; assert_equal("ColB", worksheet.tables_c2); end
   def test_tables_d2; assert_equal("Column1", worksheet.tables_d2); end
@@ -74,13 +74,13 @@ class TestExampleSpreadsheet < Minitest::Test
   def test_tables_g4; assert_in_epsilon(3.0, worksheet.tables_g4, 0.002); end
   def test_tables_h4; assert_in_delta(1.0, worksheet.tables_h4, 0.002); end
   def test_tables_b5; assert_in_epsilon(3.0, worksheet.tables_b5, 0.002); end
-  def test_tables_c5; assert_in_delta(0.0, worksheet.tables_c5, 0.002); end
+  def test_tables_c5; assert_in_delta(0.0, (worksheet.tables_c5||0), 0.002); end
   def test_tables_e6; assert_equal("ColA", worksheet.tables_e6); end
   def test_tables_f6; assert_equal("ColB", worksheet.tables_f6); end
   def test_tables_g6; assert_equal("Column1", worksheet.tables_g6); end
   def test_tables_e7; assert_in_epsilon(3.0, worksheet.tables_e7, 0.002); end
-  def test_tables_f7; assert_in_delta(0.0, worksheet.tables_f7, 0.002); end
-  def test_tables_g7; assert_in_delta(0.0, worksheet.tables_g7, 0.002); end
+  def test_tables_f7; assert_in_delta(0.0, (worksheet.tables_f7||0), 0.002); end
+  def test_tables_g7; assert_in_delta(0.0, (worksheet.tables_g7||0), 0.002); end
   def test_tables_e8; assert_equal("ColA", worksheet.tables_e8); end
   def test_tables_f8; assert_equal("ColB", worksheet.tables_f8); end
   def test_tables_g8; assert_equal("Column1", worksheet.tables_g8); end
@@ -93,8 +93,8 @@ class TestExampleSpreadsheet < Minitest::Test
   def test_tables_g10; assert_equal("2B", worksheet.tables_g10); end
   def test_tables_c11; assert_in_epsilon(3.0, worksheet.tables_c11, 0.002); end
   def test_tables_e11; assert_in_epsilon(3.0, worksheet.tables_e11, 0.002); end
-  def test_tables_f11; assert_in_delta(0.0, worksheet.tables_f11, 0.002); end
-  def test_tables_g11; assert_in_delta(0.0, worksheet.tables_g11, 0.002); end
+  def test_tables_f11; assert_in_delta(0.0, (worksheet.tables_f11||0), 0.002); end
+  def test_tables_g11; assert_in_delta(0.0, (worksheet.tables_g11||0), 0.002); end
   def test_tables_c12; assert_in_epsilon(3.0, worksheet.tables_c12, 0.002); end
   def test_tables_c13; assert_in_epsilon(3.0, worksheet.tables_c13, 0.002); end
   def test_tables_c14; assert_in_epsilon(3.0, worksheet.tables_c14, 0.002); end

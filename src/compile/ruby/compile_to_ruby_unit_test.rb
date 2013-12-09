@@ -24,7 +24,13 @@ class CompileToRubyUnitTest
       value = mapper.map(ast)
       full_reference = "worksheet.#{c_name}_#{cell.downcase}"
       test_name = "test_#{c_name}_#{cell.downcase}"
-      case ast.first
+      if ast.first == :constant
+        type = constants[ast[1]][0] || :constant
+      else
+        type = ast.first
+      end
+
+      case type
       when :blank
         if sloppy
           o.puts "  def #{test_name}; assert_includes([nil, 0], #{full_reference}); end"
@@ -34,7 +40,7 @@ class CompileToRubyUnitTest
       when :number
         if sloppy
           if value.to_f.abs <= 1
-            if value == "0" 
+            if value.to_f == 0 
               o.puts "  def #{test_name}; assert_in_delta(#{value}, (#{full_reference}||0), #{delta}); end"
             else
               o.puts "  def #{test_name}; assert_in_delta(#{value}, #{full_reference}, #{delta}); end"

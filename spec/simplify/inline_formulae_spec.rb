@@ -84,8 +84,8 @@ A4\t[:sheet_reference, :sheet2, [:cell, :A2]]
 A5\t[:sheet_reference, :sheet3, [:cell, :A5]]
 A6\t[:number, 1]
 A7\t[:sheet_reference, :sheet2, [:cell, :"$A$2"]]
-A8\t[:number, 0]
-A9\t[:number, 0]
+A8\t[:blank]
+A9\t[:blank]
 END
   
 input = StringIO.new(input)
