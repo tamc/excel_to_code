@@ -384,6 +384,8 @@ class ExcelToX
       table_rids = ExtractWorksheetTableRelationships.extract(i)
     end
 
+    return if table_rids.empty?
+
     xml_for_rids = {}
     xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")) do |i|
       xml_for_rids = ExtractRelationships.extract(i)
