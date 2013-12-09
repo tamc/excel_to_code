@@ -1,5 +1,4 @@
 require 'rspec'
-require 'pry'
 require 'stringio'
 require 'tmpdir'
 
