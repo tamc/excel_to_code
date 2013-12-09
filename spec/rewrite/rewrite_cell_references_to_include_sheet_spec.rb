@@ -30,7 +30,6 @@ it "should return the same object when referencing the same worksheet" do
   r.worksheet = :sheet1
   first = r.map([:cell, :A1])
   second = r.map([:cell, :A1])
-  p first
   first.object_id.should == second.object_id
 end
 
@@ -39,7 +38,6 @@ it "should ensure that sheet references are also the same object" do
   r.worksheet = :sheet1
   first = r.map([:sheet_reference, :shee2, [:cell, :A1]])
   second = r.map([:sheet_reference, :shee2, [:cell, :A1]])
-  p first
   first.object_id.should == second.object_id
 end
 
