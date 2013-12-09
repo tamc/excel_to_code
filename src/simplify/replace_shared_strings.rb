@@ -6,16 +6,25 @@ class ReplaceSharedStringAst
     @shared_strings = shared_strings
   end
   
+  # This is convoluted so as to always
+  # return the same shared string
   def map(ast)
     return ast unless ast.is_a?(Array)
-    shared_string(ast) if ast.first == :shared_string
-    ast.each { |a| map(a) }
+    return shared_string(ast) if ast[0] == :shared_string
+    ast.each.with_index do |a, i|
+      next unless a.is_a?(Array)
+      if a[0] == :shared_string
+        ast[i] = shared_string(ast)
+      else
+        map(a)
+      end
+    end
     ast
   end
   
   # Format [:shared_string, string_id]
   def shared_string(ast)
-    ast.replace([:string,shared_strings[ast[1].to_i]])
+    ast.replace(shared_strings[ast[1].to_i])
   end
 end
   

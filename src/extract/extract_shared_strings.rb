@@ -20,7 +20,7 @@ class ExtractSharedStrings < Nokogiri::XML::SAX::Document
   
   def end_element(name)
     return unless name == "si"
-    @output << @current.join
+    @output << [:string, @current.join]
     @current = nil
   end
   
