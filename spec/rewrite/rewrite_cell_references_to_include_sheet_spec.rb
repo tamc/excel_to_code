@@ -41,4 +41,12 @@ it "should ensure that sheet references are also the same object" do
   first.object_id.should == second.object_id
 end
 
+it "should remove fixed (e.g., $A$1) references" do
+  r = RewriteCellReferencesToIncludeSheetAst.new
+  r.worksheet = :sheet1
+  r.map([:sheet_reference, :shee2, [:cell, :"$A$1"]]).should == [:sheet_reference, :shee2, [:cell, :A1]]
+  r.map([:cell, :"$A$1"]).should == [:sheet_reference, :sheet1, [:cell, :A1]]
+  r.map([:area, :"$A$1", :"B$10"]).should == [:sheet_reference, :sheet1, [:area, :A1, :B10]]
+end
+
 end

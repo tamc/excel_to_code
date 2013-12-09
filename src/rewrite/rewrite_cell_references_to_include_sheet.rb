@@ -30,14 +30,23 @@ class RewriteCellReferencesToIncludeSheetAst
   end
   
   def cell(ast)
+    ast[1] = ast[1].to_s.gsub('$','').to_sym
     @fp.map([:sheet_reference, worksheet, ast.dup])
   end
   
   def area(ast)
+    ast[1] = ast[1].to_s.gsub('$','').to_sym
+    ast[2] = ast[2].to_s.gsub('$','').to_sym
     @fp.map([:sheet_reference, worksheet, ast.dup])
   end
   
   def sheet_reference(ast)
+    if ast[2][0] == :cell
+      ast[2][1] = ast[2][1].to_s.gsub('$','').to_sym
+    elsif ast[2][1] == :area
+      ast[2][1] = ast[2][1].to_s.gsub('$','').to_sym
+      ast[2][2] = ast[2][2].to_s.gsub('$','').to_sym
+    end
     @fp.map(ast)
   end
 
