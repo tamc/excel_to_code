@@ -676,6 +676,7 @@ class ExcelToX
     # Replace the named references in the array formulae
     named_references = NamedReferences.new(@named_references)
     named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
+    p @named_references.keys
 
     table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
     replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
@@ -757,6 +758,8 @@ class ExcelToX
     begin 
       number_of_passes += 1
       log.info "Starting pass #{number_of_passes} on #{cells_with_formulae.size} cells"
+      p @formulae[[:'Intermediate output', :AY7]]
+
       replacements_made_in_the_last_pass = 0
       inline_replacer.count_replaced = 0
       value_replacer.replacements_made_in_the_last_pass = 0
@@ -764,6 +767,8 @@ class ExcelToX
       offset_replacement.count_replaced = 0
       indirect_replacement.count_replaced = 0
       references_that_need_updating = {}
+
+      p @formulae[[:'Intermediate output', :AY7]]
     
       cells_with_formulae.each do |ref, ast|
         # FIXME: Shouldn't need to wrap ref.fist in an array
@@ -782,6 +787,7 @@ class ExcelToX
         end
         cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
       end
+      p @formulae[[:'Intermediate output', :AY7]]
 
       simplify(references_that_need_updating)
 

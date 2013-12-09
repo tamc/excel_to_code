@@ -7,7 +7,7 @@ describe ExtractNamedReferences do
     output = ExtractNamedReferences.extract(input)
     output.should == {
       "in_result" =>  "Inputs!$A$3",
-      ["inputs", "local_named_reference"] => "Inputs!$A$3"
+      [:inputs, "local_named_reference"] => "Inputs!$A$3"
     }
   end
 end

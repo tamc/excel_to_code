@@ -27,7 +27,7 @@ class ExtractNamedReferences < Nokogiri::XML::SAX::Document
     if name == "sheet"
       @sheet_names << attributes.assoc('name').last
     elsif name == "definedName"
-      @sheet = attributes.assoc('localSheetId') && @sheet_names[attributes.assoc('localSheetId').last.to_i].downcase
+      @sheet = attributes.assoc('localSheetId') && @sheet_names[attributes.assoc('localSheetId').last.to_i].downcase.to_sym
       @name =  attributes.assoc('name').last.downcase
       @reference = ""
     end
