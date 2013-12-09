@@ -7,9 +7,15 @@ class CachingFormulaParser
     instance.parse(*args)
   end
 
+  def self.map(*args)
+    instance.map(*args)
+  end
+
   def initialize
     @number_cache = {}
     @string_cache = {}
+    @percentage_cache = {}
+    @error_cache = {}
   end
 
   def parse(text)
@@ -53,8 +59,33 @@ class CachingFormulaParser
     @number_cache[ast] ||= ast
   end
 
+  def percentage(ast)
+    ast[1] = ast[1].to_f
+    @percentage_cache[ast] ||= ast
+  end
+
   def string(ast)
     return @string_cache[ast] ||= ast
+  end
+
+  TRUE = [:boolean_true]
+  FALSE = [:boolean_false]
+  BLANK = [:blank]
+
+  def boolean_true(ast)
+    TRUE
+  end
+
+  def boolean_false(ast)
+    FALSE
+  end
+
+  def error(ast)
+    @error_cache[ast] ||= ast
+  end
+
+  def blank(ast)
+    BLANK
   end
 
 end

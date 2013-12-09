@@ -142,11 +142,29 @@ class MapFormulaeToValues
       nil
     end
   end
+
+  ERRORS = {
+    :"#NAME?" => :name,
+    :"#VALUE!" => :value,
+    :"#DIV/0!" => :div0,
+    :"#REF!" => :ref,
+    :"#N/A" => :na,
+    :"#NUM!" => :num
+  }
     
   def value(ast)
     return extract_values_from_array(ast) if ast.first == :array
-    return :not_a_value unless @value_for_ast.respond_to?(ast.first)
-    eval(@value_for_ast.send(*ast))
+    case ast.first
+    when :blank; nil
+    when :null; nil
+    when :number; ast[1]
+    when :percentage; ast[1]/100.0
+    when :string; ast[1]
+    when :error; ERRORS[ast[1]]
+    when :boolean_true; true
+    when :boolean_false; false
+    else return :not_a_value
+    end
   end
   
   def extract_values_from_array(ast)
@@ -167,8 +185,8 @@ class MapFormulaeToValues
   def ast_for_value(value)
     return value if value.is_a?(Array) && value.first.is_a?(Symbol)
     @replacements_made_in_the_last_pass += 1
-    case value
-    when Numeric; [:number,value.inspect]
+    ast = case value
+    when Numeric; [:number,value]
     when true; [:boolean_true]
     when false; [:boolean_false]
     when Symbol; 
@@ -180,6 +198,7 @@ class MapFormulaeToValues
     else
       raise NotSupportedException.new("Ast for #{value.inspect} of class #{value.class} not recognised")
     end
+    CachingFormulaParser.map(ast)
   end
   
 end

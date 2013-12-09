@@ -9,15 +9,28 @@ describe CachingFormulaParser do
 
   it "should turn numbers into numeric values" do
     CachingFormulaParser.parse("1.31").should == [:number, 1.31]
+    CachingFormulaParser.parse("10%").should == [:percentage, 10]
   end
 
-  it "should cache numbers and strings" do
+  it "should cache numbers and strings and booleans and blanks and errors" do
     first = CachingFormulaParser.parse("1.31")
     second = CachingFormulaParser.parse("1.31")
     first.object_id.should == second.object_id
 
     first = CachingFormulaParser.parse('"Hello"')
     second = CachingFormulaParser.parse('"Hello"')
+    first.object_id.should == second.object_id
+
+    first = CachingFormulaParser.parse('TRUE')
+    second = CachingFormulaParser.parse('TRUE')
+    first.object_id.should == second.object_id
+
+    first = CachingFormulaParser.parse('FALSE')
+    second = CachingFormulaParser.parse('FALSE')
+    first.object_id.should == second.object_id
+
+    first = CachingFormulaParser.parse('#DIV/0!')
+    second = CachingFormulaParser.parse('#DIV/0!')
     first.object_id.should == second.object_id
   end
 
