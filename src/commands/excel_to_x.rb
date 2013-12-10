@@ -381,7 +381,6 @@ class ExcelToX
       end
       
       extract_tables_for_worksheet(name,xml_filename)
-      GC.start
     end
   end
   
@@ -414,15 +413,10 @@ class ExcelToX
   
   def rewrite_worksheets
     rewrite_row_and_column_references
-    GC.start
     rewrite_shared_formulae
-    GC.start
     rewrite_array_formulae
-    GC.start
     rewrite_values
-    GC.start
     combine_formulae_files
-    GC.start
   end
   
   # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
@@ -520,7 +514,6 @@ class ExcelToX
     @formulae.merge! @formulae_array
     @formulae.merge! @formulae_simple
 
-    GC.start
     log.info "Sheet contains #{@formulae.size} cells"
   end
   
@@ -707,7 +700,6 @@ class ExcelToX
       wrap_formulae_that_return_arrays_replacer.map(ast)
     end
 
-    GC.start
   end
 
   # These types of cells don't conatain formulae and can therefore be skipped
@@ -798,9 +790,7 @@ class ExcelToX
       replacements_made_in_the_last_pass += indirect_replacement.count_replaced
 
       log.info "Pass #{number_of_passes}: Made #{replacements_made_in_the_last_pass} replacements"
-      GC.start
     end while replacements_made_in_the_last_pass > 0 && number_of_passes < 20
-    GC.start
   end
 
   
@@ -950,8 +940,6 @@ class ExcelToX
       @formulae[["", common_ast[1]]] = repeated_ast
     end
 
-    GC.start
-
   end
   
   # This puts back in an optimisation that excel carries out by making sure that
@@ -966,7 +954,6 @@ class ExcelToX
     end
 
     @constants = r.constants.invert
-    GC.start
   end
   
   # If nothing has been specified in named_references_that_can_be_set_at_runtime 
