@@ -63,7 +63,7 @@ class AstExpandArrayFormulae
     return [:array, *max_rows.times.map do |row|
       [:row, *max_columns.times.map do |column| 
         block.call(arrays.map do |a|
-          a[row][column] || [:error, "#N/A"]
+          (a[row] && a[row][column]) || CachingFormulaParser.map([:error, :"#N/A"])
         end)
       end]
     end]
@@ -165,7 +165,7 @@ class AstExpandArrayFormulae
           if ok_to_be_an_array[i]
             a
           else
-            a[row][column] || [:error, "#N/A"]
+            a[row][column] || [:error, :"#N/A"]
           end
         end]
       end]
