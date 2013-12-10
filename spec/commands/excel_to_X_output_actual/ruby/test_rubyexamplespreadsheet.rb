@@ -53,6 +53,31 @@ class TestRubyExampleSpreadsheet < Test::Unit::TestCase
   def test_referencing_b9; assert_in_epsilon(3.0, worksheet.referencing_b9, 0.002); end
   def test_referencing_b11; assert_equal("Named", worksheet.referencing_b11); end
   def test_referencing_c11; assert_equal("Reference", worksheet.referencing_c11); end
+  def test_referencing_c15; assert_in_delta(1.0, worksheet.referencing_c15, 0.002); end
+  def test_referencing_d15; assert_in_epsilon(2.0, worksheet.referencing_d15, 0.002); end
+  def test_referencing_e15; assert_in_epsilon(3.0, worksheet.referencing_e15, 0.002); end
+  def test_referencing_f15; assert_in_epsilon(4.0, worksheet.referencing_f15, 0.002); end
+  def test_referencing_c16; assert_in_epsilon(1.4535833325868115, worksheet.referencing_c16, 0.002); end
+  def test_referencing_d16; assert_in_epsilon(1.4535833325868115, worksheet.referencing_d16, 0.002); end
+  def test_referencing_e16; assert_in_epsilon(1.511726665890284, worksheet.referencing_e16, 0.002); end
+  def test_referencing_f16; assert_in_epsilon(1.5407983325420203, worksheet.referencing_f16, 0.002); end
+  def test_referencing_c17; assert_in_epsilon(9.054545454545455, worksheet.referencing_c17, 0.002); end
+  def test_referencing_d17; assert_in_epsilon(12.0, worksheet.referencing_d17, 0.002); end
+  def test_referencing_e17; assert_in_epsilon(18.0, worksheet.referencing_e17, 0.002); end
+  def test_referencing_f17; assert_in_epsilon(18.0, worksheet.referencing_f17, 0.002); end
+  def test_referencing_c18; assert_in_delta(0.3681150635671386, worksheet.referencing_c18, 0.002); end
+  def test_referencing_d18; assert_in_delta(0.3681150635671386, worksheet.referencing_d18, 0.002); end
+  def test_referencing_e18; assert_in_delta(0.40588480110308967, worksheet.referencing_e18, 0.002); end
+  def test_referencing_f18; assert_in_delta(0.42190146532760275, worksheet.referencing_f18, 0.002); end
+  def test_referencing_c19; assert_in_delta(0.651, worksheet.referencing_c19, 0.002); end
+  def test_referencing_d19; assert_in_delta(0.651, worksheet.referencing_d19, 0.002); end
+  def test_referencing_e19; assert_in_delta(0.651, worksheet.referencing_e19, 0.002); end
+  def test_referencing_f19; assert_in_delta(0.651, worksheet.referencing_f19, 0.002); end
+  def test_referencing_c22; assert_in_epsilon(4.0, worksheet.referencing_c22, 0.002); end
+  def test_referencing_d22; assert_in_epsilon(1.5407983325420203, worksheet.referencing_d22, 0.002); end
+  def test_referencing_d23; assert_in_epsilon(18.0, worksheet.referencing_d23, 0.002); end
+  def test_referencing_d24; assert_in_delta(0.42190146532760275, worksheet.referencing_d24, 0.002); end
+  def test_referencing_d25; assert_in_delta(0.651, worksheet.referencing_d25, 0.002); end
   def test_tables_a1; assert_in_delta(0.0, (worksheet.tables_a1||0), 0.002); end
   def test_tables_b2; assert_equal("ColA", worksheet.tables_b2); end
   def test_tables_c2; assert_equal("ColB", worksheet.tables_c2); end

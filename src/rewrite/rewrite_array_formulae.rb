@@ -2,6 +2,10 @@ class ExtractArrayFormulaForCell
   
   attr_accessor :row_offset, :column_offset
   
+  def initialize
+    @fc = CachingFormulaParser.instance
+  end
+
   def map(ast)
     case ast.first
     when :array; map_array(ast)
@@ -15,7 +19,7 @@ class ExtractArrayFormulaForCell
       if ast.length == 2
         @row_offset = 0
       else
-        return [:error, "#N/A"]
+        return @fc.map([:error, :"#N/A"])
       end
     end
 
@@ -23,18 +27,18 @@ class ExtractArrayFormulaForCell
       if ast[1].length == 2
         @column_offset = 0
       else
-        return [:error, "#N/A"]
+        return @fc.map([:error, :"#N/A"])
       end
     end
     
     ast[@row_offset+1][@column_offset+1] # plus ones to skip tthe [:array,[:row,"cell"]] symbols
   end
   
-  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = { 'INDEX' => true,  'MMULT' => true}
+  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = { INDEX: true,  MMULT: true}
   
   def map_function(ast)
     return ast unless FUNCTIONS_THAT_CAN_RETURN_ARRAYS.has_key?(ast[1])
-    [:function, "INDEX", ast, [:number, (@row_offset+1).to_s], [:number, (column_offset+1).to_s]]
+    [:function, :INDEX, ast, @fc.map([:number, (@row_offset+1)]), @fc.map([:number, (column_offset+1)])]
   end
   
 end

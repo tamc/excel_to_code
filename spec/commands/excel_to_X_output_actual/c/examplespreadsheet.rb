@@ -169,6 +169,27 @@ module ExampleSpreadsheet
   attach_function 'ranges_f6', [], ExcelValue.by_value
   # end of Ranges
   attach_function 'set_referencing_a4', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_c15', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_d15', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e15', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f15', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_c16', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_d16', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e16', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f16', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_c17', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_d17', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e17', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f17', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_c18', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_d18', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e18', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f18', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_c19', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_d19', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e19', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f19', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_c22', [ExcelValue.by_value], :void
   attach_function 'referencing_a1', [], ExcelValue.by_value
   attach_function 'referencing_a2', [], ExcelValue.by_value
   attach_function 'referencing_a4', [], ExcelValue.by_value
@@ -179,6 +200,31 @@ module ExampleSpreadsheet
   attach_function 'referencing_b9', [], ExcelValue.by_value
   attach_function 'referencing_b11', [], ExcelValue.by_value
   attach_function 'referencing_c11', [], ExcelValue.by_value
+  attach_function 'referencing_c15', [], ExcelValue.by_value
+  attach_function 'referencing_d15', [], ExcelValue.by_value
+  attach_function 'referencing_e15', [], ExcelValue.by_value
+  attach_function 'referencing_f15', [], ExcelValue.by_value
+  attach_function 'referencing_c16', [], ExcelValue.by_value
+  attach_function 'referencing_d16', [], ExcelValue.by_value
+  attach_function 'referencing_e16', [], ExcelValue.by_value
+  attach_function 'referencing_f16', [], ExcelValue.by_value
+  attach_function 'referencing_c17', [], ExcelValue.by_value
+  attach_function 'referencing_d17', [], ExcelValue.by_value
+  attach_function 'referencing_e17', [], ExcelValue.by_value
+  attach_function 'referencing_f17', [], ExcelValue.by_value
+  attach_function 'referencing_c18', [], ExcelValue.by_value
+  attach_function 'referencing_d18', [], ExcelValue.by_value
+  attach_function 'referencing_e18', [], ExcelValue.by_value
+  attach_function 'referencing_f18', [], ExcelValue.by_value
+  attach_function 'referencing_c19', [], ExcelValue.by_value
+  attach_function 'referencing_d19', [], ExcelValue.by_value
+  attach_function 'referencing_e19', [], ExcelValue.by_value
+  attach_function 'referencing_f19', [], ExcelValue.by_value
+  attach_function 'referencing_c22', [], ExcelValue.by_value
+  attach_function 'referencing_d22', [], ExcelValue.by_value
+  attach_function 'referencing_d23', [], ExcelValue.by_value
+  attach_function 'referencing_d24', [], ExcelValue.by_value
+  attach_function 'referencing_d25', [], ExcelValue.by_value
   # end of Referencing
   attach_function 'set_tables_b2', [ExcelValue.by_value], :void
   attach_function 'set_tables_c2', [ExcelValue.by_value], :void

@@ -53,6 +53,31 @@ class RubyExampleSpreadsheet
   def referencing_b9; @referencing_b9 ||= common1; end
   def referencing_b11; @referencing_b11 ||= "Named"; end
   def referencing_c11; @referencing_c11 ||= "Reference"; end
+  attr_accessor :referencing_c15 # Default: 1.0
+  attr_accessor :referencing_d15 # Default: 2.0
+  attr_accessor :referencing_e15 # Default: 3.0
+  attr_accessor :referencing_f15 # Default: 4.0
+  attr_accessor :referencing_c16 # Default: 1.4535833325868115
+  attr_accessor :referencing_d16 # Default: 1.4535833325868115
+  attr_accessor :referencing_e16 # Default: 1.511726665890284
+  attr_accessor :referencing_f16 # Default: 1.5407983325420203
+  attr_accessor :referencing_c17 # Default: 9.054545454545455
+  attr_accessor :referencing_d17 # Default: 12.0
+  attr_accessor :referencing_e17 # Default: 18.0
+  attr_accessor :referencing_f17 # Default: 18.0
+  attr_accessor :referencing_c18 # Default: 0.3681150635671386
+  attr_accessor :referencing_d18 # Default: 0.3681150635671386
+  attr_accessor :referencing_e18 # Default: 0.40588480110308967
+  attr_accessor :referencing_f18 # Default: 0.42190146532760275
+  attr_accessor :referencing_c19 # Default: 0.651
+  attr_accessor :referencing_d19 # Default: 0.651
+  attr_accessor :referencing_e19 # Default: 0.651
+  attr_accessor :referencing_f19 # Default: 0.651
+  attr_accessor :referencing_c22 # Default: 4.0
+  def referencing_d22; @referencing_d22 ||= index(common3,1.0,1.0); end
+  def referencing_d23; @referencing_d23 ||= index(common3,2.0,1.0); end
+  def referencing_d24; @referencing_d24 ||= index(common3,3.0,1.0); end
+  def referencing_d25; @referencing_d25 ||= index(common3,4.0,1.0); end
   def tables_a1; @tables_a1 ||= nil; end
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
@@ -66,7 +91,7 @@ class RubyExampleSpreadsheet
   def tables_f4; @tables_f4 ||= tables_c4; end
   def tables_g4; @tables_g4 ||= excel_match("2B",[[tables_b4,tables_c4,tables_d4]],false); end
   def tables_h4; @tables_h4 ||= excel_match("B",[[tables_c4,tables_d4]]); end
-  def tables_b5; @tables_b5 ||= common3; end
+  def tables_b5; @tables_b5 ||= common7; end
   def tables_c5; @tables_c5 ||= sum([[tables_c3],[tables_c4]]); end
   def tables_e6; @tables_e6 ||= tables_b2; end
   def tables_f6; @tables_f6 ||= tables_c2; end
@@ -84,18 +109,19 @@ class RubyExampleSpreadsheet
   def tables_e10; @tables_e10 ||= tables_b4; end
   def tables_f10; @tables_f10 ||= tables_c4; end
   def tables_g10; @tables_g10 ||= tables_d4; end
-  def tables_c11; @tables_c11 ||= common3; end
+  def tables_c11; @tables_c11 ||= common7; end
   def tables_e11; @tables_e11 ||= tables_b5; end
   def tables_f11; @tables_f11 ||= tables_c5; end
   def tables_g11; @tables_g11 ||= nil; end
   def tables_c12; @tables_c12 ||= tables_b5; end
-  def tables_c13; @tables_c13 ||= common5; end
-  def tables_c14; @tables_c14 ||= common5; end
+  def tables_c13; @tables_c13 ||= common9; end
+  def tables_c14; @tables_c14 ||= common9; end
   def s_innapropriate_sheet_name__c4; @s_innapropriate_sheet_name__c4 ||= valuetypes_a3; end
   def common0; @common0 ||= add(referencing_a4,1.0); end
   def common1; @common1 ||= sum([[tables_b5,tables_c5,nil]]); end
-  def common3; @common3 ||= sum([[tables_b3],[tables_b4]]); end
-  def common5; @common5 ||= sum([[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]); end
+  def common3; @common3 ||= index([[referencing_c16,referencing_d16,referencing_e16,referencing_f16],[referencing_c17,referencing_d17,referencing_e17,referencing_f17],[referencing_c18,referencing_d18,referencing_e18,referencing_f18],[referencing_c19,referencing_d19,referencing_e19,referencing_f19]],nil,excel_match(referencing_c22,[[referencing_c15,referencing_d15,referencing_e15,referencing_f15]],0.0)); end
+  def common7; @common7 ||= sum([[tables_b3],[tables_b4]]); end
+  def common9; @common9 ||= sum([[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]); end
 
 
   # starting initializer
@@ -112,6 +138,27 @@ class RubyExampleSpreadsheet
     @ranges_g5 = 3.0
     @ranges_f6 = 3.0
     @referencing_a4 = 10.0
+    @referencing_c15 = 1.0
+    @referencing_d15 = 2.0
+    @referencing_e15 = 3.0
+    @referencing_f15 = 4.0
+    @referencing_c16 = 1.4535833325868115
+    @referencing_d16 = 1.4535833325868115
+    @referencing_e16 = 1.511726665890284
+    @referencing_f16 = 1.5407983325420203
+    @referencing_c17 = 9.054545454545455
+    @referencing_d17 = 12.0
+    @referencing_e17 = 18.0
+    @referencing_f17 = 18.0
+    @referencing_c18 = 0.3681150635671386
+    @referencing_d18 = 0.3681150635671386
+    @referencing_e18 = 0.40588480110308967
+    @referencing_f18 = 0.42190146532760275
+    @referencing_c19 = 0.651
+    @referencing_d19 = 0.651
+    @referencing_e19 = 0.651
+    @referencing_f19 = 0.651
+    @referencing_c22 = 4.0
     @tables_b2 = "ColA"
     @tables_c2 = "ColB"
     @tables_d2 = "Column1"
