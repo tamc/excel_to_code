@@ -78,6 +78,145 @@ class TestRubyExampleSpreadsheet < Test::Unit::TestCase
   def test_referencing_d23; assert_in_epsilon(18.0, worksheet.referencing_d23, 0.002); end
   def test_referencing_d24; assert_in_delta(0.42190146532760275, worksheet.referencing_d24, 0.002); end
   def test_referencing_d25; assert_in_delta(0.651, worksheet.referencing_d25, 0.002); end
+  def test_referencing_c31; assert_equal("Technology efficiencies -- hot water -- annual mean", worksheet.referencing_c31); end
+  def test_referencing_o31; assert_equal("% of input energy", worksheet.referencing_o31); end
+  def test_referencing_f33; assert_equal("Electricity (delivered to end user)", worksheet.referencing_f33); end
+  def test_referencing_g33; assert_equal("Electricity (supplied to grid)", worksheet.referencing_g33); end
+  def test_referencing_h33; assert_equal("Solid hydrocarbons", worksheet.referencing_h33); end
+  def test_referencing_i33; assert_equal("Liquid hydrocarbons", worksheet.referencing_i33); end
+  def test_referencing_j33; assert_equal("Gaseous hydrocarbons", worksheet.referencing_j33); end
+  def test_referencing_k33; assert_equal("Heat transport", worksheet.referencing_k33); end
+  def test_referencing_l33; assert_equal("Environmental heat", worksheet.referencing_l33); end
+  def test_referencing_m33; assert_equal("Heating & cooling", worksheet.referencing_m33); end
+  def test_referencing_n33; assert_equal("Conversion losses", worksheet.referencing_n33); end
+  def test_referencing_o33; assert_equal("Balance", worksheet.referencing_o33); end
+  def test_referencing_c34; assert_equal("Code", worksheet.referencing_c34); end
+  def test_referencing_d34; assert_equal("Technology", worksheet.referencing_d34); end
+  def test_referencing_e34; assert_equal("Notes", worksheet.referencing_e34); end
+  def test_referencing_f34; assert_equal("V.01", worksheet.referencing_f34); end
+  def test_referencing_g34; assert_equal("V.02", worksheet.referencing_g34); end
+  def test_referencing_h34; assert_equal("V.03", worksheet.referencing_h34); end
+  def test_referencing_i34; assert_equal("V.04", worksheet.referencing_i34); end
+  def test_referencing_j34; assert_equal("V.05", worksheet.referencing_j34); end
+  def test_referencing_k34; assert_equal("V.07", worksheet.referencing_k34); end
+  def test_referencing_l34; assert_equal("R.07", worksheet.referencing_l34); end
+  def test_referencing_m34; assert_equal("H.01", worksheet.referencing_m34); end
+  def test_referencing_n34; assert_equal("X.01", worksheet.referencing_n34); end
+  def test_referencing_c35; assert_in_delta(1.0, worksheet.referencing_c35, 0.002); end
+  def test_referencing_d35; assert_equal("Gas boiler (old)", worksheet.referencing_d35); end
+  def test_referencing_j35; assert_in_delta(-1.0, worksheet.referencing_j35, 0.002); end
+  def test_referencing_m35; assert_in_delta(0.76, worksheet.referencing_m35, 0.002); end
+  def test_referencing_n35; assert_in_delta(0.24, worksheet.referencing_n35, 0.002); end
+  def test_referencing_o35; assert_in_delta(0.0, (worksheet.referencing_o35||0), 0.002); end
+  def test_referencing_c36; assert_in_epsilon(2.0, worksheet.referencing_c36, 0.002); end
+  def test_referencing_d36; assert_equal("Gas boiler (new)", worksheet.referencing_d36); end
+  def test_referencing_j36; assert_in_delta(-1.0, worksheet.referencing_j36, 0.002); end
+  def test_referencing_m36; assert_in_delta(0.91, worksheet.referencing_m36, 0.002); end
+  def test_referencing_n36; assert_in_delta(0.09, worksheet.referencing_n36, 0.002); end
+  def test_referencing_o36; assert_in_delta(0.0, (worksheet.referencing_o36||0), 0.002); end
+  def test_referencing_c37; assert_in_epsilon(3.0, worksheet.referencing_c37, 0.002); end
+  def test_referencing_d37; assert_equal("Resistive heating", worksheet.referencing_d37); end
+  def test_referencing_f37; assert_in_delta(-1.0, worksheet.referencing_f37, 0.002); end
+  def test_referencing_m37; assert_in_delta(1.0, worksheet.referencing_m37, 0.002); end
+  def test_referencing_n37; assert_in_delta(0.0, (worksheet.referencing_n37||0), 0.002); end
+  def test_referencing_o37; assert_in_delta(0.0, (worksheet.referencing_o37||0), 0.002); end
+  def test_referencing_c38; assert_in_epsilon(4.0, worksheet.referencing_c38, 0.002); end
+  def test_referencing_d38; assert_equal("Oil-fired boiler", worksheet.referencing_d38); end
+  def test_referencing_i38; assert_in_delta(-1.0, worksheet.referencing_i38, 0.002); end
+  def test_referencing_m38; assert_in_delta(0.97, worksheet.referencing_m38, 0.002); end
+  def test_referencing_n38; assert_in_delta(0.03, worksheet.referencing_n38, 0.002); end
+  def test_referencing_o38; assert_in_delta(-2.7755575615628914e-17, worksheet.referencing_o38, 0.002); end
+  def test_referencing_c39; assert_in_epsilon(5.0, worksheet.referencing_c39, 0.002); end
+  def test_referencing_d39; assert_equal("Solid-fuel boiler", worksheet.referencing_d39); end
+  def test_referencing_e39; assert_equal("[2]", worksheet.referencing_e39); end
+  def test_referencing_h39; assert_in_delta(-1.0, worksheet.referencing_h39, 0.002); end
+  def test_referencing_m39; assert_in_delta(0.87, worksheet.referencing_m39, 0.002); end
+  def test_referencing_n39; assert_in_delta(0.13, worksheet.referencing_n39, 0.002); end
+  def test_referencing_o39; assert_in_delta(0.0, (worksheet.referencing_o39||0), 0.002); end
+  def test_referencing_c40; assert_in_epsilon(6.0, worksheet.referencing_c40, 0.002); end
+  def test_referencing_d40; assert_equal("Stirling engine micro-CHP", worksheet.referencing_d40); end
+  def test_referencing_e40; assert_equal("[3]", worksheet.referencing_e40); end
+  def test_referencing_g40; assert_in_delta(0.225, worksheet.referencing_g40, 0.002); end
+  def test_referencing_j40; assert_in_delta(-1.0, worksheet.referencing_j40, 0.002); end
+  def test_referencing_m40; assert_in_delta(0.63, worksheet.referencing_m40, 0.002); end
+  def test_referencing_n40; assert_in_delta(0.145, worksheet.referencing_n40, 0.002); end
+  def test_referencing_o40; assert_in_delta(0.0, (worksheet.referencing_o40||0), 0.002); end
+  def test_referencing_c41; assert_in_epsilon(7.0, worksheet.referencing_c41, 0.002); end
+  def test_referencing_d41; assert_equal("Fuel-cell micro-CHP", worksheet.referencing_d41); end
+  def test_referencing_e41; assert_equal("[3]", worksheet.referencing_e41); end
+  def test_referencing_g41; assert_in_delta(0.45, worksheet.referencing_g41, 0.002); end
+  def test_referencing_j41; assert_in_delta(-1.0, worksheet.referencing_j41, 0.002); end
+  def test_referencing_m41; assert_in_delta(0.45, worksheet.referencing_m41, 0.002); end
+  def test_referencing_n41; assert_in_delta(0.1, worksheet.referencing_n41, 0.002); end
+  def test_referencing_o41; assert_in_delta(0.0, (worksheet.referencing_o41||0), 0.002); end
+  def test_referencing_c42; assert_in_epsilon(8.0, worksheet.referencing_c42, 0.002); end
+  def test_referencing_d42; assert_equal("Air-source heat pump", worksheet.referencing_d42); end
+  def test_referencing_f42; assert_in_delta(-1.0, worksheet.referencing_f42, 0.002); end
+  def test_referencing_l42; assert_in_delta(-1.0, worksheet.referencing_l42, 0.002); end
+  def test_referencing_m42; assert_in_epsilon(2.0, worksheet.referencing_m42, 0.002); end
+  def test_referencing_o42; assert_in_delta(0.0, (worksheet.referencing_o42||0), 0.002); end
+  def test_referencing_c43; assert_in_epsilon(9.0, worksheet.referencing_c43, 0.002); end
+  def test_referencing_d43; assert_equal("Ground-source heat pump", worksheet.referencing_d43); end
+  def test_referencing_f43; assert_in_delta(-1.0, worksheet.referencing_f43, 0.002); end
+  def test_referencing_l43; assert_in_epsilon(-2.0, worksheet.referencing_l43, 0.002); end
+  def test_referencing_m43; assert_in_epsilon(3.0, worksheet.referencing_m43, 0.002); end
+  def test_referencing_o43; assert_in_delta(0.0, (worksheet.referencing_o43||0), 0.002); end
+  def test_referencing_c44; assert_in_epsilon(10.0, worksheet.referencing_c44, 0.002); end
+  def test_referencing_d44; assert_equal("Geothermal electricity", worksheet.referencing_d44); end
+  def test_referencing_l44; assert_in_delta(-1.0, worksheet.referencing_l44, 0.002); end
+  def test_referencing_m44; assert_in_delta(0.85, worksheet.referencing_m44, 0.002); end
+  def test_referencing_n44; assert_in_delta(0.15, worksheet.referencing_n44, 0.002); end
+  def test_referencing_o44; assert_in_delta(0.0, (worksheet.referencing_o44||0), 0.002); end
+  def test_referencing_c45; assert_in_epsilon(11.0, worksheet.referencing_c45, 0.002); end
+  def test_referencing_d45; assert_equal("Community scale gas CHP with local district heating", worksheet.referencing_d45); end
+  def test_referencing_g45; assert_in_delta(0.38, worksheet.referencing_g45, 0.002); end
+  def test_referencing_j45; assert_in_delta(-1.0, worksheet.referencing_j45, 0.002); end
+  def test_referencing_m45; assert_in_delta(0.38, worksheet.referencing_m45, 0.002); end
+  def test_referencing_n45; assert_in_delta(0.24, worksheet.referencing_n45, 0.002); end
+  def test_referencing_o45; assert_in_delta(0.0, (worksheet.referencing_o45||0), 0.002); end
+  def test_referencing_c46; assert_in_epsilon(12.0, worksheet.referencing_c46, 0.002); end
+  def test_referencing_d46; assert_equal("Community scale solid-fuel CHP with local district heating", worksheet.referencing_d46); end
+  def test_referencing_g46; assert_in_delta(0.17, worksheet.referencing_g46, 0.002); end
+  def test_referencing_h46; assert_in_delta(-1.0, worksheet.referencing_h46, 0.002); end
+  def test_referencing_m46; assert_in_delta(0.57, worksheet.referencing_m46, 0.002); end
+  def test_referencing_n46; assert_in_delta(0.26, worksheet.referencing_n46, 0.002); end
+  def test_referencing_o46; assert_in_delta(0.0, (worksheet.referencing_o46||0), 0.002); end
+  def test_referencing_c47; assert_in_epsilon(13.0, worksheet.referencing_c47, 0.002); end
+  def test_referencing_d47; assert_equal("Long distance district heating from large power stations", worksheet.referencing_d47); end
+  def test_referencing_e47; assert_equal("[6]", worksheet.referencing_e47); end
+  def test_referencing_k47; assert_in_delta(-1.0, worksheet.referencing_k47, 0.002); end
+  def test_referencing_m47; assert_in_delta(0.9, worksheet.referencing_m47, 0.002); end
+  def test_referencing_n47; assert_in_delta(0.1, worksheet.referencing_n47, 0.002); end
+  def test_referencing_o47; assert_in_delta(0.0, (worksheet.referencing_o47||0), 0.002); end
+  def test_referencing_d50; assert_equal("Gas boiler (old)", worksheet.referencing_d50); end
+  def test_referencing_g50; assert_in_epsilon(137.26515207025273, worksheet.referencing_g50, 0.002); end
+  def test_referencing_d51; assert_equal("Gas boiler (new)", worksheet.referencing_d51); end
+  def test_referencing_g51; assert_in_epsilon(30.731004194832696, worksheet.referencing_g51, 0.002); end
+  def test_referencing_d52; assert_equal("Resistive heating", worksheet.referencing_d52); end
+  def test_referencing_g52; assert_in_epsilon(20.487336129888465, worksheet.referencing_g52, 0.002); end
+  def test_referencing_d53; assert_equal("Oil-fired boiler", worksheet.referencing_d53); end
+  def test_referencing_g53; assert_in_epsilon(8.194934451955387, worksheet.referencing_g53, 0.002); end
+  def test_referencing_d54; assert_equal("Solid-fuel boiler", worksheet.referencing_d54); end
+  def test_referencing_g54; assert_in_epsilon(8.194934451955387, worksheet.referencing_g54, 0.002); end
+  def test_referencing_d55; assert_equal("Stirling engine micro-CHP", worksheet.referencing_d55); end
+  def test_referencing_g55; assert_in_delta(0.0, (worksheet.referencing_g55||0), 0.002); end
+  def test_referencing_d56; assert_equal("Fuel-cell micro-CHP", worksheet.referencing_d56); end
+  def test_referencing_g56; assert_in_delta(0.0, (worksheet.referencing_g56||0), 0.002); end
+  def test_referencing_d57; assert_equal("Air-source heat pump", worksheet.referencing_d57); end
+  def test_referencing_g57; assert_in_delta(0.0, (worksheet.referencing_g57||0), 0.002); end
+  def test_referencing_d58; assert_equal("Ground-source heat pump", worksheet.referencing_d58); end
+  def test_referencing_g58; assert_in_delta(0.0, (worksheet.referencing_g58||0), 0.002); end
+  def test_referencing_d59; assert_equal("Geothermal electricity", worksheet.referencing_d59); end
+  def test_referencing_g59; assert_in_delta(0.0, (worksheet.referencing_g59||0), 0.002); end
+  def test_referencing_d60; assert_equal("Community scale gas CHP with local district heating", worksheet.referencing_d60); end
+  def test_referencing_g60; assert_in_delta(0.0, (worksheet.referencing_g60||0), 0.002); end
+  def test_referencing_d61; assert_equal("Community scale solid-fuel CHP with local district heating", worksheet.referencing_d61); end
+  def test_referencing_g61; assert_in_delta(0.0, (worksheet.referencing_g61||0), 0.002); end
+  def test_referencing_d62; assert_equal("Long distance district heating from large power stations", worksheet.referencing_d62); end
+  def test_referencing_g62; assert_in_delta(0.0, (worksheet.referencing_g62||0), 0.002); end
+  def test_referencing_d64; assert_equal("H.01", worksheet.referencing_d64); end
+  def test_referencing_e64; assert_equal("Heating & cooling", worksheet.referencing_e64); end
+  def test_referencing_h64; assert_in_epsilon(204.87336129888465, worksheet.referencing_h64, 0.002); end
   def test_tables_a1; assert_in_delta(0.0, (worksheet.tables_a1||0), 0.002); end
   def test_tables_b2; assert_equal("ColA", worksheet.tables_b2); end
   def test_tables_c2; assert_equal("ColB", worksheet.tables_c2); end

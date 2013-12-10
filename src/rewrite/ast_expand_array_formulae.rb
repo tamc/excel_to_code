@@ -69,7 +69,7 @@ class AstExpandArrayFormulae
     end]
   end
   
-  FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS = {'AVERAGE' => true, 'COUNT' => true, 'COUNTA' => true, 'MAX' => true, 'MIN' => true, 'SUM' => true, 'SUMPRODUCT' => true, 'MMULT' => true}
+  FUNCTIONS_THAT_ACCEPT_RANGES_FOR_ALL_ARGUMENTS = {AVERAGE: true, COUNT: true, COUNTA: true, MAX: true, MIN: true, SUM: true, SUMPRODUCT: true, MMULT: true}
   
   # Format [:function, function_name, arg1, arg2, ...]
   def function(ast)
