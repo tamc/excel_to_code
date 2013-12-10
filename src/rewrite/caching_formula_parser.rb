@@ -89,6 +89,7 @@ class CachingFormulaParser
   end
 
   def error(ast)
+    ast[1] = ast[1].to_sym
     @error_cache[ast] ||= ast
   end
 
