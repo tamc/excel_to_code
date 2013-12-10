@@ -2,7 +2,7 @@
 # Compiled version of /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx
 require '/Users/tamc/Documents/github/excel_to_code/src/excel/excel_functions'
 
-class ExampleSpreadsheet
+class RubyExampleSpreadsheet
   include ExcelFunctions
   def original_excel_filename; "/Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"; end
   attr_accessor :valuetypes_a1 # Default: true

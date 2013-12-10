@@ -12,13 +12,13 @@ describe ExcelToRuby do
     command.xml_directory = File.join(actual,'xml')
     command.intermediate_directory = File.join(actual,'intermediate')
     command.output_directory = File.join(actual,'ruby')
-    command.output_name = "ExampleSpreadsheet"
+    command.output_name = "RubyExampleSpreadsheet"
     #command.cells_that_can_be_set_at_runtime = {
     #  'Referencing' => ['A4']
     #}
     command.run_in_memory = true
     command.go!
-    require_relative File.join(actual,'ruby','test_examplespreadsheet')
-    Minitest::Unit.new.run.should == 0
+    require_relative File.join(actual,'ruby','test_rubyexamplespreadsheet')
+    Minitest.run.should == true
   end
 end

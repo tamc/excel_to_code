@@ -1,10 +1,10 @@
 # coding: utf-8
 # All tests for /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx
 require 'test/unit'
-require_relative 'examplespreadsheet'
+require_relative 'rubyexamplespreadsheet'
 
-class TestExampleSpreadsheet < Test::Unit::TestCase
-  def worksheet; @worksheet ||= ExampleSpreadsheet.new; end
+class TestRubyExampleSpreadsheet < Test::Unit::TestCase
+  def worksheet; @worksheet ||= RubyExampleSpreadsheet.new; end
   def test_valuetypes_a1; assert_equal(true, worksheet.valuetypes_a1); end
   def test_valuetypes_a2; assert_equal("Hello", worksheet.valuetypes_a2); end
   def test_valuetypes_a3; assert_in_delta(1.0, worksheet.valuetypes_a3, 0.002); end
