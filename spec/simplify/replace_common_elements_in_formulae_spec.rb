@@ -16,8 +16,13 @@ describe ReplaceCommonElementsInFormulae do
       ["sheet1", "A1"] => [:function, "INDEX", [:cell, "common0"], [:number, 2]]
     }
 
+    expected_count = {
+      [:cell, "common0"] => 1
+    }
+
     r = ReplaceCommonElementsInFormulae.new
     r.replace(input,common).should == expected_output
+    r.common_elements_used.should == expected_count
   end # /it
 
 end # /Describe

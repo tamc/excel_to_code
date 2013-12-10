@@ -94,11 +94,8 @@ class RubyExampleSpreadsheet
   def s_innapropriate_sheet_name__c4; @s_innapropriate_sheet_name__c4 ||= valuetypes_a3; end
   def common0; @common0 ||= add(referencing_a4,1.0); end
   def common1; @common1 ||= sum([[tables_b5,tables_c5,nil]]); end
-  def common2; @common2 ||= [[tables_b5,tables_c5,nil]]; end
   def common3; @common3 ||= sum([[tables_b3],[tables_b4]]); end
-  def common4; @common4 ||= [[tables_b3],[tables_b4]]; end
   def common5; @common5 ||= sum([[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]); end
-  def common6; @common6 ||= [[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]; end
 
 
   # starting initializer

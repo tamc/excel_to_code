@@ -2713,22 +2713,19 @@ ExcelValue tables_c14();
 ExcelValue s_innapropriate_sheet_name__c4();
 ExcelValue _common0();
 ExcelValue _common1();
-ExcelValue _common2();
 ExcelValue _common3();
-ExcelValue _common4();
 ExcelValue _common5();
-ExcelValue _common6();
 // end of definitions
 
 // Used to decide whether to recalculate a cell
-static int variable_set[94];
+static int variable_set[91];
 
 // Used to reset all cached values and free up memory
 void reset() {
   int i;
   cell_counter = 0;
   free_all_allocated_memory(); 
-  for(i = 0; i < 94; i++) {
+  for(i = 0; i < 91; i++) {
     variable_set[i] = 0;
   }
 };
@@ -3518,47 +3515,22 @@ ExcelValue _common1() {
   return result;
 }
 
-ExcelValue _common2() {
-  static ExcelValue result;
-  if(variable_set[89] == 1) { return result;}
-  static ExcelValue array0[3];
-  array0[0] = tables_b5();
-  array0[1] = tables_c5();
-  array0[2] = BLANK;
-  ExcelValue array0_ev = new_excel_range(array0,1,3);
-  result = array0_ev;
-  variable_set[89] = 1;
-  return result;
-}
-
 ExcelValue _common3() {
   static ExcelValue result;
-  if(variable_set[90] == 1) { return result;}
+  if(variable_set[89] == 1) { return result;}
   static ExcelValue array1[2];
   array1[0] = tables_b3();
   array1[1] = tables_b4();
   ExcelValue array1_ev = new_excel_range(array1,2,1);
   ExcelValue array0[] = {array1_ev};
   result = sum(1, array0);
-  variable_set[90] = 1;
-  return result;
-}
-
-ExcelValue _common4() {
-  static ExcelValue result;
-  if(variable_set[91] == 1) { return result;}
-  static ExcelValue array0[2];
-  array0[0] = tables_b3();
-  array0[1] = tables_b4();
-  ExcelValue array0_ev = new_excel_range(array0,2,1);
-  result = array0_ev;
-  variable_set[91] = 1;
+  variable_set[89] = 1;
   return result;
 }
 
 ExcelValue _common5() {
   static ExcelValue result;
-  if(variable_set[92] == 1) { return result;}
+  if(variable_set[90] == 1) { return result;}
   static ExcelValue array1[6];
   array1[0] = tables_b3();
   array1[1] = tables_c3();
@@ -3569,23 +3541,7 @@ ExcelValue _common5() {
   ExcelValue array1_ev = new_excel_range(array1,2,3);
   ExcelValue array0[] = {array1_ev};
   result = sum(1, array0);
-  variable_set[92] = 1;
-  return result;
-}
-
-ExcelValue _common6() {
-  static ExcelValue result;
-  if(variable_set[93] == 1) { return result;}
-  static ExcelValue array0[6];
-  array0[0] = tables_b3();
-  array0[1] = tables_c3();
-  array0[2] = tables_d3();
-  array0[3] = tables_b4();
-  array0[4] = tables_c4();
-  array0[5] = tables_d4();
-  ExcelValue array0_ev = new_excel_range(array0,2,3);
-  result = array0_ev;
-  variable_set[93] = 1;
+  variable_set[90] = 1;
   return result;
 }
 

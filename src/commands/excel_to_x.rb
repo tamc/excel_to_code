@@ -931,8 +931,13 @@ class ExcelToX
       index +=1 
     end
 
-    # FIXME: This means that some common elements won't ever be called, becuase they are replaced by a longer common element. Should the common elements be merged first?
-    ReplaceCommonElementsInFormulae.replace(@formulae, repeated_element_ast)
+    r = ReplaceCommonElementsInFormulae.new
+    r.replace(@formulae, repeated_element_ast)
+    common_elements_used = r.common_elements_used
+
+    repeated_element_ast.delete_if do |repeated_ast, common_ast|
+      common_elements_used[common_ast] == 0
+    end
 
     # FIXME: Is this best? Seems to work
     repeated_element_ast.each do |repeated_ast, common_ast|

@@ -5,8 +5,10 @@ class ReplaceCommonElementsInFormulae
   end
   
   attr_accessor :common_elements
+  attr_accessor :common_elements_used
   
   def replace(input, common_elements)
+    @common_elements_used ||= Hash.new { |h, k| h[k] = 0 }
     @common_elements = common_elements
     input.each do |ref, ast|
       replace_repeated_formulae(ast)
@@ -21,6 +23,7 @@ class ReplaceCommonElementsInFormulae
     return ast if VALUES.has_key?(ast.first)    
     replacement = @common_elements[ast]
     if replacement
+      @common_elements_used[replacement] += 1
       ast.replace(replacement)
     else
       ast.each { |a| replace_repeated_formulae(a) }
