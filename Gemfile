@@ -8,3 +8,8 @@ group :test do
   gem 'ZenTest'
   gem 'rspec'
 end
+
+group :development do
+  gem 'pry-rescue'
+  gem 'pry-stack_explorer'
+end
