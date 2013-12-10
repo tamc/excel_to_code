@@ -732,9 +732,9 @@ class ExcelToX
   def replace_formulae_with_their_results
     number_of_passes = 0
 
-    cells_with_formulae = @formulae.dup
-    cells_with_formulae.each do |ref, ast|
-      cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
+    @cells_with_formulae = @formulae.dup
+    @cells_with_formulae.each do |ref, ast|
+      @cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
     end
 
     # Set up for replacing references to cells with the cell
@@ -756,7 +756,7 @@ class ExcelToX
 
     begin 
       number_of_passes += 1
-      log.info "Starting pass #{number_of_passes} on #{cells_with_formulae.size} cells"
+      log.info "Starting pass #{number_of_passes} on #{@cells_with_formulae.size} cells"
 
       replacements_made_in_the_last_pass = 0
       inline_replacer.count_replaced = 0
@@ -766,7 +766,7 @@ class ExcelToX
       indirect_replacement.count_replaced = 0
       references_that_need_updating = {}
 
-      cells_with_formulae.each do |ref, ast|
+      @cells_with_formulae.each do |ref, ast|
         # FIXME: Shouldn't need to wrap ref.fist in an array
         inline_replacer.current_sheet_name = [ref.first]
         inline_replacer.map(ast)
@@ -781,7 +781,7 @@ class ExcelToX
         if indirect_replacement.replace(ast)
           references_that_need_updating[ref] = ast
         end
-        cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
+        @cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
       end
 
       simplify(references_that_need_updating)
@@ -842,6 +842,7 @@ class ExcelToX
     r.rewrite(@formulae)
     # Must remove the values as well, to avoid any tests being generated for cells that don't exist
     r.rewrite(@values)
+    r.rewrite(@cells_with_formulae)
   end
   
   # If a cell is only referenced from one other cell, then it is inlined into that other cell
@@ -868,7 +869,7 @@ class ExcelToX
     r = InlineFormulaeAst.new
     r.references = @formulae
     r.inline_ast = inline_ast_decision
-    @formulae.each do |ref, ast|
+    @cells_with_formulae.each do |ref, ast|
       r.current_sheet_name = [ref.first]
       r.map(ast)
     end
@@ -915,7 +916,7 @@ class ExcelToX
     
     
     identifier = IdentifyRepeatedFormulaElements.new
-    repeated_elements = identifier.count(@formulae)
+    repeated_elements = identifier.count(@cells_with_formulae)
     
     # We apply a threshold that something needs to be used twice for us to bother separating it out. 
     # FIXME: This threshold is arbitrary
@@ -932,7 +933,7 @@ class ExcelToX
     end
 
     r = ReplaceCommonElementsInFormulae.new
-    r.replace(@formulae, repeated_element_ast)
+    r.replace(@cells_with_formulae, repeated_element_ast)
     common_elements_used = r.common_elements_used
 
     repeated_element_ast.delete_if do |repeated_ast, common_ast|
