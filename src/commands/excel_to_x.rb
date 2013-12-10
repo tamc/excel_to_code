@@ -676,7 +676,6 @@ class ExcelToX
     # Replace the named references in the array formulae
     named_references = NamedReferences.new(@named_references)
     named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
-    p @named_references.keys
 
     table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
     replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
