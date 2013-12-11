@@ -8,7 +8,14 @@ class RewriteCellReferencesToIncludeSheetAst
     @fp = CachingFormulaParser.instance
   end
     
+  # FIXME: UGh.
   def map(ast)
+    r = do_map(ast)
+    ast.replace(r) unless r.object_id == ast.object_id
+    ast
+  end
+
+  def do_map(ast)
     return ast unless ast.is_a?(Array)
     return cell(ast) if ast[0] == :cell
     return area(ast) if ast[0] == :area
@@ -23,7 +30,7 @@ class RewriteCellReferencesToIncludeSheetAst
       when :sheet_reference
         ast[i] = sheet_reference(a)
       else
-        map(a)
+        do_map(a)
       end
     end
     ast

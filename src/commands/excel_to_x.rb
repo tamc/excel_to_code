@@ -467,7 +467,7 @@ class ExcelToX
     log.info "Rewriting array formulae"
     # FIMXE: Refactor this
 
-    named_reference_replacer = ReplaceNamedReferencesAst.new( NamedReferences.new(@named_references)) 
+    named_reference_replacer = ReplaceNamedReferencesAst.new(@named_references)
     table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     expand_array_formulae_replacer = AstExpandArrayFormulae.new
@@ -674,14 +674,14 @@ class ExcelToX
 
     cells.each do |ref, ast|
       @sheetless_cell_reference_replacer.worksheet = ref.first
-      cells[ref] = ast = @sheetless_cell_reference_replacer.map(ast)
+      @sheetless_cell_reference_replacer.map(ast)
       @shared_string_replacer.map(ast)
       @named_reference_replacer.default_sheet_name = ref.first
       @named_reference_replacer.map(ast)
       @table_reference_replacer.worksheet = ref.first
       @table_reference_replacer.referring_cell = ref.last
       @table_reference_replacer.map(ast)
-      cells[ref] = ast = @replace_ranges_with_array_literals_replacer.map(ast)
+      @replace_ranges_with_array_literals_replacer.map(ast)
       @replace_arithmetic_on_ranges_replacer.map(ast)
       @replace_arrays_with_single_cells_replacer.map(ast)
       @replace_string_joins_on_ranges_replacer.map(ast)

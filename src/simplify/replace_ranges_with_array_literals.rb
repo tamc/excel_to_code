@@ -6,6 +6,12 @@ class ReplaceRangesWithArrayLiteralsAst
   end
 
   def map(ast)
+    r = do_map(ast)
+    ast.replace(r) unless r.object_id == ast.object_id
+    ast
+  end
+
+  def do_map(ast)
     return ast unless ast.is_a?(Array)
     case ast[0]
     when :sheet_reference; return sheet_reference(ast)
@@ -16,7 +22,7 @@ class ReplaceRangesWithArrayLiteralsAst
         case a[0]
         when :sheet_reference; ast[i] = sheet_reference(a)
         when :area; ast[i] = area(a)
-        else map(a)
+        else do_map(a)
         end
       end
     end
