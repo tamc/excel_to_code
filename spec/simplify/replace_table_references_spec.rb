@@ -24,7 +24,7 @@ expected_output = <<END
 A3\t[:sheet_reference, :Tables, [:area, :B3, :C3]]
 A4\t[:string_join, [:sheet_reference, :Tables, [:cell, :B4]], [:sheet_reference, :Tables, [:cell, :C4]]]
 A5\t[:function, "SUM", [:cell, :A1], [:sheet_reference, :Tables, [:area, :B5, :C5]]]
-C3\t[:error, "#REF!"]
+C3\t[:error, :"#REF!"]
 C4\t[:sheet_reference, :Tables, [:cell, :B4]]
 C5\t[:sheet_reference, :Tables, [:area, :B3, :C4]]
 C6\t[:sheet_reference, :"Global assumptions", [:area, :D85, :N90]]

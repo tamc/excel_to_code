@@ -20,7 +20,7 @@ class ReplaceTableReferenceAst
   def table_reference(ast)
     table_name = ast[1]
     table_reference = ast[2]
-    return ast.replace([:error,"#REF!"]) unless tables.has_key?(table_name.downcase)
+    return ast.replace([:error, :"#REF!"]) unless tables.has_key?(table_name.downcase)
     ast.replace(tables[table_name.downcase].reference_for(table_name,table_reference,worksheet,referring_cell))
   end
   
@@ -30,7 +30,7 @@ class ReplaceTableReferenceAst
     table = tables.values.find do |table|
       table.includes?(worksheet,referring_cell)
     end
-    return ast.replace([:error,"#REF!"]) unless table
+    return ast.replace([:error, :"#REF!"]) unless table
     ast.replace(table.reference_for(table.name,table_reference,worksheet,referring_cell))
   end
   
