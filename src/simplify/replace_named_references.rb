@@ -22,6 +22,7 @@ class ReplaceNamedReferencesAst
   
   def initialize(named_references, default_sheet_name = nil)
     @named_references, @default_sheet_name = named_references, default_sheet_name
+    @named_references = NamedReferences.new(@named_references) unless @named_references.is_a?(NamedReferences)
   end
   
   def map(ast)

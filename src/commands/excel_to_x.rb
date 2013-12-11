@@ -668,36 +668,33 @@ class ExcelToX
     
   def simplify(cells = @formulae)
     log.info "Simplifying cells"
-    shared_string_replacer = ReplaceSharedStringAst.new(@shared_strings)
-    simplify_arithmetic_replacer = SimplifyArithmeticAst.new
 
-    # Replace the named references in the array formulae
-    named_references = NamedReferences.new(@named_references)
-    named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
-
-    table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
-    replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
-    replace_arithmetic_on_ranges_replacer = ReplaceArithmeticOnRangesAst.new
-    replace_arrays_with_single_cells_replacer = ReplaceArraysWithSingleCellsAst.new
-    replace_string_joins_on_ranges_replacer = ReplaceStringJoinOnRangesAST.new
-    sheetless_cell_reference_replacer = RewriteCellReferencesToIncludeSheetAst.new
-    wrap_formulae_that_return_arrays_replacer = WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
+    @shared_string_replacer ||= ReplaceSharedStringAst.new(@shared_strings)
+    @simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
+    @replace_arithmetic_on_ranges_replacer ||= ReplaceArithmeticOnRangesAst.new
+    @wrap_formulae_that_return_arrays_replacer ||= WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
+    @named_reference_replacer ||= ReplaceNamedReferencesAst.new(@named_references) 
+    @table_reference_replacer ||= ReplaceTableReferenceAst.new(@tables)
+    @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
+    @replace_arrays_with_single_cells_replacer ||= ReplaceArraysWithSingleCellsAst.new
+    @replace_string_joins_on_ranges_replacer ||= ReplaceStringJoinOnRangesAST.new
+    @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
 
     cells.each do |ref, ast|
-      shared_string_replacer.map(ast)
-      simplify_arithmetic_replacer.map(ast)
-      named_reference_replacer.default_sheet_name = ref.first
-      named_reference_replacer.map(ast)
-      table_reference_replacer.worksheet = ref.first
-      table_reference_replacer.referring_cell = ref.last
-      table_reference_replacer.map(ast)
-      replace_ranges_with_array_literals_replacer.map(ast)
-      replace_arithmetic_on_ranges_replacer.map(ast)
-      replace_arrays_with_single_cells_replacer.map(ast)
-      replace_string_joins_on_ranges_replacer.map(ast)
-      sheetless_cell_reference_replacer.worksheet = ref.first
-      cells[ref] = sheetless_cell_reference_replacer.map(ast)
-      wrap_formulae_that_return_arrays_replacer.map(ast)
+      @sheetless_cell_reference_replacer.worksheet = ref.first
+      cells[ref] = ast = @sheetless_cell_reference_replacer.map(ast)
+      @shared_string_replacer.map(ast)
+      @simplify_arithmetic_replacer.map(ast)
+      @named_reference_replacer.default_sheet_name = ref.first
+      @named_reference_replacer.map(ast)
+      @table_reference_replacer.worksheet = ref.first
+      @table_reference_replacer.referring_cell = ref.last
+      @table_reference_replacer.map(ast)
+      @replace_ranges_with_array_literals_replacer.map(ast)
+      @replace_arithmetic_on_ranges_replacer.map(ast)
+      @replace_arrays_with_single_cells_replacer.map(ast)
+      @replace_string_joins_on_ranges_replacer.map(ast)
+      @wrap_formulae_that_return_arrays_replacer.map(ast)
     end
 
   end
