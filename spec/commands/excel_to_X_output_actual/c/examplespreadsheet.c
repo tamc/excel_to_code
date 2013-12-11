@@ -3054,157 +3054,43 @@ static ExcelValue valuetypes_a6_variable;
 ExcelValue valuetypes_a6() { if(variable_set[5] == 1) { return valuetypes_a6_variable; } else { return valuetypes_a6_default(); } }
 void set_valuetypes_a6(ExcelValue newValue) { variable_set[5] = 1; valuetypes_a6_variable = newValue; }
 
-ExcelValue formulaetypes_a1() {
-  static ExcelValue result;
-  if(variable_set[6] == 1) { return result;}
-  result = constant4;
-  variable_set[6] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a1() { return constant4; }
 
-ExcelValue formulaetypes_b1() {
-  static ExcelValue result;
-  if(variable_set[7] == 1) { return result;}
-  result = constant5;
-  variable_set[7] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b1() { return constant5; }
 
-ExcelValue formulaetypes_a2() {
-  static ExcelValue result;
-  if(variable_set[8] == 1) { return result;}
-  result = constant6;
-  variable_set[8] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a2() { return constant6; }
 
-ExcelValue formulaetypes_b2() {
-  static ExcelValue result;
-  if(variable_set[9] == 1) { return result;}
-  result = constant7;
-  variable_set[9] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b2() { return constant7; }
 
-ExcelValue formulaetypes_a3() {
-  static ExcelValue result;
-  if(variable_set[10] == 1) { return result;}
-  result = constant8;
-  variable_set[10] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a3() { return constant8; }
 
-ExcelValue formulaetypes_b3() {
-  static ExcelValue result;
-  if(variable_set[11] == 1) { return result;}
-  result = constant7;
-  variable_set[11] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b3() { return constant7; }
 
-ExcelValue formulaetypes_a4() {
-  static ExcelValue result;
-  if(variable_set[12] == 1) { return result;}
-  result = constant8;
-  variable_set[12] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a4() { return constant8; }
 
-ExcelValue formulaetypes_b4() {
-  static ExcelValue result;
-  if(variable_set[13] == 1) { return result;}
-  result = constant7;
-  variable_set[13] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b4() { return constant7; }
 
-ExcelValue formulaetypes_a5() {
-  static ExcelValue result;
-  if(variable_set[14] == 1) { return result;}
-  result = constant9;
-  variable_set[14] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a5() { return constant9; }
 
-ExcelValue formulaetypes_b5() {
-  static ExcelValue result;
-  if(variable_set[15] == 1) { return result;}
-  result = constant5;
-  variable_set[15] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b5() { return constant5; }
 
-ExcelValue formulaetypes_a6() {
-  static ExcelValue result;
-  if(variable_set[16] == 1) { return result;}
-  result = constant10;
-  variable_set[16] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a6() { return constant10; }
 
-ExcelValue formulaetypes_b6() {
-  static ExcelValue result;
-  if(variable_set[17] == 1) { return result;}
-  result = constant11;
-  variable_set[17] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b6() { return constant11; }
 
-ExcelValue formulaetypes_a7() {
-  static ExcelValue result;
-  if(variable_set[18] == 1) { return result;}
-  result = constant12;
-  variable_set[18] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a7() { return constant12; }
 
-ExcelValue formulaetypes_b7() {
-  static ExcelValue result;
-  if(variable_set[19] == 1) { return result;}
-  result = constant11;
-  variable_set[19] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b7() { return constant11; }
 
-ExcelValue formulaetypes_a8() {
-  static ExcelValue result;
-  if(variable_set[20] == 1) { return result;}
-  result = constant12;
-  variable_set[20] = 1;
-  return result;
-}
+ExcelValue formulaetypes_a8() { return constant12; }
 
-ExcelValue formulaetypes_b8() {
-  static ExcelValue result;
-  if(variable_set[21] == 1) { return result;}
-  result = constant11;
-  variable_set[21] = 1;
-  return result;
-}
+ExcelValue formulaetypes_b8() { return constant11; }
 
-ExcelValue ranges_b1() {
-  static ExcelValue result;
-  if(variable_set[22] == 1) { return result;}
-  result = constant13;
-  variable_set[22] = 1;
-  return result;
-}
+ExcelValue ranges_b1() { return constant13; }
 
-ExcelValue ranges_c1() {
-  static ExcelValue result;
-  if(variable_set[23] == 1) { return result;}
-  result = constant14;
-  variable_set[23] = 1;
-  return result;
-}
+ExcelValue ranges_c1() { return constant14; }
 
-ExcelValue ranges_a2() {
-  static ExcelValue result;
-  if(variable_set[24] == 1) { return result;}
-  result = constant15;
-  variable_set[24] = 1;
-  return result;
-}
+ExcelValue ranges_a2() { return constant15; }
 
 ExcelValue ranges_b2() {
   static ExcelValue result;
@@ -3233,13 +3119,7 @@ ExcelValue ranges_c2() {
   return result;
 }
 
-ExcelValue ranges_a3() {
-  static ExcelValue result;
-  if(variable_set[27] == 1) { return result;}
-  result = constant16;
-  variable_set[27] = 1;
-  return result;
-}
+ExcelValue ranges_a3() { return constant16; }
 
 ExcelValue ranges_b3() {
   static ExcelValue result;
@@ -3275,13 +3155,7 @@ ExcelValue ranges_c3() {
   return result;
 }
 
-ExcelValue ranges_a4() {
-  static ExcelValue result;
-  if(variable_set[30] == 1) { return result;}
-  result = constant17;
-  variable_set[30] = 1;
-  return result;
-}
+ExcelValue ranges_a4() { return constant17; }
 
 ExcelValue ranges_b4() {
   static ExcelValue result;
@@ -3368,13 +3242,7 @@ static ExcelValue referencing_a4_variable;
 ExcelValue referencing_a4() { if(variable_set[40] == 1) { return referencing_a4_variable; } else { return referencing_a4_default(); } }
 void set_referencing_a4(ExcelValue newValue) { variable_set[40] = 1; referencing_a4_variable = newValue; }
 
-ExcelValue referencing_b4() {
-  static ExcelValue result;
-  if(variable_set[41] == 1) { return result;}
-  result = _common0();
-  variable_set[41] = 1;
-  return result;
-}
+ExcelValue referencing_b4() { return _common0(); }
 
 ExcelValue referencing_c4() {
   static ExcelValue result;
@@ -3384,13 +3252,7 @@ ExcelValue referencing_c4() {
   return result;
 }
 
-ExcelValue referencing_a5() {
-  static ExcelValue result;
-  if(variable_set[43] == 1) { return result;}
-  result = constant18;
-  variable_set[43] = 1;
-  return result;
-}
+ExcelValue referencing_a5() { return constant18; }
 
 ExcelValue referencing_b8() {
   static ExcelValue result;
@@ -3400,29 +3262,11 @@ ExcelValue referencing_b8() {
   return result;
 }
 
-ExcelValue referencing_b9() {
-  static ExcelValue result;
-  if(variable_set[45] == 1) { return result;}
-  result = _common1();
-  variable_set[45] = 1;
-  return result;
-}
+ExcelValue referencing_b9() { return _common1(); }
 
-ExcelValue referencing_b11() {
-  static ExcelValue result;
-  if(variable_set[46] == 1) { return result;}
-  result = constant20;
-  variable_set[46] = 1;
-  return result;
-}
+ExcelValue referencing_b11() { return constant20; }
 
-ExcelValue referencing_c11() {
-  static ExcelValue result;
-  if(variable_set[47] == 1) { return result;}
-  result = constant21;
-  variable_set[47] = 1;
-  return result;
-}
+ExcelValue referencing_c11() { return constant21; }
 
 ExcelValue referencing_c15_default() {
   return constant2;
@@ -3603,125 +3447,35 @@ ExcelValue referencing_d25() {
   return result;
 }
 
-ExcelValue referencing_c31() {
-  static ExcelValue result;
-  if(variable_set[73] == 1) { return result;}
-  result = constant33;
-  variable_set[73] = 1;
-  return result;
-}
+ExcelValue referencing_c31() { return constant33; }
 
-ExcelValue referencing_o31() {
-  static ExcelValue result;
-  if(variable_set[74] == 1) { return result;}
-  result = constant34;
-  variable_set[74] = 1;
-  return result;
-}
+ExcelValue referencing_o31() { return constant34; }
 
-ExcelValue referencing_f33() {
-  static ExcelValue result;
-  if(variable_set[75] == 1) { return result;}
-  result = constant35;
-  variable_set[75] = 1;
-  return result;
-}
+ExcelValue referencing_f33() { return constant35; }
 
-ExcelValue referencing_g33() {
-  static ExcelValue result;
-  if(variable_set[76] == 1) { return result;}
-  result = constant36;
-  variable_set[76] = 1;
-  return result;
-}
+ExcelValue referencing_g33() { return constant36; }
 
-ExcelValue referencing_h33() {
-  static ExcelValue result;
-  if(variable_set[77] == 1) { return result;}
-  result = constant37;
-  variable_set[77] = 1;
-  return result;
-}
+ExcelValue referencing_h33() { return constant37; }
 
-ExcelValue referencing_i33() {
-  static ExcelValue result;
-  if(variable_set[78] == 1) { return result;}
-  result = constant38;
-  variable_set[78] = 1;
-  return result;
-}
+ExcelValue referencing_i33() { return constant38; }
 
-ExcelValue referencing_j33() {
-  static ExcelValue result;
-  if(variable_set[79] == 1) { return result;}
-  result = constant39;
-  variable_set[79] = 1;
-  return result;
-}
+ExcelValue referencing_j33() { return constant39; }
 
-ExcelValue referencing_k33() {
-  static ExcelValue result;
-  if(variable_set[80] == 1) { return result;}
-  result = constant40;
-  variable_set[80] = 1;
-  return result;
-}
+ExcelValue referencing_k33() { return constant40; }
 
-ExcelValue referencing_l33() {
-  static ExcelValue result;
-  if(variable_set[81] == 1) { return result;}
-  result = constant41;
-  variable_set[81] = 1;
-  return result;
-}
+ExcelValue referencing_l33() { return constant41; }
 
-ExcelValue referencing_m33() {
-  static ExcelValue result;
-  if(variable_set[82] == 1) { return result;}
-  result = constant42;
-  variable_set[82] = 1;
-  return result;
-}
+ExcelValue referencing_m33() { return constant42; }
 
-ExcelValue referencing_n33() {
-  static ExcelValue result;
-  if(variable_set[83] == 1) { return result;}
-  result = constant43;
-  variable_set[83] = 1;
-  return result;
-}
+ExcelValue referencing_n33() { return constant43; }
 
-ExcelValue referencing_o33() {
-  static ExcelValue result;
-  if(variable_set[84] == 1) { return result;}
-  result = constant44;
-  variable_set[84] = 1;
-  return result;
-}
+ExcelValue referencing_o33() { return constant44; }
 
-ExcelValue referencing_c34() {
-  static ExcelValue result;
-  if(variable_set[85] == 1) { return result;}
-  result = constant45;
-  variable_set[85] = 1;
-  return result;
-}
+ExcelValue referencing_c34() { return constant45; }
 
-ExcelValue referencing_d34() {
-  static ExcelValue result;
-  if(variable_set[86] == 1) { return result;}
-  result = constant46;
-  variable_set[86] = 1;
-  return result;
-}
+ExcelValue referencing_d34() { return constant46; }
 
-ExcelValue referencing_e34() {
-  static ExcelValue result;
-  if(variable_set[87] == 1) { return result;}
-  result = constant47;
-  variable_set[87] = 1;
-  return result;
-}
+ExcelValue referencing_e34() { return constant47; }
 
 ExcelValue referencing_f34_default() {
   return constant48;
@@ -3786,21 +3540,9 @@ static ExcelValue referencing_n34_variable;
 ExcelValue referencing_n34() { if(variable_set[96] == 1) { return referencing_n34_variable; } else { return referencing_n34_default(); } }
 void set_referencing_n34(ExcelValue newValue) { variable_set[96] = 1; referencing_n34_variable = newValue; }
 
-ExcelValue referencing_c35() {
-  static ExcelValue result;
-  if(variable_set[97] == 1) { return result;}
-  result = constant2;
-  variable_set[97] = 1;
-  return result;
-}
+ExcelValue referencing_c35() { return constant2; }
 
-ExcelValue referencing_d35() {
-  static ExcelValue result;
-  if(variable_set[98] == 1) { return result;}
-  result = constant57;
-  variable_set[98] = 1;
-  return result;
-}
+ExcelValue referencing_d35() { return constant57; }
 
 ExcelValue referencing_j35_default() {
   return constant58;
@@ -3823,29 +3565,11 @@ static ExcelValue referencing_n35_variable;
 ExcelValue referencing_n35() { if(variable_set[101] == 1) { return referencing_n35_variable; } else { return referencing_n35_default(); } }
 void set_referencing_n35(ExcelValue newValue) { variable_set[101] = 1; referencing_n35_variable = newValue; }
 
-ExcelValue referencing_o35() {
-  static ExcelValue result;
-  if(variable_set[102] == 1) { return result;}
-  result = constant61;
-  variable_set[102] = 1;
-  return result;
-}
+ExcelValue referencing_o35() { return constant61; }
 
-ExcelValue referencing_c36() {
-  static ExcelValue result;
-  if(variable_set[103] == 1) { return result;}
-  result = constant5;
-  variable_set[103] = 1;
-  return result;
-}
+ExcelValue referencing_c36() { return constant5; }
 
-ExcelValue referencing_d36() {
-  static ExcelValue result;
-  if(variable_set[104] == 1) { return result;}
-  result = constant62;
-  variable_set[104] = 1;
-  return result;
-}
+ExcelValue referencing_d36() { return constant62; }
 
 ExcelValue referencing_j36_default() {
   return constant58;
@@ -3868,29 +3592,11 @@ static ExcelValue referencing_n36_variable;
 ExcelValue referencing_n36() { if(variable_set[107] == 1) { return referencing_n36_variable; } else { return referencing_n36_default(); } }
 void set_referencing_n36(ExcelValue newValue) { variable_set[107] = 1; referencing_n36_variable = newValue; }
 
-ExcelValue referencing_o36() {
-  static ExcelValue result;
-  if(variable_set[108] == 1) { return result;}
-  result = constant61;
-  variable_set[108] = 1;
-  return result;
-}
+ExcelValue referencing_o36() { return constant61; }
 
-ExcelValue referencing_c37() {
-  static ExcelValue result;
-  if(variable_set[109] == 1) { return result;}
-  result = constant18;
-  variable_set[109] = 1;
-  return result;
-}
+ExcelValue referencing_c37() { return constant18; }
 
-ExcelValue referencing_d37() {
-  static ExcelValue result;
-  if(variable_set[110] == 1) { return result;}
-  result = constant65;
-  variable_set[110] = 1;
-  return result;
-}
+ExcelValue referencing_d37() { return constant65; }
 
 ExcelValue referencing_f37_default() {
   return constant58;
@@ -3913,29 +3619,11 @@ static ExcelValue referencing_n37_variable;
 ExcelValue referencing_n37() { if(variable_set[113] == 1) { return referencing_n37_variable; } else { return referencing_n37_default(); } }
 void set_referencing_n37(ExcelValue newValue) { variable_set[113] = 1; referencing_n37_variable = newValue; }
 
-ExcelValue referencing_o37() {
-  static ExcelValue result;
-  if(variable_set[114] == 1) { return result;}
-  result = constant61;
-  variable_set[114] = 1;
-  return result;
-}
+ExcelValue referencing_o37() { return constant61; }
 
-ExcelValue referencing_c38() {
-  static ExcelValue result;
-  if(variable_set[115] == 1) { return result;}
-  result = constant22;
-  variable_set[115] = 1;
-  return result;
-}
+ExcelValue referencing_c38() { return constant22; }
 
-ExcelValue referencing_d38() {
-  static ExcelValue result;
-  if(variable_set[116] == 1) { return result;}
-  result = constant66;
-  variable_set[116] = 1;
-  return result;
-}
+ExcelValue referencing_d38() { return constant66; }
 
 ExcelValue referencing_i38_default() {
   return constant58;
@@ -3958,37 +3646,13 @@ static ExcelValue referencing_n38_variable;
 ExcelValue referencing_n38() { if(variable_set[119] == 1) { return referencing_n38_variable; } else { return referencing_n38_default(); } }
 void set_referencing_n38(ExcelValue newValue) { variable_set[119] = 1; referencing_n38_variable = newValue; }
 
-ExcelValue referencing_o38() {
-  static ExcelValue result;
-  if(variable_set[120] == 1) { return result;}
-  result = constant69;
-  variable_set[120] = 1;
-  return result;
-}
+ExcelValue referencing_o38() { return constant69; }
 
-ExcelValue referencing_c39() {
-  static ExcelValue result;
-  if(variable_set[121] == 1) { return result;}
-  result = constant70;
-  variable_set[121] = 1;
-  return result;
-}
+ExcelValue referencing_c39() { return constant70; }
 
-ExcelValue referencing_d39() {
-  static ExcelValue result;
-  if(variable_set[122] == 1) { return result;}
-  result = constant71;
-  variable_set[122] = 1;
-  return result;
-}
+ExcelValue referencing_d39() { return constant71; }
 
-ExcelValue referencing_e39() {
-  static ExcelValue result;
-  if(variable_set[123] == 1) { return result;}
-  result = constant72;
-  variable_set[123] = 1;
-  return result;
-}
+ExcelValue referencing_e39() { return constant72; }
 
 ExcelValue referencing_h39_default() {
   return constant58;
@@ -4011,37 +3675,13 @@ static ExcelValue referencing_n39_variable;
 ExcelValue referencing_n39() { if(variable_set[126] == 1) { return referencing_n39_variable; } else { return referencing_n39_default(); } }
 void set_referencing_n39(ExcelValue newValue) { variable_set[126] = 1; referencing_n39_variable = newValue; }
 
-ExcelValue referencing_o39() {
-  static ExcelValue result;
-  if(variable_set[127] == 1) { return result;}
-  result = constant61;
-  variable_set[127] = 1;
-  return result;
-}
+ExcelValue referencing_o39() { return constant61; }
 
-ExcelValue referencing_c40() {
-  static ExcelValue result;
-  if(variable_set[128] == 1) { return result;}
-  result = constant75;
-  variable_set[128] = 1;
-  return result;
-}
+ExcelValue referencing_c40() { return constant75; }
 
-ExcelValue referencing_d40() {
-  static ExcelValue result;
-  if(variable_set[129] == 1) { return result;}
-  result = constant76;
-  variable_set[129] = 1;
-  return result;
-}
+ExcelValue referencing_d40() { return constant76; }
 
-ExcelValue referencing_e40() {
-  static ExcelValue result;
-  if(variable_set[130] == 1) { return result;}
-  result = constant77;
-  variable_set[130] = 1;
-  return result;
-}
+ExcelValue referencing_e40() { return constant77; }
 
 ExcelValue referencing_g40_default() {
   return constant78;
@@ -4071,37 +3711,13 @@ static ExcelValue referencing_n40_variable;
 ExcelValue referencing_n40() { if(variable_set[134] == 1) { return referencing_n40_variable; } else { return referencing_n40_default(); } }
 void set_referencing_n40(ExcelValue newValue) { variable_set[134] = 1; referencing_n40_variable = newValue; }
 
-ExcelValue referencing_o40() {
-  static ExcelValue result;
-  if(variable_set[135] == 1) { return result;}
-  result = constant61;
-  variable_set[135] = 1;
-  return result;
-}
+ExcelValue referencing_o40() { return constant61; }
 
-ExcelValue referencing_c41() {
-  static ExcelValue result;
-  if(variable_set[136] == 1) { return result;}
-  result = constant81;
-  variable_set[136] = 1;
-  return result;
-}
+ExcelValue referencing_c41() { return constant81; }
 
-ExcelValue referencing_d41() {
-  static ExcelValue result;
-  if(variable_set[137] == 1) { return result;}
-  result = constant82;
-  variable_set[137] = 1;
-  return result;
-}
+ExcelValue referencing_d41() { return constant82; }
 
-ExcelValue referencing_e41() {
-  static ExcelValue result;
-  if(variable_set[138] == 1) { return result;}
-  result = constant77;
-  variable_set[138] = 1;
-  return result;
-}
+ExcelValue referencing_e41() { return constant77; }
 
 ExcelValue referencing_g41_default() {
   return constant83;
@@ -4131,29 +3747,11 @@ static ExcelValue referencing_n41_variable;
 ExcelValue referencing_n41() { if(variable_set[142] == 1) { return referencing_n41_variable; } else { return referencing_n41_default(); } }
 void set_referencing_n41(ExcelValue newValue) { variable_set[142] = 1; referencing_n41_variable = newValue; }
 
-ExcelValue referencing_o41() {
-  static ExcelValue result;
-  if(variable_set[143] == 1) { return result;}
-  result = constant61;
-  variable_set[143] = 1;
-  return result;
-}
+ExcelValue referencing_o41() { return constant61; }
 
-ExcelValue referencing_c42() {
-  static ExcelValue result;
-  if(variable_set[144] == 1) { return result;}
-  result = constant85;
-  variable_set[144] = 1;
-  return result;
-}
+ExcelValue referencing_c42() { return constant85; }
 
-ExcelValue referencing_d42() {
-  static ExcelValue result;
-  if(variable_set[145] == 1) { return result;}
-  result = constant86;
-  variable_set[145] = 1;
-  return result;
-}
+ExcelValue referencing_d42() { return constant86; }
 
 ExcelValue referencing_f42_default() {
   return constant58;
@@ -4176,29 +3774,11 @@ static ExcelValue referencing_m42_variable;
 ExcelValue referencing_m42() { if(variable_set[148] == 1) { return referencing_m42_variable; } else { return referencing_m42_default(); } }
 void set_referencing_m42(ExcelValue newValue) { variable_set[148] = 1; referencing_m42_variable = newValue; }
 
-ExcelValue referencing_o42() {
-  static ExcelValue result;
-  if(variable_set[149] == 1) { return result;}
-  result = constant61;
-  variable_set[149] = 1;
-  return result;
-}
+ExcelValue referencing_o42() { return constant61; }
 
-ExcelValue referencing_c43() {
-  static ExcelValue result;
-  if(variable_set[150] == 1) { return result;}
-  result = constant87;
-  variable_set[150] = 1;
-  return result;
-}
+ExcelValue referencing_c43() { return constant87; }
 
-ExcelValue referencing_d43() {
-  static ExcelValue result;
-  if(variable_set[151] == 1) { return result;}
-  result = constant88;
-  variable_set[151] = 1;
-  return result;
-}
+ExcelValue referencing_d43() { return constant88; }
 
 ExcelValue referencing_f43_default() {
   return constant58;
@@ -4221,29 +3801,11 @@ static ExcelValue referencing_m43_variable;
 ExcelValue referencing_m43() { if(variable_set[154] == 1) { return referencing_m43_variable; } else { return referencing_m43_default(); } }
 void set_referencing_m43(ExcelValue newValue) { variable_set[154] = 1; referencing_m43_variable = newValue; }
 
-ExcelValue referencing_o43() {
-  static ExcelValue result;
-  if(variable_set[155] == 1) { return result;}
-  result = constant61;
-  variable_set[155] = 1;
-  return result;
-}
+ExcelValue referencing_o43() { return constant61; }
 
-ExcelValue referencing_c44() {
-  static ExcelValue result;
-  if(variable_set[156] == 1) { return result;}
-  result = constant19;
-  variable_set[156] = 1;
-  return result;
-}
+ExcelValue referencing_c44() { return constant19; }
 
-ExcelValue referencing_d44() {
-  static ExcelValue result;
-  if(variable_set[157] == 1) { return result;}
-  result = constant90;
-  variable_set[157] = 1;
-  return result;
-}
+ExcelValue referencing_d44() { return constant90; }
 
 ExcelValue referencing_l44_default() {
   return constant58;
@@ -4266,29 +3828,11 @@ static ExcelValue referencing_n44_variable;
 ExcelValue referencing_n44() { if(variable_set[160] == 1) { return referencing_n44_variable; } else { return referencing_n44_default(); } }
 void set_referencing_n44(ExcelValue newValue) { variable_set[160] = 1; referencing_n44_variable = newValue; }
 
-ExcelValue referencing_o44() {
-  static ExcelValue result;
-  if(variable_set[161] == 1) { return result;}
-  result = constant61;
-  variable_set[161] = 1;
-  return result;
-}
+ExcelValue referencing_o44() { return constant61; }
 
-ExcelValue referencing_c45() {
-  static ExcelValue result;
-  if(variable_set[162] == 1) { return result;}
-  result = constant93;
-  variable_set[162] = 1;
-  return result;
-}
+ExcelValue referencing_c45() { return constant93; }
 
-ExcelValue referencing_d45() {
-  static ExcelValue result;
-  if(variable_set[163] == 1) { return result;}
-  result = constant94;
-  variable_set[163] = 1;
-  return result;
-}
+ExcelValue referencing_d45() { return constant94; }
 
 ExcelValue referencing_g45_default() {
   return constant95;
@@ -4318,29 +3862,11 @@ static ExcelValue referencing_n45_variable;
 ExcelValue referencing_n45() { if(variable_set[167] == 1) { return referencing_n45_variable; } else { return referencing_n45_default(); } }
 void set_referencing_n45(ExcelValue newValue) { variable_set[167] = 1; referencing_n45_variable = newValue; }
 
-ExcelValue referencing_o45() {
-  static ExcelValue result;
-  if(variable_set[168] == 1) { return result;}
-  result = constant61;
-  variable_set[168] = 1;
-  return result;
-}
+ExcelValue referencing_o45() { return constant61; }
 
-ExcelValue referencing_c46() {
-  static ExcelValue result;
-  if(variable_set[169] == 1) { return result;}
-  result = constant27;
-  variable_set[169] = 1;
-  return result;
-}
+ExcelValue referencing_c46() { return constant27; }
 
-ExcelValue referencing_d46() {
-  static ExcelValue result;
-  if(variable_set[170] == 1) { return result;}
-  result = constant96;
-  variable_set[170] = 1;
-  return result;
-}
+ExcelValue referencing_d46() { return constant96; }
 
 ExcelValue referencing_g46_default() {
   return constant97;
@@ -4370,37 +3896,13 @@ static ExcelValue referencing_n46_variable;
 ExcelValue referencing_n46() { if(variable_set[174] == 1) { return referencing_n46_variable; } else { return referencing_n46_default(); } }
 void set_referencing_n46(ExcelValue newValue) { variable_set[174] = 1; referencing_n46_variable = newValue; }
 
-ExcelValue referencing_o46() {
-  static ExcelValue result;
-  if(variable_set[175] == 1) { return result;}
-  result = constant61;
-  variable_set[175] = 1;
-  return result;
-}
+ExcelValue referencing_o46() { return constant61; }
 
-ExcelValue referencing_c47() {
-  static ExcelValue result;
-  if(variable_set[176] == 1) { return result;}
-  result = constant100;
-  variable_set[176] = 1;
-  return result;
-}
+ExcelValue referencing_c47() { return constant100; }
 
-ExcelValue referencing_d47() {
-  static ExcelValue result;
-  if(variable_set[177] == 1) { return result;}
-  result = constant101;
-  variable_set[177] = 1;
-  return result;
-}
+ExcelValue referencing_d47() { return constant101; }
 
-ExcelValue referencing_e47() {
-  static ExcelValue result;
-  if(variable_set[178] == 1) { return result;}
-  result = constant102;
-  variable_set[178] = 1;
-  return result;
-}
+ExcelValue referencing_e47() { return constant102; }
 
 ExcelValue referencing_k47_default() {
   return constant58;
@@ -4423,21 +3925,9 @@ static ExcelValue referencing_n47_variable;
 ExcelValue referencing_n47() { if(variable_set[181] == 1) { return referencing_n47_variable; } else { return referencing_n47_default(); } }
 void set_referencing_n47(ExcelValue newValue) { variable_set[181] = 1; referencing_n47_variable = newValue; }
 
-ExcelValue referencing_o47() {
-  static ExcelValue result;
-  if(variable_set[182] == 1) { return result;}
-  result = constant61;
-  variable_set[182] = 1;
-  return result;
-}
+ExcelValue referencing_o47() { return constant61; }
 
-ExcelValue referencing_d50() {
-  static ExcelValue result;
-  if(variable_set[183] == 1) { return result;}
-  result = constant57;
-  variable_set[183] = 1;
-  return result;
-}
+ExcelValue referencing_d50() { return constant57; }
 
 ExcelValue referencing_g50_default() {
   return constant104;
@@ -4446,13 +3936,7 @@ static ExcelValue referencing_g50_variable;
 ExcelValue referencing_g50() { if(variable_set[184] == 1) { return referencing_g50_variable; } else { return referencing_g50_default(); } }
 void set_referencing_g50(ExcelValue newValue) { variable_set[184] = 1; referencing_g50_variable = newValue; }
 
-ExcelValue referencing_d51() {
-  static ExcelValue result;
-  if(variable_set[185] == 1) { return result;}
-  result = constant62;
-  variable_set[185] = 1;
-  return result;
-}
+ExcelValue referencing_d51() { return constant62; }
 
 ExcelValue referencing_g51_default() {
   return constant105;
@@ -4461,13 +3945,7 @@ static ExcelValue referencing_g51_variable;
 ExcelValue referencing_g51() { if(variable_set[186] == 1) { return referencing_g51_variable; } else { return referencing_g51_default(); } }
 void set_referencing_g51(ExcelValue newValue) { variable_set[186] = 1; referencing_g51_variable = newValue; }
 
-ExcelValue referencing_d52() {
-  static ExcelValue result;
-  if(variable_set[187] == 1) { return result;}
-  result = constant65;
-  variable_set[187] = 1;
-  return result;
-}
+ExcelValue referencing_d52() { return constant65; }
 
 ExcelValue referencing_g52_default() {
   return constant106;
@@ -4476,13 +3954,7 @@ static ExcelValue referencing_g52_variable;
 ExcelValue referencing_g52() { if(variable_set[188] == 1) { return referencing_g52_variable; } else { return referencing_g52_default(); } }
 void set_referencing_g52(ExcelValue newValue) { variable_set[188] = 1; referencing_g52_variable = newValue; }
 
-ExcelValue referencing_d53() {
-  static ExcelValue result;
-  if(variable_set[189] == 1) { return result;}
-  result = constant66;
-  variable_set[189] = 1;
-  return result;
-}
+ExcelValue referencing_d53() { return constant66; }
 
 ExcelValue referencing_g53_default() {
   return constant107;
@@ -4491,13 +3963,7 @@ static ExcelValue referencing_g53_variable;
 ExcelValue referencing_g53() { if(variable_set[190] == 1) { return referencing_g53_variable; } else { return referencing_g53_default(); } }
 void set_referencing_g53(ExcelValue newValue) { variable_set[190] = 1; referencing_g53_variable = newValue; }
 
-ExcelValue referencing_d54() {
-  static ExcelValue result;
-  if(variable_set[191] == 1) { return result;}
-  result = constant71;
-  variable_set[191] = 1;
-  return result;
-}
+ExcelValue referencing_d54() { return constant71; }
 
 ExcelValue referencing_g54_default() {
   return constant107;
@@ -4506,13 +3972,7 @@ static ExcelValue referencing_g54_variable;
 ExcelValue referencing_g54() { if(variable_set[192] == 1) { return referencing_g54_variable; } else { return referencing_g54_default(); } }
 void set_referencing_g54(ExcelValue newValue) { variable_set[192] = 1; referencing_g54_variable = newValue; }
 
-ExcelValue referencing_d55() {
-  static ExcelValue result;
-  if(variable_set[193] == 1) { return result;}
-  result = constant76;
-  variable_set[193] = 1;
-  return result;
-}
+ExcelValue referencing_d55() { return constant76; }
 
 ExcelValue referencing_g55_default() {
   return constant61;
@@ -4521,13 +3981,7 @@ static ExcelValue referencing_g55_variable;
 ExcelValue referencing_g55() { if(variable_set[194] == 1) { return referencing_g55_variable; } else { return referencing_g55_default(); } }
 void set_referencing_g55(ExcelValue newValue) { variable_set[194] = 1; referencing_g55_variable = newValue; }
 
-ExcelValue referencing_d56() {
-  static ExcelValue result;
-  if(variable_set[195] == 1) { return result;}
-  result = constant82;
-  variable_set[195] = 1;
-  return result;
-}
+ExcelValue referencing_d56() { return constant82; }
 
 ExcelValue referencing_g56_default() {
   return constant61;
@@ -4536,13 +3990,7 @@ static ExcelValue referencing_g56_variable;
 ExcelValue referencing_g56() { if(variable_set[196] == 1) { return referencing_g56_variable; } else { return referencing_g56_default(); } }
 void set_referencing_g56(ExcelValue newValue) { variable_set[196] = 1; referencing_g56_variable = newValue; }
 
-ExcelValue referencing_d57() {
-  static ExcelValue result;
-  if(variable_set[197] == 1) { return result;}
-  result = constant86;
-  variable_set[197] = 1;
-  return result;
-}
+ExcelValue referencing_d57() { return constant86; }
 
 ExcelValue referencing_g57_default() {
   return constant61;
@@ -4551,13 +3999,7 @@ static ExcelValue referencing_g57_variable;
 ExcelValue referencing_g57() { if(variable_set[198] == 1) { return referencing_g57_variable; } else { return referencing_g57_default(); } }
 void set_referencing_g57(ExcelValue newValue) { variable_set[198] = 1; referencing_g57_variable = newValue; }
 
-ExcelValue referencing_d58() {
-  static ExcelValue result;
-  if(variable_set[199] == 1) { return result;}
-  result = constant88;
-  variable_set[199] = 1;
-  return result;
-}
+ExcelValue referencing_d58() { return constant88; }
 
 ExcelValue referencing_g58_default() {
   return constant61;
@@ -4566,13 +4008,7 @@ static ExcelValue referencing_g58_variable;
 ExcelValue referencing_g58() { if(variable_set[200] == 1) { return referencing_g58_variable; } else { return referencing_g58_default(); } }
 void set_referencing_g58(ExcelValue newValue) { variable_set[200] = 1; referencing_g58_variable = newValue; }
 
-ExcelValue referencing_d59() {
-  static ExcelValue result;
-  if(variable_set[201] == 1) { return result;}
-  result = constant90;
-  variable_set[201] = 1;
-  return result;
-}
+ExcelValue referencing_d59() { return constant90; }
 
 ExcelValue referencing_g59_default() {
   return constant61;
@@ -4581,13 +4017,7 @@ static ExcelValue referencing_g59_variable;
 ExcelValue referencing_g59() { if(variable_set[202] == 1) { return referencing_g59_variable; } else { return referencing_g59_default(); } }
 void set_referencing_g59(ExcelValue newValue) { variable_set[202] = 1; referencing_g59_variable = newValue; }
 
-ExcelValue referencing_d60() {
-  static ExcelValue result;
-  if(variable_set[203] == 1) { return result;}
-  result = constant94;
-  variable_set[203] = 1;
-  return result;
-}
+ExcelValue referencing_d60() { return constant94; }
 
 ExcelValue referencing_g60_default() {
   return constant61;
@@ -4596,13 +4026,7 @@ static ExcelValue referencing_g60_variable;
 ExcelValue referencing_g60() { if(variable_set[204] == 1) { return referencing_g60_variable; } else { return referencing_g60_default(); } }
 void set_referencing_g60(ExcelValue newValue) { variable_set[204] = 1; referencing_g60_variable = newValue; }
 
-ExcelValue referencing_d61() {
-  static ExcelValue result;
-  if(variable_set[205] == 1) { return result;}
-  result = constant96;
-  variable_set[205] = 1;
-  return result;
-}
+ExcelValue referencing_d61() { return constant96; }
 
 ExcelValue referencing_g61_default() {
   return constant61;
@@ -4611,13 +4035,7 @@ static ExcelValue referencing_g61_variable;
 ExcelValue referencing_g61() { if(variable_set[206] == 1) { return referencing_g61_variable; } else { return referencing_g61_default(); } }
 void set_referencing_g61(ExcelValue newValue) { variable_set[206] = 1; referencing_g61_variable = newValue; }
 
-ExcelValue referencing_d62() {
-  static ExcelValue result;
-  if(variable_set[207] == 1) { return result;}
-  result = constant101;
-  variable_set[207] = 1;
-  return result;
-}
+ExcelValue referencing_d62() { return constant101; }
 
 ExcelValue referencing_g62_default() {
   return constant61;
@@ -4633,13 +4051,7 @@ static ExcelValue referencing_d64_variable;
 ExcelValue referencing_d64() { if(variable_set[209] == 1) { return referencing_d64_variable; } else { return referencing_d64_default(); } }
 void set_referencing_d64(ExcelValue newValue) { variable_set[209] = 1; referencing_d64_variable = newValue; }
 
-ExcelValue referencing_e64() {
-  static ExcelValue result;
-  if(variable_set[210] == 1) { return result;}
-  result = constant42;
-  variable_set[210] = 1;
-  return result;
-}
+ExcelValue referencing_e64() { return constant42; }
 
 ExcelValue referencing_h64() {
   static ExcelValue result;
@@ -4877,13 +4289,7 @@ ExcelValue tables_h4() {
   return result;
 }
 
-ExcelValue tables_b5() {
-  static ExcelValue result;
-  if(variable_set[225] == 1) { return result;}
-  result = _common7();
-  variable_set[225] = 1;
-  return result;
-}
+ExcelValue tables_b5() { return _common7(); }
 
 ExcelValue tables_c5() {
   static ExcelValue result;
@@ -4994,13 +4400,7 @@ ExcelValue tables_g9() {
   return result;
 }
 
-ExcelValue tables_c10() {
-  static ExcelValue result;
-  if(variable_set[239] == 1) { return result;}
-  result = _common1();
-  variable_set[239] = 1;
-  return result;
-}
+ExcelValue tables_c10() { return _common1(); }
 
 ExcelValue tables_e10() {
   static ExcelValue result;
@@ -5026,13 +4426,7 @@ ExcelValue tables_g10() {
   return result;
 }
 
-ExcelValue tables_c11() {
-  static ExcelValue result;
-  if(variable_set[243] == 1) { return result;}
-  result = _common7();
-  variable_set[243] = 1;
-  return result;
-}
+ExcelValue tables_c11() { return _common7(); }
 
 ExcelValue tables_e11() {
   static ExcelValue result;
@@ -5066,21 +4460,9 @@ ExcelValue tables_c12() {
   return result;
 }
 
-ExcelValue tables_c13() {
-  static ExcelValue result;
-  if(variable_set[248] == 1) { return result;}
-  result = _common9();
-  variable_set[248] = 1;
-  return result;
-}
+ExcelValue tables_c13() { return _common9(); }
 
-ExcelValue tables_c14() {
-  static ExcelValue result;
-  if(variable_set[249] == 1) { return result;}
-  result = _common9();
-  variable_set[249] = 1;
-  return result;
-}
+ExcelValue tables_c14() { return _common9(); }
 
 ExcelValue s_innapropriate_sheet_name__c4() {
   static ExcelValue result;
