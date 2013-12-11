@@ -8,9 +8,10 @@ input = <<END
 A1\t[:cell, :"$A$2"]
 A2\t[:cell, :"A3"]
 A3\t[:number, 1]
-A4\t[:sheet_reference,"sheet2",[:cell,:"A1"]]
-A5\t[:sheet_reference,"sheet3",[:cell,:"A5"]]
-A6\t[:function, "OFFSET", [:cell, :"$A$2"], [:cell, :"A3"], [:sheet_reference,:"sheet2",[:cell,:"A1"]]]
+A4\t[:sheet_reference,:sheet2,[:cell,:"A1"]]
+A5\t[:sheet_reference,:sheet3,[:cell,:"A5"]]
+A6\t[:function, :OFFSET, [:cell, :"$A$2"], [:cell, :"A3"], [:sheet_reference,:sheet2,[:cell,:"A1"]]]
+A7\t[:function, :OFFSET, [:function, :INDIRECT, [:string_join, [:string, "G."], [:sheet_reference, :sheet3, [:cell, :A5]], [:string, ".choice"]]], [:number, 0.0], [:number, -1.0]]
 END
 
 references = {
@@ -29,7 +30,8 @@ A2\t[:number, 1]
 A3\t[:number, 1]
 A4\t[:number, 5]
 A5\t[:number, 10]
-A6\t[:function, "OFFSET", [:cell, :"$A$2"], [:number, 1], [:number, 5]]
+A6\t[:function, :OFFSET, [:cell, :"$A$2"], [:number, 1], [:number, 5]]
+A7\t[:function, :OFFSET, [:function, :INDIRECT, [:string_join, [:string, "G."], [:number, 10], [:string, ".choice"]]], [:number, 0.0], [:number, -1.0]]
 END
     
 input = StringIO.new(input)

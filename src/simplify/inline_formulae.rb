@@ -22,7 +22,7 @@ class InlineFormulaeAst
   end
 
   def function(ast)
-    if ast[1] == 'OFFSET'
+    if ast[1] == :OFFSET && (ast[2][0] == :cell || ast[2][0] == :sheet_reference)
       # Don't map the second argument - it should be left as a cell refernce
       ast[3..-1].each {|a| map(a) }
     else
