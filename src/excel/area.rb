@@ -59,17 +59,15 @@ class Area < String
   def to_array_literal(sheet = nil)
     calculate_excel_variables
     unfixed_start = @excel_start.unfix
+    fc = CachingFormulaParser.instance
     [:array,
       *(0.upto(height).map do |row|
         [:row,
           *(0.upto(width).map do |column|
             if sheet
-              [:sheet_reference, 
-                sheet,
-                [:cell,
-                  unfixed_start.offset(row,column)
-                ]
-              ]
+              fc.sheet_reference(
+                [:sheet_reference, sheet, [:cell, unfixed_start.offset(row,column)]]
+              )
             else
               [:cell,
                 unfixed_start.offset(row,column)

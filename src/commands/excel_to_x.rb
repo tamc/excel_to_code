@@ -271,9 +271,9 @@ class ExcelToX
       end
     end
     # Replace A1:B2 with [A1, A2, B1, B2]
-    rewriter = ReplaceRangesWithArrayLiteralsAst.new
+    @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     @named_references.each do |name, reference|
-      @named_references[name] = rewriter.map(reference)
+      @named_references[name] = @replace_ranges_with_array_literals_replacer.map(reference)
     end
   end
 
@@ -481,9 +481,9 @@ class ExcelToX
       simplify_arithmetic_replacer.map(details.last)
     end
     
-    replace_ranges_with_array_literals_replacer = ReplaceRangesWithArrayLiteralsAst.new
+    @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     @formulae_array.each do |ref, details|
-      replace_ranges_with_array_literals_replacer.map(details.last)
+      details[-1] = @replace_ranges_with_array_literals_replacer.map(details.last)
     end
 
     expand_array_formulae_replacer = AstExpandArrayFormulae.new
@@ -690,7 +690,7 @@ class ExcelToX
       @table_reference_replacer.worksheet = ref.first
       @table_reference_replacer.referring_cell = ref.last
       @table_reference_replacer.map(ast)
-      @replace_ranges_with_array_literals_replacer.map(ast)
+      cells[ref] = ast = @replace_ranges_with_array_literals_replacer.map(ast)
       @replace_arithmetic_on_ranges_replacer.map(ast)
       @replace_arrays_with_single_cells_replacer.map(ast)
       @replace_string_joins_on_ranges_replacer.map(ast)

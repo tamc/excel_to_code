@@ -56,6 +56,12 @@ describe Area do
     Area.for("A$1:A$2").to_array_literal.should == [:array,[:row,[:cell,:A1]],[:row,[:cell,:A2]]]
     Area.for("A1:A1").to_array_literal(:worksheet).should == [:array,[:row,[:sheet_reference,:worksheet,[:cell,:A1]]]]
   end
+
+  it "should return cached sheet reference objects when called" do
+    first = Area.for("A1:A1").to_array_literal(:worksheet)
+    second = Area.for("A1:A1").to_array_literal(:worksheet)
+    first[1][1].object_id.should == second[1][1].object_id
+  end
   
   it "should be able to say whether a particular reference falls within the area" do
     Area.for("C2:E4").includes?("D3").should == true

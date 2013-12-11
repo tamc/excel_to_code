@@ -1,14 +1,11 @@
 require_relative '../excel'
 
 class ReplaceRangesWithArrayLiteralsAst
-  def map(ast)
-    result = do_map(ast)
-    # FIXME: Is this needed?
-    ast.replace(result) unless ast.object_id == result.object_id
-    ast
+  def initialize
+    @cache = {}
   end
 
-  def do_map(ast)
+  def map(ast)
     return ast unless ast.is_a?(Array)
     case ast[0]
     when :sheet_reference; return sheet_reference(ast)
@@ -28,6 +25,10 @@ class ReplaceRangesWithArrayLiteralsAst
   
   # Of the form [:sheet_reference, sheet, reference]
   def sheet_reference(ast)
+    @cache[ast] || calculate_expansion_for(ast)
+  end
+
+  def calculate_expansion_for(ast)
     sheet = ast[1]
     reference = ast[2]
     return ast unless reference.first == :area
@@ -35,11 +36,12 @@ class ReplaceRangesWithArrayLiteralsAst
     a = area.to_array_literal(sheet)
     
     # Don't convert single cell ranges
-    if a.size == 2 && a[1].size == 2
+    result = if a.size == 2 && a[1].size == 2
       a[1][1]
     else
       a
     end
+    @cache[ast.dup] = result
   end
   
   # Of the form [:area, start, finish]
