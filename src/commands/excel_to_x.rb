@@ -459,35 +459,20 @@ class ExcelToX
     log.info "Rewriting array formulae"
     # FIMXE: Refactor this
 
-    # Replace the named references in the array formulae
-    named_references = NamedReferences.new(@named_references)
-    named_reference_replacer = ReplaceNamedReferencesAst.new(named_references) 
+    named_reference_replacer = ReplaceNamedReferencesAst.new( NamedReferences.new(@named_references)) 
+    table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
+    simplify_arithmetic_replacer = SimplifyArithmeticAst.new
+    @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
+    expand_array_formulae_replacer = AstExpandArrayFormulae.new
 
     @formulae_array.each do |ref, details|
       named_reference_replacer.default_sheet_name = ref.first
       named_reference_replacer.map(details.last)
-    end
-    
-    table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
-
-    @formulae_array.each do |ref, details|
       table_reference_replacer.worksheet = ref.first
       table_reference_replacer.referring_cell = ref.last
       table_reference_replacer.map(details.last)
-    end
-      
-    simplify_arithmetic_replacer = SimplifyArithmeticAst.new
-    @formulae_array.each do |ref, details|
       simplify_arithmetic_replacer.map(details.last)
-    end
-    
-    @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
-    @formulae_array.each do |ref, details|
       details[-1] = @replace_ranges_with_array_literals_replacer.map(details.last)
-    end
-
-    expand_array_formulae_replacer = AstExpandArrayFormulae.new
-    @formulae_array.each do |ref, details|
       expand_array_formulae_replacer.map(details.last)
     end
 
