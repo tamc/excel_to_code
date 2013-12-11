@@ -52,12 +52,47 @@ class MapFormulaeToValues
   # [:arithmetic, left, operator, right]
   def arithmetic(ast)
     left, operator, right = ast[1], ast[2], ast[3]
-    l = value(left)
-    r = value(right)
-    return if (l == :not_a_value) || (r == :not_a_value)
-    ast.replace(formula_value(operator.last,l,r))
+    l = @calculator.number_argument(value(left))
+    r = @calculator.number_argument(value(right))
+    if (l == :not_a_value) && (r == :not_a_value)
+      return ast
+    elsif (l != :not_a_value) && (r != :not_a_value)
+      ast.replace(formula_value(operator.last,l,r))
+    # SPECIAL CASES
+    elsif l == 0
+      case operator.last
+      when :+ 
+        ast.replace(right)
+      when :*, :/, :^
+        ast.replace([:number, 0])
+      end
+    elsif r == 0
+      case operator.last
+      when :+, :-
+        ast.replace(left)
+      when :* 
+        ast.replace([:number, 0])
+      when :/
+        ast.replace([:error, :'#DIV/0!'])
+      when :^
+        ast.replace([:number, 1])
+      end
+    elsif l == 1
+      case operator.last
+      when :*
+        ast.replace(right)
+      when :^
+        ast.replace([:number, 1])
+      end
+    elsif r == 1
+      case operator.last
+      when :*, :/, :^
+        ast.replace(left)
+      end
+    end
+    ast
   end
-  
+
   alias :comparison :arithmetic
 
   # [:percentage, number]
