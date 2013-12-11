@@ -417,6 +417,7 @@ class ExcelToX
     rewrite_array_formulae
     rewrite_values
     combine_formulae_files
+    simplify_arithmetic
   end
   
   # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
@@ -454,6 +455,13 @@ class ExcelToX
     @formulae_shared = RewriteSharedFormulae.rewrite( @formulae_shared, @formulae_shared_targets)
     # FIXME: Could now nil off the @formula_shared_targets ?
   end
+
+  def simplify_arithmetic
+    simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
+    @formulae.each do |ref, ast|
+      simplify_arithmetic_replacer.map(ast)
+    end
+  end
   
   def rewrite_array_formulae
     log.info "Rewriting array formulae"
@@ -461,9 +469,9 @@ class ExcelToX
 
     named_reference_replacer = ReplaceNamedReferencesAst.new( NamedReferences.new(@named_references)) 
     table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
-    simplify_arithmetic_replacer = SimplifyArithmeticAst.new
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     expand_array_formulae_replacer = AstExpandArrayFormulae.new
+    simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
 
     @formulae_array.each do |ref, details|
       named_reference_replacer.default_sheet_name = ref.first
@@ -471,8 +479,8 @@ class ExcelToX
       table_reference_replacer.worksheet = ref.first
       table_reference_replacer.referring_cell = ref.last
       table_reference_replacer.map(details.last)
-      simplify_arithmetic_replacer.map(details.last)
       details[-1] = @replace_ranges_with_array_literals_replacer.map(details.last)
+      simplify_arithmetic_replacer.map(details.last)
       expand_array_formulae_replacer.map(details.last)
     end
 
@@ -655,7 +663,6 @@ class ExcelToX
     log.info "Simplifying cells"
 
     @shared_string_replacer ||= ReplaceSharedStringAst.new(@shared_strings)
-    @simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
     @replace_arithmetic_on_ranges_replacer ||= ReplaceArithmeticOnRangesAst.new
     @wrap_formulae_that_return_arrays_replacer ||= WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
     @named_reference_replacer ||= ReplaceNamedReferencesAst.new(@named_references) 
@@ -669,7 +676,6 @@ class ExcelToX
       @sheetless_cell_reference_replacer.worksheet = ref.first
       cells[ref] = ast = @sheetless_cell_reference_replacer.map(ast)
       @shared_string_replacer.map(ast)
-      @simplify_arithmetic_replacer.map(ast)
       @named_reference_replacer.default_sheet_name = ref.first
       @named_reference_replacer.map(ast)
       @table_reference_replacer.worksheet = ref.first
