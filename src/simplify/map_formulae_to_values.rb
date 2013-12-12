@@ -93,7 +93,13 @@ class MapFormulaeToValues
     ast
   end
 
-  alias :comparison :arithmetic
+  def comparison(ast)
+    left, operator, right = ast[1], ast[2], ast[3]
+    l = value(left)
+    r = value(right)
+    return ast if (l == :not_a_value) || (r == :not_a_value)
+    ast.replace(formula_value(operator.last,l,r))
+  end
 
   # [:percentage, number]
   def percentage(ast)

@@ -57,8 +57,6 @@
 [:arithmetic, [:cell, :A1], [:operator, :-], [:blank]]	[:cell, :A1]
 [:arithmetic, [:cell, :A1], [:operator, :^], [:blank]]	[:number, 1]
 
-
-
 # Comparators
 [:comparison, [:number, 1], [:comparator, :"="], [:number, 8]]	[:boolean_false]
 [:comparison, [:number, 1], [:comparator, :<], [:number, 8]]	[:boolean_true]
@@ -66,6 +64,7 @@
 [:comparison, [:number, 1], [:comparator, :"<="], [:number, 8]]	[:boolean_true]
 [:comparison, [:number, 1], [:comparator, :">="], [:number, 8]]	[:boolean_false]
 [:comparison, [:number, 1], [:comparator, :"<>"], [:number, 8]]	[:boolean_true]
+[:comparison, [:string, "H.01"], [:comparator, :"="], [:string, "V.01"]]	[:boolean_false]
 
 # Functions
 [:function, :PI]	[:number, 3.141592653589793]
