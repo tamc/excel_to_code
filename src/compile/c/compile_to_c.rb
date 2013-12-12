@@ -44,7 +44,7 @@ class CompileToC
         # Other functions just have a getter
         else
           # In simple cases, don't bother memoizing the result
-          simple = (ast[0] == :constant) || (ast[0] == :cell && ast[1] =~ /common\d+/)
+          simple = (ast[0] == :constant) || (ast[0] == :cell && ast[1] =~ /common\d+/) || (ast[0] == :blank) || (ast[0] == :error)
 
           if simple
             output.puts "#{static_or_not}ExcelValue #{name}() { return #{calculation}; }"

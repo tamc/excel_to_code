@@ -4083,14 +4083,7 @@ ExcelValue referencing_h64() {
   return result;
 }
 
-ExcelValue tables_a1() {
-  static ExcelValue result;
-  if(variable_set[212] == 1) { return result;}
-  result = BLANK;
-  variable_set[212] = 1;
-  return result;
-}
-
+ExcelValue tables_a1() { return BLANK; }
 ExcelValue tables_b2_default() {
   return constant109;
 }
@@ -4245,14 +4238,7 @@ ExcelValue tables_f7() {
   return result;
 }
 
-ExcelValue tables_g7() {
-  static ExcelValue result;
-  if(variable_set[232] == 1) { return result;}
-  result = BLANK;
-  variable_set[232] = 1;
-  return result;
-}
-
+ExcelValue tables_g7() { return BLANK; }
 ExcelValue tables_e8() {
   static ExcelValue result;
   if(variable_set[233] == 1) { return result;}
@@ -4343,14 +4329,7 @@ ExcelValue tables_f11() {
   return result;
 }
 
-ExcelValue tables_g11() {
-  static ExcelValue result;
-  if(variable_set[246] == 1) { return result;}
-  result = BLANK;
-  variable_set[246] = 1;
-  return result;
-}
-
+ExcelValue tables_g11() { return BLANK; }
 ExcelValue tables_c12() {
   static ExcelValue result;
   if(variable_set[247] == 1) { return result;}
