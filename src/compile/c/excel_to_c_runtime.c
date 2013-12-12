@@ -843,12 +843,12 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	  printf("Out of memory");
 	  exit(-1);
 	}
-	free_later(left_string);
 	memcpy(left_string,string,number_of_characters);
 	left_string[number_of_characters] = '\0';
 	if(string_must_be_freed == 1) {
 		free(string);
 	}
+	free_later(left_string);
 	return new_excel_string(left_string);
 }
 
@@ -1331,7 +1331,6 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	  printf("Out of memory");
 	  exit(-1);
 	}
-	free_later(string);
 	char *current_string;
 	int current_string_length;
 	int must_free_current_string;
@@ -1381,6 +1380,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	}
 	string = realloc(string,used_length+1);
   string[used_length] = '\0';
+	free_later(string);
 	return new_excel_string(string);
 }
 
@@ -1750,8 +1750,8 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
   if(strcmp(format_v.string,"0%") == 0) {
     // FIXME: Too little? 
     s = malloc(100);
-    free_later(s);
     sprintf(s, "%d%%",(int) round(number_v.number*100));
+    free_later(s);
     result = new_excel_string(s);
   } else {
     return format_v;
@@ -2283,6 +2283,10 @@ int test_functions() {
   assert(string_join(2, string_join_array_4).string[8] == '\0');
 	// ... should convert TRUE and FALSE into strings
   assert(string_join(3,string_join_array_5).string[4] == 'T');
+  // Should deal with very long string joins
+	ExcelValue string_join_array_6[] = {new_excel_string("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"), new_excel_string("012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789")};
+  assert(string_join(2, string_join_array_6).string[0] == '0');
+  free_all_allocated_memory();
 	
   // Test SUBTOTAL function
   ExcelValue subtotal_array_1[] = {new_excel_number(10),new_excel_number(100),BLANK};
