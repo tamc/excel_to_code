@@ -479,7 +479,7 @@ class ExcelToX
       table_reference_replacer.worksheet = ref.first
       table_reference_replacer.referring_cell = ref.last
       table_reference_replacer.map(details.last)
-      details[-1] = @replace_ranges_with_array_literals_replacer.map(details.last)
+      @replace_ranges_with_array_literals_replacer.map(details.last)
       simplify_arithmetic_replacer.map(details.last)
       expand_array_formulae_replacer.map(details.last)
     end
