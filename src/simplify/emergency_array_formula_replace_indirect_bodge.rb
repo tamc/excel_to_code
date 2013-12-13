@@ -18,13 +18,12 @@ class EmergencyArrayFormulaReplaceIndirectBodge
    
   def map(ast)
     return ast unless ast.is_a?(Array)
-    function(ast) if ast[0] == :function
+    function(ast) if ast[0] == :function && ast[1] == :INDIRECT
     ast.each { |a| map(a) }
     ast
   end
   
   def function(ast)
-    return unless ast[1] == :INDIRECT
     new_ast = deep_copy(ast)
     @inline_formulae_replacer.references = @references
     @inline_formulae_replacer.current_sheet_name = [@current_sheet_name]

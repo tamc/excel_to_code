@@ -412,10 +412,10 @@ class ExcelToX
   end
   
   def rewrite_worksheets
+    rewrite_values
     rewrite_row_and_column_references
     rewrite_shared_formulae
     rewrite_array_formulae
-    rewrite_values
     combine_formulae_files
     simplify_arithmetic
   end
