@@ -30,13 +30,13 @@ class RubyExampleSpreadsheet
   def ranges_b1; @ranges_b1 ||= "This sheet"; end
   def ranges_c1; @ranges_c1 ||= "Other sheet"; end
   def ranges_a2; @ranges_a2 ||= "Standard"; end
-  def ranges_b2; @ranges_b2 ||= sum([[ranges_f4],[ranges_f5],[ranges_f6]]); end
-  def ranges_c2; @ranges_c2 ||= sum([[valuetypes_a3],[valuetypes_a4]]); end
+  def ranges_b2; @ranges_b2 ||= common0; end
+  def ranges_c2; @ranges_c2 ||= sum(valuetypes_a3,valuetypes_a4); end
   def ranges_a3; @ranges_a3 ||= "Column"; end
-  def ranges_b3; @ranges_b3 ||= sum([[nil],[nil],[nil],[ranges_f4],[ranges_f5],[ranges_f6]]); end
-  def ranges_c3; @ranges_c3 ||= sum([[valuetypes_a1],[valuetypes_a2],[valuetypes_a3],[valuetypes_a4],[valuetypes_a5],[valuetypes_a6]]); end
+  def ranges_b3; @ranges_b3 ||= common0; end
+  def ranges_c3; @ranges_c3 ||= sum(valuetypes_a1,valuetypes_a2,valuetypes_a3,valuetypes_a4,valuetypes_a5,valuetypes_a6); end
   def ranges_a4; @ranges_a4 ||= "Row"; end
-  def ranges_b4; @ranges_b4 ||= sum([[nil,nil,nil,nil,ranges_e5,ranges_f5,ranges_g5]]); end
+  def ranges_b4; @ranges_b4 ||= sum(ranges_e5,ranges_f5,ranges_g5); end
   def ranges_c4; @ranges_c4 ||= sum(valuetypes_a4); end
   attr_accessor :ranges_f4 # Default: 1.0
   attr_accessor :ranges_e5 # Default: 1.0
@@ -46,11 +46,11 @@ class RubyExampleSpreadsheet
   def referencing_a1; @referencing_a1 ||= referencing_c4; end
   def referencing_a2; @referencing_a2 ||= referencing_c4; end
   attr_accessor :referencing_a4 # Default: 10.0
-  def referencing_b4; @referencing_b4 ||= common0; end
-  def referencing_c4; @referencing_c4 ||= add(common0,1.0); end
+  def referencing_b4; @referencing_b4 ||= common1; end
+  def referencing_c4; @referencing_c4 ||= add(common1,1.0); end
   def referencing_a5; @referencing_a5 ||= 3.0; end
   def referencing_b8; @referencing_b8 ||= referencing_c4; end
-  def referencing_b9; @referencing_b9 ||= common1; end
+  def referencing_b9; @referencing_b9 ||= common2; end
   def referencing_b11; @referencing_b11 ||= "Named"; end
   def referencing_c11; @referencing_c11 ||= "Reference"; end
   attr_accessor :referencing_c15 # Default: 1.0
@@ -216,7 +216,7 @@ class RubyExampleSpreadsheet
   attr_accessor :referencing_g62 # Default: 0.0
   attr_accessor :referencing_d64 # Default: "H.01"
   def referencing_e64; @referencing_e64 ||= "Heating & cooling"; end
-  def referencing_h64; @referencing_h64 ||= sum([[0,0,0,0,multiply(multiply(divide(referencing_g50,referencing_m35),excel_equal?(referencing_d64,referencing_j34)),referencing_j35),0,0,multiply(multiply(divide(referencing_g50,referencing_m35),excel_equal?(referencing_d64,referencing_m34)),referencing_m35),multiply(multiply(divide(referencing_g50,referencing_m35),excel_equal?(referencing_d64,referencing_n34)),referencing_n35)],[0,0,0,0,multiply(multiply(divide(referencing_g51,referencing_m36),excel_equal?(referencing_d64,referencing_j34)),referencing_j36),0,0,multiply(multiply(divide(referencing_g51,referencing_m36),excel_equal?(referencing_d64,referencing_m34)),referencing_m36),multiply(multiply(divide(referencing_g51,referencing_m36),excel_equal?(referencing_d64,referencing_n34)),referencing_n36)],[multiply(multiply(divide(referencing_g52,referencing_m37),excel_equal?(referencing_d64,referencing_f34)),referencing_f37),0,0,0,0,0,0,multiply(multiply(divide(referencing_g52,referencing_m37),excel_equal?(referencing_d64,referencing_m34)),referencing_m37),multiply(multiply(divide(referencing_g52,referencing_m37),excel_equal?(referencing_d64,referencing_n34)),referencing_n37)],[0,0,0,multiply(multiply(divide(referencing_g53,referencing_m38),excel_equal?(referencing_d64,referencing_i34)),referencing_i38),0,0,0,multiply(multiply(divide(referencing_g53,referencing_m38),excel_equal?(referencing_d64,referencing_m34)),referencing_m38),multiply(multiply(divide(referencing_g53,referencing_m38),excel_equal?(referencing_d64,referencing_n34)),referencing_n38)],[0,0,multiply(multiply(divide(referencing_g54,referencing_m39),excel_equal?(referencing_d64,referencing_h34)),referencing_h39),0,0,0,0,multiply(multiply(divide(referencing_g54,referencing_m39),excel_equal?(referencing_d64,referencing_m34)),referencing_m39),multiply(multiply(divide(referencing_g54,referencing_m39),excel_equal?(referencing_d64,referencing_n34)),referencing_n39)],[0,multiply(multiply(divide(referencing_g55,referencing_m40),excel_equal?(referencing_d64,referencing_g34)),referencing_g40),0,0,multiply(multiply(divide(referencing_g55,referencing_m40),excel_equal?(referencing_d64,referencing_j34)),referencing_j40),0,0,multiply(multiply(divide(referencing_g55,referencing_m40),excel_equal?(referencing_d64,referencing_m34)),referencing_m40),multiply(multiply(divide(referencing_g55,referencing_m40),excel_equal?(referencing_d64,referencing_n34)),referencing_n40)],[0,multiply(multiply(divide(referencing_g56,referencing_m41),excel_equal?(referencing_d64,referencing_g34)),referencing_g41),0,0,multiply(multiply(divide(referencing_g56,referencing_m41),excel_equal?(referencing_d64,referencing_j34)),referencing_j41),0,0,multiply(multiply(divide(referencing_g56,referencing_m41),excel_equal?(referencing_d64,referencing_m34)),referencing_m41),multiply(multiply(divide(referencing_g56,referencing_m41),excel_equal?(referencing_d64,referencing_n34)),referencing_n41)],[multiply(multiply(divide(referencing_g57,referencing_m42),excel_equal?(referencing_d64,referencing_f34)),referencing_f42),0,0,0,0,0,multiply(multiply(divide(referencing_g57,referencing_m42),excel_equal?(referencing_d64,referencing_l34)),referencing_l42),multiply(multiply(divide(referencing_g57,referencing_m42),excel_equal?(referencing_d64,referencing_m34)),referencing_m42),0],[multiply(multiply(divide(referencing_g58,referencing_m43),excel_equal?(referencing_d64,referencing_f34)),referencing_f43),0,0,0,0,0,multiply(multiply(divide(referencing_g58,referencing_m43),excel_equal?(referencing_d64,referencing_l34)),referencing_l43),multiply(multiply(divide(referencing_g58,referencing_m43),excel_equal?(referencing_d64,referencing_m34)),referencing_m43),0],[0,0,0,0,0,0,multiply(multiply(divide(referencing_g59,referencing_m44),excel_equal?(referencing_d64,referencing_l34)),referencing_l44),multiply(multiply(divide(referencing_g59,referencing_m44),excel_equal?(referencing_d64,referencing_m34)),referencing_m44),multiply(multiply(divide(referencing_g59,referencing_m44),excel_equal?(referencing_d64,referencing_n34)),referencing_n44)],[0,multiply(multiply(divide(referencing_g60,referencing_m45),excel_equal?(referencing_d64,referencing_g34)),referencing_g45),0,0,multiply(multiply(divide(referencing_g60,referencing_m45),excel_equal?(referencing_d64,referencing_j34)),referencing_j45),0,0,multiply(multiply(divide(referencing_g60,referencing_m45),excel_equal?(referencing_d64,referencing_m34)),referencing_m45),multiply(multiply(divide(referencing_g60,referencing_m45),excel_equal?(referencing_d64,referencing_n34)),referencing_n45)],[0,multiply(multiply(divide(referencing_g61,referencing_m46),excel_equal?(referencing_d64,referencing_g34)),referencing_g46),multiply(multiply(divide(referencing_g61,referencing_m46),excel_equal?(referencing_d64,referencing_h34)),referencing_h46),0,0,0,0,multiply(multiply(divide(referencing_g61,referencing_m46),excel_equal?(referencing_d64,referencing_m34)),referencing_m46),multiply(multiply(divide(referencing_g61,referencing_m46),excel_equal?(referencing_d64,referencing_n34)),referencing_n46)],[0,0,0,0,0,multiply(multiply(divide(referencing_g62,referencing_m47),excel_equal?(referencing_d64,referencing_k34)),referencing_k47),0,multiply(multiply(divide(referencing_g62,referencing_m47),excel_equal?(referencing_d64,referencing_m34)),referencing_m47),multiply(multiply(divide(referencing_g62,referencing_m47),excel_equal?(referencing_d64,referencing_n34)),referencing_n47)]]); end
+  def referencing_h64; @referencing_h64 ||= sum(multiply(multiply(common7,common8),referencing_j35),multiply(multiply(common7,common9),referencing_m35),multiply(multiply(common7,common10),referencing_n35),multiply(multiply(common11,common8),referencing_j36),multiply(multiply(common11,common9),referencing_m36),multiply(multiply(common11,common10),referencing_n36),multiply(multiply(common12,common13),referencing_f37),multiply(multiply(common12,common9),referencing_m37),multiply(multiply(common12,common10),referencing_n37),multiply(multiply(common14,excel_equal?(referencing_d64,referencing_i34)),referencing_i38),multiply(multiply(common14,common9),referencing_m38),multiply(multiply(common14,common10),referencing_n38),multiply(multiply(common15,common16),referencing_h39),multiply(multiply(common15,common9),referencing_m39),multiply(multiply(common15,common10),referencing_n39),multiply(multiply(common17,common18),referencing_g40),multiply(multiply(common17,common8),referencing_j40),multiply(multiply(common17,common9),referencing_m40),multiply(multiply(common17,common10),referencing_n40),multiply(multiply(common19,common18),referencing_g41),multiply(multiply(common19,common8),referencing_j41),multiply(multiply(common19,common9),referencing_m41),multiply(multiply(common19,common10),referencing_n41),multiply(multiply(common20,common13),referencing_f42),multiply(multiply(common20,common21),referencing_l42),multiply(multiply(common20,common9),referencing_m42),multiply(multiply(common22,common13),referencing_f43),multiply(multiply(common22,common21),referencing_l43),multiply(multiply(common22,common9),referencing_m43),multiply(multiply(common23,common21),referencing_l44),multiply(multiply(common23,common9),referencing_m44),multiply(multiply(common23,common10),referencing_n44),multiply(multiply(common24,common18),referencing_g45),multiply(multiply(common24,common8),referencing_j45),multiply(multiply(common24,common9),referencing_m45),multiply(multiply(common24,common10),referencing_n45),multiply(multiply(common25,common18),referencing_g46),multiply(multiply(common25,common16),referencing_h46),multiply(multiply(common25,common9),referencing_m46),multiply(multiply(common25,common10),referencing_n46),multiply(multiply(common26,excel_equal?(referencing_d64,referencing_k34)),referencing_k47),multiply(multiply(common26,common9),referencing_m47),multiply(multiply(common26,common10),referencing_n47)); end
   attr_accessor :referencing_e68 # Default: "Alpha"
   attr_accessor :referencing_f68 # Default: 1.0
   attr_accessor :referencing_e69 # Default: "Beta"
@@ -224,8 +224,8 @@ class RubyExampleSpreadsheet
   attr_accessor :referencing_e70 # Default: "Gamma"
   attr_accessor :referencing_f70 # Default: 3.0
   attr_accessor :referencing_e72 # Default: "Beta"
-  def referencing_f72; @referencing_f72 ||= common7; end
-  def referencing_g72; @referencing_g72 ||= common7; end
+  def referencing_f72; @referencing_f72 ||= common27; end
+  def referencing_g72; @referencing_g72 ||= common27; end
   def tables_a1; @tables_a1 ||= nil; end
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
@@ -239,8 +239,8 @@ class RubyExampleSpreadsheet
   def tables_f4; @tables_f4 ||= tables_c4; end
   def tables_g4; @tables_g4 ||= excel_match("2B",[[tables_b4,tables_c4,tables_d4]],false); end
   def tables_h4; @tables_h4 ||= excel_match("B",[[tables_c4,tables_d4]]); end
-  def tables_b5; @tables_b5 ||= common9; end
-  def tables_c5; @tables_c5 ||= sum([[tables_c3],[tables_c4]]); end
+  def tables_b5; @tables_b5 ||= common34; end
+  def tables_c5; @tables_c5 ||= sum(tables_c3,tables_c4); end
   def tables_e6; @tables_e6 ||= tables_b2; end
   def tables_f6; @tables_f6 ||= tables_c2; end
   def tables_g6; @tables_g6 ||= tables_d2; end
@@ -253,24 +253,45 @@ class RubyExampleSpreadsheet
   def tables_e9; @tables_e9 ||= tables_b3; end
   def tables_f9; @tables_f9 ||= tables_c3; end
   def tables_g9; @tables_g9 ||= tables_d3; end
-  def tables_c10; @tables_c10 ||= common1; end
+  def tables_c10; @tables_c10 ||= common2; end
   def tables_e10; @tables_e10 ||= tables_b4; end
   def tables_f10; @tables_f10 ||= tables_c4; end
   def tables_g10; @tables_g10 ||= tables_d4; end
-  def tables_c11; @tables_c11 ||= common9; end
+  def tables_c11; @tables_c11 ||= common34; end
   def tables_e11; @tables_e11 ||= tables_b5; end
   def tables_f11; @tables_f11 ||= tables_c5; end
   def tables_g11; @tables_g11 ||= nil; end
   def tables_c12; @tables_c12 ||= tables_b5; end
-  def tables_c13; @tables_c13 ||= common11; end
-  def tables_c14; @tables_c14 ||= common11; end
+  def tables_c13; @tables_c13 ||= common35; end
+  def tables_c14; @tables_c14 ||= common35; end
   def s_innapropriate_sheet_name__c4; @s_innapropriate_sheet_name__c4 ||= valuetypes_a3; end
-  def common0; @common0 ||= add(referencing_a4,1.0); end
-  def common1; @common1 ||= sum([[tables_b5,tables_c5,nil]]); end
+  def common0; @common0 ||= sum(ranges_f4,ranges_f5,ranges_f6); end
+  def common1; @common1 ||= add(referencing_a4,1.0); end
+  def common2; @common2 ||= sum(tables_b5,tables_c5); end
   def common3; @common3 ||= index([[referencing_c16,referencing_d16,referencing_e16,referencing_f16],[referencing_c17,referencing_d17,referencing_e17,referencing_f17],[referencing_c18,referencing_d18,referencing_e18,referencing_f18],[referencing_c19,referencing_d19,referencing_e19,referencing_f19]],nil,excel_match(referencing_c22,[[referencing_c15,referencing_d15,referencing_e15,referencing_f15]],0.0)); end
-  def common7; @common7 ||= sum([[multiply(excel_equal?(referencing_e72,referencing_e68),referencing_f68)],[multiply(excel_equal?(referencing_e72,referencing_e69),referencing_f69)],[multiply(excel_equal?(referencing_e72,referencing_e70),referencing_f70)]]); end
-  def common9; @common9 ||= sum([[tables_b3],[tables_b4]]); end
-  def common11; @common11 ||= sum([[tables_b3,tables_c3,tables_d3],[tables_b4,tables_c4,tables_d4]]); end
+  def common7; @common7 ||= divide(referencing_g50,referencing_m35); end
+  def common8; @common8 ||= excel_equal?(referencing_d64,referencing_j34); end
+  def common9; @common9 ||= excel_equal?(referencing_d64,referencing_m34); end
+  def common10; @common10 ||= excel_equal?(referencing_d64,referencing_n34); end
+  def common11; @common11 ||= divide(referencing_g51,referencing_m36); end
+  def common12; @common12 ||= divide(referencing_g52,referencing_m37); end
+  def common13; @common13 ||= excel_equal?(referencing_d64,referencing_f34); end
+  def common14; @common14 ||= divide(referencing_g53,referencing_m38); end
+  def common15; @common15 ||= divide(referencing_g54,referencing_m39); end
+  def common16; @common16 ||= excel_equal?(referencing_d64,referencing_h34); end
+  def common17; @common17 ||= divide(referencing_g55,referencing_m40); end
+  def common18; @common18 ||= excel_equal?(referencing_d64,referencing_g34); end
+  def common19; @common19 ||= divide(referencing_g56,referencing_m41); end
+  def common20; @common20 ||= divide(referencing_g57,referencing_m42); end
+  def common21; @common21 ||= excel_equal?(referencing_d64,referencing_l34); end
+  def common22; @common22 ||= divide(referencing_g58,referencing_m43); end
+  def common23; @common23 ||= divide(referencing_g59,referencing_m44); end
+  def common24; @common24 ||= divide(referencing_g60,referencing_m45); end
+  def common25; @common25 ||= divide(referencing_g61,referencing_m46); end
+  def common26; @common26 ||= divide(referencing_g62,referencing_m47); end
+  def common27; @common27 ||= sum(multiply(excel_equal?(referencing_e72,referencing_e68),referencing_f68),multiply(excel_equal?(referencing_e72,referencing_e69),referencing_f69),multiply(excel_equal?(referencing_e72,referencing_e70),referencing_f70)); end
+  def common34; @common34 ||= sum(tables_b3,tables_b4); end
+  def common35; @common35 ||= sum(tables_b3,tables_c3,tables_d3,tables_b4,tables_c4,tables_d4); end
 
 
   # starting initializer

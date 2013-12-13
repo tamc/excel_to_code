@@ -168,7 +168,57 @@ class MapFormulaeToValues
     result = ast_for_value(result)
     ast.replace(result)
   end
-  
+
+  # [:function, :SUM, a, b, c...] 
+  def map_sum(ast)
+      values = ast[2..-1].map { |a| value(a) }
+      return partially_map_sum(ast) if values.any? { |a| a == :not_a_value }
+      ast.replace(formula_value(:SUM,*values))
+  end
+
+  def partially_map_sum(ast)
+    number_total = 0
+    not_number_array = []
+    ast[2..-1].each do |a|
+      result = filter_numbers_and_not(a)
+      number_total += result.first
+      not_number_array.concat(result.last)
+    end
+    if number_total == 0 && not_number_array.empty?
+      ast.replace([:number, number_total])
+    # FIXME: Will I be haunted by this? What if doing a sum of something that isn't a number
+    # and so what is expected is a VALUE error?. YES. This doesn't work well.
+    #elsif number_total == 0 && not_number_array.size == 1
+    #  p not_number_array[0]
+    #  ast.replace(not_number_array[0])
+    else
+      new_ast = [:function, :SUM].concat(not_number_array)
+      new_ast.push([:number, number_total]) unless number_total == 0
+      ast.replace(new_ast)
+    end
+    ast
+  end
+
+  def filter_numbers_and_not(ast)
+    number_total = 0
+    not_number_array = []
+    case ast.first
+    when :array
+      array_as_values(ast).each do |row|
+        row.each do |c|
+          result = filter_numbers_and_not(c)
+          number_total += result.first
+          not_number_array.concat(result.last)
+        end
+      end
+    when :blank, :number, :percentage, :string, :boolean_true, :boolean_false
+      number_total += @calculator.number_argument(value(ast))
+    else
+      not_number_array.push(ast)
+    end
+    [number_total, not_number_array]
+  end
+
   def array_as_values(array_mapped)
     case array_mapped.first
     when :array
