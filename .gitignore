@@ -23,6 +23,7 @@ examples/getsetranges/
 examples/utf8-strings/
 examples/offsets/
 examples/offsets.rb
+examples/global/
 examples/test_offsets.rb
 spec/commands/excel_to_ruby_output_actual
 spec/test_data/ExampleSpreadsheet

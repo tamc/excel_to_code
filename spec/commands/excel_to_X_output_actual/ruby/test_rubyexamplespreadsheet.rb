@@ -217,6 +217,15 @@ class TestRubyExampleSpreadsheet < Test::Unit::TestCase
   def test_referencing_d64; assert_equal("H.01", worksheet.referencing_d64); end
   def test_referencing_e64; assert_equal("Heating & cooling", worksheet.referencing_e64); end
   def test_referencing_h64; assert_in_epsilon(204.87336129888465, worksheet.referencing_h64, 0.002); end
+  def test_referencing_e68; assert_equal("Alpha", worksheet.referencing_e68); end
+  def test_referencing_f68; assert_in_delta(1.0, worksheet.referencing_f68, 0.002); end
+  def test_referencing_e69; assert_equal("Beta", worksheet.referencing_e69); end
+  def test_referencing_f69; assert_in_epsilon(2.0, worksheet.referencing_f69, 0.002); end
+  def test_referencing_e70; assert_equal("Gamma", worksheet.referencing_e70); end
+  def test_referencing_f70; assert_in_epsilon(3.0, worksheet.referencing_f70, 0.002); end
+  def test_referencing_e72; assert_equal("Beta", worksheet.referencing_e72); end
+  def test_referencing_f72; assert_in_epsilon(2.0, worksheet.referencing_f72, 0.002); end
+  def test_referencing_g72; assert_in_epsilon(2.0, worksheet.referencing_g72, 0.002); end
   def test_tables_a1; assert_in_delta(0.0, (worksheet.tables_a1||0), 0.002); end
   def test_tables_b2; assert_equal("ColA", worksheet.tables_b2); end
   def test_tables_c2; assert_equal("ColB", worksheet.tables_c2); end

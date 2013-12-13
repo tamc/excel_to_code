@@ -473,7 +473,14 @@ class ExcelToX
     expand_array_formulae_replacer = AstExpandArrayFormulae.new
     simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
 
+    # FIXME: THIS IS THE MOST HORRIFIC BODGE. I HATE IT.
+    emergency_indirect_replacement_bodge = EmergencyArrayFormulaReplaceIndirectBodge.new
+    emergency_indirect_replacement_bodge.references = @values
+    
     @formulae_array.each do |ref, details|
+      emergency_indirect_replacement_bodge.current_sheet_name = ref.first
+      emergency_indirect_replacement_bodge.replace(details.last)
+
       named_reference_replacer.default_sheet_name = ref.first
       named_reference_replacer.map(details.last)
       table_reference_replacer.worksheet = ref.first

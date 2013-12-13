@@ -256,6 +256,13 @@ module ExampleSpreadsheet
   attach_function 'set_referencing_g61', [ExcelValue.by_value], :void
   attach_function 'set_referencing_g62', [ExcelValue.by_value], :void
   attach_function 'set_referencing_d64', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e68', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f68', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e69', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f69', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e70', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_f70', [ExcelValue.by_value], :void
+  attach_function 'set_referencing_e72', [ExcelValue.by_value], :void
   attach_function 'referencing_a1', [], ExcelValue.by_value
   attach_function 'referencing_a2', [], ExcelValue.by_value
   attach_function 'referencing_a4', [], ExcelValue.by_value
@@ -430,6 +437,15 @@ module ExampleSpreadsheet
   attach_function 'referencing_d64', [], ExcelValue.by_value
   attach_function 'referencing_e64', [], ExcelValue.by_value
   attach_function 'referencing_h64', [], ExcelValue.by_value
+  attach_function 'referencing_e68', [], ExcelValue.by_value
+  attach_function 'referencing_f68', [], ExcelValue.by_value
+  attach_function 'referencing_e69', [], ExcelValue.by_value
+  attach_function 'referencing_f69', [], ExcelValue.by_value
+  attach_function 'referencing_e70', [], ExcelValue.by_value
+  attach_function 'referencing_f70', [], ExcelValue.by_value
+  attach_function 'referencing_e72', [], ExcelValue.by_value
+  attach_function 'referencing_f72', [], ExcelValue.by_value
+  attach_function 'referencing_g72', [], ExcelValue.by_value
   # end of Referencing
   attach_function 'set_tables_b2', [ExcelValue.by_value], :void
   attach_function 'set_tables_c2', [ExcelValue.by_value], :void
