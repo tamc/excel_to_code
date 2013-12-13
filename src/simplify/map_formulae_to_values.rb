@@ -212,7 +212,12 @@ class MapFormulaeToValues
         end
       end
     when :blank, :number, :percentage, :string, :boolean_true, :boolean_false
-      number_total += @calculator.number_argument(value(ast))
+      number = @calculator.number_argument(value(ast))
+      if number.is_a?(Symbol)
+        not_number_array.push(ast)
+      else
+        number_total += number
+      end
     else
       not_number_array.push(ast)
     end
