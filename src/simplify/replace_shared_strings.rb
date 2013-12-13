@@ -14,7 +14,7 @@ class ReplaceSharedStringAst
     ast.each.with_index do |a, i|
       next unless a.is_a?(Array)
       if a[0] == :shared_string
-        ast[i] = shared_string(ast)
+        ast[i] = shared_string(a)
       else
         map(a)
       end
