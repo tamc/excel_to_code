@@ -474,10 +474,12 @@ class ExcelToX
     simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
 
     # FIXME: THIS IS THE MOST HORRIFIC BODGE. I HATE IT.
+    @shared_string_replacer ||= ReplaceSharedStringAst.new(@shared_strings)
     emergency_indirect_replacement_bodge = EmergencyArrayFormulaReplaceIndirectBodge.new
     emergency_indirect_replacement_bodge.references = @values
     
     @formulae_array.each do |ref, details|
+      @shared_string_replacer.map(details.last)
       emergency_indirect_replacement_bodge.current_sheet_name = ref.first
       emergency_indirect_replacement_bodge.replace(details.last)
 
