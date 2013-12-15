@@ -204,7 +204,7 @@ class Formula < RubyPeg
   end
   
   def reference
-    terminal(/\$?[A-Za-z]{1,3}\$?[0-9]+(?![0-9A-Za-z_])/)
+    terminal(/\$?[A-Za-z]{1,3}\$?[0-9]+(?![0-9A-Za-z_.])/)
   end
   
   def boolean

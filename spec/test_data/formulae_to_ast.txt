@@ -115,6 +115,7 @@ Sector.codes[[Description ]]  [:table_reference, "Sector.codes", "Description "]
    
 # parses infix modifiers in edge cases
 (-'DUKES 09 (2.5)'!$B$25)	[:brackets, [:prefix, "-", [:sheet_reference, "DUKES 09 (2.5)", [:cell, "$B$25"]]]]
+
 -(INDEX(INDIRECT(BI$19&"!Year.Matrix"), MATCH("Subtotal.Supply", INDIRECT(BI$19&"!Year.Modules"), 0), MATCH("V.04", INDIRECT(BI$19&"!Year.Vectors"), 0))+INDEX(INDIRECT(BI$19&"!Year.Matrix"),MATCH("Subtotal.Consumption",INDIRECT(BI$19&"!Year.Modules"), 0),MATCH("V.04",INDIRECT(BI$19&"!Year.Vectors"), 0)))	[:prefix, "-", [:brackets, [:arithmetic, [:function, "INDEX", [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Matrix"]]], [:function, "MATCH", [:string, "Subtotal.Supply"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Modules"]]], [:number, "0"]], [:function, "MATCH", [:string, "V.04"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Vectors"]]], [:number, "0"]]], [:operator, "+"], [:function, "INDEX", [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Matrix"]]], [:function, "MATCH", [:string, "Subtotal.Consumption"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Modules"]]], [:number, "0"]], [:function, "MATCH", [:string, "V.04"], [:function, "INDIRECT", [:string_join, [:cell, "BI$19"], [:string, "!Year.Vectors"]]], [:number, "0"]]]]]]
 MAX(MIN(F121, -F22), 0)"	[:function, "MAX", [:function, "MIN", [:cell, "F121"], [:prefix, "-", [:cell, "F22"]]], [:number, "0"]]
 IFERROR(INDEX(INDIRECT($C102&".Outputs["&this.Year&"]"), MATCH(Z$5, INDIRECT($C102&".Outputs[Vector]"), 0)), 0)'	[:function, "IFERROR", [:function, "INDEX", [:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs["], [:named_reference, "this.Year"], [:string, "]"]]], [:function, "MATCH", [:cell, "Z$5"], [:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs[Vector]"]]], [:number, "0"]]], [:number, "0"]]
@@ -152,3 +153,8 @@ SUM({1,2,3})	[:function,"SUM",[:array,[:row,[:number,"1"],[:number,"2"],[:number
 #DIV/0! [:error, "#DIV/0!"]
 #N/A  [:error, "#N/A"]
 #NUM! [:error, "#NUM!"]
+
+# Parses arithmetic on names
+CH4.as.CO2e	[:named_reference, 'CH4.as.CO2e']
+446.85181935425*(unit.Mt/CH4.as.CO2e)	[:arithmetic, [:number, "446.85181935425"], [:operator, "*"], [:brackets, [:arithmetic, [:named_reference, "unit.Mt"], [:operator, "/"], [:named_reference, "CH4.as.CO2e"]]]]
+
