@@ -22,9 +22,9 @@ class CompileToC
         worksheet = ref.first
         cell = ref.last
         mapper.worksheet = worksheet
-        c_name = mapper.sheet_names[worksheet.to_s] || worksheet.to_s
+        worksheet_c_name = mapper.sheet_names[worksheet.to_s] || worksheet.to_s
         calculation = mapper.map(ast)
-        name = c_name ? "#{c_name}_#{cell.downcase}" : cell.downcase
+        name = worksheet_c_name.length > 0 ? "#{worksheet_c_name}_#{cell.downcase}" : cell.downcase
         
         # Declare function as static so it can be inlined where possible
         static_or_not = gettable.call(ref) ? "" : "static "
@@ -38,7 +38,7 @@ class CompileToC
           output.puts "  return #{calculation};"
           output.puts "}"
           output.puts "static ExcelValue #{name}_variable;"
-          output.puts "ExcelValue #{name}() { if(variable_set[#{@variable_set_counter}] == 1) { return #{name}_variable; } else { return #{c_name}_#{cell.downcase}_default(); } }"
+          output.puts "ExcelValue #{name}() { if(variable_set[#{@variable_set_counter}] == 1) { return #{name}_variable; } else { return #{name}_default(); } }"
           output.puts "void set_#{name}(ExcelValue newValue) { variable_set[#{@variable_set_counter}] = 1; #{name}_variable = newValue; }"
           output.puts
         # Other functions just have a getter

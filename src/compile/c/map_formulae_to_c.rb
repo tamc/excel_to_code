@@ -158,7 +158,7 @@ class MapFormulaeToC < MapValuesToC
   def cell(reference)
     # FIXME: What a cludge.
     if reference =~ /common\d+/
-      "_#{reference}()"
+      "#{reference}()"
     else
       reference.to_s.downcase.gsub('$','')
     end

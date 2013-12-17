@@ -8,7 +8,7 @@ class NamedReferences
   
   def reference_for(sheet,named_reference)
     sheet = sheet.downcase
-    named_reference = named_reference.downcase
+    named_reference = named_reference.downcase.to_sym
     @named_references[[sheet, named_reference]] ||
     @named_references[named_reference] ||
     [:error, :"#NAME?"]

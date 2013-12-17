@@ -299,7 +299,7 @@ END
     o.puts "  # Start of named references"
     # Getters
     @named_references_to_keep.each do |name|
-      o.puts "  attach_function '_#{c_name_for(name)}', [], ExcelValue.by_value"
+      o.puts "  attach_function '#{c_name_for(name)}', [], ExcelValue.by_value"
     end
 
     # Setters

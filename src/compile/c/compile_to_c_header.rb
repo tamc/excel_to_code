@@ -13,9 +13,9 @@ class CompileToCHeader
     formulae.each do |ref, ast|
       begin
         static_or_not = (gettable.call(ref) || settable.call(ref)) ? "" : "static "
-        worksheet = c_name_for_worksheet_name[ref.first.to_s]
+        worksheet = c_name_for_worksheet_name[ref.first.to_s] || ref.first.to_s
         ref = ref.last.downcase
-        name =  "#{worksheet}_#{ref}"
+        name =  worksheet.length > 0 ? "#{worksheet}_#{ref}" : ref
         output.puts "#{static_or_not}ExcelValue #{name}();"
       rescue Exception => e
         puts "Exception at  #{ref} #{ast}"

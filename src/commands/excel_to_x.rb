@@ -113,7 +113,7 @@ class ExcelToX
     
     self.cells_that_can_be_set_at_runtime ||= {}
     
-    # Make sure that all the cell names are downcase and don't have any $ in them
+    # Make sure that all the cell names are upcase symbols and don't have any $ in them
     if cells_that_can_be_set_at_runtime.is_a?(Hash)
   
       # Make sure the sheet names are symbols
@@ -128,7 +128,7 @@ class ExcelToX
       end
     end
 
-    # Make sure that all the cell names are downcase and don't have any $ in them
+    # Make sure that all the cell names are upcase symbols and don't have any $ in them
     if cells_to_keep
       cells_to_keep.keys.each do |sheet|
         next if sheet.is_a?(Symbol)
@@ -140,6 +140,14 @@ class ExcelToX
         cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
       end
     end  
+
+    if named_references_to_keep.is_a?(Array)
+      named_references_to_keep.map! { |named_reference| named_reference.downcase.to_sym }
+    end
+
+    if named_references_that_can_be_set_at_runtime.is_a?(Array)
+      named_references_that_can_be_set_at_runtime.map! { |named_reference| named_reference.downcase.to_sym }
+    end
     
     # Make sure the relevant directories exist
     self.excel_file = File.expand_path(excel_file)
@@ -270,10 +278,27 @@ class ExcelToX
         exit
       end
     end
-    # Replace A1:B2 with [A1, A2, B1, B2]
+    # Replace A$1:B2 with [A1, A2, B1, B2]
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
+
     @named_references.each do |name, reference|
       @named_references[name] = @replace_ranges_with_array_literals_replacer.map(reference)
+    end
+
+    # Now we need to check the user specified named references
+    if named_references_to_keep.is_a?(Array)
+      named_references_to_keep.each.with_index do |named_reference, i|
+        next if @named_references.has_key?(named_reference)
+        log.warn "Named reference '#{named_reference}' in named_references_to_keep has not been found in the spreadsheet"
+        named_references_to_keep[i] = nil
+      end.compact!
+    end
+    if named_references_that_can_be_set_at_runtime.is_a?(Array)
+      named_references_that_can_be_set_at_runtime.each.with_index do |named_reference, i|
+        next if @named_references.has_key?(named_reference)
+        log.warn "Named reference '#{named_reference}' in named_references_that_can_be_set_at_runtime has not been found in the spreadsheet"
+        named_references_that_can_be_set_at_runtime[i] = nil
+      end.compact!
     end
   end
 
@@ -310,6 +335,7 @@ class ExcelToX
   end
 
   def c_name_for(name)
+    name = name.to_s
     @c_names_assigned ||= {}
     return @c_names_assigned.invert.fetch(name) if @c_names_assigned.has_value?(name)
     c_name = name.downcase.gsub(/[^a-z0-9]+/,'_') # Make it lowercase, replace anything that isn't a-z or 0-9 with underscores
@@ -554,7 +580,7 @@ class ExcelToX
       if ref
         add_ref_to_hash(ref, @cells_to_keep)
       else
-        log.warn "Named reference #{name} not found"
+        log.warn "Named reference "#{name}" not found"
       end
     end
   end
@@ -613,6 +639,10 @@ class ExcelToX
     # FIXME can this be refactored with #add_ref_to_hash
     @named_references_to_keep.each do |name|
       ref = all_named_references[name]
+      unless ref
+        log.warn "Named reference to keep #{name} not found in spreadsheet"
+        next
+      end
       if ref.first == :sheet_reference
         sheet = ref[1]
         cell = Reference.for(ref[2][1]).unfix.to_sym

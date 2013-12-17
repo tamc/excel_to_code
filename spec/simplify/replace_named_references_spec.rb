@@ -13,10 +13,10 @@ A5\t[:named_reference, "missing"]
 END
 
 named_references = {
-  "global" =>               [:sheet_reference,'thisSheet',[:area, "A1:A10"]], 
-  "local" =>                [:sheet_reference,'notReallyLocal',[:area, "A1:A10"]],
-  ["thissheet","local"] =>  [:sheet_reference,'thisSheet',[:area, "A1:A10"]],
-  ["othersheet","local"] => [:sheet_reference,'otherSheet',[:area, "A1:A10"]]
+  :"global" =>               [:sheet_reference,'thisSheet',[:area, "A1:A10"]], 
+  :"local" =>                [:sheet_reference,'notReallyLocal',[:area, "A1:A10"]],
+  ["thissheet", :"local"] =>  [:sheet_reference,'thisSheet',[:area, "A1:A10"]],
+  ["othersheet", :"local"] => [:sheet_reference,'otherSheet',[:area, "A1:A10"]]
 }
 
 expected_output = <<END
@@ -42,7 +42,7 @@ input = <<END
 A1\t[:named_reference, "gLOBal"]
 END
 
-named_references = {"global" => [:sheet_reference,'thisSheet',[:area, "A1:A10"]]}
+named_references = {:"global" => [:sheet_reference,'thisSheet',[:area, "A1:A10"]]}
 
 expected_output = <<END
 A1\t[:sheet_reference, "thisSheet", [:area, "A1:A10"]]
@@ -63,7 +63,7 @@ input = <<END
 A1\tA1:B6\t[:named_reference, "Global"]
 END
 
-named_references = {"global" => [:sheet_reference,'thisSheet',[:area, "A1:A10"]]}
+named_references = {:"global" => [:sheet_reference,'thisSheet',[:area, "A1:A10"]]}
 
 expected_output = <<END
 A1\tA1:B6\t[:sheet_reference, "thisSheet", [:area, "A1:A10"]]

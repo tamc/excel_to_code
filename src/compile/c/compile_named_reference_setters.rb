@@ -56,7 +56,7 @@ class MapNamedReferenceToCSetter
     settable_refs = cells_that_can_be_set_at_runtime[sheet]
     return false unless settable_refs
     return true if settable_refs == :all
-    settable_refs.include?(reference.upcase) 
+    settable_refs.include?(reference.upcase.to_sym) 
   end
 
 end

@@ -65,7 +65,7 @@ input = {
 sheet_names = { 'Sheet1' => 'sheet1' }
 
 cells_that_can_be_set_at_runtime = {
-  'Sheet1' => ['B1']
+  'Sheet1' => [:'B1']
 }
 
 expected = <<END

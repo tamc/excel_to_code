@@ -19,11 +19,11 @@ class CompileToRubyUnitTest
     mapper = MapValuesToRuby.new
     mapper.constants = constants
     input.each do |ref, ast|
-      c_name = sheet_names[ref.first.to_s] || ref.first.to_s #FIXME: Need to make it the actual c_name
+      worksheet_c_name = sheet_names[ref.first.to_s] || ref.first.to_s #FIXME: Need to make it the actual c_name
       cell = ref.last
       value = mapper.map(ast)
-      full_reference = "worksheet.#{c_name}_#{cell.downcase}"
-      test_name = "test_#{c_name}_#{cell.downcase}"
+      full_reference = worksheet_c_name.length > 0 ? "worksheet.#{worksheet_c_name}_#{cell.downcase}" : "worksheet.#{cell.downcase}"
+      test_name = "test_#{worksheet_c_name}_#{cell.downcase}"
       if ast.first == :constant
         type = constants[ast[1]][0] || :constant
       else

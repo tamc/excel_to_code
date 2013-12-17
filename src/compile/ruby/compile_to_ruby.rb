@@ -20,8 +20,8 @@ class CompileToRuby
         worksheet = ref.first.to_s
         cell = ref.last
         mapper.worksheet = worksheet
-        c_name = mapper.sheet_names[worksheet]
-        name = c_name ? "#{c_name}_#{cell.downcase}" : cell.downcase
+        worksheet_c_name = mapper.sheet_names[worksheet] || worksheet.to_s
+        name = worksheet_c_name.length > 0 ? "#{worksheet_c_name}_#{cell.downcase}" : cell.downcase
         if settable.call(ref)
           output.puts "  attr_accessor :#{name} # Default: #{mapper.map(ast)}"
           defaults << "    @#{name} = #{mapper.map(ast)}"
