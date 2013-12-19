@@ -13,6 +13,7 @@ GEM
     mini_portile (0.5.1)
     nokogiri (1.6.0)
       mini_portile (~> 0.5.0)
+    ox (2.0.12)
     pry (0.9.12.4)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -43,6 +44,7 @@ DEPENDENCIES
   ZenTest
   ffi
   nokogiri
+  ox
   pry-rescue
   pry-stack_explorer
   rspec
