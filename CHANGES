@@ -1,6 +1,7 @@
 # Head
 
 - A lot of changes: no longer generates intermediate files, hopefully faster, but perhaps not
+- Uses Ox instead of Nokogiri to parse worksheets, and does the parsing in one pass.
 
 # 0.1.23 - 2013 December 4th
 

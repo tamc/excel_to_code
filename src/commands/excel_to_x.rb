@@ -244,7 +244,6 @@ class ExcelToX
     extract_shared_strings
     extract_named_references
     extract_worksheet_names
-    extract_dimensions_from_worksheets
   end
 
   # @shared_strings is an array of strings
@@ -346,92 +345,52 @@ class ExcelToX
     c_name
   end
 
-  # We want a central list of the maximum extent of each worksheet
-  # so that we can convert column (e.g., C:F) and row (e.g., 13:18)
-  # references into equivalent area references (e.g., C1:F30)
-  def extract_dimensions_from_worksheets 
-    log.info "Starting to extract dimensions from worksheets"  
-    @worksheets_dimensions = {}
-    extractor = ExtractWorksheetDimensions.new
-    worksheets do |name, xml_filename|
-      xml(xml_filename) do |i| 
-        @worksheets_dimensions[name] = extractor.extract(i)
-      end
-      # FIXME: Should this actual return WorksheetDimension objects? rather than text ranges?
-    end
-  end
   
-  # For each worksheet, this makes four passes through the xml
-  # 1. Extract the values of each cell into @values
-  # 2. Extract all the cells which are simple formulae into @formulae_simple
-  # 3. Extract all the cells which use shared formulae
-  # 4. Extract all the cells which are part of array formulae
-  # 
-  # It then looks at the relationship file and extracts any tables
+  # For each worksheet, extract the useful bits from the excel xml
   def extract_data_from_worksheets
     # All are hashes of the format ["SheetName", "A1"] => [:number, "1"]
-    @values = {}
-    @formulae_simple = {}
-    @formulae_shared = {}
-    @formulae_shared_targets = {}
-    @formulae_array = {}
     # This one has a series of table references
-    @tables = {}
+    extractor = ExtractEverythingFromWorkbook.new
     
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?
     worksheets do |name, xml_filename|
       log.info "Extracting data from #{name}"
-      
-      # ast
-      xml(xml_filename) do |i|
-        @values.merge! ExtractValues.extract(name, i)
+      xml(xml_filename) do |input|
+        extractor.extract(name, input)
       end
-      
-       # ast
-      xml(xml_filename) do |i| 
-        @formulae_simple.merge! ExtractSimpleFormulae.extract(name, i) 
-      end
-      
-      # [shared_range, shared_identifier, ast]
-      xml(xml_filename) do |i| 
-        @formulae_shared.merge! ExtractSharedFormulae.extract(name, i) 
-      end
-      # shared_identifier
-      xml(xml_filename) do |i| 
-        @formulae_shared_targets.merge! ExtractSharedFormulaeTargets.extract(name, i)
-      end
-      #  [array_range, ast]
-      xml(xml_filename) do |i| 
-        @formulae_array.merge! ExtractArrayFormulae.extract(name, i)
-      end
-      
-      extract_tables_for_worksheet(name,xml_filename)
     end
+    @values = extractor.values
+    @formulae_simple = extractor.formulae_simple
+    @formulae_shared = extractor.formulae_shared
+    @formulae_shared_targets = extractor.formulae_shared_targets 
+    @formulae_array = extractor.formulae_array
+    @worksheets_dimensions = extractor.worksheets_dimensions
+    @table_rids = extractor.table_rids
+    @tables = {}
+    extract_tables
   end
   
   # To extract a table we need to look in the worksheet for table references
   # then we look in the relationships file for the filename that matches that
   # reference and contains the table data. Then we consolidate all the data
   # from individual table files into a single table file for the worksheet.
-  def extract_tables_for_worksheet(name, xml_filename)
-    table_rids = []
-    xml(xml_filename) do |i| 
-      table_rids = ExtractWorksheetTableRelationships.extract(i)
-    end
+  def extract_tables
+    @table_rids.each do |worksheet_name, array_of_table_rids|
+      xml_filename = @worksheet_xmls[worksheet_name]
+      xml_for_rids = {}
 
-    return if table_rids.empty?
-
-    xml_for_rids = {}
-    xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")) do |i|
-      xml_for_rids = ExtractRelationships.extract(i)
-    end
-
-    table_rids.each do |rid| 
-      # FIXME: Extract actual Table objects?
-      xml(File.join('worksheets', xml_for_rids[rid])) do |i|
-        ExtractTable.extract(name, i).each do |name, details|
-          @tables[name.downcase] = Table.new(name, *details)
+      # Load the relationship file
+      xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")) do |i|
+        xml_for_rids = ExtractRelationships.extract(i)
+      end
+      
+      # Then extract the individual tables
+      array_of_table_rids.each do |rid| 
+        xml(File.join('worksheets', xml_for_rids[rid])) do |i|
+          ExtractTable.extract(worksheet_name, i).each do |table_name, details|
+            @tables[table_name.downcase] = Table.new(table_name, *details)
+          end
         end
       end
     end
