@@ -12,6 +12,9 @@ describe "ExcelFunctions: VLOOKUP" do
     FunctionTest.vlookup(2.6,[[1,'a'],[2,'b'],[3,'c']],2,false).should == :na
     FunctionTest.vlookup("HELLO",[['hello','a'],[2,'b'],[3,'c']],2,false).should == 'a'
     FunctionTest.vlookup("HELMP",[['hello','a'],[2,'b'],[3,'c']],2,true).should == 'a'
+    test = [['HELLO','a'],[2,'b'],[3,'c']]
+    FunctionTest.vlookup("HELMP",test,2,true)
+    test[0][0].should == 'HELLO'
   end
     
   it "nil should not match with anything" do

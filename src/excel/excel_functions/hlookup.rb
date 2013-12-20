@@ -23,7 +23,7 @@ module ExcelFunctions
       next if lookup_value.is_a?(String) && !possible_match.is_a?(String)
       next if lookup_value.is_a?(Numeric) && !possible_match.is_a?(Numeric)
       
-      possible_match.downcase! if lookup_value.is_a?(String)
+      possible_match = possible_match.downcase if lookup_value.is_a?(String)
 
       if lookup_value == possible_match
         return lookup_table[row_number-1][column_number]

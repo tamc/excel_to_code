@@ -2,6 +2,7 @@
 
 - A lot of changes: no longer generates intermediate files, hopefully faster, but perhaps not
 - Uses Ox instead of Nokogiri to parse worksheets, and does the parsing in one pass.
+- Fixed a bug in the ruby version of vlookup and hlookup that would downcase strings passed as arguments in certain situations
 
 # 0.1.23 - 2013 December 4th
 

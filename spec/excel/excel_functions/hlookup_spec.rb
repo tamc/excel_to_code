@@ -12,9 +12,11 @@ describe "ExcelFunctions: HLOOKUP" do
     FunctionTest.hlookup(2.6,test,2,true).should == 'b'
     FunctionTest.hlookup(2.6,test,2,false).should == :na
 
-    test = [["hello",2,3],['a','b','c']]
+    test = [["hEllo",2,3],['a','b','c']]
     FunctionTest.hlookup("HELLO", test, 2, false).should == 'a'
     FunctionTest.hlookup("HELMP", test, 2, true).should == 'a'
+    # Make sure we aren't modifying the string
+    test[0][0].should == "hEllo"
   end
     
   it "nil should not match with anything" do
