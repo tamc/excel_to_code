@@ -6,7 +6,8 @@ command.output_directory = this_directory
 command.output_name = 'getsetranges'
 command.actually_compile_code = true
 command.actually_run_tests = true
+command.cells_to_keep = { "Sheet1" => :all }
 command.named_references_that_can_be_set_at_runtime = :where_possible # ['A']
-command.named_references_to_keep = :all #['Total', "Not a named reference"]
+command.named_references_to_keep = ['rangeoverblanks'] #['Total', "Not a named reference"]
 command.run_in_memory = true
 command.go!

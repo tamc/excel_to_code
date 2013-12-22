@@ -509,6 +509,8 @@ class ExcelToX
   def required_references
     log.info "Checking required references"
     required_refs = {}
+
+    # Need to add blank for any settable cells that aren't defined
     if @cells_that_can_be_set_at_runtime && @cells_that_can_be_set_at_runtime != :named_references_only
       @cells_that_can_be_set_at_runtime.each do |worksheet, refs|
         next if refs == :all
@@ -517,11 +519,41 @@ class ExcelToX
         end
       end
     end
+
+    # Need to add blanks for any cells the user want's, but aren't defined
     if @cells_to_keep
       @cells_to_keep.each do |worksheet, refs|
         next if refs == :all
         refs.each do |ref|
           required_refs[[worksheet, ref]] = [:blank]
+        end
+      end
+    end
+
+    # In some situations also need to add the named references 
+    if @named_references_to_keep
+      @named_references_to_keep.each do |name|
+        ref = @named_references[name]
+        if ref.first == :sheet_reference
+          s = ref[1]
+          c = Reference.for(ref[2][1]).unfix.to_sym
+          required_refs[[s, c]] = [:blank]
+        elsif ref.first == :array
+          ref.each do |row|
+            next unless row.is_a?(Array)
+            row.each do |cell|
+              next unless cell.is_a?(Array)
+              if cell.first == :sheet_reference
+                s = cell[1]
+                c = Reference.for(cell[2][1]).unfix.to_sym
+                required_refs[[s, c]] = [:blank]
+              else
+                log.warn "Named reference '#{name}' refers to cells that can't be interpreted"
+              end
+            end
+          end
+        else
+          log.warn "Named reference '#{name}' refers to cells that can't be interpreted"
         end
       end
     end
@@ -538,8 +570,9 @@ class ExcelToX
       ref = @named_references[name]
       if ref
         add_ref_to_hash(ref, @cells_to_keep)
+        p @cells_to_keep
       else
-        log.warn "Named reference "#{name}" not found"
+        log.warn "Named reference \"#{name}\" not found"
       end
     end
   end

@@ -1,5 +1,7 @@
 # Head
 
+- Fixed a bug when named references are specified as well as cells to keep and named reference points to blanks
+
 # 0.2.0 - 2013 December 20th
 
 - A lot of changes: no longer generates intermediate files, hopefully faster, but perhaps not
