@@ -5,10 +5,13 @@
 #include <ctype.h>
 #include <math.h>
 
-// To run the tests at the end of this file
-// cc excel_to_c_runtime; ./a.out
+#ifndef NUMBER_OF_REFS
+  #define NUMBER_OF_REFS 0
+#endif
 
-// FIXME: Extract a header file
+#ifndef EXCEL_FILENAME
+  #define EXCEL_FILENAME "NoExcelFilename" 
+#endif
 
 // I predefine an array of ExcelValues to store calculations
 // Probably bad practice. At the very least, I should make it
@@ -102,14 +105,13 @@ int cell_counter = 0;
 // My little heap for keeping pointers to memory that I need to reclaim
 void *memory_that_needs_to_be_freed[MAX_MEMORY_TO_BE_FREED_HEAP_SIZE];
 int memory_that_needs_to_be_freed_counter = 0;
-
-#define MEMORY_THAT_NEEDS_TO_BE_FREED_HEAP_CHECK 
+int memory_that_needs_to_be_freed_size = MAX_MEMORY_TO_BE_FREED_HEAP_SIZE;
 
 static void free_later(void *pointer) {
 	memory_that_needs_to_be_freed[memory_that_needs_to_be_freed_counter] = pointer;
 	memory_that_needs_to_be_freed_counter++;
-	if(memory_that_needs_to_be_freed_counter >= MAX_MEMORY_TO_BE_FREED_HEAP_SIZE) { 
-		printf("Memory that needs to be freed heap full. Edit MAX_MEMORY_TO_BE_FREED_HEAP_SIZE in the c source code"); 
+	if(memory_that_needs_to_be_freed_counter >= memory_that_needs_to_be_freed_size) { 
+		printf("Memory that needs to be freed heap full"); 
 		exit(-1);
 	}
 }
@@ -120,6 +122,15 @@ static void free_all_allocated_memory() {
 		free(memory_that_needs_to_be_freed[i]);
 	}
 	memory_that_needs_to_be_freed_counter = 0;
+}
+
+static int variable_set[NUMBER_OF_REFS];
+
+// Resets all cached and malloc'd values
+void reset() {
+  cell_counter = 0;
+  free_all_allocated_memory();
+  memset(variable_set, 0, sizeof(variable_set));
 }
 
 // The object initializers
@@ -163,6 +174,8 @@ static void * new_excel_value_array(int size) {
 };
 
 // Constants
+static ExcelValue ORIGINAL_EXCEL_FILENAME = {.type = ExcelString, .string = EXCEL_FILENAME };
+
 const ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
 
 const ExcelValue ZERO = {.type = ExcelNumber, .number = 0};

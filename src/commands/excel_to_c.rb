@@ -19,11 +19,16 @@ class ExcelToC < ExcelToX
   def write_out_excel_as_code
     log.info "Writing C code"
         
-    number_of_refs = @formulae.size
+    number_of_refs = @formulae.size + @named_references_to_keep.size
         
     # Output the workbook preamble
     o = output("#{output_name.downcase}.c")
     o.puts "// #{excel_file} approximately translated into C"
+    o.puts "// definitions"
+    o.puts "#define NUMBER_OF_REFS #{number_of_refs}"
+    o.puts "#define EXCEL_FILENAME  #{excel_file.inspect}"
+    o.puts "// end of definitions"
+    o.puts
 
     o.puts '// First we have c versions of all the excel functions that we know'
     o.puts IO.readlines(File.join(File.dirname(__FILE__),'..','compile','c','excel_to_c_runtime.c')).join
@@ -32,34 +37,11 @@ class ExcelToC < ExcelToX
     o.puts '// Start of the file specific functions'
     o.puts
     
-    # Now we have to put all the initial definitions out
-    o.puts "// definitions"
-    o.puts "static ExcelValue ORIGINAL_EXCEL_FILENAME = {.type = ExcelString, .string = #{excel_file.inspect} };"
 
     c = CompileToCHeader.new
     c.settable = settable
     c.gettable = gettable
     c.rewrite(@formulae, @worksheet_c_names, o)
-
-    # Need to make sure there are enough refs for named references as well
-    number_of_refs += @named_references_to_keep.size
-
-    o.puts "// end of definitions"
-    o.puts
-    o.puts "// Used to decide whether to recalculate a cell"
-    o.puts "static int variable_set[#{number_of_refs}];"
-    o.puts ""
-    o.puts "// Used to reset all cached values and free up memory"
-    # FIXME: This feels like a bad place for this. Should be in runtime?
-    o.puts "void reset() {"
-    o.puts "  int i;"
-    o.puts "  cell_counter = 0;"
-    o.puts "  free_all_allocated_memory(); "
-    o.puts "  for(i = 0; i < #{number_of_refs}; i++) {"
-    o.puts "    variable_set[i] = 0;"
-    o.puts "  }"
-    o.puts "};"
-    o.puts
     
     # Output the value constants
     o.puts "// starting the value constants"
