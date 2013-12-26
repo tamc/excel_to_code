@@ -13,11 +13,10 @@
   #define EXCEL_FILENAME "NoExcelFilename" 
 #endif
 
-// I predefine an array of ExcelValues to store calculations
-// Probably bad practice. At the very least, I should make it
-// link to the cell reference in some way.
-#define MAX_EXCEL_VALUE_HEAP_SIZE 1000000
-#define MAX_MEMORY_TO_BE_FREED_HEAP_SIZE 1000000
+// Need to retain malloc'd values for a while, so can return to functions that use this library
+// So to avoid a memory leak we keep an array of all the values we have malloc'd, which we then
+// free when the reset() function is called.
+#define MEMORY_TO_BE_FREED_LATER_HEAP_INCREMENT 1000
 
 #define true 1
 #define false 0
@@ -95,25 +94,27 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v);
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
 static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
 
-
-// My little heap for excel values
-ExcelValue cells[MAX_EXCEL_VALUE_HEAP_SIZE];
-int cell_counter = 0;
-
-#define HEAPCHECK if(cell_counter >= MAX_EXCEL_VALUE_HEAP_SIZE) { printf("ExcelValue heap full. Edit MAX_EXCEL_VALUE_HEAP_SIZE in the c source code."); exit(-1); }
-
 // My little heap for keeping pointers to memory that I need to reclaim
-void *memory_that_needs_to_be_freed[MAX_MEMORY_TO_BE_FREED_HEAP_SIZE];
+void **memory_that_needs_to_be_freed;
 int memory_that_needs_to_be_freed_counter = 0;
-int memory_that_needs_to_be_freed_size = MAX_MEMORY_TO_BE_FREED_HEAP_SIZE;
+int memory_that_needs_to_be_freed_size = -1;
 
 static void free_later(void *pointer) {
+	if(memory_that_needs_to_be_freed_counter >= memory_that_needs_to_be_freed_size) { 
+    if(memory_that_needs_to_be_freed_size <= 0) {
+      memory_that_needs_to_be_freed = malloc(MEMORY_TO_BE_FREED_LATER_HEAP_INCREMENT*sizeof(void*));
+      memory_that_needs_to_be_freed_size = MEMORY_TO_BE_FREED_LATER_HEAP_INCREMENT;
+    } else {
+      memory_that_needs_to_be_freed_size += MEMORY_TO_BE_FREED_LATER_HEAP_INCREMENT;
+      memory_that_needs_to_be_freed = realloc(memory_that_needs_to_be_freed, memory_that_needs_to_be_freed_size * sizeof(void*));
+      if(!memory_that_needs_to_be_freed) {
+        printf("Could not allocate new memory to memory that needs to be freed array. halting.");
+        exit(-1);
+      }
+    }
+  }
 	memory_that_needs_to_be_freed[memory_that_needs_to_be_freed_counter] = pointer;
 	memory_that_needs_to_be_freed_counter++;
-	if(memory_that_needs_to_be_freed_counter >= memory_that_needs_to_be_freed_size) { 
-		printf("Memory that needs to be freed heap full"); 
-		exit(-1);
-	}
 }
 
 static void free_all_allocated_memory() {
@@ -128,40 +129,15 @@ static int variable_set[NUMBER_OF_REFS];
 
 // Resets all cached and malloc'd values
 void reset() {
-  cell_counter = 0;
   free_all_allocated_memory();
   memset(variable_set, 0, sizeof(variable_set));
 }
 
-// The object initializers
-static ExcelValue new_excel_number(double number) {
-	cell_counter++;
-	HEAPCHECK
-	ExcelValue new_cell = 	cells[cell_counter];
-	new_cell.type = ExcelNumber;
-	new_cell.number = number;
-	return new_cell;
-};
+// Handy macros
 
-static ExcelValue new_excel_string(char *string) {
-	cell_counter++;
-	HEAPCHECK
-	ExcelValue new_cell = cells[cell_counter];
-	new_cell.type = ExcelString;
-	new_cell.string = string;
-	return new_cell;
-};
-
-static ExcelValue new_excel_range(void *array, int rows, int columns) {
-	cell_counter++;
-	HEAPCHECK
-	ExcelValue new_cell = cells[cell_counter];
-	new_cell.type = ExcelRange;
-	new_cell.array = array;
-	new_cell.rows = rows;
-	new_cell.columns = columns;
-	return new_cell;
-};
+#define new_excel_number(numberdouble) ((ExcelValue) {.type = ExcelNumber, .number = numberdouble})
+#define new_excel_string(stringchar) ((ExcelValue) {.type = ExcelString, .string = stringchar})
+#define new_excel_range(arrayofvalues, rangerows, rangecolumns) ((ExcelValue) {.type = ExcelRange, .array = arrayofvalues, .rows = rangerows, .columns = rangecolumns})
 
 static void * new_excel_value_array(int size) {
 	ExcelValue *pointer = malloc(sizeof(ExcelValue)*size); // Freed later
@@ -305,7 +281,7 @@ static ExcelValue excel_abs(ExcelValue a_v) {
 	if(a >= 0.0 ) {
 		return a_v;
 	} else {
-		return new_excel_number(-a);
+		return (ExcelValue) {.type = ExcelNumber, .number = -a};
 	}
 }
 
