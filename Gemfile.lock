@@ -1,7 +1,6 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    ZenTest (4.9.2)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     coderay (1.1.0)
@@ -41,7 +40,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  ZenTest
   ffi
   nokogiri
   ox
