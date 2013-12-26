@@ -1,9 +1,9 @@
 # coding: utf-8
 # All tests for /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx
-require 'test/unit'
+require 'minitest/autorun'
 require_relative 'rubyexamplespreadsheet'
 
-class TestRubyExampleSpreadsheet < Test::Unit::TestCase
+class TestRubyExampleSpreadsheet < Minitest::Unit::TestCase
   def worksheet; @worksheet ||= RubyExampleSpreadsheet.new; end
   def test_valuetypes_a1; assert_equal(true, worksheet.valuetypes_a1); end
   def test_valuetypes_a2; assert_equal("Hello", worksheet.valuetypes_a2); end

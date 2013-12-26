@@ -1,11 +1,9 @@
 # coding: utf-8
 # Test for examplespreadsheet
-require 'rubygems'
-gem 'minitest'
 require 'minitest/autorun'
 require_relative 'examplespreadsheet'
 
-class TestExampleSpreadsheet < Minitest::Test
+class TestExampleSpreadsheet < Minitest::Unit::TestCase
   def self.runnable_methods
     puts 'Overriding minitest to run tests in a defined order'
     methods = methods_matching(/^test_/)
