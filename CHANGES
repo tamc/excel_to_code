@@ -1,5 +1,13 @@
 # Head
 
+# 0.2.2 - 2013 December 29th
+
+- Moved the excel function tests out of the C runtime and into a separate file
+- Moved the reset() function into the C runtime out of the generated code
+- Changed the generated tests to use minitest, now it is part of the Ruby library
+- Removed the ZenTest dependency
+- Changed the C runtime to avoid the big static arrays, and instead malloc the amount of memory actually needed
+
 # 0.2.1 - 2013 December 22nd
 
 - Fixed a bug when named references are specified as well as cells to keep and named reference points to blanks
