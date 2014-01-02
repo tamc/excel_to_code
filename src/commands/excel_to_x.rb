@@ -134,11 +134,11 @@ class ExcelToX
     # that are in the excel.
     simplify # Replacing shared strings and named references with their actual values, tidying arithmetic
 
-    # In case this hasn't been set by the user
-    if @cells_that_can_be_set_at_runtime.empty?
-      log.info "Creating a good set of cells that should be settable"
-      @cells_that_can_be_set_at_runtime = a_good_set_of_cells_that_should_be_settable_at_runtime
-    end
+    # If nothing has been specified in named_references_that_can_be_set_at_runtime 
+    # or in cells_that_can_be_set_at_runtime, then we assume that
+    # all value cells should be settable if they are referenced by
+    # any other forumla.
+    ensure_there_is_a_good_set_of_cells_that_can_be_set_at_runtime
 
     if named_references_that_can_be_set_at_runtime == :where_possible
       work_out_which_named_references_can_be_set_at_runtime
@@ -622,7 +622,7 @@ class ExcelToX
     return unless @named_references_that_can_be_set_at_runtime
     return unless @named_references_that_can_be_set_at_runtime == :where_possible
     cells_that_can_be_set = @cells_that_can_be_set_at_runtime
-    cells_that_can_be_set = a_good_set_of_cells_that_should_be_settable_at_runtime if cells_that_can_be_set == :named_references_only
+    cells_that_can_be_set = cells_with_settable_values if cells_that_can_be_set == :named_references_only
     cells_that_can_be_set_due_to_named_reference = Hash.new { |h,k| h[k] = Array.new  }
     @named_references_that_can_be_set_at_runtime = []
     all_named_references = @named_references
@@ -977,7 +977,19 @@ class ExcelToX
   # or in cells_that_can_be_set_at_runtime, then we assume that
   # all value cells should be settable if they are referenced by
   # any other forumla.
-  def a_good_set_of_cells_that_should_be_settable_at_runtime
+  def ensure_there_is_a_good_set_of_cells_that_can_be_set_at_runtime
+    # By this stage, if named_references were set, then cells_that_can_be_set_at_runtime will 
+    # have been set to match
+    return unless @cells_that_can_be_set_at_runtime.empty?
+    @cells_that_can_be_set_at_runtime = cells_with_settable_values
+  end
+
+  # Returns a list of cells that are:
+  # 1. Simple values (e.g., a string or a number)
+  # 2. That are referenced in other formulae
+  # ... these are likely to be cells that the user will want to use as inputs
+  # to their calculation.
+  def cells_with_settable_values
     log.info "Generating a good set of cells that should be settable"
 
     counter = CountFormulaReferences.new
