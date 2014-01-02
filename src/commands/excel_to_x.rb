@@ -145,6 +145,9 @@ class ExcelToX
     # specifed or judged as settable
     work_out_which_named_references_can_be_set_at_runtime
 
+    # Slims down the named references we keep track of to just the ones that should
+    # appear in the generated code: basically those that are specifed as being gettable
+    # or specified or judged to be settable.
     filter_named_references
 
     replace_formulae_with_their_results
