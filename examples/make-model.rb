@@ -19,5 +19,4 @@ command.cells_to_keep = {
 
 command.actually_compile_code = true
 command.actually_run_tests = true
-command.run_in_memory = true
 command.go!

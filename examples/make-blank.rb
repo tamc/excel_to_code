@@ -9,5 +9,4 @@ command.cells_that_can_be_set_at_runtime = { "Sheet1" => ["A1"] }
 command.cells_to_keep = { "Sheet1" => ["A2"]}
 command.actually_compile_code = true
 command.actually_run_tests = true
-command.run_in_memory = true
 command.go!

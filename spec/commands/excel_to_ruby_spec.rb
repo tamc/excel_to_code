@@ -16,7 +16,6 @@ describe ExcelToRuby do
     #command.cells_that_can_be_set_at_runtime = {
     #  'Referencing' => ['A4']
     #}
-    command.run_in_memory = true
     command.go!
     require_relative File.join(actual,'ruby','test_rubyexamplespreadsheet')
     Minitest.run.should == true

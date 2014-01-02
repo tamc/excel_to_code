@@ -1,5 +1,7 @@
 # Head
 
+- Removed the run_in_memory option, it no longer does anything.
+
 # 0.2.2 - 2013 December 29th
 
 - Moved the excel function tests out of the C runtime and into a separate file

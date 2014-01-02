@@ -89,11 +89,6 @@ class ExcelToX
   #   * false - the generated tests are not run
   attr_accessor :actually_run_tests
   
-  # Optional attribute. Boolean.
-  #   * true - the intermediate files are not written to disk (requires a lot of memory)
-  #   * false - the intermediate files are written to disk (default, easier to debug)
-  attr_accessor :run_in_memory
-  
   # This is the log file, if set it needs to respond to the same methods as the standard logger library
   attr_accessor :log
 
@@ -101,6 +96,10 @@ class ExcelToX
   #   * true - empty cells and zeros are treated as being equivalent in tests. Numbers greater then 1 are only expected to match with assert_in_epsilon, numbers less than 1 are only expected to match with assert_in_delta
   #   * false - empty cells and zeros are treated as being different in tests. Numbers must match to full accuracy.
   attr_accessor :sloppy_tests
+
+  def run_in_memory=(boolean)
+    $stderr.puts "The run_in_memory switch is deprecated (it is now always true). Please remove calls to it"
+  end 
   
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
@@ -225,7 +224,6 @@ class ExcelToX
   def sort_out_output_directories    
     FileUtils.mkdir_p(output_directory)
     FileUtils.mkdir_p(xml_directory)
-    FileUtils.mkdir_p(intermediate_directory) unless run_in_memory
   end
   
   # FIXME: Replace these with pure ruby versions?
