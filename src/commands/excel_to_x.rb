@@ -106,6 +106,10 @@ class ExcelToX
   def go!
     # This sorts out the settings
     set_defaults
+    clean_cells_that_can_be_set_at_runtime
+    clean_cells_to_keep
+    clean_named_references_to_keep
+    clean_named_references_that_can_be_set_at_runtime
     
     # These turn the excel into xml on disk
     sort_out_output_directories
@@ -167,6 +171,7 @@ class ExcelToX
     log.info "The generated code is available in #{File.join(output_directory)}"
   end
   
+  # If an attribute hasn't been specified, specifies a good default value here.
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
     
@@ -176,42 +181,6 @@ class ExcelToX
     self.output_name ||= "Excelspreadsheet"
     
     self.cells_that_can_be_set_at_runtime ||= {}
-    
-    # Make sure that all the cell names are upcase symbols and don't have any $ in them
-    if cells_that_can_be_set_at_runtime.is_a?(Hash)
-  
-      # Make sure the sheet names are symbols
-      cells_that_can_be_set_at_runtime.keys.each do |sheet|
-        next if sheet.is_a?(Symbol)
-        cells_that_can_be_set_at_runtime[sheet.to_sym] = cells_that_can_be_set_at_runtime.delete(sheet)
-      end
-
-      cells_that_can_be_set_at_runtime.keys.each do |sheet|
-        next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
-        cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
-      end
-    end
-
-    # Make sure that all the cell names are upcase symbols and don't have any $ in them
-    if cells_to_keep
-      cells_to_keep.keys.each do |sheet|
-        next if sheet.is_a?(Symbol)
-        cells_to_keep[sheet.to_sym] = cells_to_keep.delete(sheet)
-      end
-
-      cells_to_keep.keys.each do |sheet|
-        next unless cells_to_keep[sheet].is_a?(Array)
-        cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
-      end
-    end  
-
-    if named_references_to_keep.is_a?(Array)
-      named_references_to_keep.map! { |named_reference| named_reference.downcase.to_sym }
-    end
-
-    if named_references_that_can_be_set_at_runtime.is_a?(Array)
-      named_references_that_can_be_set_at_runtime.map! { |named_reference| named_reference.downcase.to_sym }
-    end
     
     # Make sure the relevant directories exist
     self.excel_file = File.expand_path(excel_file)
@@ -224,6 +193,56 @@ class ExcelToX
     self.sloppy_tests ||= true
   end
   
+  # Make sure that sheet names are symbols FIXME: Case ?
+  # Make sure that all the cell names are upcase symbols and don't have any $ in them
+  def clean_cells_that_can_be_set_at_runtime
+    return unless cells_that_can_be_set_at_runtime.is_a?(Hash)
+
+    # Make sure sheet names are symbols
+    cells_that_can_be_set_at_runtime.keys.each do |sheet|
+      next if sheet.is_a?(Symbol)
+      cells_that_can_be_set_at_runtime[sheet.to_sym] = cells_that_can_be_set_at_runtime.delete(sheet)
+    end
+
+    # Make sure references are of the form A1, not a1 or A$1
+    cells_that_can_be_set_at_runtime.keys.each do |sheet|
+      next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
+      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map do |reference| 
+        reference.gsub('$','').upcase.to_sym
+      end
+    end
+  end
+
+  # Make sure that sheet names are symbols FIXME: Case ?
+  # Make sure that all the cell names are upcase symbols and don't have any $ in them
+  def clean_cells_to_keep
+    return unless cells_to_keep
+    
+    # Make sure sheet names are symbols
+    cells_to_keep.keys.each do |sheet|
+      next if sheet.is_a?(Symbol)
+      cells_to_keep[sheet.to_sym] = cells_to_keep.delete(sheet)
+    end
+
+    # Make sure references are of the form A1, not a1 or A$1
+    cells_to_keep.keys.each do |sheet|
+      next unless cells_to_keep[sheet].is_a?(Array)
+      cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
+    end
+  end  
+
+  # Make sure named_references_to_keep are lowercase symbols
+  def clean_named_references_to_keep
+    return unless named_references_to_keep.is_a?(Array)
+    named_references_to_keep.map! { |named_reference| named_reference.downcase.to_sym }
+  end
+
+  # Make sure named_references_that_can_be_set_at_runtime are lowercase symbols
+  def clean_named_references_that_can_be_set_at_runtime
+    return unless named_references_that_can_be_set_at_runtime.is_a?(Array)
+    named_references_that_can_be_set_at_runtime.map! { |named_reference| named_reference.downcase.to_sym }
+  end
+
   # Creates any directories that are needed
   def sort_out_output_directories    
     FileUtils.mkdir_p(output_directory)
