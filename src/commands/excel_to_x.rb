@@ -26,10 +26,6 @@ class ExcelToX
   # Optional attribute. The excel file will be translated to xml and stored here.
   # If not specified, will be '#{excel_file_name}/xml'
   attr_accessor :xml_directory
-
-  # Optional attribute. The intermediate workings will be stored here.
-  # If not specified, will be '#{excel_file_name}/intermediate'
-  attr_accessor :intermediate_directory
   
   # Optional attribute. Specifies which cells have setters created in the c code so their values can be altered at runtime.
   # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
@@ -96,16 +92,21 @@ class ExcelToX
   #   * false - empty cells and zeros are treated as being different in tests. Numbers must match to full accuracy.
   attr_accessor :sloppy_tests
 
+  # Deprecated
   def run_in_memory=(boolean)
     $stderr.puts "The run_in_memory switch is deprecated (it is now always true). Please remove calls to it"
   end 
   
+  # Deprecated
+  def intermediate_directory=(dirname)
+    $stderr.puts "The intermediate_directory switch is deprecated (nowdays, no intermediate files are written). Please remove calls to it"
+  end
+
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
     
     self.output_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),language)
     self.xml_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'xml')
-    self.intermediate_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'intermediate')
     
     self.output_name ||= "Excelspreadsheet"
     

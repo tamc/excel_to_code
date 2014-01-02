@@ -10,7 +10,6 @@ describe ExcelToC do
     command = ExcelToC.new
     command.excel_file = excel
     command.xml_directory = File.join(actual,'xml')
-    command.intermediate_directory = File.join(actual,'intermediate')
     command.output_directory = File.join(actual,'c')
     command.output_name = "ExampleSpreadsheet"
     #command.cells_that_can_be_set_at_runtime = {
