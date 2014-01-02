@@ -1,6 +1,6 @@
 require 'ox'
 
-class ExtractEverythingFromWorkbook < ::Ox::Sax
+class ExtractDataFromWorksheet < ::Ox::Sax
 
   attr_accessor :table_rids
   attr_accessor :worksheets_dimensions

@@ -348,7 +348,7 @@ class ExcelToX
   def extract_data_from_worksheets
     # All are hashes of the format ["SheetName", "A1"] => [:number, "1"]
     # This one has a series of table references
-    extractor = ExtractEverythingFromWorkbook.new
+    extractor = ExtractDataFromWorksheet.new
     
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?

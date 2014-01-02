@@ -1,30 +1,30 @@
 require_relative '../spec_helper'
 
-describe ExtractEverythingFromWorkbook do
+describe ExtractDataFromWorksheet do
   
   before do
-    extractor = ExtractEverythingFromWorkbook.new
+    extractor = ExtractDataFromWorksheet.new
     input = excel_fragment 'FormulaeTypes.xml'
     extractor.extract(:SheetName, input)
     @extractor = extractor
   end
 
   it "should have a table_rids attribute with a hash keyed to the sheet name giving the ids of its tables" do
-    extractor = ExtractEverythingFromWorkbook.new
+    extractor = ExtractDataFromWorksheet.new
     input = excel_fragment 'TableRelationships.xml'
     extractor.extract(:SheetName, input)
     extractor.table_rids.should == {:SheetName => ["rId1", "rId2", "rId3"] }
   end
 
   it "should have a worksheets_dimensions attribute with a hash keyed to the sheet name with the dimensions of the worksheet as the value" do
-    extractor = ExtractEverythingFromWorkbook.new
+    extractor = ExtractDataFromWorksheet.new
     input = excel_fragment 'ValueTypes.xml'
     extractor.extract(:SheetName, input)
     extractor.worksheets_dimensions.should == {:SheetName => "A1:A6"}
   end
 
   it "should have a values attribute that returns a hash with the types and values of the cells" do
-    extractor = ExtractEverythingFromWorkbook.new
+    extractor = ExtractDataFromWorksheet.new
     input = excel_fragment 'ValueTypes.xml'
     extractor.extract(:SheetName, input)
     extractor.values.should == {
