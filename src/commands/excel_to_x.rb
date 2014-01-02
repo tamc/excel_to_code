@@ -9,7 +9,6 @@ require_relative '../excel_to_code'
 
 # Used to throw normally fatal errors
 class ExcelToCodeException < Exception; end
-class VersionedFileNotFoundException < Exception; end
 class XMLFileNotFoundException < Exception; end
 
 class ExcelToX
