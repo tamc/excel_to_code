@@ -102,6 +102,67 @@ class ExcelToX
     $stderr.puts "The intermediate_directory switch is deprecated (nowdays, no intermediate files are written). Please remove calls to it"
   end
 
+  # This is the main method. Once all the above attributes have been set, it should be called to actually do the work.
+  def go!
+    # This sorts out the settings
+    set_defaults
+    
+    # These turn the excel into xml on disk
+    sort_out_output_directories
+    unzip_excel
+    
+    # These get all the information out of the excel and put it in memory
+    extract_data_from_workbook
+    extract_data_from_worksheets
+    
+    # This turns named references that are specified as getters and setters
+    # into a series of required cell references
+    transfer_named_references_to_keep_into_cells_to_keep
+    transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
+    
+    # These perform some translations to simplify the excel
+    # Including:
+    # * Turning row and column references (e.g., A:A) to areas, based on the size of the worksheet
+    # * Turning range references (e.g., A1:B2) into array litterals (e.g., {A1,B1;A2,B2})
+    # * Turning shared formulae into a series of conventional formulae
+    # * Turning array formulae into a series of conventional formulae
+    # * Mergining all the different types of formulae and values into a single file
+    rewrite_worksheets
+    
+    # These perform a series of transformations to the information
+    # with the intent of removing any redundant calculations
+    # that are in the excel.
+    simplify # Replacing shared strings and named references with their actual values, tidying arithmetic
+
+    # In case this hasn't been set by the user
+    if @cells_that_can_be_set_at_runtime.empty?
+      log.info "Creating a good set of cells that should be settable"
+      @cells_that_can_be_set_at_runtime = a_good_set_of_cells_that_should_be_settable_at_runtime
+    end
+
+    if named_references_that_can_be_set_at_runtime == :where_possible
+      work_out_which_named_references_can_be_set_at_runtime
+    end
+
+    filter_named_references
+
+    replace_formulae_with_their_results
+    inline_formulae_that_are_only_used_once
+    remove_any_cells_not_needed_for_outputs
+    separate_formulae_elements
+    replace_values_with_constants
+    create_sorted_references_to_test
+
+    # This actually creates the code (implemented in subclasses)
+    write_code
+    
+    # These compile and run the code version of the excel (implemented in subclasses)
+    compile_code
+    run_tests
+    
+    log.info "The generated code is available in #{File.join(output_directory)}"
+  end
+  
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
     
@@ -157,67 +218,6 @@ class ExcelToX
 
     # By default, tests allow empty cells and zeros to be treated as equivalent, and numbers only have to match to a 0.001 epsilon (if expected>1) or 0.001 delta (if expected<1)
     self.sloppy_tests ||= true
-  end
-  
-  def go!
-    # This sorts out the settings
-    set_defaults
-    
-    # These turn the excel into a more accesible format
-    sort_out_output_directories
-    unzip_excel
-    
-    # These get all the information out of the excel and put
-    # into a series of plain text files
-    extract_data_from_workbook
-    extract_data_from_worksheets
-    
-    # This turns named references that are specified as getters and setters
-    # into a series of required cell references
-    transfer_named_references_to_keep_into_cells_to_keep
-    transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
-    
-    # These perform some translations to simplify the excel
-    # Including:
-    # * Turning row and column references (e.g., A:A) to areas, based on the size of the worksheet
-    # * Turning range references (e.g., A1:B2) into array litterals (e.g., {A1,B1;A2,B2})
-    # * Turning shared formulae into a series of conventional formulae
-    # * Turning array formulae into a series of conventional formulae
-    # * Mergining all the different types of formulae and values into a single file
-    rewrite_worksheets
-    
-    # These perform a series of transformations to the information
-    # with the intent of removing any redundant calculations
-    # that are in the excel.
-    simplify # Replacing shared strings and named references with their actual values, tidying arithmetic
-
-    # In case this hasn't been set by the user
-    if @cells_that_can_be_set_at_runtime.empty?
-      log.info "Creating a good set of cells that should be settable"
-      @cells_that_can_be_set_at_runtime = a_good_set_of_cells_that_should_be_settable_at_runtime
-    end
-
-    if named_references_that_can_be_set_at_runtime == :where_possible
-      work_out_which_named_references_can_be_set_at_runtime
-    end
-
-    filter_named_references
-
-    replace_formulae_with_their_results
-    inline_formulae_that_are_only_used_once
-    remove_any_cells_not_needed_for_outputs
-    separate_formulae_elements
-    replace_values_with_constants
-    create_sorted_references_to_test
-
-    # This actually creates the code (implemented in subclasses)
-    write_code
-    
-    # These compile and run the code version of the excel (implemented in subclasses)
-    compile_code
-    run_tests
-    
-    log.info "The generated code is available in #{File.join(output_directory)}"
   end
   
   # Creates any directories that are needed
