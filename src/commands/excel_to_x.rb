@@ -130,12 +130,17 @@ class ExcelToX
     # * Turning range references (e.g., A1:B2) into array litterals (e.g., {A1,B1;A2,B2})
     # * Turning shared formulae into a series of conventional formulae
     # * Turning array formulae into a series of conventional formulae
-    # * Mergining all the different types of formulae and values into a single file
-    rewrite_worksheets
+    # * Mergining all the different types of formulae and values into a single hash
+    rewrite_values_to_remove_shared_strings
+    rewrite_row_and_column_references
+    rewrite_shared_formulae_into_normal_formulae
+    rewrite_array_formulae
+    combine_formulae_types
     
     # These perform a series of transformations to the information
     # with the intent of removing any redundant calculations that are in the excel.
     # Replacing shared strings and named references with their actual values, tidying arithmetic
+    simplify_arithmetic
     simplify
 
     # If nothing has been specified in named_references_that_can_be_set_at_runtime 
@@ -365,7 +370,6 @@ class ExcelToX
     @c_names_assigned[c_name] = name
     c_name
   end
-
   
   # For each worksheet, extract the useful bits from the excel xml
   def extract_data_from_worksheets
@@ -417,13 +421,72 @@ class ExcelToX
     end
   end
   
-  def rewrite_worksheets
-    rewrite_values
-    rewrite_row_and_column_references
-    rewrite_shared_formulae
-    rewrite_array_formulae
-    combine_formulae_files
-    simplify_arithmetic
+  # This makes sure that cells_to_keep includes named_references_to_keep
+  def transfer_named_references_to_keep_into_cells_to_keep
+    log.info "Transfering named references to keep into cells to keep"
+    return unless @named_references_to_keep
+    @named_references_to_keep = @named_references.keys if @named_references_to_keep == :all
+    @cells_to_keep ||= {}
+    @named_references_to_keep.each do |name|
+      ref = @named_references[name]
+      if ref
+        add_ref_to_hash(ref, @cells_to_keep)
+      else
+        log.warn "Named reference \"#{name}\" not found"
+      end
+    end
+  end
+
+  # This makes sure that there are cell setter methods for any named references that can be set
+  def transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
+    log.info "Making sure there are setter methods for named references that can be set"
+    return unless @named_references_that_can_be_set_at_runtime
+    return if @named_references_that_can_be_set_at_runtime == :where_possible # in this case will be done in #work_out_which_named_references_can_be_set_at_runtime
+    @cells_that_can_be_set_at_runtime ||= {}
+    @named_references_that_can_be_set_at_runtime.each do |name|
+      ref = @named_references[name]
+      if ref
+        add_ref_to_hash(ref, @cells_that_can_be_set_at_runtime)
+      else
+        log.warn "Named reference #{name} not found"
+      end
+    end
+  end
+
+  # The reference passed may be a sheet reference or an area reference
+  # in which case we need to expand out the ref so that the hash contains
+  # one reference per cell
+  def add_ref_to_hash(ref, hash)
+    ref = ref.dup
+    if ref.first == :sheet_reference
+      sheet = ref[1]
+      cell = Reference.for(ref[2][1]).unfix.to_sym
+      hash[sheet] ||= []
+      return if hash[sheet] == :all
+      hash[sheet] << cell.to_sym unless hash[sheet].include?(cell.to_sym)
+    elsif ref.first == :array
+      ref.shift
+      ref.each do |row|
+        row = row.dup
+        row.shift
+        row.each do |cell|
+          add_ref_to_hash(cell, hash)
+        end
+      end
+    else
+      log.error "Weird reference in named reference #{ref}"
+    end
+  end
+  
+  # Excel can include references to strings rather than the strings
+  # themselves. This harmonises so the strings themselves are always
+  # used.
+  def rewrite_values_to_remove_shared_strings
+    log.info "Rewriting values"
+    r = ReplaceSharedStringAst.new(@shared_strings)
+    @values.each do |ref, ast|
+      r.map(ast)
+    end
   end
   
   # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
@@ -456,19 +519,17 @@ class ExcelToX
     # FIXME: Could we now nil off the dimensions? Or do we need for indirects?
   end
   
-  def rewrite_shared_formulae
+  # Excel can share formula definitions across cells. This function unshares
+  # them so every cell has its own definition
+  def rewrite_shared_formulae_into_normal_formulae
     log.info "Rewriting shared formulae"
     @formulae_shared = RewriteSharedFormulae.rewrite( @formulae_shared, @formulae_shared_targets)
-    # FIXME: Could now nil off the @formula_shared_targets ?
+    @shared_formulae_targets = :no_longer_needed # Allow the targets to be garbage collected.
   end
 
-  def simplify_arithmetic
-    simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
-    @formulae.each do |ref, ast|
-      simplify_arithmetic_replacer.map(ast)
-    end
-  end
-  
+  # Excel has the concept of array formulae: formulae whose answer spans
+  # many cells. They are awkward. We try and replace them with conventional
+  # formulae here.
   def rewrite_array_formulae
     log.info "Rewriting array formulae"
     # FIMXE: Refactor this
@@ -502,16 +563,10 @@ class ExcelToX
     @formulae_array = RewriteArrayFormulae.rewrite(@formulae_array)
   end
 
-  def rewrite_values
-    log.info "Rewriting values"
-    r = ReplaceSharedStringAst.new(@shared_strings)
-    @values.each do |ref, ast|
-      r.map(ast)
-    end
-  end
-  
-  def combine_formulae_files
-    log.info "Combining formula files"
+  # At the end of this function we are left with a single @formulae hash
+  # that contains every cell in the workbook, whatever its original format.
+  def combine_formulae_types
+    log.info "Combining formulae types"
 
     @formulae = required_references
     # We dup this to avoid the values being replaced when manipulating formulae
@@ -523,6 +578,16 @@ class ExcelToX
     @formulae.merge! @formulae_simple
 
     log.info "Sheet contains #{@formulae.size} cells"
+  end
+  
+  # Turns aritmetic with many arguments (1+2+3+4) into arithmetic with only
+  # two arguments (((1+2)+3)+4), taking into account operator precedence.
+  def simplify_arithmetic
+    log.info "Simplifying arithmetic"
+    simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
+    @formulae.each do |ref, ast|
+      simplify_arithmetic_replacer.map(ast)
+    end
   end
   
   # This ensures that all gettable and settable values appear in the output
@@ -579,64 +644,6 @@ class ExcelToX
       end
     end
     required_refs
-  end
-
-  # This makes sure that cells_to_keep includes named_references_to_keep
-  def transfer_named_references_to_keep_into_cells_to_keep
-    log.info "Transfering named references to keep into cells to keep"
-    return unless @named_references_to_keep
-    @named_references_to_keep = @named_references.keys if @named_references_to_keep == :all
-    @cells_to_keep ||= {}
-    @named_references_to_keep.each do |name|
-      ref = @named_references[name]
-      if ref
-        add_ref_to_hash(ref, @cells_to_keep)
-        p @cells_to_keep
-      else
-        log.warn "Named reference \"#{name}\" not found"
-      end
-    end
-  end
-
-  # This makes sure that there are cell setter methods for any named references that can be set
-  def transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
-    log.info "Making sure there are setter methods for named references that can be set"
-    return unless @named_references_that_can_be_set_at_runtime
-    return if @named_references_that_can_be_set_at_runtime == :where_possible # in this case will be done in #work_out_which_named_references_can_be_set_at_runtime
-    @cells_that_can_be_set_at_runtime ||= {}
-    @named_references_that_can_be_set_at_runtime.each do |name|
-      ref = @named_references[name]
-      if ref
-        add_ref_to_hash(ref, @cells_that_can_be_set_at_runtime)
-      else
-        log.warn "Named reference #{name} not found"
-      end
-    end
-  end
-
-  # The reference passed may be a sheet reference or an area reference
-  # in which case we need to expand out the ref so that the hash contains
-  # one reference per cell
-  def add_ref_to_hash(ref, hash)
-    ref = ref.dup
-    if ref.first == :sheet_reference
-      sheet = ref[1]
-      cell = Reference.for(ref[2][1]).unfix.to_sym
-      hash[sheet] ||= []
-      return if hash[sheet] == :all
-      hash[sheet] << cell.to_sym unless hash[sheet].include?(cell.to_sym)
-    elsif ref.first == :array
-      ref.shift
-      ref.each do |row|
-        row = row.dup
-        row.shift
-        row.each do |cell|
-          add_ref_to_hash(cell, hash)
-        end
-      end
-    else
-      log.error "Weird reference in named reference #{ref}"
-    end
   end
 
   # This just checks which named references refer to cells that we have already declared as settable
