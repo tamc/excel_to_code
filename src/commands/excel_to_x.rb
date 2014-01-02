@@ -130,9 +130,9 @@ class ExcelToX
     rewrite_worksheets
     
     # These perform a series of transformations to the information
-    # with the intent of removing any redundant calculations
-    # that are in the excel.
-    simplify # Replacing shared strings and named references with their actual values, tidying arithmetic
+    # with the intent of removing any redundant calculations that are in the excel.
+    # Replacing shared strings and named references with their actual values, tidying arithmetic
+    simplify
 
     # If nothing has been specified in named_references_that_can_be_set_at_runtime 
     # or in cells_that_can_be_set_at_runtime, then we assume that
@@ -140,9 +140,10 @@ class ExcelToX
     # any other forumla.
     ensure_there_is_a_good_set_of_cells_that_can_be_set_at_runtime
 
-    if named_references_that_can_be_set_at_runtime == :where_possible
-      work_out_which_named_references_can_be_set_at_runtime
-    end
+    # If named_reference_that_have_been_set_at_runtime is given the :where_possible switch
+    # then will take a look at which named_references only refer to cells that have been
+    # specifed or judged as settable
+    work_out_which_named_references_can_be_set_at_runtime
 
     filter_named_references
 
