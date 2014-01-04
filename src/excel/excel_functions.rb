@@ -94,3 +94,5 @@ require_relative 'excel_functions/isnumber'
 require_relative 'excel_functions/len'
 
 require_relative 'excel_functions/substitute'
+
+require_relative 'excel_functions/lower'

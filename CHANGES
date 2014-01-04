@@ -1,5 +1,6 @@
 # Head
 
+- Implemented the LOWER function in ruby
 - Removed the run_in_memory option, it no longer does anything.
 - Remmoved the intermediate_directory option, the code no longer needs to write intermediate files
 

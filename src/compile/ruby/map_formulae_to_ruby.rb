@@ -6,6 +6,7 @@ class MapFormulaeToRuby < MapValuesToRuby
   attr_accessor :worksheet
   
   FUNCTIONS = {
+    'LOWER' => 'lower',
     :'*' => 'multiply',
     :'+' => 'add',
     :'-' => 'subtract',
