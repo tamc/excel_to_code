@@ -18,7 +18,7 @@ describe "ExcelFunctions: LOWER" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['LOWER'].should == 'lower'
+    MapFormulaeToRuby::FUNCTIONS[:LOWER].should == 'lower'
   end
   
 end
