@@ -40,6 +40,9 @@ class ExcelToX
   #
   # Alternatively, can se to :where_possible to create setters for named references that point to setable cells
   #
+  # Alternatively, can specify a block, in which case each named reference in the workbook will be yielded to it
+  # and if the bock returns true, it will be made settable
+  #
   # Each named reference then has a function in the resulting C code of the form
   # void set_named_reference_mangled_into_a_c_function(ExcelValue newValue)
   #
@@ -67,6 +70,9 @@ class ExcelToX
   # of a string.
   #
   # Alternatively, can specify :all to keep all named references
+  #
+  # Alternatively, can specify a block, in which case each named reference in the workbook will be yielded to it
+  # and if the bock returns true, it will be kept in the output and if false it may be optimised out of the output
   #
   # Each named reference then has a function in the resulting C code of the form
   # ExcelValue named_reference_mangled_into_a_c_function()
@@ -366,6 +372,16 @@ class ExcelToX
 
   # Make sure named_references_to_keep are lowercase symbols
   def clean_named_references_to_keep
+    # Named references_to_keep can be passed a block, in which case this loops
+    # through offering up the named references. If the block returns true then
+    # the named reference is kept
+    if named_references_to_keep.is_a?(Proc)
+      new_named_references_to_keep = @named_references.keys.select do |named_reference|
+        named_references_to_keep.call(named_reference)
+      end
+      @named_references_to_keep = new_named_references_to_keep
+    end
+
     return unless named_references_to_keep.is_a?(Array)
     named_references_to_keep.map! { |named_reference| named_reference.downcase.to_sym }
 
@@ -379,6 +395,16 @@ class ExcelToX
 
   # Make sure named_references_that_can_be_set_at_runtime are lowercase symbols
   def clean_named_references_that_can_be_set_at_runtime
+    # amed_references_that_can_be_set_at_runtime can be passed a block, in which case this loops
+    # through offering up the named references. If the block returns true then
+    # the named reference is made settable
+    if named_references_that_can_be_set_at_runtime.is_a?(Proc)
+      new_named_references_that_can_be_set_at_runtime = @named_references.keys.select do |named_reference|
+        named_references_that_can_be_set_at_runtime.call(named_reference)
+      end
+      @named_references_that_can_be_set_at_runtime = new_named_references_that_can_be_set_at_runtime
+    end
+
     return unless named_references_that_can_be_set_at_runtime.is_a?(Array)
     named_references_that_can_be_set_at_runtime.map! { |named_reference| named_reference.downcase.to_sym }
 
