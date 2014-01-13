@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.4 - 2013 January 13th
+
 - Now checks whether sheet names and named references provided by the user actually exist, and if not, aborts
 
 # 0.2.3 - 2013 January 4th
