@@ -106,19 +106,24 @@ class ExcelToX
   def go!
     # This sorts out the settings
     set_defaults
-    clean_cells_that_can_be_set_at_runtime
-    clean_cells_to_keep
-    clean_named_references_to_keep
-    clean_named_references_that_can_be_set_at_runtime
     
     # These turn the excel into xml on disk
     sort_out_output_directories
     unzip_excel
     
-    # These get all the information out of the excel and put it in memory
+    # These gets the named references, worksheet names and shared strings out of the excel
     extract_data_from_workbook
-    extract_data_from_worksheets
     
+    # This checks that the user inputs of which cells to keep are in the right
+    # format and refer to sheets and references that actually exist
+    clean_cells_that_can_be_set_at_runtime
+    clean_cells_to_keep
+    clean_named_references_to_keep
+    clean_named_references_that_can_be_set_at_runtime
+
+    # This gets all the formulae, values and tables out of the worksheets
+    extract_data_from_worksheets
+
     # This turns named references that are specified as getters and setters
     # into a series of required cell references
     transfer_named_references_to_keep_into_cells_to_keep
@@ -198,55 +203,6 @@ class ExcelToX
     self.sloppy_tests ||= true
   end
   
-  # Make sure that sheet names are symbols FIXME: Case ?
-  # Make sure that all the cell names are upcase symbols and don't have any $ in them
-  def clean_cells_that_can_be_set_at_runtime
-    return unless cells_that_can_be_set_at_runtime.is_a?(Hash)
-
-    # Make sure sheet names are symbols
-    cells_that_can_be_set_at_runtime.keys.each do |sheet|
-      next if sheet.is_a?(Symbol)
-      cells_that_can_be_set_at_runtime[sheet.to_sym] = cells_that_can_be_set_at_runtime.delete(sheet)
-    end
-
-    # Make sure references are of the form A1, not a1 or A$1
-    cells_that_can_be_set_at_runtime.keys.each do |sheet|
-      next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
-      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map do |reference| 
-        reference.gsub('$','').upcase.to_sym
-      end
-    end
-  end
-
-  # Make sure that sheet names are symbols FIXME: Case ?
-  # Make sure that all the cell names are upcase symbols and don't have any $ in them
-  def clean_cells_to_keep
-    return unless cells_to_keep
-    
-    # Make sure sheet names are symbols
-    cells_to_keep.keys.each do |sheet|
-      next if sheet.is_a?(Symbol)
-      cells_to_keep[sheet.to_sym] = cells_to_keep.delete(sheet)
-    end
-
-    # Make sure references are of the form A1, not a1 or A$1
-    cells_to_keep.keys.each do |sheet|
-      next unless cells_to_keep[sheet].is_a?(Array)
-      cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
-    end
-  end  
-
-  # Make sure named_references_to_keep are lowercase symbols
-  def clean_named_references_to_keep
-    return unless named_references_to_keep.is_a?(Array)
-    named_references_to_keep.map! { |named_reference| named_reference.downcase.to_sym }
-  end
-
-  # Make sure named_references_that_can_be_set_at_runtime are lowercase symbols
-  def clean_named_references_that_can_be_set_at_runtime
-    return unless named_references_that_can_be_set_at_runtime.is_a?(Array)
-    named_references_that_can_be_set_at_runtime.map! { |named_reference| named_reference.downcase.to_sym }
-  end
 
   # Creates any directories that are needed
   def sort_out_output_directories    
@@ -310,21 +266,6 @@ class ExcelToX
       @named_references[name] = @replace_ranges_with_array_literals_replacer.map(reference)
     end
 
-    # Now we need to check the user specified named references
-    if named_references_to_keep.is_a?(Array)
-      named_references_to_keep.each.with_index do |named_reference, i|
-        next if @named_references.has_key?(named_reference)
-        log.warn "Named reference '#{named_reference}' in named_references_to_keep has not been found in the spreadsheet"
-        named_references_to_keep[i] = nil
-      end.compact!
-    end
-    if named_references_that_can_be_set_at_runtime.is_a?(Array)
-      named_references_that_can_be_set_at_runtime.each.with_index do |named_reference, i|
-        next if @named_references.has_key?(named_reference)
-        log.warn "Named reference '#{named_reference}' in named_references_that_can_be_set_at_runtime has not been found in the spreadsheet"
-        named_references_that_can_be_set_at_runtime[i] = nil
-      end.compact!
-    end
   end
 
   # Excel keeps a list of worksheet names. To get the mapping between
@@ -370,6 +311,85 @@ class ExcelToX
     @c_names_assigned[c_name] = name
     c_name
   end
+
+  # Make sure that sheet names are symbols FIXME: Case ?
+  # Make sure that all the cell names are upcase symbols and don't have any $ in them
+  def clean_cells_that_can_be_set_at_runtime
+    return unless cells_that_can_be_set_at_runtime.is_a?(Hash)
+
+    # Make sure sheet names are symbols
+    cells_that_can_be_set_at_runtime.keys.each do |sheet|
+      next if sheet.is_a?(Symbol)
+      cells_that_can_be_set_at_runtime[sheet.to_sym] = cells_that_can_be_set_at_runtime.delete(sheet)
+    end
+
+    # Make sure the sheets actually exist
+    cells_that_can_be_set_at_runtime.keys.each do |sheet|
+      next if @worksheet_xmls.has_key?(sheet)
+      log.error "Cells that can be set at runtime includes #{sheet.inspect} but could not be found in workbook: #{@worksheet_xmls.keys.inspect}"
+      exit
+    end
+
+    # Make sure references are of the form A1, not a1 or A$1
+    cells_that_can_be_set_at_runtime.keys.each do |sheet|
+      next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
+      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map do |reference| 
+        reference.gsub('$','').upcase.to_sym
+      end
+    end
+  end
+
+  # Make sure that sheet names are symbols FIXME: Case ?
+  # Make sure that all the cell names are upcase symbols and don't have any $ in them
+  def clean_cells_to_keep
+    return unless cells_to_keep
+    
+    # Make sure sheet names are symbols
+    cells_to_keep.keys.each do |sheet|
+      next if sheet.is_a?(Symbol)
+      cells_to_keep[sheet.to_sym] = cells_to_keep.delete(sheet)
+    end
+    
+    # Make sure the sheets actually exist
+    cells_to_keep.keys.each do |sheet|
+      next if @worksheet_xmls.has_key?(sheet)
+      log.error "Cells to keep includes #{sheet.inspect} but could not be found in workbook: #{@worksheet_xmls.keys.inspect}"
+      exit
+    end
+
+    # Make sure references are of the form A1, not a1 or A$1
+    cells_to_keep.keys.each do |sheet|
+      next unless cells_to_keep[sheet].is_a?(Array)
+      cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
+    end
+  end  
+
+  # Make sure named_references_to_keep are lowercase symbols
+  def clean_named_references_to_keep
+    return unless named_references_to_keep.is_a?(Array)
+    named_references_to_keep.map! { |named_reference| named_reference.downcase.to_sym }
+
+    # Now we need to check the user specified named references actually exist
+    named_references_to_keep.each.with_index do |named_reference, i|
+      next if @named_references.has_key?(named_reference)
+      log.warn "Named reference #{named_reference.inspect} in named_references_to_keep has not been found in the spreadsheet: #{@named_references.keys.inspect}"
+      exit
+    end
+  end
+
+  # Make sure named_references_that_can_be_set_at_runtime are lowercase symbols
+  def clean_named_references_that_can_be_set_at_runtime
+    return unless named_references_that_can_be_set_at_runtime.is_a?(Array)
+    named_references_that_can_be_set_at_runtime.map! { |named_reference| named_reference.downcase.to_sym }
+
+    # Now we need to check the user specified named references actually exist
+    named_references_that_can_be_set_at_runtime.each.with_index do |named_reference, i|
+      next if @named_references.has_key?(named_reference)
+      log.error "Named reference #{named_reference.inspect} in named_references_that_can_be_set_at_runtime has not been found in the spreadsheet: #{@named_references.keys.inspect}"
+      exit
+    end
+  end
+
   
   # For each worksheet, extract the useful bits from the excel xml
   def extract_data_from_worksheets

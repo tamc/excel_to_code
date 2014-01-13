@@ -11,10 +11,6 @@ command.cells_to_keep = {
   # The names, limits, 10 worders, long descriptions
   "Control" => (5.upto(57).to_a.map { |r| ["d#{r}","f#{r}","h#{r}","i#{r}","j#{r}","k#{r}","bo#{r}","bp#{r}","bq#{r}","br#{r}"] }).flatten, 
   "Intermediate output" => :all, 
-  "CostPerCapita" => :all, 
-  "Land Use" => :all, 
-  "Flows" => :all, 
-  "AQ Outputs" => :all, 
 }
 
 command.actually_compile_code = true
