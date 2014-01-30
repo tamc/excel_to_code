@@ -841,7 +841,7 @@ class ExcelToX
     # First of all we replace any indirects where their values can be calculated at compile time with those
     # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
     indirect_replacement = ReplaceIndirectsWithReferencesAst.new
-    column_replacement = ReplaceColumnWithColumnNumberAST.new
+    column_and_row_function_replacement = ReplaceColumnAndRowFunctionsAST.new
     offset_replacement = ReplaceOffsetsWithReferencesAst.new
 
     begin 
@@ -851,7 +851,7 @@ class ExcelToX
       replacements_made_in_the_last_pass = 0
       inline_replacer.count_replaced = 0
       value_replacer.replacements_made_in_the_last_pass = 0
-      column_replacement.count_replaced = 0
+      column_and_row_function_replacement.count_replaced = 0
       offset_replacement.count_replaced = 0
       indirect_replacement.count_replaced = 0
       references_that_need_updating = {}
@@ -862,7 +862,8 @@ class ExcelToX
         inline_replacer.map(ast)
         # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
         value_replacer.map(ast)
-        if column_replacement.replace(ast)
+        column_and_row_function_replacement.current_reference = ref.last
+        if column_and_row_function_replacement.replace(ast)
           references_that_need_updating[ref] = ast
         end
         if offset_replacement.replace(ast)
@@ -878,7 +879,7 @@ class ExcelToX
 
       replacements_made_in_the_last_pass += inline_replacer.count_replaced
       replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
-      replacements_made_in_the_last_pass += column_replacement.count_replaced
+      replacements_made_in_the_last_pass += column_and_row_function_replacement.count_replaced
       replacements_made_in_the_last_pass += offset_replacement.count_replaced
       replacements_made_in_the_last_pass += indirect_replacement.count_replaced
 
