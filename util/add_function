@@ -28,7 +28,7 @@ describe "ExcelFunctions: #{uppercase_name}" do
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['#{uppercase_name}'].should == '#{name}'
+    MapFormulaeToRuby::FUNCTIONS[:'#{uppercase_name}'].should == '#{name}'
   end
   
 end
@@ -71,7 +71,7 @@ end
 # Add to the MapFormulaeToRuby::FUNCTIONS
 map_formulae_to_ruby = IO.readlines('src/compile/ruby/map_formulae_to_ruby.rb').join
 map_formulae_to_ruby.gsub!(/FUNCTIONS = {\n([^}]*?)\n\s*}/m) do |match|
-  functions = $1.split(",\n") << "    '#{uppercase_name}' => '#{name}'"
+  functions = $1.split(",\n") << "    :'#{uppercase_name}' => '#{name}'"
   "FUNCTIONS = {\n#{functions.sort.uniq.join(",\n")}\n  }"
 end
 
