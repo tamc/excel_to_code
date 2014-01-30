@@ -190,7 +190,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * LOOKUP -- Looks up values in a vector or array
 * MATCH -- Looks up values in a reference or array -- _R_ _C_
 * OFFSET -- Returns a reference offset from a given reference
-* ROW -- Returns the row number of a reference
+* ROW -- Returns the row number of a reference -- _Only if the answer can be calculated at compile time_
 * ROWS -- Returns the number of rows in a reference
 * RTD -- Retrieves real-time data from a program that supports COM automation
 * TRANSPOSE -- Returns the transpose of an array
@@ -212,7 +212,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * COSH -- Returns the hyperbolic cosine of a number -- _R_ _C_
 * DEGREES -- Converts radians to degrees
 * EVEN -- Rounds a number up to the nearest even integer
-* EXP -- Returns e raised to the power of a given number
+* EXP -- Returns e raised to the power of a given number -- _R_ _C_
 * FACT -- Returns the factorial of a number
 * FACTDOUBLE -- Returns the double factorial of a number
 * FLOOR -- Rounds a number down, toward zero

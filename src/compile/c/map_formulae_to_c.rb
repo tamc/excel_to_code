@@ -35,6 +35,7 @@ class MapFormulaeToC < MapValuesToC
     :'COSH' => 'cosh',
     :'COUNT' => 'count',
     :'COUNTA' => 'counta',
+    :'EXP' => 'excel_exp',
     :'FIND2' => 'find_2',
     :'FIND3' => 'find',
     :'HLOOKUP3' => 'hlookup_3',

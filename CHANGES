@@ -1,5 +1,7 @@
 # Head
 
+- implemented the EXP function in ruby and C
+
 # 0.2.6 - 2013 January 30th
 
 - implemented the ROW() function (so long as it can be replaced at runtime)

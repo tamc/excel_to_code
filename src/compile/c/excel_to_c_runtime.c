@@ -68,6 +68,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
 static ExcelValue excel_log(ExcelValue number);
 static ExcelValue excel_log_2(ExcelValue number, ExcelValue base);
+static ExcelValue excel_exp(ExcelValue number);
 static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
@@ -309,6 +310,14 @@ static ExcelValue excel_log_2(ExcelValue number_v, ExcelValue base_v) {
   if(b<=0) { return NUM; }
 
   return	new_excel_number(log(n)/log(b));
+}
+
+static ExcelValue excel_exp(ExcelValue number_v) {
+	CHECK_FOR_PASSED_ERROR(number_v)
+	NUMBER(number_v, n)
+	CHECK_FOR_CONVERSION_ERROR
+
+  return	new_excel_number(exp(n));
 }
 
 static ExcelValue excel_and(int array_size, ExcelValue *array) {

@@ -745,6 +745,15 @@ int test_functions() {
   assert(excel_isnumber(TRUE).type == ExcelBoolean);
   assert(excel_isnumber(TRUE).number == 0);
 
+  // Test the EXP function
+  assert(excel_exp(BLANK).number == 1);
+  assert(excel_exp(ZERO).number == 1);
+  assert(excel_exp(ONE).number == 2.718281828459045);
+  assert(excel_exp(new_excel_string("1")).number == 2.718281828459045);
+  assert(excel_exp(FALSE).number == 1);
+  assert(excel_exp(TRUE).number == 2.718281828459045);
+  assert(excel_exp(DIV0).type == ExcelError);
+
   // Release memory
   free_all_allocated_memory();
   

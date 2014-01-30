@@ -96,3 +96,5 @@ require_relative 'excel_functions/len'
 require_relative 'excel_functions/substitute'
 
 require_relative 'excel_functions/lower'
+
+require_relative 'excel_functions/exp'
