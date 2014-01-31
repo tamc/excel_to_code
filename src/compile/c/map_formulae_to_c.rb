@@ -47,6 +47,7 @@ class MapFormulaeToC < MapValuesToC
     :'INDEX3' => 'excel_index',
     :'INT' => 'excel_int',
     :'ISNUMBER' => 'excel_isnumber',
+    :'ISBLANK' => 'excel_isblank',
     :'LARGE' => 'large',
     :'LEFT1' => 'left_1',
     :'LEFT2' => 'left',

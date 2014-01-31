@@ -754,6 +754,15 @@ int test_functions() {
   assert(excel_exp(TRUE).number == 2.718281828459045);
   assert(excel_exp(DIV0).type == ExcelError);
 
+  // Test the ISBLANK function
+  assert(excel_isblank(BLANK).type == ExcelBoolean);
+  assert(excel_isblank(BLANK).number == true);
+  assert(excel_isblank(ZERO).type == ExcelBoolean);
+  assert(excel_isblank(ZERO).number == false);
+  assert(excel_isblank(TRUE).number == false);
+  assert(excel_isblank(FALSE).number == false);
+  assert(excel_isblank(new_excel_string("")).number == false);
+
   // Release memory
   free_all_allocated_memory();
   

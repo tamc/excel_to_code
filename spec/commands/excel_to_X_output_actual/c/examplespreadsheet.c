@@ -70,11 +70,13 @@ static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 static ExcelValue excel_isnumber(ExcelValue number);
+static ExcelValue excel_isblank(ExcelValue value);
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
 static ExcelValue excel_log(ExcelValue number);
 static ExcelValue excel_log_2(ExcelValue number, ExcelValue base);
+static ExcelValue excel_exp(ExcelValue number);
 static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
@@ -318,6 +320,14 @@ static ExcelValue excel_log_2(ExcelValue number_v, ExcelValue base_v) {
   return	new_excel_number(log(n)/log(b));
 }
 
+static ExcelValue excel_exp(ExcelValue number_v) {
+	CHECK_FOR_PASSED_ERROR(number_v)
+	NUMBER(number_v, n)
+	CHECK_FOR_CONVERSION_ERROR
+
+  return	new_excel_number(exp(n));
+}
+
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
 	int i;
 	ExcelValue current_excel_value, array_result;
@@ -502,6 +512,14 @@ static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 
 static ExcelValue excel_isnumber(ExcelValue potential_number) {
   if(potential_number.type == ExcelNumber) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
+
+static ExcelValue excel_isblank(ExcelValue value) {
+  if(value.type == ExcelEmpty) {
     return TRUE;
   } else {
     return FALSE;

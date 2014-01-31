@@ -63,6 +63,7 @@ static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 static ExcelValue excel_isnumber(ExcelValue number);
+static ExcelValue excel_isblank(ExcelValue value);
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
@@ -504,6 +505,14 @@ static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v) {
 
 static ExcelValue excel_isnumber(ExcelValue potential_number) {
   if(potential_number.type == ExcelNumber) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
+
+static ExcelValue excel_isblank(ExcelValue value) {
+  if(value.type == ExcelEmpty) {
     return TRUE;
   } else {
     return FALSE;
