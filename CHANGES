@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.9 - 2013 January 31st
+
 - implemented the TRANSPOSE function (removed at compile time, only works in array formulae)
 
 # 0.2.8 - 2013 January 31st
