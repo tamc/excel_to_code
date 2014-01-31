@@ -585,9 +585,10 @@ class ExcelToX
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     expand_array_formulae_replacer = AstExpandArrayFormulae.new
     simplify_arithmetic_replacer ||= SimplifyArithmeticAst.new
+    @shared_string_replacer ||= ReplaceSharedStringAst.new(@shared_strings)
+    transpose_function_replacer = ReplaceTransposeFunction.new
 
     # FIXME: THIS IS THE MOST HORRIFIC BODGE. I HATE IT.
-    @shared_string_replacer ||= ReplaceSharedStringAst.new(@shared_strings)
     emergency_indirect_replacement_bodge = EmergencyArrayFormulaReplaceIndirectBodge.new
     emergency_indirect_replacement_bodge.references = @values
     
@@ -602,6 +603,7 @@ class ExcelToX
       table_reference_replacer.referring_cell = ref.last
       table_reference_replacer.map(details.last)
       @replace_ranges_with_array_literals_replacer.map(details.last)
+      transpose_function_replacer.map(details.last)
       simplify_arithmetic_replacer.map(details.last)
       expand_array_formulae_replacer.map(details.last)
     end
