@@ -112,6 +112,8 @@ class ExcelToX
   def go!
     # This sorts out the settings
     set_defaults
+
+    log.info "Excel to Code version #{ExcelToCode.version}\n\n"
     
     # These turn the excel into xml on disk
     sort_out_output_directories
@@ -480,10 +482,17 @@ class ExcelToX
     functions_that_are_removed_during_compilation.each do |f|
       functions_used.delete(f)
     end
+
     unless functions_used.empty?
-      puts
-      puts "The following functions have not been implemented in excel_to_code. Please see https://github.com/tamc/excel_to_code/blob/master/doc/How_to_add_a_missing_function.md"
-      puts functions_used
+      
+      log.fatal "The following functions have not been implemented in excel_to_code #{ExcelToCode.version}:"
+
+      functions_used.each do |f|
+        log.fatal f.to_s
+      end 
+      
+      log.fatal "Check for a new version of excel_to_code at https://github.com/tamc/excel_to_code"
+      log.fatal "Or follow the instractions at https://github.com/tamc/excel_to_code/blob/master/doc/How_to_add_a_missing_function.md to implement the function yourself"
       exit
     end
   end

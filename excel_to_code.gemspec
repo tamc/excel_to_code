@@ -1,6 +1,8 @@
+require_relative 'src/excel_to_code'
+
 Gem::Specification.new do |s|
   s.name = "excel_to_code"
-  s.version = '0.2.10'
+  s.version = ExcelToCode.version
   s.license = "MIT"
   s.add_dependency('rubypeg')
   s.add_dependency('nokogiri','>= 1.5.0')

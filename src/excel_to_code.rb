@@ -1,3 +1,7 @@
+class ExcelToCode
+  def self.version() "0.2.10" end
+end
+
 require_relative 'commands'
 require_relative 'compile'
 require_relative 'excel'

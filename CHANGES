@@ -1,5 +1,6 @@
 # Head
 
+- Implemented ExcelToCode.version and display this when running the program or listing errors
 - Updated how to add a missing function docs
 
 # 0.2.10 - 2013 February 1st

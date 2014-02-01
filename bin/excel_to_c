@@ -4,6 +4,7 @@ require_relative '../src/excel_to_code'
 
 command = ExcelToC.new
 
+#FIXME: Add a version option
 opts = OptionParser.new do |opts|
   opts.banner = <<-END
 
