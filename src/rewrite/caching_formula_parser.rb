@@ -3,6 +3,8 @@ require 'singleton'
 class CachingFormulaParser
   include Singleton
 
+  attr_accessor :functions_used
+
   def self.parse(*args)
     instance.parse(*args)
   end
@@ -19,6 +21,7 @@ class CachingFormulaParser
     @operator_cache = {}
     @comparator_cache = {}
     @sheet_reference_cache = {}
+    @functions_used = {}
   end
 
   def parse(text)
@@ -30,15 +33,24 @@ class CachingFormulaParser
     end
   end
 
+  # FIXME: THe function bit in here isn't DRY or consistent
   def map(ast)
     return ast unless ast.is_a?(Array)
-    ast[1] = ast[1].to_sym if ast[0] == :function
+    if ast[0] == :function
+      ast[1] = ast[1].to_sym 
+      @functions_used[ast[1]] = true
+    end
     if respond_to?(ast[0])
       ast = send(ast[0], ast) 
     else
       ast.each.with_index do |a,i| 
         next unless a.is_a?(Array)
-        a[1] = a[1].to_sym if a[0] == :function
+        
+        if a[0] == :function
+          a[1] = a[1].to_sym 
+          @functions_used[a[1]] = true
+        end
+
         ast[i] = map(a)
       end
     end

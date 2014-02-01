@@ -130,6 +130,10 @@ class ExcelToX
     # This gets all the formulae, values and tables out of the worksheets
     extract_data_from_worksheets
 
+    # This is an early check that the functions in the extracted data have 
+    # all got an implementation in, at least, the ruby code
+    check_all_functions_implemented
+
     # This turns named references that are specified as getters and setters
     # into a series of required cell references
     transfer_named_references_to_keep_into_cells_to_keep
@@ -464,6 +468,23 @@ class ExcelToX
           end
         end
       end
+    end
+  end
+
+  def check_all_functions_implemented
+    functions_that_are_removed_during_compilation = [:INDIRECT, :OFFSET, :ROW, :COLUMN, :TRANSPOSE]
+    functions_used = CachingFormulaParser.instance.functions_used.keys
+    functions_used.delete_if do |f|
+      MapFormulaeToRuby::FUNCTIONS[f]
+    end
+    functions_that_are_removed_during_compilation.each do |f|
+      functions_used.delete(f)
+    end
+    unless functions_used.empty?
+      puts
+      puts "The following functions have not been implemented in excel_to_code. Please see https://github.com/tamc/excel_to_code/blob/master/doc/How_to_add_a_missing_function.md"
+      puts functions_used
+      exit
     end
   end
   
