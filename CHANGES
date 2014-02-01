@@ -1,5 +1,7 @@
 # Head
 
+- Updated how to add a missing function docs
+
 # 0.2.10 - 2013 February 1st
 
 - Now aborts earlier in the process if the spreadsheet contains functions that haven't yet been implemented in excel_to_code

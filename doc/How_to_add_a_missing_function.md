@@ -2,6 +2,8 @@
 
 Only some excel functions are currently implemented. These are listed in src/compile/ruby/map_formulae_to_ruby.rb in the MapFormulaeToRuby::FUNCTIONS hash.
 
+If adding a function, it ALWAYS needs to be implemented in ruby, even if you are intending to generate only C code.
+
 ## Adding a new function to the Ruby output
 
 A shell script: util/add_function <function_name> will create the required files. 
@@ -16,11 +18,13 @@ Check that src/rewrite/expand_array_formulae_ast.rb will treat the formula corre
 
 Add the function definition and implementation to src/compile/c/excel_to_c_runtime.c
 
-The tests for that function go in the main body of that file.
+The tests for that function go in src/compile/c/excel_to_c_runtime_test.c
+
+Best approach is to look at the existing functions for inspiration.
 
 Run the tests with
 
-    gcc excel_to_c_runtime.c; ./a.out
+    cc excel_to_c_runtime_test.c; ./a.out
 
 Add the function lookup to the FUNCTIONS hash in src/compile/c/map_formulae_to_c.rb
 
