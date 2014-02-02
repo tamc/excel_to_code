@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.11 - 2013 February 2nd
+
 - Implemented the FORECAST function
 - Implemented the AVERAGEIFS function
 - Implemented ExcelToCode.version and display this when running the program or listing errors
