@@ -285,7 +285,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * FINV -- Returns the inverse of the F probability distribution
 * FISHER -- Returns the Fisher transformation
 * FISHERINV -- Returns the inverse of the Fisher transformation
-* FORECAST -- Returns a value along a linear trend
+* FORECAST -- Returns a value along a linear trend -- _R_ _C_
 * FREQUENCY -- Returns a frequency distribution as a vertical array
 * FTEST -- Returns the result of an F-test
 * GAMMADIST -- Returns the gamma distribution

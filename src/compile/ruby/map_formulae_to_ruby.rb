@@ -28,6 +28,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'COUNTA' => 'counta',
     :'EXP' => 'exp',
     :'FIND' => 'find',
+    :'FORECAST' => 'forecast',
     :'HLOOKUP' => 'hlookup',
     :'IF' => 'excel_if',
     :'IFERROR' => 'iferror',

@@ -62,6 +62,8 @@ static ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue not_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue average(int array_size, ExcelValue *array);
+static ExcelValue averageifs(ExcelValue average_range_v, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
 static ExcelValue hlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v);
@@ -71,6 +73,7 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 static ExcelValue excel_isnumber(ExcelValue number);
 static ExcelValue excel_isblank(ExcelValue value);
+static ExcelValue forecast(ExcelValue required_x, ExcelValue known_y, ExcelValue known_x);
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
@@ -404,6 +407,74 @@ static ExcelValue average(int array_size, ExcelValue *array) {
 	if(r.has_error == true) return r.error;
 	if(r.count == 0) return DIV0;
 	return new_excel_number(r.sum/r.count);
+}
+
+static ExcelValue forecast(ExcelValue required_x_v, ExcelValue known_y, ExcelValue known_x) {
+  CHECK_FOR_PASSED_ERROR(required_x_v)
+
+	NUMBER(required_x_v, required_x)
+	CHECK_FOR_CONVERSION_ERROR
+
+  if(known_x.type != ExcelRange) { return NA; }
+  if(known_y.type != ExcelRange) { return NA; }
+
+  int known_x_size = known_x.rows * known_x.columns;
+  int known_y_size = known_y.rows * known_y.columns;
+
+  int i;
+  ExcelValue *x_array, *y_array;
+  ExcelValue vx, vy;
+
+  x_array = known_x.array;
+  y_array = known_y.array;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    if(vx.type == ExcelError) {
+      return vx;
+    }
+  }
+
+  for(i=0; i<known_x_size; i++) {
+    vy = y_array[i];
+    if(vy.type == ExcelError) {
+      return vy;
+    }
+  }
+
+  if(known_x_size != known_y_size) { return NA; }
+  if(known_x_size == 0) { return NA; }
+
+  ExcelValue mean_y = average(1, &known_y);
+  ExcelValue mean_x = average(1, &known_x);
+
+  if(mean_y.type == ExcelError) { return mean_y; }
+  if(mean_x.type == ExcelError) { return mean_x; }
+
+  float mx = mean_x.number;
+  float my = mean_y.number;
+
+  float b_numerator, b_denominator, b, a;
+  
+  b_denominator = 0;
+  b_numerator = 0;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    vy = y_array[i];
+    if(vx.type != ExcelNumber) { continue; }
+    if(vy.type != ExcelNumber) { continue; }
+
+    b_denominator = b_denominator + pow(vx.number - mx, 2);
+    b_numerator = b_numerator + ((vx.number - mx)*(vy.number-my));
+  }
+
+  if(b_denominator == 0) { return DIV0; }
+
+  b = b_numerator / b_denominator;
+  a = mean_y.number - (b*mean_x.number);
+
+  return new_excel_number(a + (b*required_x));
 }
 
 static ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
@@ -1426,24 +1497,29 @@ static ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, 
   }
 }
 
-static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
-  // First, set up the sum_range
-  CHECK_FOR_PASSED_ERROR(sum_range_v);
+
+static ExcelValue filter_range(ExcelValue original_range_v, int number_of_arguments, ExcelValue *arguments) {
+  // First, set up the original_range
+  CHECK_FOR_PASSED_ERROR(original_range_v);
 
   // Set up the sum range
-  ExcelValue *sum_range;
-  int sum_range_rows, sum_range_columns;
+  ExcelValue *original_range;
+  int original_range_rows, original_range_columns;
   
-  if(sum_range_v.type == ExcelRange) {
-    sum_range = sum_range_v.array;
-    sum_range_rows = sum_range_v.rows;
-    sum_range_columns = sum_range_v.columns;
+  if(original_range_v.type == ExcelRange) {
+    original_range = original_range_v.array;
+    original_range_rows = original_range_v.rows;
+    original_range_columns = original_range_v.columns;
   } else {
-    sum_range = (ExcelValue*) new_excel_value_array(1);
-	sum_range[0] = sum_range_v;
-    sum_range_rows = 1;
-    sum_range_columns = 1;
+    original_range = (ExcelValue*) new_excel_value_array(1);
+	original_range[0] = original_range_v;
+    original_range_rows = 1;
+    original_range_columns = 1;
   }
+
+  // This is the filtered range
+  ExcelValue *filtered_range = new_excel_value_array(original_range_rows*original_range_columns);
+  int number_of_filtered_values = 0; 
   
   // Then go through and set up the check ranges
   if(number_of_arguments % 2 != 0) return VALUE;
@@ -1455,11 +1531,11 @@ static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelV
     current_value = arguments[i*2];
     if(current_value.type == ExcelRange) {
       criteria_range[i] = current_value;
-      if(current_value.rows != sum_range_rows) return VALUE;
-      if(current_value.columns != sum_range_columns) return VALUE;
+      if(current_value.rows != original_range_rows) return VALUE;
+      if(current_value.columns != original_range_columns) return VALUE;
     } else {
-      if(sum_range_rows != 1) return VALUE;
-      if(sum_range_columns != 1) return VALUE;
+      if(original_range_rows != 1) return VALUE;
+      if(original_range_columns != 1) return VALUE;
       ExcelValue *tmp_array2 =  (ExcelValue*) new_excel_value_array(1);
       tmp_array2[0] = current_value;
       criteria_range[i] =  new_excel_range(tmp_array2,1,1);
@@ -1510,8 +1586,7 @@ static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelV
     }
   }
   
-  double total = 0;
-  int size = sum_range_columns * sum_range_rows;
+  int size = original_range_columns * original_range_rows;
   int j;
   int passed = 0;
   ExcelValue value_to_be_checked;
@@ -1635,17 +1710,28 @@ static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelV
       if(passed == 0) break;
     }
     if(passed == 1) {
-      current_value = sum_range[j];
+      current_value = original_range[j];
       if(current_value.type == ExcelError) {
         return current_value;
       } else if(current_value.type == ExcelNumber) {
-        total += current_value.number;
+        filtered_range[number_of_filtered_values] = current_value;
+        number_of_filtered_values += 1;
       }
     }
   }
   // Tidy up
   free(criteria);
-  return new_excel_number(total);
+  return new_excel_range(filtered_range, number_of_filtered_values, 1);
+}
+
+static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
+  ExcelValue filtered_range = filter_range(sum_range_v, number_of_arguments, arguments);
+  return sum(1,&filtered_range);
+}
+
+static ExcelValue averageifs(ExcelValue average_range_v, int number_of_arguments, ExcelValue *arguments) {
+  ExcelValue filtered_range = filter_range(average_range_v, number_of_arguments, arguments);
+  return average(1,&filtered_range);
 }
 
 static ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v ) {

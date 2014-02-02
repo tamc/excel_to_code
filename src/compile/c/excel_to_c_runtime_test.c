@@ -825,6 +825,21 @@ int test_functions() {
   // ... should return an error if range argument is an error
   assert(averageifs(REF,2,averageifs_array_13).type == ExcelError);
 
+  // Tests for the FORECAST function
+  ExcelValue forecast_array1[] = { new_excel_number(1), new_excel_number(2), new_excel_number(3), new_excel_number(4), new_excel_number(5)};
+  ExcelValue forecast_array2[] = { new_excel_number(2), new_excel_number(3), new_excel_number(4), new_excel_number(5), new_excel_number(6)};
+  ExcelValue forecast_array1_v = new_excel_range(forecast_array1,5,1);
+  ExcelValue forecast_array2_v = new_excel_range(forecast_array2,5,1);
+
+  assert(forecast(new_excel_number(0), forecast_array2_v, forecast_array1_v).number == 1);
+  assert(forecast(new_excel_number(1), forecast_array2_v, forecast_array1_v).number == 2);
+  assert(forecast(new_excel_number(6), forecast_array2_v, forecast_array1_v).number == 7);
+
+  ExcelValue forecast_array3[] = { BLANK, new_excel_number(2), new_excel_number(3), new_excel_number(4), BLANK};
+  ExcelValue forecast_array3_v = new_excel_range(forecast_array3,5,1);
+
+  assert(forecast(new_excel_number(6), forecast_array2_v, forecast_array3_v).number == 7);
+
   // Release memory
   free_all_allocated_memory();
   

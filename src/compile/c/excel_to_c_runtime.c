@@ -66,6 +66,7 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 static ExcelValue excel_isnumber(ExcelValue number);
 static ExcelValue excel_isblank(ExcelValue value);
+static ExcelValue forecast(ExcelValue required_x, ExcelValue known_y, ExcelValue known_x);
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
@@ -399,6 +400,74 @@ static ExcelValue average(int array_size, ExcelValue *array) {
 	if(r.has_error == true) return r.error;
 	if(r.count == 0) return DIV0;
 	return new_excel_number(r.sum/r.count);
+}
+
+static ExcelValue forecast(ExcelValue required_x_v, ExcelValue known_y, ExcelValue known_x) {
+  CHECK_FOR_PASSED_ERROR(required_x_v)
+
+	NUMBER(required_x_v, required_x)
+	CHECK_FOR_CONVERSION_ERROR
+
+  if(known_x.type != ExcelRange) { return NA; }
+  if(known_y.type != ExcelRange) { return NA; }
+
+  int known_x_size = known_x.rows * known_x.columns;
+  int known_y_size = known_y.rows * known_y.columns;
+
+  int i;
+  ExcelValue *x_array, *y_array;
+  ExcelValue vx, vy;
+
+  x_array = known_x.array;
+  y_array = known_y.array;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    if(vx.type == ExcelError) {
+      return vx;
+    }
+  }
+
+  for(i=0; i<known_x_size; i++) {
+    vy = y_array[i];
+    if(vy.type == ExcelError) {
+      return vy;
+    }
+  }
+
+  if(known_x_size != known_y_size) { return NA; }
+  if(known_x_size == 0) { return NA; }
+
+  ExcelValue mean_y = average(1, &known_y);
+  ExcelValue mean_x = average(1, &known_x);
+
+  if(mean_y.type == ExcelError) { return mean_y; }
+  if(mean_x.type == ExcelError) { return mean_x; }
+
+  float mx = mean_x.number;
+  float my = mean_y.number;
+
+  float b_numerator, b_denominator, b, a;
+  
+  b_denominator = 0;
+  b_numerator = 0;
+
+  for(i=0; i<known_x_size; i++) {
+    vx = x_array[i];
+    vy = y_array[i];
+    if(vx.type != ExcelNumber) { continue; }
+    if(vy.type != ExcelNumber) { continue; }
+
+    b_denominator = b_denominator + pow(vx.number - mx, 2);
+    b_numerator = b_numerator + ((vx.number - mx)*(vy.number-my));
+  }
+
+  if(b_denominator == 0) { return DIV0; }
+
+  b = b_numerator / b_denominator;
+  a = mean_y.number - (b*mean_x.number);
+
+  return new_excel_number(a + (b*required_x));
 }
 
 static ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
