@@ -263,6 +263,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 
 * AVEDEV -- Returns the average of the absolute deviations of data points from their mean
 * AVERAGE -- Returns the average of its arguments -- _R_ _C_
+* AVERAGEIFS -- Returns the average of its arguments -- _R_ _C_
 * AVERAGEA -- Returns the average of its arguments, including numbers, text, and logical values
 * BETADIST -- Returns the beta cumulative distribution function
 * BETAINV -- Returns the inverse of the cumulative distribution function for a specified beta distribution

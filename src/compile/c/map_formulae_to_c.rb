@@ -30,6 +30,7 @@ class MapFormulaeToC < MapValuesToC
     :'ABS' => 'excel_abs',
     :'AND' => 'excel_and',
     :'AVERAGE' => 'average',
+    :'AVERAGEIFS' => 'averageifs',
     :'CHOOSE' => 'choose',
     :'CONCATENATE' => 'string_join',
     :'COSH' => 'cosh',
@@ -140,6 +141,10 @@ class MapFormulaeToC < MapValuesToC
 
   def function_sumifs(sum_range,*criteria)
     "#{FUNCTIONS[:SUMIFS]}(#{map(sum_range)}, #{map_arguments_to_array(criteria)})"
+  end
+
+  def function_averageifs(average_range,*criteria)
+    "#{FUNCTIONS[:AVERAGEIFS]}(#{map(average_range)}, #{map_arguments_to_array(criteria)})"
   end
 
   

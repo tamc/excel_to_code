@@ -762,6 +762,68 @@ int test_functions() {
   assert(excel_isblank(TRUE).number == false);
   assert(excel_isblank(FALSE).number == false);
   assert(excel_isblank(new_excel_string("")).number == false);
+  
+  // Test AVERAGEIFS function
+  ExcelValue averageifs_array_1[] = {new_excel_number(10),new_excel_number(100),BLANK};
+  ExcelValue averageifs_array_1_v = new_excel_range(averageifs_array_1,3,1);
+  ExcelValue averageifs_array_2[] = {new_excel_string("pear"),new_excel_string("bear"),new_excel_string("apple")};
+  ExcelValue averageifs_array_2_v = new_excel_range(averageifs_array_2,3,1);
+  ExcelValue averageifs_array_3[] = {new_excel_number(1),new_excel_number(2),new_excel_number(3),new_excel_number(4),new_excel_number(5),new_excel_number(5)};
+  ExcelValue averageifs_array_3_v = new_excel_range(averageifs_array_3,6,1);
+  ExcelValue averageifs_array_4[] = {new_excel_string("CO2"),new_excel_string("CH4"),new_excel_string("N2O"),new_excel_string("CH4"),new_excel_string("N2O"),new_excel_string("CO2")};
+  ExcelValue averageifs_array_4_v = new_excel_range(averageifs_array_4,6,1);
+  ExcelValue averageifs_array_5[] = {new_excel_string("1A"),new_excel_string("1A"),new_excel_string("1A"),new_excel_number(4),new_excel_number(4),new_excel_number(5)};
+  ExcelValue averageifs_array_5_v = new_excel_range(averageifs_array_5,6,1);
+  
+  // ... should only average values that meet all of the criteria
+  ExcelValue averageifs_array_6[] = { averageifs_array_1_v, new_excel_number(10), averageifs_array_2_v, new_excel_string("Bear") };
+  assert(averageifs(averageifs_array_1_v,4,averageifs_array_6).type == ExcelError);
+  
+  ExcelValue averageifs_array_7[] = { averageifs_array_1_v, new_excel_number(10), averageifs_array_2_v, new_excel_string("Pear") };
+  assert(averageifs(averageifs_array_1_v,4,averageifs_array_7).number == 10.0);
+  
+  // ... should work when single cells are given where ranges expected
+  ExcelValue averageifs_array_8[] = { new_excel_string("CAR"), new_excel_string("CAR"), new_excel_string("FCV"), new_excel_string("FCV")};
+  assert(averageifs(new_excel_number(0.143897265452564), 4, averageifs_array_8).number == 0.143897265452564);
+
+  // ... should match numbers with strings that contain numbers
+  ExcelValue averageifs_array_9[] = { new_excel_number(10), new_excel_string("10.0")};
+  assert(averageifs(new_excel_number(100),2,averageifs_array_9).number == 100);
+  
+  ExcelValue averageifs_array_10[] = { averageifs_array_4_v, new_excel_string("CO2"), averageifs_array_5_v, new_excel_number(2)};
+  assert(averageifs(averageifs_array_3_v,4, averageifs_array_10).type == ExcelError);
+  
+  // ... should match with strings that contain criteria
+  ExcelValue averageifs_array_10a[] = { averageifs_array_3_v, new_excel_string("=5")};
+  assert(averageifs(averageifs_array_3_v,2, averageifs_array_10a).number == 5);
+
+  ExcelValue averageifs_array_10b[] = { averageifs_array_3_v, new_excel_string("<>3")};
+  assert(averageifs(averageifs_array_3_v,2, averageifs_array_10b).number == 3.4);
+
+  ExcelValue averageifs_array_10c[] = { averageifs_array_3_v, new_excel_string("<3")};
+  assert(averageifs(averageifs_array_3_v,2, averageifs_array_10c).number == 1.5);
+  
+  ExcelValue averageifs_array_10d[] = { averageifs_array_3_v, new_excel_string("<=3")};
+  assert(averageifs(averageifs_array_3_v,2, averageifs_array_10d).number == 2);
+
+  ExcelValue averageifs_array_10e[] = { averageifs_array_3_v, new_excel_string(">3")};
+  assert(averageifs(averageifs_array_3_v,2, averageifs_array_10e).number == 14.0/3.0);
+
+  ExcelValue averageifs_array_10f[] = { averageifs_array_3_v, new_excel_string(">=3")};
+  assert(averageifs(averageifs_array_3_v,2, averageifs_array_10f).number == (3.0+4.0+5.0+5.0)/4.0);
+  
+  // ... should treat BLANK as an empty string when in the check_range, but not in the criteria
+  ExcelValue averageifs_array_11[] = { BLANK, new_excel_number(20)};
+  assert(averageifs(new_excel_number(100),2,averageifs_array_11).type == ExcelError);
+  
+  ExcelValue averageifs_array_12[] = {BLANK, new_excel_string("")};
+  assert(averageifs(new_excel_number(100),2,averageifs_array_12).number == 100);
+  
+  ExcelValue averageifs_array_13[] = {BLANK, BLANK};
+  assert(averageifs(new_excel_number(100),2,averageifs_array_13).type == ExcelError);
+    
+  // ... should return an error if range argument is an error
+  assert(averageifs(REF,2,averageifs_array_13).type == ExcelError);
 
   // Release memory
   free_all_allocated_memory();
