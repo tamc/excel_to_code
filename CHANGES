@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.12 - 2013 February 3rd
+
 - Reworked the SimplifyArithmetic routine to make fewer passes.
 
 # 0.2.11 - 2013 February 2nd
