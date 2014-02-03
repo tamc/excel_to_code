@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.13 - 2013 February 3rd
+
 - Now fails earlier if external references are found
 - Extra logging messages when expanding array formulae
 
