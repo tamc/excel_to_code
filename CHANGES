@@ -1,5 +1,7 @@
 # Head
 
+- Reworked the SimplifyArithmetic routine to make fewer passes.
+
 # 0.2.11 - 2013 February 2nd
 
 - Implemented the FORECAST function
