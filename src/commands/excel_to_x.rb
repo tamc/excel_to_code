@@ -607,7 +607,7 @@ class ExcelToX
   # many cells. They are awkward. We try and replace them with conventional
   # formulae here.
   def rewrite_array_formulae
-    log.info "Rewriting array formulae"
+    log.info "Expanding #{@formulae_array.size} array formulae"
     # FIMXE: Refactor this
 
     named_reference_replacer = ReplaceNamedReferencesAst.new(@named_references)
@@ -638,6 +638,7 @@ class ExcelToX
       expand_array_formulae_replacer.map(details.last)
     end
 
+    log.info "Rewriting array formulae into conventional formulae"
     @formulae_array = RewriteArrayFormulae.rewrite(@formulae_array)
   end
 
