@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.14 - 2013 February 4th
+
 - Optimised the array formula expansion a tiny bit
 - Aborts earlier if unable to replace a ROW or COLUMN function
 - When inlining, don't inline into a COLUMN or ROW function
