@@ -2,6 +2,7 @@
 
 - Optimised the array formula expansion a tiny bit
 - Aborts earlier if unable to replace a ROW or COLUMN function
+- When inlining, don't inline into a COLUMN or ROW function
 
 # 0.2.13 - 2013 February 3rd
 

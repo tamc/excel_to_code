@@ -22,9 +22,16 @@ class InlineFormulaeAst
   end
 
   def function(ast)
-    if ast[1] == :OFFSET && (ast[2][0] == :cell || ast[2][0] == :sheet_reference)
+    case ast[1]
+    when :OFFSET
       # Don't map the second argument - it should be left as a cell refernce
-      ast[3..-1].each {|a| map(a) }
+      if (ast[2][0] == :cell || ast[2][0] == :sheet_reference)
+        ast[3..-1].each {|a| map(a) }
+      else
+        ast.each { |a| map(a) }
+      end
+    when :COLUMN, :ROW
+      # Don't map any arguments
     else
       # Otherwise good to map all the other arguments
       ast.each { |a| map(a) }

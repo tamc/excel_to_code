@@ -12,6 +12,8 @@ A4\t[:sheet_reference,:sheet2,[:cell,:"A1"]]
 A5\t[:sheet_reference,:sheet3,[:cell,:"A5"]]
 A6\t[:function, :OFFSET, [:cell, :"$A$2"], [:cell, :"A3"], [:sheet_reference,:sheet2,[:cell,:"A1"]]]
 A7\t[:function, :OFFSET, [:function, :INDIRECT, [:string_join, [:string, "G."], [:sheet_reference, :sheet3, [:cell, :A5]], [:string, ".choice"]]], [:number, 0.0], [:number, -1.0]]
+A8\t[:function, :COLUMN, [:sheet_reference, :sheet3, [:cell, :A5]]]
+A9\t[:function, :ROW, [:sheet_reference, :sheet3, [:cell, :A5]]]
 END
 
 references = {
@@ -32,6 +34,8 @@ A4\t[:number, 5]
 A5\t[:number, 10]
 A6\t[:function, :OFFSET, [:cell, :"$A$2"], [:number, 1], [:number, 5]]
 A7\t[:function, :OFFSET, [:function, :INDIRECT, [:string_join, [:string, "G."], [:number, 10], [:string, ".choice"]]], [:number, 0.0], [:number, -1.0]]
+A8\t[:function, :COLUMN, [:sheet_reference, :sheet3, [:cell, :A5]]]
+A9\t[:function, :ROW, [:sheet_reference, :sheet3, [:cell, :A5]]]
 END
     
 input = StringIO.new(input)
