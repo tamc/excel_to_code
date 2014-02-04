@@ -5,8 +5,11 @@ class AstExpandArrayFormulae
   def map(ast)
     return ast unless ast.is_a?(Array)
     operator = ast[0]
-    send(operator, ast) if respond_to?(operator)
-    ast.each {|a| map(a) }
+    if respond_to?(operator)
+      send(operator, ast) 
+    else
+      ast.each {|a| map(a) }
+    end
     ast
   end
 

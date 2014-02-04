@@ -1,5 +1,7 @@
 # Head
 
+- Optimised the array formula expansion a tiny bit
+
 # 0.2.13 - 2013 February 3rd
 
 - Now fails earlier if external references are found
