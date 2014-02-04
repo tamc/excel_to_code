@@ -16,8 +16,8 @@ class ReplaceColumnAndRowFunctionsAST
    
   def map(ast)
     return ast unless ast.is_a?(Array)
-    function(ast) if ast[0] == :function
     ast.each { |a| map(a) }
+    function(ast) if ast[0] == :function
     ast
   end
   
@@ -31,7 +31,7 @@ class ReplaceColumnAndRowFunctionsAST
       elsif ast[2][0] == :sheet_reference
         reference = Reference.for(ast[2][2][1])
       else
-        return
+        raise ExcelToCodeException.new("COLUMN/ROW not replaced in #{@current_reference} #{ast}")
       end
     else
       reference = Reference.for(@current_reference)
