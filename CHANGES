@@ -1,5 +1,7 @@
 # Head
 
+- OFFSET replacement now deals with errors in arguments
+
 # 0.2.14 - 2013 February 4th
 
 - Optimised the array formula expansion a tiny bit

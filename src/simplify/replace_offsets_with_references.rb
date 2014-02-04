@@ -29,6 +29,11 @@ class ReplaceOffsetsWithReferencesAst
     column_offset = ast[4]
     height = ast[5] || [:number, 1]
     width = ast[6] || [:number, 1]
+    [row_offset, column_offset, height, width].each do |arg|
+       next unless arg.first == :error
+       ast.replace(arg) 
+       return
+    end
     return unless [row_offset, column_offset, height, width].all? { |a| a.first == :number }
     if reference.first == :cell
       ast.replace(offset_cell(reference, row_offset, column_offset, height, width))
