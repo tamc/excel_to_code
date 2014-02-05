@@ -49,3 +49,8 @@ examples/test_arrayformulatest.rb
 examples/test_model.rb
 
 examples/test_model2.rb
+examples/rangesinsteadofcells
+
+examples/rangesinsteadofcells.rb
+
+examples/test_rangesinsteadofcells.rb
