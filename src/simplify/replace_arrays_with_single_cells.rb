@@ -46,6 +46,7 @@ class ReplaceArraysWithSingleCellsAst
 
   def try_and_convert_array(ast)
     return ast unless ast.first == :array
+    return ast unless all_references?(ast)
     #return ast unless ast[1..-1].all? { |c| c.first == :sheet_reference }
     if ast.length == 2
       single_row(ast)
@@ -53,6 +54,14 @@ class ReplaceArraysWithSingleCellsAst
       single_column(ast)
     else
       ERROR
+    end
+  end
+
+  def all_references?(ast)
+    ast[1..-1].all? do |row|
+      row[1..-1].all? do |cell|
+        cell.first == :sheet_reference
+      end
     end
   end
 

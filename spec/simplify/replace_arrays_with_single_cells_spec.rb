@@ -38,6 +38,8 @@ describe ReplaceArraysWithSingleCellsAst do
 
   r.map([:function, :INDIRECT, [:string_join, ast, ast_vertical]]).should == [:function, :INDIRECT, [:string_join, [:sheet_reference, :"sheet1", [:cell, :"B1"]], [:sheet_reference, :sheet1, [:cell, :A2]]]]
 
+  ast = [:string_join, [:array, [:row, [:string, "A"]]], [:array, [:row, [:string, "B"]]]]
+  r.map(ast).should == ast
     
   end
 
