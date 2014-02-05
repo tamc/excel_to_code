@@ -148,6 +148,45 @@ class MapFormulaeToC < MapValuesToC
     "#{FUNCTIONS[:AVERAGEIFS]}(#{map(average_range)}, #{map_arguments_to_array(criteria)})"
   end
 
+  def function_if(condition, true_case, false_case = [:boolean_false])
+    true_code = map(true_case)
+    false_code = map(false_case)
+
+    condition_name = "condition#{@counter}"
+    result_name = "ifresult#{@counter}"
+    @counter += 1
+
+    initializers << "ExcelValue #{condition_name} = #{map(condition)};"
+    initializers << "ExcelValue #{result_name};"
+    initializers << "switch(#{condition_name}.type) {"
+    initializers << "case ExcelBoolean:"
+  	initializers << "  if(#{condition_name}.number == true) {"
+    initializers << "    #{result_name} = #{true_code};"
+    initializers << "  } else {"
+    initializers << "    #{result_name} = #{false_code};"
+    initializers << "  }"
+    initializers << "  break;"
+  	initializers << "case ExcelNumber:"
+    initializers << "  if(#{condition_name}.number == 0) {"
+    initializers << "    #{result_name} = #{false_code};"
+    initializers << "  } else {"
+    initializers << "    #{result_name} = #{true_code};"
+    initializers << "  }"
+    initializers << "  break;"
+	  initializers << "case ExcelEmpty: "
+    initializers << "  #{result_name} = #{false_code};"
+    initializers << "  break;"
+	  initializers << "case ExcelString:"
+    initializers << "case ExcelRange:"
+    initializers << "  #{result_name} = VALUE;"
+    initializers << "  break;"
+  	initializers << "case ExcelError:"
+    initializers << "  #{result_name} = #{condition_name};"
+    initializers << "  break;"
+    initializers << "}"
+
+    return result_name
+  end
   
   def any_number_of_argument_function(function_name,arguments)    
     "#{FUNCTIONS[function_name.to_sym]}(#{map_arguments_to_array(arguments)})"

@@ -1,5 +1,6 @@
 # Head
 
+- Generated C code now has C if statements, so that there is no need to evaluate both the true and the false case
 - OFFSET replacement now deals with errors in arguments
 - Reworked the way that ranges are dealt with when cells are expected (may not be right)
 
