@@ -98,6 +98,11 @@ class ExcelToX
   #   * false - empty cells and zeros are treated as being different in tests. Numbers must match to full accuracy.
   attr_accessor :sloppy_tests
 
+  # Optional attribute, Boolean. Default true
+  #   * true - the compiler attempts to extract bits of calculation that appear in more than one formula into separate methods. This should increase performance
+  #   * false - the compiler leaves calculations fully expanded. This may make debugging easier
+  attr_accessor :extract_repeated_parts_of_formulae
+
   # Deprecated
   def run_in_memory=(boolean)
     $stderr.puts "The run_in_memory switch is deprecated (it is now always true). Please remove calls to it"
@@ -179,7 +184,7 @@ class ExcelToX
     replace_formulae_with_their_results
     inline_formulae_that_are_only_used_once
     remove_any_cells_not_needed_for_outputs
-    # separate_formulae_elements
+    separate_formulae_elements if extract_repeated_parts_of_formulae
     replace_values_with_constants
     create_sorted_references_to_test
 
@@ -213,6 +218,9 @@ class ExcelToX
 
     # By default, tests allow empty cells and zeros to be treated as equivalent, and numbers only have to match to a 0.001 epsilon (if expected>1) or 0.001 delta (if expected<1)
     self.sloppy_tests ||= true
+
+    # Setting this to false may make it easier to figure out errors
+    self.extract_repeated_parts_of_formulae = true if @extract_repeated_parts_of_formulae == nil
   end
   
 
