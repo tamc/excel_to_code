@@ -31,5 +31,37 @@ END
   #   second = r.map(testB)
   #   first.object_id.should == second.object_id
   # end
+  #
+it "should deal with the edge case where SUMIF(A1:A10, 10, B5:B6) is interpreted by Excel as SUMIF(A1:A10, 10, B5:B15)" do
+
+  r = ReplaceRangesWithArrayLiteralsAst.new
+
+  ast = [:function, :SUMIF, [:sheet_reference, :sheet1, [:area, :A1, :A3]], [:number, 10], [:sheet_reference, :sheet1, [:area, :B1, :B2]]]
+  r.map(ast).should == [:function, :SUMIF, 
+                        [:array, 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :A1]]], 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :A2]]],
+                         [:row, [:sheet_reference, :sheet1, [:cell, :A3]]]
+                        ], [:number, 10], 
+                        [:array, 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :B1]]], 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :B2]]],
+                         [:row, [:sheet_reference, :sheet1, [:cell, :B3]]]
+                        ]]
+  ast = [:function, :SUMIF, [:sheet_reference, :sheet1, [:area, :A1, :A3]], [:number, 10], [:sheet_reference, :sheet1, [:cell, :B10]]]
+  r.map(ast).should == [:function, :SUMIF, 
+                        [:array, 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :A1]]], 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :A2]]],
+                         [:row, [:sheet_reference, :sheet1, [:cell, :A3]]]
+                        ], [:number, 10], 
+                        [:array, 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :B10]]], 
+                         [:row, [:sheet_reference, :sheet1, [:cell, :B11]]],
+                         [:row, [:sheet_reference, :sheet1, [:cell, :B12]]]
+                        ]]
+  
+
+end
 
 end

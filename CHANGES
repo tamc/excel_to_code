@@ -1,5 +1,6 @@
 # Head
 
+- SUMIF now copes with criteria ranges that are different in size from sum ranges
 - Optional attribute on excel_to_x: extract_repeated_parts_of_formulae. Setting it to false may make it easier to localise errors
 - Generated C code now has C if statements, so that there is no need to evaluate both the true and the false case
 - OFFSET replacement now deals with errors in arguments
