@@ -179,7 +179,7 @@ class ExcelToX
     replace_formulae_with_their_results
     inline_formulae_that_are_only_used_once
     remove_any_cells_not_needed_for_outputs
-    separate_formulae_elements
+    # separate_formulae_elements
     replace_values_with_constants
     create_sorted_references_to_test
 
@@ -811,21 +811,31 @@ class ExcelToX
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
 
     cells.each do |ref, ast|
-      @sheetless_cell_reference_replacer.worksheet = ref.first
-      @sheetless_cell_reference_replacer.map(ast)
-      @shared_string_replacer.map(ast)
-      @named_reference_replacer.default_sheet_name = ref.first
-      @named_reference_replacer.map(ast)
-      @table_reference_replacer.worksheet = ref.first
-      @table_reference_replacer.referring_cell = ref.last
-      @table_reference_replacer.map(ast)
-      @replace_ranges_with_array_literals_replacer.map(ast)
-      @replace_arithmetic_on_ranges_replacer.map(ast)
-      @replace_arrays_with_single_cells_replacer.map(ast)
-      @replace_string_joins_on_ranges_replacer.map(ast)
-      @wrap_formulae_that_return_arrays_replacer.map(ast)
-    end
+      begin
+        @sheetless_cell_reference_replacer.worksheet = ref.first
+        @sheetless_cell_reference_replacer.map(ast)
+        @shared_string_replacer.map(ast)
+        @named_reference_replacer.default_sheet_name = ref.first
+        @named_reference_replacer.map(ast)
+        @table_reference_replacer.worksheet = ref.first
+        @table_reference_replacer.referring_cell = ref.last
+        @table_reference_replacer.map(ast)
+        @replace_ranges_with_array_literals_replacer.map(ast)
+        #@replace_arithmetic_on_ranges_replacer.map(ast)
 
+        @replace_arrays_with_single_cells_replacer.ref = ref
+        a = @replace_arrays_with_single_cells_replacer.map(ast)
+        if @replace_arrays_with_single_cells_replacer.need_to_replace
+          cells[ref] = a
+        end
+
+        #@replace_string_joins_on_ranges_replacer.map(ast)
+        @wrap_formulae_that_return_arrays_replacer.map(ast)
+      rescue  Exception => e
+        log.fatal "Exception when simplifying #{ref}: #{ast}"
+        raise
+      end
+    end
   end
 
   # These types of cells don't conatain formulae and can therefore be skipped
