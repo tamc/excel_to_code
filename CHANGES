@@ -1,5 +1,6 @@
 # Head
 
+- Fixed bug in C compilation when specifying :all cells in a sheet are settable
 - Switched off warnings in default C build script
 
 # 0.2.15 - 2013 February 6th

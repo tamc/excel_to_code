@@ -256,7 +256,7 @@ END
       # Put in place the setters, if any
       settable_refs = @cells_that_can_be_set_at_runtime[name]
       if settable_refs
-        settable_refs = all_formulae[name].keys if settable_refs == :all
+        settable_refs = @formulae.keys.select { |k| k.first == name }.map { |k| k.last } if settable_refs == :all
         settable_refs.each do |ref|
           o.puts "  attach_function 'set_#{c_name}_#{ref.downcase}', [ExcelValue.by_value], :void"
         end
