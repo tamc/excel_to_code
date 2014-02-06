@@ -110,7 +110,7 @@ class ExcelToC < ExcelToX
     
     # Target for compiled version
     o.puts "#{name}.o:"
-    o.puts "\tgcc -Wall -fPIC -c #{name}.c"
+    o.puts "\tgcc -fPIC -c #{name}.c"
     o.puts
     
     # Target for cleaning

@@ -1,5 +1,7 @@
 # Head
 
+- Switched off warnings in default C build script
+
 # 0.2.15 - 2013 February 6th
 
 - SUMIF now copes with criteria ranges that are different in size from sum ranges
