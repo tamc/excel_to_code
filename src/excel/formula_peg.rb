@@ -67,7 +67,7 @@ class Formula < RubyPeg
   
   def comparison
     node :comparison do
-      (arithmetic || thing) && space && comparator && space && (arithmetic || thing)
+      (arithmetic || string_join || thing) && space && comparator && space && (arithmetic || string_join || thing)
     end
   end
   

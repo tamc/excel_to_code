@@ -9,7 +9,7 @@ row								:= basic_type ( space `',' space basic_type )*
 basic_type						 = string | percentage | number | boolean
 string_join                     := (arithmetic | thing) (space `"&" space (arithmetic | thing))+
 arithmetic                      := thing (space operator space thing)+
-comparison                      := (arithmetic | thing) space comparator space (arithmetic | thing)
+comparison                      := (arithmetic | string_join | thing) space comparator space (arithmetic | string_join | thing)
 comparator                      := '>=' | '<=' | '<>' | '>' | '<' | '='
 string                          := `'"' /(""|[^"])*/ `'"'
 any_reference                    = external_reference | any_internal_reference
