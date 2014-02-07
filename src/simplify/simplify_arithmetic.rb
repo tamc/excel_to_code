@@ -1,11 +1,10 @@
 class SimplifyArithmeticAst
   
-  attr_accessor :map_count  
-
   def map(ast)
     @brackets_to_remove = []
     simplify_arithmetic(ast)
-    remove_brackets(ast)
+    remove_brackets
+    ast
   end
 
   def simplify_arithmetic(ast)
@@ -15,15 +14,13 @@ class SimplifyArithmeticAst
     when :arithmetic; arithmetic(ast)
     when :brackets; @brackets_to_remove << ast
     end
-    ast
   end
   
-  def remove_brackets(ast)
+  def remove_brackets
     @brackets_to_remove.uniq.each do |ast|
       raise NotSupportedException.new("Multiple arguments not supported in brackets #{ast.inspect}") if ast.size > 2
       ast.replace(ast[1])
     end
-    ast
   end
 
   # This sets the operator precedence
@@ -42,8 +39,6 @@ class SimplifyArithmeticAst
       while i = ast.find_index { |a| a[0] == :operator && op.has_key?(a[1])}
         # Now we need to wrap that operation in its own arithmetic clause
         old_clause = ast[(i-1)..(i+1)]
-        # Make sure we do any mapping
-        #old_clause.each { |a| map(a) }
         # Now create a new clause
         new_clause = [:arithmetic, *old_clause]
         # And insert it back into the ast
