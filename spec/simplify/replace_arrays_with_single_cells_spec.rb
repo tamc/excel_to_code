@@ -15,7 +15,7 @@ describe ReplaceArraysWithSingleCellsAst do
   r.map(ast).should == [:sheet_reference, :"sheet1", [:cell, :"C1"]] 
 
   r.ref = [:sheet1, :D10]
-  r.map(ast).should == [:error, :"#VALUE!"] 
+  r.map(ast).should ==   [:error, :"#VALUE!"]  # [:array, [:row, [:sheet_reference, :sheet1, [:cell, :B1]], [:sheet_reference, :sheet1, [:cell, :C1]]]] # Excel would return a #VALUE! but we need to return the array in case it is part of function that accepts an array FIXME: Do this properly someitme
 
   r.ref = [:sheet1, :B10]
   r.map([:function, :SUM, *ast]).should == [:function, :SUM, *ast]
@@ -38,9 +38,16 @@ describe ReplaceArraysWithSingleCellsAst do
 
   r.map([:function, :INDIRECT, [:string_join, ast, ast_vertical]]).should == [:function, :INDIRECT, [:string_join, [:sheet_reference, :"sheet1", [:cell, :"B1"]], [:sheet_reference, :sheet1, [:cell, :A2]]]]
 
-  ast = [:string_join, [:array, [:row, [:string, "A"]]], [:array, [:row, [:string, "B"]]]]
-  r.map(ast).should == ast
-    
+  sumifast = [:function, :SUMIF, ast_vertical, ast_vertical ] 
+  sumifast_result = [:function, :SUMIF, ast_vertical, [:sheet_reference, :sheet1, [:cell, :A3]]]
+  r.ref = [:sheet1, :B3]
+  r.map(sumifast).should == sumifast_result
+
+  sumifsast = [:function, :SUMIFS, ast_vertical, ast_vertical, ast_vertical ] 
+  sumifsast_result = [:function, :SUMIFS, ast_vertical, ast_vertical, [:sheet_reference, :sheet1, [:cell, :A3]]]
+  r.ref = [:sheet1, :B3]
+  r.map(sumifsast).should == sumifsast_result
+
   end
 
 end

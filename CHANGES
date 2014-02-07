@@ -1,5 +1,6 @@
 # Head
 
+- SUMIF and SUMIFS can now cope with being passed ranges for the criteria
 - Fixed formula parser to cope with comparisons with string joins
 - Fixed bug in C compilation when specifying :all cells in a sheet are settable
 - Switched off warnings in default C build script

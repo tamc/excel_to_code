@@ -12,7 +12,9 @@ class ReplaceArraysWithSingleCellsAst
     return unless ast.is_a?(Array)
     if ast.first == :array
       @need_to_replace = true
-      return try_and_convert_array(ast)
+      new_ast = try_and_convert_array(ast)
+      return ERROR if new_ast.first == :array
+      return new_ast
     else
       do_map(ast)
       ast
@@ -39,9 +41,30 @@ class ReplaceArraysWithSingleCellsAst
       else
         ast[1..-1].each { |a| do_map(a) }
       end
+    when :function
+      if ast[1] == :SUMIF && ast[3].first == :array
+        ast[3] = try_and_convert_array(ast[3])
+      elsif ast[1] == :SUMIFS && check_sumifs(ast)
+        # Replacement madein check_sumif function
+      else
+        ast[2..-1].each { |a| do_map(a) }
+      end
     else
       ast[1..-1].each { |a| do_map(a) }
     end
+  end
+
+  def check_sumifs(ast)
+    replacement_made = false
+    i = 4
+    while i < ast.length
+      if ast[i].first == :array
+        replacement_made = true
+        ast[i] = try_and_convert_array(ast[i])
+      end
+      i +=2
+    end
+    ast
   end
 
   def try_and_convert_array(ast)
@@ -53,7 +76,7 @@ class ReplaceArraysWithSingleCellsAst
     elsif ast[1].length == 2
       single_column(ast)
     else
-      ERROR
+      ast
     end
   end
 
@@ -78,7 +101,7 @@ class ReplaceArraysWithSingleCellsAst
       sheet == s && column == c
     end
 
-    match || ERROR
+    match || ast
   end
 
   def single_column(ast)
@@ -94,6 +117,6 @@ class ReplaceArraysWithSingleCellsAst
       sheet == s && row == r
     end
 
-    match || ERROR
+    match || ast
   end
 end
