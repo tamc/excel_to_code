@@ -643,6 +643,8 @@ class ExcelToX
       @replace_ranges_with_array_literals_replacer.map(details.last)
       transpose_function_replacer.map(details.last)
       simplify_arithmetic_replacer.map(details.last)
+      # FIXME: Seem to need to do this twice, second time to eliminate brackets?!
+      simplify_arithmetic_replacer.map(details.last)
       expand_array_formulae_replacer.map(details.last)
     end
 
