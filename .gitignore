@@ -65,3 +65,7 @@ examples/test_results.txt
 examples/rangearrayformulaesa.rb
 
 examples/global.rb
+
+examples/offsetindirect.rb
+
+examples/test_offsetindirect.rb
