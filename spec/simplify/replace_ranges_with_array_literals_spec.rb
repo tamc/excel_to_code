@@ -36,7 +36,7 @@ it "should deal with the edge case where SUMIF(A1:A10, 10, B5:B6) is interpreted
 
   r = ReplaceRangesWithArrayLiteralsAst.new
 
-  ast = [:function, :SUMIF, [:sheet_reference, :sheet1, [:area, :A1, :A3]], [:number, 10], [:sheet_reference, :sheet1, [:area, :B1, :B2]]]
+  ast = [:function, :SUMIF, [:sheet_reference, :sheet1, [:area, :A1, :A3]], [:number, 10], [:sheet_reference, :sheet1, [:area, :"B$1", :"B$2"]]]
   r.map(ast).should == [:function, :SUMIF, 
                         [:array, 
                          [:row, [:sheet_reference, :sheet1, [:cell, :A1]]], 
@@ -60,7 +60,7 @@ it "should deal with the edge case where SUMIF(A1:A10, 10, B5:B6) is interpreted
                          [:row, [:sheet_reference, :sheet1, [:cell, :B11]]],
                          [:row, [:sheet_reference, :sheet1, [:cell, :B12]]]
                         ]]
-  
+
 
 end
 

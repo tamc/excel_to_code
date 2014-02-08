@@ -41,6 +41,7 @@ class Reference < String
     @excel_row_number = @excel_row.to_i
     @excel_column_number = @@column_number_for_column[@excel_column]
     @excel_variables_calculated = true
+    self
   end
     
   def offset(rows,columns)

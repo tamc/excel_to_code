@@ -1,5 +1,6 @@
 # Head
 
+- Parser now picks up external named references
 - Added a workaround for brackets not being removed in some cases
 - The ruby version of IF() now treats 0 as false and all other numbers as true 
 - SUMIF and SUMIFS can now cope with being passed ranges for the criteria

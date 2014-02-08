@@ -53,8 +53,8 @@ class ReplaceRangesWithArrayLiteralsAst
     check_range, criteria, sum_range = ast[2], ast[3], ast[4]
     return map_args(ast) unless [:area, :sheet_reference, :cell].include?(check_range.first)
     return map_args(ast) unless [:area, :sheet_reference, :cell].include?(sum_range.first)
-    check_area = area_for(check_range)
-    sum_area = area_for(sum_range)
+    check_area = area_for(check_range).unfix
+    sum_area = area_for(sum_range).unfix
 
     check_area.calculate_excel_variables
     sum_area.calculate_excel_variables
