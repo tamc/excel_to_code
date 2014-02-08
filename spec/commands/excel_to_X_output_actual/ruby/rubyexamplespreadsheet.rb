@@ -226,7 +226,7 @@ class RubyExampleSpreadsheet
   attr_accessor :referencing_e72 # Default: "Beta"
   def referencing_f72; @referencing_f72 ||= common27; end
   def referencing_g72; @referencing_g72 ||= common27; end
-  def tables_a1; @tables_a1 ||= nil; end
+  def tables_a1; @tables_a1 ||= 0; end
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
   attr_accessor :tables_d2 # Default: "Column1"
@@ -246,7 +246,7 @@ class RubyExampleSpreadsheet
   def tables_g6; @tables_g6 ||= tables_d2; end
   def tables_e7; @tables_e7 ||= tables_b5; end
   def tables_f7; @tables_f7 ||= tables_c5; end
-  def tables_g7; @tables_g7 ||= nil; end
+  def tables_g7; @tables_g7 ||= 0; end
   def tables_e8; @tables_e8 ||= tables_b2; end
   def tables_f8; @tables_f8 ||= tables_c2; end
   def tables_g8; @tables_g8 ||= tables_d2; end
@@ -260,7 +260,7 @@ class RubyExampleSpreadsheet
   def tables_c11; @tables_c11 ||= common34; end
   def tables_e11; @tables_e11 ||= tables_b5; end
   def tables_f11; @tables_f11 ||= tables_c5; end
-  def tables_g11; @tables_g11 ||= nil; end
+  def tables_g11; @tables_g11 ||= 0; end
   def tables_c12; @tables_c12 ||= tables_b5; end
   def tables_c13; @tables_c13 ||= common35; end
   def tables_c14; @tables_c14 ||= common35; end

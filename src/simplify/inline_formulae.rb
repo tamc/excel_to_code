@@ -1,6 +1,6 @@
 class InlineFormulaeAst
 
-  BLANK = [:blank]
+  BLANK = [:number, 0]
   
   attr_accessor :references, :current_sheet_name, :inline_ast
   attr_accessor :count_replaced
