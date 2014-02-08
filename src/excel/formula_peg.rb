@@ -111,7 +111,7 @@ class Formula < RubyPeg
   
   def external_reference
     node :external_reference do
-      terminal(/\[\d+\]!?/) && any_internal_reference
+      terminal(/\[\d+\]!?/) && (any_internal_reference || named_reference)
     end
   end
   
