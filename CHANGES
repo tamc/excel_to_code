@@ -1,5 +1,6 @@
 # Head
 
+- Now prints more informative error messages if fails to compile a 'common' element
 - Changed order of array replacement
 - Ruby version of LEN now distinguishes zeros that are blank from zeros that are not
 - References to blank cells now return 0 not blank

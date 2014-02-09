@@ -66,6 +66,12 @@ class CompileToC
         mapper.reset
       rescue Exception => e
         puts "Exception at #{ref} #{ast}"
+        if ref.first == "" # Then it is a common method, helpful to indicate where it comes from
+          s = /#{ref.last}/io
+          formulae.each do |r, a|
+            puts "Referenced in #{r}" if a.to_s =~ s
+          end
+        end
         raise
       end      
     end
