@@ -103,6 +103,13 @@ class ExcelToX
   #   * false - the compiler leaves calculations fully expanded. This may make debugging easier
   attr_accessor :extract_repeated_parts_of_formulae
 
+  # Optional attribute, Array. Default nil
+  # This is used to help debug large spreadsheets that aren't working correctly.
+  # If set to the name of a worksheet then ONLY that worksheet will be run through the 
+  # optimisation and simplification code. Will also override cells_to_keep to keep all
+  # cells on tha sheet and nothing else.
+  attr_accessor :isolate
+
   # Deprecated
   def run_in_memory=(boolean)
     $stderr.puts "The run_in_memory switch is deprecated (it is now always true). Please remove calls to it"
@@ -221,6 +228,11 @@ class ExcelToX
 
     # Setting this to false may make it easier to figure out errors
     self.extract_repeated_parts_of_formulae = true if @extract_repeated_parts_of_formulae == nil
+    if self.isolate
+      self.cells_to_keep = { isolate.to_s => :all }
+      self.isolate = self.isolate.to_sym 
+      log.warn "Isolating #{@isolate} worksheet. No other sheets will be converted"
+    end
   end
   
 
@@ -440,6 +452,13 @@ class ExcelToX
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?
     worksheets do |name, xml_filename|
+
+      # This is used in debugging large worksheets to limit 
+      # the optimisation to a particular worksheet
+      if isolate
+        extractor.only_extract_values = (isolate != name)
+      end
+
       log.info "Extracting data from #{name}"
       xml(xml_filename) do |input|
         extractor.extract(name, input)

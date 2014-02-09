@@ -2,6 +2,8 @@ require 'ox'
 
 class ExtractDataFromWorksheet < ::Ox::Sax
 
+  attr_accessor :only_extract_values
+
   attr_accessor :table_rids
   attr_accessor :worksheets_dimensions
   attr_accessor :values
@@ -75,6 +77,8 @@ class ExtractDataFromWorksheet < ::Ox::Sax
       @values[key] = @fp.map(ast)
     when :f
       @current_element.pop
+      return if only_extract_values
+
       unless @formula.empty?
         formula_text = @formula.join.gsub(/[\r\n]+/,'')
         ast = @fp.parse(formula_text)

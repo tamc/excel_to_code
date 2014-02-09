@@ -47,6 +47,10 @@ END
   opts.on('--precise-tests',"The generated tests treat blanks and zeros as different and requires numbers to be exactly the same.") do
     command.sloppy_tests = false
   end
+
+  opts.on('--isolate WORKSHEET', "Only performs translation and optimiation of that one worksheet. Useful for debugging an incorrect translation of a large worksheet") do |sheet|
+    command.isolate = sheet
+  end
   
   opts.on("-h", "--help", "Show this message") do
     puts opts

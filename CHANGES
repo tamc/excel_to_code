@@ -1,5 +1,6 @@
 # Head
 
+- Added an isolate attribute to excel_to_x to help debugging large worksheets: if set, only one sheet is translated
 - Now prints more informative error messages if fails to compile a 'common' element
 - Changed order of array replacement
 - Ruby version of LEN now distinguishes zeros that are blank from zeros that are not

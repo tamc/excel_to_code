@@ -64,4 +64,17 @@ describe ExtractDataFromWorksheet do
     }
   end
 
+  it "should have a :only_extract_values method which defaults to false" do
+    extractor = ExtractDataFromWorksheet.new
+    extractor.only_extract_values = true
+
+    input = excel_fragment 'FormulaeTypes.xml'
+    extractor.extract(:SheetName, input)
+    extractor.formulae_simple.length.should == 0
+    extractor.formulae_array.length.should == 0
+    extractor.formulae_shared.length.should == 0
+    extractor.formulae_shared_targets.length.should == 0
+    extractor.values.length.should == 16
+  end
+
 end
