@@ -28,7 +28,7 @@ class MapFormulaeToValues
     # FIXME: Remove references to this method
   end
 
-  DO_NOT_MAP = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true}
+  DO_NOT_MAP = {:number => true, :string => true, :blank => true, :inlined_blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true}
 
   def map(ast)
     ast[1..-1].each do |a| 
@@ -108,7 +108,13 @@ class MapFormulaeToValues
   
   # [:string_join, stringA, stringB, ...]
   def string_join(ast)
-    values = ast[1..-1].map { |a| value(a) } 
+    values = ast[1..-1].map do |a| 
+      if a == [:inlined_blank]
+        a = ""
+      else
+        value(a)
+      end
+    end
     return if values.any? { |a| a == :not_a_value }
     ast.replace(ast_for_value(@calculator.string_join(*values)))
   end
@@ -134,7 +140,7 @@ class MapFormulaeToValues
   end
 
   def map_len(ast)
-    if ast[2].is_a?(BlankCell)
+    if ast[2] == [:inlined_blank]
       ast.replace([:number, 0])
     else
       normal_function(ast)
@@ -266,6 +272,7 @@ class MapFormulaeToValues
     return extract_values_from_array(ast) if ast.first == :array
     case ast.first
     when :blank; nil
+    when :inlined_blank; 0
     when :null; nil
     when :number; ast[1]
     when :percentage; ast[1]/100.0

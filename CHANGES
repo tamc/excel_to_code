@@ -1,5 +1,7 @@
 # Head
 
+- Added an inlined_blank type, which is sometimes like a zero, and sometimes like an empty string
+- String join in the ruby compilation treates zeros that are blank differently from zeros
 - Added an isolate attribute to excel_to_x to help debugging large worksheets: if set, only one sheet is translated
 - Now prints more informative error messages if fails to compile a 'common' element
 - Changed order of array replacement

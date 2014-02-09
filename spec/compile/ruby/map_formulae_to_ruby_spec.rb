@@ -15,5 +15,12 @@ describe MapFormulaeToRuby do
       actual.to_s.should == desired.to_s
     end
   end
+
+  it "should treat zeros that are blank differently in strings joins" do
+    ast = [:string_join, [:inlined_blank], [:string, "Hi"]]
+    @mapper.map(ast).should == 'string_join("","Hi")'
+    ast = [:function, :COUNTA, [:inlined_blank], [:blank]]
+    @mapper.map(ast).should == 'counta(0.0,nil)'
+  end
   
 end

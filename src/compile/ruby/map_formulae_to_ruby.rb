@@ -82,7 +82,12 @@ class MapFormulaeToRuby < MapValuesToRuby
   end
 
   def string_join(*strings)
-    "string_join(#{strings.map {|a| map(a)}.join(',')})"
+    strings = strings.map do |s|
+      s = [:string, ""] if s == [:inlined_blank]
+      s = map(s)
+    end
+
+    "string_join(#{strings.join(',')})"
   end
 
   def comparison(left,operator,right)

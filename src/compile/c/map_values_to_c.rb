@@ -18,6 +18,10 @@ class MapValuesToC
   def blank
     "BLANK"
   end
+
+  def inlined_blank
+    "ZERO"
+  end
   
   def constant(name)
     name

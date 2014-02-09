@@ -20,6 +20,10 @@ class MapValuesToRuby
   def blank
     "nil"
   end
+
+  def inlined_blank
+    "0.0"
+  end
   
   def constant(constant)
     map(constants[constant])
