@@ -831,15 +831,13 @@ class ExcelToX
         @table_reference_replacer.referring_cell = ref.last
         @table_reference_replacer.map(ast)
         @replace_ranges_with_array_literals_replacer.map(ast)
-        #@replace_arithmetic_on_ranges_replacer.map(ast)
-
         @replace_arrays_with_single_cells_replacer.ref = ref
         a = @replace_arrays_with_single_cells_replacer.map(ast)
         if @replace_arrays_with_single_cells_replacer.need_to_replace
-          cells[ref] = a
+          cells[ref] = @formulae[ref] = a
         end
-
-        #@replace_string_joins_on_ranges_replacer.map(ast)
+        @replace_arithmetic_on_ranges_replacer.map(ast)
+        @replace_string_joins_on_ranges_replacer.map(ast)
         @wrap_formulae_that_return_arrays_replacer.map(ast)
       rescue  Exception => e
         log.fatal "Exception when simplifying #{ref}: #{ast}"
