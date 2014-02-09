@@ -146,7 +146,7 @@ class ExcelToX
     transfer_named_references_to_keep_into_cells_to_keep
     transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
     
-    # These perform some translations to simplify the excel
+    # These perform some translations to tsimplify the excel
     # Including:
     # * Turning row and column references (e.g., A:A) to areas, based on the size of the worksheet
     # * Turning range references (e.g., A1:B2) into array litterals (e.g., {A1,B1;A2,B2})
