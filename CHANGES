@@ -1,5 +1,6 @@
 # Head
 
+- Ruby version of LEN now distinguishes zeros that are blank from zeros that are not
 - References to blank cells now return 0 not blank
 - Fix for SUMIF different sized ranges when fixed references are used
 - Parser now picks up external named references

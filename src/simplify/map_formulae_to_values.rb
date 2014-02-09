@@ -123,11 +123,24 @@ class MapFormulaeToValues
     if respond_to?("map_#{name.to_s.downcase}")
       send("map_#{name.to_s.downcase}",ast)
     else
-      values = ast[2..-1].map { |a| value(a) }
-      return if values.any? { |a| a == :not_a_value }
-      ast.replace(formula_value(name,*values))
+      normal_function(ast)
     end
   end
+
+  def normal_function(ast)
+    values = ast[2..-1].map { |a| value(a) }
+    return if values.any? { |a| a == :not_a_value }
+    ast.replace(formula_value( ast[1],*values))
+  end
+
+  def map_len(ast)
+    if ast[2].is_a?(BlankCell)
+      ast.replace([:number, 0])
+    else
+      normal_function(ast)
+    end
+  end
+
 
   # [:function, "COUNT", range]
   def map_count(ast)
