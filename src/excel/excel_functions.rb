@@ -104,3 +104,5 @@ require_relative 'excel_functions/isblank'
 require_relative 'excel_functions/averageifs'
 
 require_relative 'excel_functions/forecast'
+
+require_relative 'excel_functions/ensure_is_number'

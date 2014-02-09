@@ -1,5 +1,6 @@
 # Head
 
+- Added an ENSURE_IS_NUMBER function to the runtime which turns anything that Excel thinks looks a bit like a number into a real number
 - Added an inlined_blank type, which is sometimes like a zero, and sometimes like an empty string
 - String join in the ruby compilation treates zeros that are blank differently from zeros
 - Added an isolate attribute to excel_to_x to help debugging large worksheets: if set, only one sheet is translated

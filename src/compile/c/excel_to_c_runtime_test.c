@@ -840,6 +840,20 @@ int test_functions() {
 
   assert(forecast(new_excel_number(6), forecast_array2_v, forecast_array3_v).number == 7);
 
+  // Tests ENSURE_IS_NUMBER function
+  assert(ensure_is_number(new_excel_number(1.3)).type == ExcelNumber);
+  assert(ensure_is_number(new_excel_number(1.3)).number == 1.3);
+  assert(ensure_is_number(BLANK).type == ExcelNumber);
+  assert(ensure_is_number(BLANK).number == 0);
+  assert(ensure_is_number(TRUE).type == ExcelNumber);
+  assert(ensure_is_number(TRUE).number == 1.0);
+  assert(ensure_is_number(FALSE).type == ExcelNumber);
+  assert(ensure_is_number(FALSE).number == 0.0);
+  assert(ensure_is_number(new_excel_string("1.3")).type == ExcelNumber);
+  assert(ensure_is_number(new_excel_string("1.3")).number == 1.3);
+  assert(ensure_is_number(new_excel_string("BASDASD")).type == ExcelError);
+  assert(ensure_is_number(DIV0).type == ExcelError);
+
   // Release memory
   free_all_allocated_memory();
   

@@ -57,6 +57,7 @@ static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue average(int array_size, ExcelValue *array);
 static ExcelValue averageifs(ExcelValue average_range_v, int number_of_arguments, ExcelValue *arguments);
+static ExcelValue ensure_is_number(ExcelValue maybe_number_v);
 static ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
 static ExcelValue hlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v);
@@ -297,6 +298,15 @@ static ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(a + b);
+}
+
+static ExcelValue ensure_is_number(ExcelValue maybe_number_v) {
+  if(maybe_number_v.type == ExcelNumber) {
+    return maybe_number_v;
+  }
+  NUMBER(maybe_number_v, maybe_number)
+	CHECK_FOR_CONVERSION_ERROR
+	return new_excel_number(maybe_number);
 }
 
 static ExcelValue excel_log(ExcelValue number) {
