@@ -24,6 +24,15 @@ END
     output.string.should == expected_output
   end
 
+  it "should also replace comparisons on range with individual calculations (e.g., A1=B1:10)" do
+    input_ast = [:function, :SUM, [:comparison, [:cell, :A1], [:comparator, "="], [:array, [:row, [:cell, :B1]], [:row, [:cell, :B2]]]]]
+    output_ast = [:function, :SUM, [:array, [:row, [:comparison, [:cell, :A1], [:comparator, "="], [:cell, :B1]]], [:row, [:comparison, [:cell, :A1], [:comparator, "="], [:cell, :B2]]]]]
+    r = ReplaceArithmeticOnRangesAst.new
+    r.map(input_ast).should == output_ast
+
+  end
+
+
   it "should work in complex nested cases" do
     input_ast = [:function,
                  :SUM,
