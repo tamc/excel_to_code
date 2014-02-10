@@ -31,6 +31,10 @@ describe "ExcelFunctions: RIGHT(string,[characters])" do
     FunctionTest.right("ONE",:error).should == :error
     FunctionTest.right(:error,:error).should == :error
   end
+
+  it "should return an error if the characters argument is negative" do
+    FunctionTest.right("ONE",-1).should == :value
+  end
   
   it "should be in the list of functions that can be mapped to ruby" do
     MapFormulaeToRuby::FUNCTIONS[:'RIGHT'].should == 'right'

@@ -78,6 +78,7 @@ static ExcelValue forecast(ExcelValue required_x, ExcelValue known_y, ExcelValue
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
+static ExcelValue len(ExcelValue string_v);
 static ExcelValue excel_log(ExcelValue number);
 static ExcelValue excel_log_2(ExcelValue number, ExcelValue base);
 static ExcelValue excel_exp(ExcelValue number);
@@ -94,6 +95,8 @@ static ExcelValue pv_5(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValu
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order_v);
 static ExcelValue rank_2(ExcelValue number_v, ExcelValue range_v);
+static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v);
+static ExcelValue right_1(ExcelValue string_v);
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue excel_int(ExcelValue number_v);
@@ -155,7 +158,7 @@ void reset() {
 static void * new_excel_value_array(int size) {
 	ExcelValue *pointer = malloc(sizeof(ExcelValue)*size); // Freed later
 	if(pointer == 0) {
-		printf("Out of memory\n");
+		printf("Out of memory in new_excel_value_array\n");
 		exit(-1);
 	}
 	free_later(pointer);
@@ -905,6 +908,10 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	int number_of_characters = (int) number_from(number_of_characters_v);
 	CHECK_FOR_CONVERSION_ERROR
 
+  if(number_of_characters < 0) {
+    return VALUE;
+  }
+
 	char *string;
 	int string_must_be_freed = 0;
 	switch (string_v.type) {
@@ -914,7 +921,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
   	  case ExcelNumber:
 		  string = malloc(20); // Freed
 		  if(string == 0) {
-			  printf("Out of memory");
+			  printf("Out of memory in left");
 			  exit(-1);
 		  }
 		  string_must_be_freed = 1;
@@ -935,7 +942,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	
 	char *left_string = malloc(number_of_characters+1); // Freed
 	if(left_string == 0) {
-	  printf("Out of memory");
+	  printf("Out of memoryn in left");
 	  exit(-1);
 	}
 	memcpy(left_string,string,number_of_characters);
@@ -949,6 +956,112 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 
 static ExcelValue left_1(ExcelValue string_v) {
 	return left(string_v, ONE);
+}
+
+static ExcelValue len(ExcelValue string_v) {
+	CHECK_FOR_PASSED_ERROR(string_v)
+	if(string_v.type == ExcelEmpty) return ZERO;
+
+	char *string;
+	int string_must_be_freed = 0;
+	switch (string_v.type) {
+  	  case ExcelString:
+  		string = string_v.string;
+  		break;
+  	  case ExcelNumber:
+		  string = malloc(20); // Freed
+		  if(string == 0) {
+			  printf("Out of memory in len");
+			  exit(-1);
+		  }
+		  string_must_be_freed = 1;
+		  snprintf(string,20,"%0.0f",string_v.number);
+		  break;
+	  case ExcelBoolean:
+	  	if(string_v.number == true) {
+	  		string = "TRUE";
+		} else {
+			string = "FALSE";
+		}
+		break;
+	  case ExcelEmpty:	  	 
+  	  case ExcelError:
+  	  case ExcelRange:
+		return string_v;
+	}
+
+  int length = strlen(string);
+	if(string_must_be_freed == 1) {
+		free(string);
+	}
+	return new_excel_number(length);
+}
+
+static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) {
+	CHECK_FOR_PASSED_ERROR(string_v)
+	CHECK_FOR_PASSED_ERROR(number_of_characters_v)
+	if(string_v.type == ExcelEmpty) return BLANK;
+	if(number_of_characters_v.type == ExcelEmpty) return BLANK;
+	
+	int number_of_characters = (int) number_from(number_of_characters_v);
+	CHECK_FOR_CONVERSION_ERROR
+
+  if(number_of_characters < 0) {
+    return VALUE;
+  }
+
+	char *string;
+	int string_must_be_freed = 0;
+	switch (string_v.type) {
+  	  case ExcelString:
+  		string = string_v.string;
+  		break;
+  	  case ExcelNumber:
+		  string = malloc(20); // Freed
+		  if(string == 0) {
+			  printf("Out of memory in right");
+			  exit(-1);
+		  }
+		  string_must_be_freed = 1;
+		  snprintf(string,20,"%f",string_v.number);
+		  break;
+	  case ExcelBoolean:
+	  	if(string_v.number == true) {
+	  		string = "TRUE";
+		} else {
+			string = "FALSE";
+		}
+		break;
+	  case ExcelEmpty:	  	 
+  	  case ExcelError:
+  	  case ExcelRange:
+		return string_v;
+	}
+	
+	char *right_string = malloc(number_of_characters+1); // Freed
+	if(right_string == 0) {
+	  printf("Out of memory in right");
+	  exit(-1);
+	}
+  int length = strlen(string);
+  if(length < number_of_characters) {
+    if(string_must_be_freed == 1) {
+      free(string);
+    }
+    return new_excel_string("");
+  } else {
+    memcpy(right_string,string+length-number_of_characters,number_of_characters);
+    right_string[number_of_characters] = '\0';
+    if(string_must_be_freed == 1) {
+      free(string);
+    }
+    free_later(right_string);
+    return new_excel_string(right_string);
+  }
+}
+
+static ExcelValue right_1(ExcelValue string_v) {
+	return right(string_v, ONE);
 }
 
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
@@ -1423,7 +1536,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	int used_length = 0;
 	char *string = malloc(allocated_length); // Freed later
 	if(string == 0) {
-	  printf("Out of memory");
+	  printf("Out of memory in string_join");
 	  exit(-1);
 	}
 	char *current_string;
@@ -1441,7 +1554,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
   	  case ExcelNumber:
 			  current_string = malloc(20); // Freed
 		  	if(current_string == 0) {
-		  	  printf("Out of memory");
+		  	  printf("Out of memory in string join");
 		  	  exit(-1);
 		  	}
 			must_free_current_string = 1;				  
@@ -1555,7 +1668,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
   // Now go through and set up the criteria
   ExcelComparison *criteria =  malloc(sizeof(ExcelComparison)*number_of_criteria); // freed at end of function
   if(criteria == 0) {
-	  printf("Out of memory\n");
+	  printf("Out of memory in filter_range\n");
 	  exit(-1);
   }
   char *s;
@@ -1765,7 +1878,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   ExcelValue current_value;
   ExcelValue **ranges = malloc(sizeof(ExcelValue *)*number_of_arguments); // Added free statements
   if(ranges == 0) {
-	  printf("Out of memory\n");
+	  printf("Out of memory in sumproduct\n");
 	  exit(-1);
   }
   double product = 1;

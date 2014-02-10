@@ -4,6 +4,7 @@ module ExcelFunctions
     return string if string.is_a?(Symbol)
     return characters if characters.is_a?(Symbol)
     return nil if string == nil || characters == nil
+    return :value if characters < 0
     string = "TRUE" if string == true
     string = "FALSE" if string == false
     string = string.to_s

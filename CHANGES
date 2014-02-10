@@ -1,5 +1,6 @@
 # Head
 
+- Fixed bug in response when LEFT and RIGHT are passed negative values
 - Implemented LEN function in C runtime
 - Implemented RIGHT funtion in C runtime
 - Inline blanks are treated as empty strings in MID and RIGHT functions
