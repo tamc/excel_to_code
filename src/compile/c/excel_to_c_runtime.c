@@ -968,7 +968,6 @@ static ExcelValue len(ExcelValue string_v) {
 			  exit(-1);
 		  }
 		  string_must_be_freed = 1;
-		  snprintf(string,20,"%0.0f",string_v.number);
 		  break;
 	  case ExcelBoolean:
 	  	if(string_v.number == true) {
