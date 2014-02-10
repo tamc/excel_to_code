@@ -144,6 +144,15 @@ class MapFormulaeToValues
     normal_function(ast, "")
   end
 
+  def map_left(ast)
+    normal_function(ast, "")
+  end
+
+  def map_mid(ast)
+    normal_function(ast, "")
+  end
+
+
   def map_len(ast)
     normal_function(ast, "")
   end

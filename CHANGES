@@ -1,5 +1,6 @@
 # Head
 
+- Inline blanks are treated as empty strings in MID and RIGHT functions
 - Fixed a bug in bounds checking when replacing arithmetic on ranges
 - Replace comparisons on arrays with arrays of comparisons
 - Ruby version of RIGHT now returns a string if index out of bounds
