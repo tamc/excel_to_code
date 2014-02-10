@@ -106,4 +106,6 @@
 [:function, :LEFT, [:function, :RIGHT, [:string, "RLNKOKEWI-E"], [:arithmetic, [:function, :LEN, [:string, "RLNKOKEWI-E"]], [:operator, :"-"], [:function, :LEN, [:blank]]]], [:number, 3]]	[:string, "RLN"]
 
 # Special cases
-[:function, :COUNT, [:array, [:row, [:blank], [:inlined_blank], [:number, 1]]]]	[:number, 2]
+[:function, :COUNT, [:array, [:row, [:blank], [:inlined_blank], [:number, 1]]]]	[:number, 1]
+[:function, :LEN, [:inlined_blank]]	[:number, 0]
+[:function, :RIGHT, [:inlined_blank], [:number, 1]]	[:string, ""]

@@ -17,6 +17,10 @@ describe "ExcelFunctions: RIGHT(string,[characters])" do
     FunctionTest.right(FALSE,3).should == "LSE"
   end
 
+  it "should return an empty string if passed an empty string" do
+    FunctionTest.right("",1).should == ""
+  end
+
   it "should return nil if given nil for either argument" do
     FunctionTest.right(nil,3).should == nil
     FunctionTest.right("ONE",nil).should == nil

@@ -134,20 +134,28 @@ class MapFormulaeToValues
     end
   end
 
-  def normal_function(ast)
-    values = ast[2..-1].map { |a| value(a) }
+  def normal_function(ast, inlined_blank = 0)
+    values = ast[2..-1].map { |a| value(a, inlined_blank) }
     return if values.any? { |a| a == :not_a_value }
     ast.replace(formula_value( ast[1],*values))
   end
 
-  def map_len(ast)
-    if ast[2] == [:inlined_blank]
-      ast.replace([:number, 0])
-    else
-      normal_function(ast)
-    end
+  def map_right(ast)
+    normal_function(ast, "")
   end
 
+  def map_len(ast)
+    normal_function(ast, "")
+  end
+
+
+  # [:function, "COUNT", range]
+  def map_count(ast)
+    values = ast[2..-1].map { |a| value(a, nil) }
+    return if values.any? { |a| a == :not_a_value }
+    ast.replace(formula_value( ast[1],*values))
+  end
+  
   # [:function, "INDEX", array, row_number, column_number]
   def map_index(ast)
     return map_index_with_only_two_arguments(ast) if ast.length == 4
@@ -261,7 +269,7 @@ class MapFormulaeToValues
   }
     
   def value(ast, inlined_blank = 0)
-    return extract_values_from_array(ast) if ast.first == :array
+    return extract_values_from_array(ast, inlined_blank) if ast.first == :array
     case ast.first
     when :blank; nil
     when :inlined_blank; inlined_blank
@@ -276,10 +284,10 @@ class MapFormulaeToValues
     end
   end
   
-  def extract_values_from_array(ast)
+  def extract_values_from_array(ast, inlined_blank = 0)
     ast[1..-1].map do |row|
       row[1..-1].map do |cell|
-        v = value(cell)
+        v = value(cell, inlined_blank)
         return :not_a_value if v == :not_a_value
         v
       end

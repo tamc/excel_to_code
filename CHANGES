@@ -1,5 +1,6 @@
 # Head
 
+- Ruby version of RIGHT now returns a string if index out of bounds
 - Removed the special case optimisation of the COUNT function. It wasn't right in some cases
 - Now copes with passing a range where a cell expected in the CHOOSE function, but only if CHOOSE is the first function in a cell
 - Now copes with a wider variety of situations where a range that should be converted into a cell is passed to a match or indirect function
