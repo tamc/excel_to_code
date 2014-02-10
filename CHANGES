@@ -1,5 +1,6 @@
 # Head
 
+- Now copes with passing a range where a cell expected in the CHOOSE function, but only if CHOOSE is the first function in a cell
 - Now copes with a wider variety of situations where a range that should be converted into a cell is passed to a match or indirect function
 - When simplifying arithmetic, ensures results are always numbers
 - Added an ENSURE_IS_NUMBER function to the runtime which turns anything that Excel thinks looks a bit like a number into a real number
