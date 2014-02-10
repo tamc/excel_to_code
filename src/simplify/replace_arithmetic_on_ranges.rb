@@ -41,7 +41,7 @@ class ReplaceArithmeticOnRangesAst
             row.map.with_index do |cell, j|
               if cell == :row
                 cell
-              elsif i >= left.length || i >= right.length || j >= left.first.length || j >= right.first.length
+              elsif i >= left.length || i >= right.length || j >= left[1].length || j >= right[1].length
                 [:error, "#VALUE!"]
               else
                 [:arithmetic, map(left[i][j]), operator, map(right[i][j])]
