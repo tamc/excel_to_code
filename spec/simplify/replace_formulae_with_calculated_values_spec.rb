@@ -14,7 +14,7 @@ END
 
 expected_output = <<END
 A1\t[:number, 2.0]
-A2\t[:number, 6.0]
+A2\t[:function, :COUNT, [:array, [:row, [:cell, "B225"]], [:row, [:cell, "B226"]], [:row, [:cell, "B227"]], [:row, [:cell, "B228"]], [:row, [:cell, "B229"]], [:row, [:cell, "B230"]]]]
 A3\t[:number, 1.0]
 A4\t[:number, 0.0]
 A5\t[:number, -1.0]
