@@ -114,11 +114,7 @@ class MapFormulaeToValues
   # [:string_join, stringA, stringB, ...]
   def string_join(ast)
     values = ast[1..-1].map do |a| 
-      if a == [:inlined_blank]
-        a = ""
-      else
-        value(a)
-      end
+        value(a, "")
     end
     return if values.any? { |a| a == :not_a_value }
     ast.replace(ast_for_value(@calculator.string_join(*values)))
@@ -152,15 +148,6 @@ class MapFormulaeToValues
     end
   end
 
-
-  # [:function, "COUNT", range]
-  def map_count(ast)
-    range = ast[2]
-    return unless [:array, :cell, :sheet_reference].include?(range.first)
-    range = array_as_values(range)
-    ast.replace(ast_for_value(range.size * range.first.size))
-  end
-  
   # [:function, "INDEX", array, row_number, column_number]
   def map_index(ast)
     return map_index_with_only_two_arguments(ast) if ast.length == 4
@@ -273,11 +260,11 @@ class MapFormulaeToValues
     :"#NUM!" => :num
   }
     
-  def value(ast)
+  def value(ast, inlined_blank = 0)
     return extract_values_from_array(ast) if ast.first == :array
     case ast.first
     when :blank; nil
-    when :inlined_blank; 0
+    when :inlined_blank; inlined_blank
     when :null; nil
     when :number; ast[1]
     when :percentage; ast[1]/100.0
