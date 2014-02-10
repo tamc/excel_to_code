@@ -46,12 +46,29 @@ class ReplaceArraysWithSingleCellsAst
         ast[3] = try_and_convert_array(ast[3])
       elsif ast[1] == :SUMIFS && check_sumifs(ast)
         # Replacement madein check_sumif function
+      elsif ast[1] == :MATCH && check_match(ast)
+        # Replacement made in check_match function
+      elsif ast[1] == :INDIRECT && check_indirect(ast)
+        # Replacement made in check function
       else
         ast[2..-1].each { |a| do_map(a) }
       end
     else
       ast[1..-1].each { |a| do_map(a) }
     end
+  end
+
+  def check_match(ast)
+    return false unless ast[2].first == :array
+    ast[2] = try_and_convert_array(ast[2])
+    ast[3..-1].each { |a| do_map(a) }
+    true
+  end
+
+  def check_indirect(ast)
+    return false unless ast[2].first == :array
+    ast[2] = try_and_convert_array(ast[2])
+    true
   end
 
   def check_sumifs(ast)
