@@ -87,6 +87,8 @@ static ExcelValue pv_5(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValu
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order_v);
 static ExcelValue rank_2(ExcelValue number_v, ExcelValue range_v);
+static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v);
+static ExcelValue right_1(ExcelValue string_v);
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue excel_int(ExcelValue number_v);
@@ -942,6 +944,69 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 
 static ExcelValue left_1(ExcelValue string_v) {
 	return left(string_v, ONE);
+}
+
+static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) {
+	CHECK_FOR_PASSED_ERROR(string_v)
+	CHECK_FOR_PASSED_ERROR(number_of_characters_v)
+	if(string_v.type == ExcelEmpty) return BLANK;
+	if(number_of_characters_v.type == ExcelEmpty) return BLANK;
+	
+	int number_of_characters = (int) number_from(number_of_characters_v);
+	CHECK_FOR_CONVERSION_ERROR
+
+	char *string;
+	int string_must_be_freed = 0;
+	switch (string_v.type) {
+  	  case ExcelString:
+  		string = string_v.string;
+  		break;
+  	  case ExcelNumber:
+		  string = malloc(20); // Freed
+		  if(string == 0) {
+			  printf("Out of memory");
+			  exit(-1);
+		  }
+		  string_must_be_freed = 1;
+		  snprintf(string,20,"%f",string_v.number);
+		  break;
+	  case ExcelBoolean:
+	  	if(string_v.number == true) {
+	  		string = "TRUE";
+		} else {
+			string = "FALSE";
+		}
+		break;
+	  case ExcelEmpty:	  	 
+  	  case ExcelError:
+  	  case ExcelRange:
+		return string_v;
+	}
+	
+	char *right_string = malloc(number_of_characters+1); // Freed
+	if(right_string == 0) {
+	  printf("Out of memory");
+	  exit(-1);
+	}
+  int length = strlen(string);
+  if(length < number_of_characters) {
+    if(string_must_be_freed == 1) {
+      free(string);
+    }
+    return new_excel_string("");
+  } else {
+    memcpy(right_string,string+length-number_of_characters,number_of_characters);
+    right_string[number_of_characters] = '\0';
+    if(string_must_be_freed == 1) {
+      free(string);
+    }
+    free_later(right_string);
+    return new_excel_string(right_string);
+  }
+}
+
+static ExcelValue right_1(ExcelValue string_v) {
+	return right(string_v, ONE);
 }
 
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {

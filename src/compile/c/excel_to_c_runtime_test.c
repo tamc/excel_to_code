@@ -854,6 +854,23 @@ int test_functions() {
   assert(ensure_is_number(new_excel_string("BASDASD")).type == ExcelError);
   assert(ensure_is_number(DIV0).type == ExcelError);
 
+  // RIGHT(string,[characters])
+  // ... should return the right n characters from a string
+  assert(strcmp(right_1(new_excel_string("ONE")).string,"E") == 0);
+  assert(strcmp(right(new_excel_string("ONE"),ONE).string,"E") == 0);
+  assert(strcmp(right(new_excel_string("ONE"),new_excel_number(3)).string,"ONE") == 0);
+  // ... should turn numbers into strings before processing
+  assert(strcmp(right(new_excel_number(1.31e12),new_excel_number(3)).string, "000") == 0);
+  // ... should turn booleans into the words TRUE and FALSE before processing
+  assert(strcmp(right(TRUE,new_excel_number(3)).string,"RUE") == 0);
+  assert(strcmp(right(FALSE,new_excel_number(3)).string,"LSE") == 0);
+  // ... should return BLANK if given BLANK for either argument
+  assert(right(BLANK,new_excel_number(3)).type == ExcelEmpty);
+  assert(right(new_excel_string("ONE"),BLANK).type == ExcelEmpty);
+  // ... should return an error if an argument is an error
+  assert(right_1(NA).type == ExcelError);
+  assert(right(new_excel_string("ONE"),NA).type == ExcelError);
+
   // Release memory
   free_all_allocated_memory();
   
