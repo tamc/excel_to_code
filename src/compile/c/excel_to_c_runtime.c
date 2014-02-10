@@ -918,7 +918,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 			  exit(-1);
 		  }
 		  string_must_be_freed = 1;
-		  snprintf(string,20,"%f",string_v.number);
+		  snprintf(string,20,"%0.0f",string_v.number);
 		  break;
 	  case ExcelBoolean:
 	  	if(string_v.number == true) {
@@ -967,6 +967,7 @@ static ExcelValue len(ExcelValue string_v) {
 			  printf("Out of memory in len");
 			  exit(-1);
 		  }
+		  snprintf(string,20,"%0.0f",string_v.number);
 		  string_must_be_freed = 1;
 		  break;
 	  case ExcelBoolean:
@@ -1015,7 +1016,7 @@ static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) 
 			  exit(-1);
 		  }
 		  string_must_be_freed = 1;
-		  snprintf(string,20,"%f",string_v.number);
+		  snprintf(string,20,"%0.0f",string_v.number);
 		  break;
 	  case ExcelBoolean:
 	  	if(string_v.number == true) {
