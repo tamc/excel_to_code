@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.16 - 2013 February 10th
+
 - Fixed bug in response when LEFT and RIGHT are passed negative values
 - Implemented LEN function in C runtime
 - Implemented RIGHT funtion in C runtime
