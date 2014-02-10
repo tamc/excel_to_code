@@ -62,14 +62,14 @@ class MapFormulaeToValues
     elsif l == 0
       case operator.last
       when :+ 
-        ast.replace(right)
+        ast.replace(n(right))
       when :*, :/, :^
         ast.replace([:number, 0])
       end
     elsif r == 0
       case operator.last
       when :+, :-
-        ast.replace(left)
+        ast.replace(n(left))
       when :* 
         ast.replace([:number, 0])
       when :/
@@ -80,17 +80,22 @@ class MapFormulaeToValues
     elsif l == 1
       case operator.last
       when :*
-        ast.replace(right)
+        ast.replace(n(right))
       when :^
         ast.replace([:number, 1])
       end
     elsif r == 1
       case operator.last
       when :*, :/, :^
-        ast.replace(left)
+        ast.replace(n(left))
       end
     end
     ast
+  end
+
+  def n(ast)
+    return ast if ast[0] == :function && ast[1] == :ENSURE_IS_NUMBER
+    [:function, :ENSURE_IS_NUMBER, ast]
   end
 
   def comparison(ast)
