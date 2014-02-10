@@ -152,11 +152,17 @@ class MapFormulaeToValues
     normal_function(ast, "")
   end
 
-
   def map_len(ast)
     normal_function(ast, "")
   end
 
+  def map_sumifs(ast)
+    sum_value = value(ast[2])
+    values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
+    return if sum_value == :not_a_value
+    return if values.any? { |a| a == :not_a_value }
+    ast.replace(formula_value( ast[1], sum_value, *values))
+  end
 
   # [:function, "COUNT", range]
   def map_count(ast)
