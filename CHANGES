@@ -1,5 +1,6 @@
 # Head
 
+- Implemented LEN function in C runtime
 - Implemented RIGHT funtion in C runtime
 - Inline blanks are treated as empty strings in MID and RIGHT functions
 - Fixed a bug in bounds checking when replacing arithmetic on ranges

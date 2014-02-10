@@ -71,6 +71,7 @@ static ExcelValue forecast(ExcelValue required_x, ExcelValue known_y, ExcelValue
 static ExcelValue large(ExcelValue array_v, ExcelValue k_v);
 static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v);
 static ExcelValue left_1(ExcelValue string_v);
+static ExcelValue len(ExcelValue string_v);
 static ExcelValue excel_log(ExcelValue number);
 static ExcelValue excel_log_2(ExcelValue number, ExcelValue base);
 static ExcelValue excel_exp(ExcelValue number);
@@ -944,6 +945,45 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 
 static ExcelValue left_1(ExcelValue string_v) {
 	return left(string_v, ONE);
+}
+
+static ExcelValue len(ExcelValue string_v) {
+	CHECK_FOR_PASSED_ERROR(string_v)
+	if(string_v.type == ExcelEmpty) return ZERO;
+
+	char *string;
+	int string_must_be_freed = 0;
+	switch (string_v.type) {
+  	  case ExcelString:
+  		string = string_v.string;
+  		break;
+  	  case ExcelNumber:
+		  string = malloc(20); // Freed
+		  if(string == 0) {
+			  printf("Out of memory");
+			  exit(-1);
+		  }
+		  string_must_be_freed = 1;
+		  snprintf(string,20,"%0.0f",string_v.number);
+		  break;
+	  case ExcelBoolean:
+	  	if(string_v.number == true) {
+	  		string = "TRUE";
+		} else {
+			string = "FALSE";
+		}
+		break;
+	  case ExcelEmpty:	  	 
+  	  case ExcelError:
+  	  case ExcelRange:
+		return string_v;
+	}
+
+  int length = strlen(string);
+	if(string_must_be_freed == 1) {
+		free(string);
+	}
+	return new_excel_number(length);
 }
 
 static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) {

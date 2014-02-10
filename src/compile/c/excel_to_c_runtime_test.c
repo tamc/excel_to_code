@@ -871,6 +871,14 @@ int test_functions() {
   assert(right_1(NA).type == ExcelError);
   assert(right(new_excel_string("ONE"),NA).type == ExcelError);
 
+  // LEN(string)
+  assert(len(BLANK).type == ExcelNumber);
+  assert(len(BLANK).number == 0);
+  assert(len(new_excel_string("Hello")).number == 5);
+  assert(len(new_excel_number(123)).number == 3);
+  assert(len(TRUE).number == 4);
+  assert(len(FALSE).number == 5);
+
   // Release memory
   free_all_allocated_memory();
   
