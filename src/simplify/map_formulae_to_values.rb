@@ -156,6 +156,10 @@ class MapFormulaeToValues
     normal_function(ast, "")
   end
 
+  def map_isblank(ast)
+    normal_function(ast,nil)
+  end
+
   def map_sumifs(ast)
     sum_value = value(ast[2])
     values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }

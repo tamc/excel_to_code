@@ -1,5 +1,7 @@
 # Head
 
+- Adjust the way that ISBLANK() is replaced with a value at compile time
+
 # 0.2.16 - 2013 February 10th
 
 - Fixed bug in response when LEFT and RIGHT are passed negative values
