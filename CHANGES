@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.17 - 2013 February 11th
+
 - Adjust the way that ISBLANK() is replaced with a value at compile time
 
 # 0.2.16 - 2013 February 10th
