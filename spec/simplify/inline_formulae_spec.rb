@@ -104,4 +104,25 @@ r.replace(input,output)
 output.string.should == expected_output
 end
 
+it "If the reference refers to a cell that doesn't exist in the Excel input, add the missing cell to the references hash as a [:blank] cell" do
+
+  ast = [:cell, :A2]
+
+  references = {
+    [:sheet1, :A1] => ast
+  }
+
+  current_sheet_name = :sheet1
+
+  r = InlineFormulaeAst.new(references, current_sheet_name)
+  
+  r.map(ast).should == [:inlined_blank]
+
+  references.should == {
+    [:sheet1, :A1] => [:inlined_blank],
+    [:sheet1, :A2] => [:blank]
+  }
+
+end
+
 end

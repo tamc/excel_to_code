@@ -167,6 +167,13 @@ module ExampleSpreadsheet
   attach_function 'ranges_f5', [], ExcelValue.by_value
   attach_function 'ranges_g5', [], ExcelValue.by_value
   attach_function 'ranges_f6', [], ExcelValue.by_value
+  attach_function 'ranges_f1', [], ExcelValue.by_value
+  attach_function 'ranges_f2', [], ExcelValue.by_value
+  attach_function 'ranges_f3', [], ExcelValue.by_value
+  attach_function 'ranges_a5', [], ExcelValue.by_value
+  attach_function 'ranges_b5', [], ExcelValue.by_value
+  attach_function 'ranges_c5', [], ExcelValue.by_value
+  attach_function 'ranges_d5', [], ExcelValue.by_value
   # end of Ranges
   attach_function 'set_referencing_a4', [ExcelValue.by_value], :void
   attach_function 'set_referencing_c15', [ExcelValue.by_value], :void
@@ -446,6 +453,81 @@ module ExampleSpreadsheet
   attach_function 'referencing_e72', [], ExcelValue.by_value
   attach_function 'referencing_f72', [], ExcelValue.by_value
   attach_function 'referencing_g72', [], ExcelValue.by_value
+  attach_function 'referencing_f35', [], ExcelValue.by_value
+  attach_function 'referencing_g35', [], ExcelValue.by_value
+  attach_function 'referencing_h35', [], ExcelValue.by_value
+  attach_function 'referencing_i35', [], ExcelValue.by_value
+  attach_function 'referencing_k35', [], ExcelValue.by_value
+  attach_function 'referencing_l35', [], ExcelValue.by_value
+  attach_function 'referencing_f36', [], ExcelValue.by_value
+  attach_function 'referencing_g36', [], ExcelValue.by_value
+  attach_function 'referencing_h36', [], ExcelValue.by_value
+  attach_function 'referencing_i36', [], ExcelValue.by_value
+  attach_function 'referencing_k36', [], ExcelValue.by_value
+  attach_function 'referencing_l36', [], ExcelValue.by_value
+  attach_function 'referencing_g37', [], ExcelValue.by_value
+  attach_function 'referencing_h37', [], ExcelValue.by_value
+  attach_function 'referencing_i37', [], ExcelValue.by_value
+  attach_function 'referencing_j37', [], ExcelValue.by_value
+  attach_function 'referencing_k37', [], ExcelValue.by_value
+  attach_function 'referencing_l37', [], ExcelValue.by_value
+  attach_function 'referencing_f38', [], ExcelValue.by_value
+  attach_function 'referencing_g38', [], ExcelValue.by_value
+  attach_function 'referencing_h38', [], ExcelValue.by_value
+  attach_function 'referencing_j38', [], ExcelValue.by_value
+  attach_function 'referencing_k38', [], ExcelValue.by_value
+  attach_function 'referencing_l38', [], ExcelValue.by_value
+  attach_function 'referencing_f39', [], ExcelValue.by_value
+  attach_function 'referencing_g39', [], ExcelValue.by_value
+  attach_function 'referencing_i39', [], ExcelValue.by_value
+  attach_function 'referencing_j39', [], ExcelValue.by_value
+  attach_function 'referencing_k39', [], ExcelValue.by_value
+  attach_function 'referencing_l39', [], ExcelValue.by_value
+  attach_function 'referencing_f40', [], ExcelValue.by_value
+  attach_function 'referencing_h40', [], ExcelValue.by_value
+  attach_function 'referencing_i40', [], ExcelValue.by_value
+  attach_function 'referencing_k40', [], ExcelValue.by_value
+  attach_function 'referencing_l40', [], ExcelValue.by_value
+  attach_function 'referencing_f41', [], ExcelValue.by_value
+  attach_function 'referencing_h41', [], ExcelValue.by_value
+  attach_function 'referencing_i41', [], ExcelValue.by_value
+  attach_function 'referencing_k41', [], ExcelValue.by_value
+  attach_function 'referencing_l41', [], ExcelValue.by_value
+  attach_function 'referencing_g42', [], ExcelValue.by_value
+  attach_function 'referencing_h42', [], ExcelValue.by_value
+  attach_function 'referencing_i42', [], ExcelValue.by_value
+  attach_function 'referencing_j42', [], ExcelValue.by_value
+  attach_function 'referencing_k42', [], ExcelValue.by_value
+  attach_function 'referencing_n42', [], ExcelValue.by_value
+  attach_function 'referencing_g43', [], ExcelValue.by_value
+  attach_function 'referencing_h43', [], ExcelValue.by_value
+  attach_function 'referencing_i43', [], ExcelValue.by_value
+  attach_function 'referencing_j43', [], ExcelValue.by_value
+  attach_function 'referencing_k43', [], ExcelValue.by_value
+  attach_function 'referencing_n43', [], ExcelValue.by_value
+  attach_function 'referencing_f44', [], ExcelValue.by_value
+  attach_function 'referencing_g44', [], ExcelValue.by_value
+  attach_function 'referencing_h44', [], ExcelValue.by_value
+  attach_function 'referencing_i44', [], ExcelValue.by_value
+  attach_function 'referencing_j44', [], ExcelValue.by_value
+  attach_function 'referencing_k44', [], ExcelValue.by_value
+  attach_function 'referencing_f45', [], ExcelValue.by_value
+  attach_function 'referencing_h45', [], ExcelValue.by_value
+  attach_function 'referencing_i45', [], ExcelValue.by_value
+  attach_function 'referencing_k45', [], ExcelValue.by_value
+  attach_function 'referencing_l45', [], ExcelValue.by_value
+  attach_function 'referencing_f46', [], ExcelValue.by_value
+  attach_function 'referencing_i46', [], ExcelValue.by_value
+  attach_function 'referencing_j46', [], ExcelValue.by_value
+  attach_function 'referencing_k46', [], ExcelValue.by_value
+  attach_function 'referencing_l46', [], ExcelValue.by_value
+  attach_function 'referencing_f47', [], ExcelValue.by_value
+  attach_function 'referencing_g47', [], ExcelValue.by_value
+  attach_function 'referencing_h47', [], ExcelValue.by_value
+  attach_function 'referencing_i47', [], ExcelValue.by_value
+  attach_function 'referencing_j47', [], ExcelValue.by_value
+  attach_function 'referencing_l47', [], ExcelValue.by_value
+  attach_function 'referencing_d11', [], ExcelValue.by_value
   # end of Referencing
   attach_function 'set_tables_b2', [ExcelValue.by_value], :void
   attach_function 'set_tables_c2', [ExcelValue.by_value], :void
@@ -492,6 +574,7 @@ module ExampleSpreadsheet
   attach_function 'tables_c12', [], ExcelValue.by_value
   attach_function 'tables_c13', [], ExcelValue.by_value
   attach_function 'tables_c14', [], ExcelValue.by_value
+  attach_function 'tables_d5', [], ExcelValue.by_value
   # end of Tables
   attach_function 's_innapropriate_sheet_name__c4', [], ExcelValue.by_value
   # end of (innapropriate) sheet name!
