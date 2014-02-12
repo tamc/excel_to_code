@@ -20,9 +20,10 @@ describe "ExcelFunctions: SUMIF" do
     FunctionTest.sumif(10,"10.0").should == 10.0
   end
     
-  it "should treat nil as an empty string if in the check range" do
-    FunctionTest.sumif(nil,"",100).should == 100
-    FunctionTest.sumif(nil,nil,100).should == 0
+  it "should treat nil as an empty string when in the check_range, but not in the criteria" do
+    FunctionTest.sumif(nil,0,20).should == 0
+    FunctionTest.sumif(0,nil,100).should == 100
+    FunctionTest.sumif(nil,nil, 100).should == 0
   end
   
   it "should return an error if an argument is an error" do

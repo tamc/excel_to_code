@@ -2,6 +2,7 @@
 
 # 0.2.17 - 2013 February 11th
 
+- Changed how SUMIF, SUMIFS, and AVERAGEIFS treat blanks in criteria (now consider them to be zeros)
 - Add missing cells if they are referenced 
 - Adjust the way that ISBLANK() is replaced with a value at compile time
 

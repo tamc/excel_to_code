@@ -31,10 +31,10 @@ module ExcelFunctions
       
       0.step(criteria.length-1,2).each do |i|
         check_range = criteria[i]
-        required_value = criteria[i+1]
+        required_value = criteria[i+1] || 0
         return :value if index >= check_range.length
         check_value = check_range[index]
-        
+
         pass = case check_value
         when String
           check_value.downcase == required_value.to_s.downcase

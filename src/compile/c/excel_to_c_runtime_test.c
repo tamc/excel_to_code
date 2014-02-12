@@ -492,15 +492,24 @@ int test_functions() {
   ExcelValue sumifs_array_10f[] = { sumifs_array_3_v, new_excel_string(">=3")};
   assert(sumifs(sumifs_array_3_v,2, sumifs_array_10f).number == 17);
 
-  // ... should treat BLANK as an empty string when in the check_range, but not in the criteria
-  ExcelValue sumifs_array_11[] = { BLANK, new_excel_number(20)};
+  // ... BLANK in check range should match empty strings, BLANK in criteria should match zero
+  ExcelValue sumifs_array_11[] = { BLANK, new_excel_number(0)};
   assert(sumifs(new_excel_number(100),2,sumifs_array_11).number == 0);
 
-  ExcelValue sumifs_array_12[] = {BLANK, new_excel_string("")};
+  ExcelValue sumifs_array_11b[] = { BLANK, new_excel_string("")};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_11b).number == 100);
+
+  ExcelValue sumifs_array_11c[] = { new_excel_string(""), BLANK};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_11c).number == 0);
+
+  ExcelValue sumifs_array_12[] = {new_excel_number(0), BLANK};
   assert(sumifs(new_excel_number(100),2,sumifs_array_12).number == 100);
 
   ExcelValue sumifs_array_13[] = {BLANK, BLANK};
   assert(sumifs(new_excel_number(100),2,sumifs_array_13).number == 0);
+
+  ExcelValue sumifs_array_14[] = {new_excel_number(10), BLANK};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_14).number == 0);
 
   // ... should return an error if range argument is an error
   assert(sumifs(REF,2,sumifs_array_13).type == ExcelError);
@@ -817,7 +826,7 @@ int test_functions() {
   ExcelValue averageifs_array_11[] = { BLANK, new_excel_number(20)};
   assert(averageifs(new_excel_number(100),2,averageifs_array_11).type == ExcelError);
 
-  ExcelValue averageifs_array_12[] = {BLANK, new_excel_string("")};
+  ExcelValue averageifs_array_12[] = {new_excel_number(0), BLANK};
   assert(averageifs(new_excel_number(100),2,averageifs_array_12).number == 100);
 
   ExcelValue averageifs_array_13[] = {BLANK, BLANK};

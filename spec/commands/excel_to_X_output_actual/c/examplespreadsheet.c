@@ -1723,6 +1723,11 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
       value_to_be_checked = ((ExcelValue *) ((ExcelValue) criteria_range[i]).array)[j];
       comparison = criteria[i];
       comparator = comparison.comparator;
+
+      // For the purposes of comparison, treates a blank criteria as matching zeros.
+      if(comparator.type == ExcelEmpty) {
+        comparator = ZERO;
+      }
       
       switch(value_to_be_checked.type) {
         case ExcelError: // Errors match only errors
@@ -1744,7 +1749,6 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
             if(strlen(comparator.string) != 0) passed = 0; // Empty strings match blanks.
             break;
           }
-          break;
         case ExcelNumber:
           if(comparator.type == ExcelNumber) {
             number = comparator.number;

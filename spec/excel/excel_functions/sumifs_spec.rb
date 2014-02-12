@@ -16,10 +16,11 @@ describe "ExcelFunctions: SUMIFS" do
     FunctionTest.sumifs([[1],[2],[3],[4],[5],[5]],[["CO2"],["CH4"],["N2O"],["CH4"],["N2O"],["CO2"]],"CO2",[["1A"],["1A"],["1A"],[4],[4],[5]],2).should == 0
   end
     
-  it "should treat nil as an empty string when in the check_range, but not in the criteria" do
+  it "should treat nil as an empty string when in the check_range, and a zero in the criteria" do
     FunctionTest.sumifs(100,nil,20).should == 0
-    FunctionTest.sumifs(100,nil,"").should == 100
+    FunctionTest.sumifs(100,nil,"").should == 100 
     FunctionTest.sumifs(100,nil,nil).should == 0
+    FunctionTest.sumifs(100,0,nil).should == 100
   end
   
   it "should return an error if an argument is an error" do
