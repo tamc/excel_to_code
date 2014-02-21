@@ -82,6 +82,7 @@ class MapFormulaeToC < MapValuesToC
     :'SUMIFS' => 'sumifs',
     :'TEXT2' => 'text',
     :'SUMPRODUCT' => 'sumproduct',
+    :'VALUE' => 'value',
     :'VLOOKUP3' => 'vlookup_3',
     :'VLOOKUP4' => 'vlookup',
     :'^' => 'power',

@@ -371,7 +371,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * TEXT -- Formats a number and converts it to text
 * TRIM -- Removes spaces from text - _R_
 * UPPER -- Converts text to uppercase
-* VALUE -- Converts a text argument to a number
+* VALUE -- Converts a text argument to a number - _R_ _C_
 
 ## External functions
 

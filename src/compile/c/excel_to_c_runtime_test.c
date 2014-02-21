@@ -890,6 +890,16 @@ int test_functions() {
   assert(len(TRUE).number == 4);
   assert(len(FALSE).number == 5);
 
+
+  // VALUE(something)
+  assert(value(BLANK).type == ExcelNumber);
+  assert(value(BLANK).number == 0);
+  assert(value(ONE).type == ExcelNumber);
+  assert(value(ONE).number == 1);
+  assert(value(new_excel_string("1")).type == ExcelNumber);
+  assert(value(new_excel_string("1")).number == 1);
+  assert(value(new_excel_string("A1A")).type == ExcelError);
+
   // Release memory
   free_all_allocated_memory();
 

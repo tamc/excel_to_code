@@ -1,5 +1,7 @@
 # Head
 
+- Implemented the VALUE function
+
 # 0.2.17 - 2013 February 11th
 
 - Changed how SUMIF, SUMIFS, and AVERAGEIFS treat blanks in criteria (now consider them to be zeros)

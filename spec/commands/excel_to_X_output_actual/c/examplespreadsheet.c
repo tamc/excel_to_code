@@ -107,6 +107,7 @@ static ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelVa
 static ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v);
 static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue text(ExcelValue number_v, ExcelValue format_v);
+static ExcelValue value(ExcelValue string_v);
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
 static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
 
@@ -1792,6 +1793,13 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
               passed = 0;
               break;
             }
+
+            // Special case, empty strings don't match zeros here
+            if(strlen(value_to_be_checked.string) == 0) {
+              passed = 0;
+              break;
+            }
+
             number = number_from(value_to_be_checked);
             if(conversion_error == 1) {
               conversion_error = 0;
@@ -2090,6 +2098,14 @@ static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
     return array[((((int) row_number_v.number)-1)*columns)+(last_good_match)];
   }
   return NA;
+}
+
+
+static ExcelValue value(ExcelValue string_v) {
+	CHECK_FOR_PASSED_ERROR(string_v)
+	NUMBER(string_v, a)
+	CHECK_FOR_CONVERSION_ERROR
+	return new_excel_number(a);
 }
 // End of the generic c functions
 
