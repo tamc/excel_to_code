@@ -64,7 +64,13 @@ class CachingFormulaParser
   def sheet_reference(ast)
     ast[1] = ast[1].to_sym
     ast[2] = map(ast[2])
-    @sheet_reference_cache[ast] ||= ast
+    # We do this to deal with Control!#REF! style rerferences
+    # that occasionally pop up in named references
+    if ast[2].first == :error
+      return ast[2]
+    else
+      @sheet_reference_cache[ast] ||= ast
+    end
   end
 
   def cell(ast)

@@ -159,7 +159,7 @@ class Formula < RubyPeg
   
   def sheet_reference
     node :sheet_reference do
-      (single_quoted_string || terminal(/[\p{word}][\p{word}_.]+/)) && ignore { terminal("!") } && (sheetless_reference || named_reference)
+      (single_quoted_string || terminal(/[\p{word}][\p{word}_.]+/)) && ignore { terminal("!") } && (sheetless_reference || error || named_reference)
     end
   end
   

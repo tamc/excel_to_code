@@ -40,7 +40,7 @@ sheet1!$A$1	[:sheet_reference, "sheet1", [:cell, "$A$1"]]
 sheet1!$A$1:$Z$1	[:sheet_reference, "sheet1", [:area, "$A$1", "$Z$1"]]
 sheet1!$1:$1000	[:sheet_reference, "sheet1", [:row_range, "$1", "$1000"]]
 sheet1!$C:$AZ	[:sheet_reference, "sheet1", [:column_range, "$C", "$AZ"]]
-Control!#REF!	[:sheet_reference, "Control", [:named_reference, "#REF!"]]
+Control!#REF!	[:sheet_reference, "Control", [:error, "#REF!"]]
   
 # parses references to other sheets with extended names
 'sheet 1'!$A$1"	[:sheet_reference, "sheet 1", [:cell, "$A$1"]]

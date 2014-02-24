@@ -62,5 +62,10 @@ describe CachingFormulaParser do
 
   end
 
+  it "should turn sheet references that refer to an error (e.g., Control!#REF! into the error)" do
+    CachingFormulaParser.parse('Control!#REF!').should == [:error, :'#REF!']
+
+  end
+
 end
 

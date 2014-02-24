@@ -1,5 +1,6 @@
 # Head
 
+- Named references that are actually #REF! errors are correctly parsed and then turned into errors
 - Implemented the VALUE function
 
 # 0.2.17 - 2013 February 11th
