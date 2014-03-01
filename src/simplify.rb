@@ -21,3 +21,4 @@ require_relative "simplify/wrap_formulae_that_return_arrays_and_are_not_in_array
 require_relative "simplify/replace_string_join_on_ranges"
 require_relative "simplify/emergency_array_formula_replace_indirect_bodge.rb"
 require_relative "simplify/replace_transpose_function"
+require_relative "simplify/replace_references_to_blanks_with_zeros"

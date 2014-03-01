@@ -226,7 +226,7 @@ class RubyExampleSpreadsheet
   attr_accessor :referencing_e72 # Default: "Beta"
   def referencing_f72; @referencing_f72 ||= common26; end
   def referencing_g72; @referencing_g72 ||= common26; end
-  def tables_a1; @tables_a1 ||= 0.0; end
+  def tables_a1; @tables_a1 ||= 0; end
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
   attr_accessor :tables_d2 # Default: "Column1"
@@ -246,7 +246,7 @@ class RubyExampleSpreadsheet
   def tables_g6; @tables_g6 ||= tables_d2; end
   def tables_e7; @tables_e7 ||= tables_b5; end
   def tables_f7; @tables_f7 ||= tables_c5; end
-  def tables_g7; @tables_g7 ||= 0.0; end
+  def tables_g7; @tables_g7 ||= 0; end
   def tables_e8; @tables_e8 ||= tables_b2; end
   def tables_f8; @tables_f8 ||= tables_c2; end
   def tables_g8; @tables_g8 ||= tables_d2; end
@@ -260,7 +260,7 @@ class RubyExampleSpreadsheet
   def tables_c11; @tables_c11 ||= common33; end
   def tables_e11; @tables_e11 ||= tables_b5; end
   def tables_f11; @tables_f11 ||= tables_c5; end
-  def tables_g11; @tables_g11 ||= 0.0; end
+  def tables_g11; @tables_g11 ||= 0; end
   def tables_c12; @tables_c12 ||= tables_b5; end
   def tables_c13; @tables_c13 ||= common34; end
   def tables_c14; @tables_c14 ||= common34; end
@@ -346,10 +346,8 @@ class RubyExampleSpreadsheet
   def referencing_i47; @referencing_i47 ||= nil; end
   def referencing_j47; @referencing_j47 ||= nil; end
   def referencing_l47; @referencing_l47 ||= nil; end
-  def referencing_d11; @referencing_d11 ||= nil; end
-  def tables_d5; @tables_d5 ||= nil; end
   def common0; @common0 ||= add(referencing_a4,1.0); end
-  def common1; @common1 ||= sum(tables_b5,tables_c5,0.0); end
+  def common1; @common1 ||= sum(tables_b5,tables_c5); end
   def common2; @common2 ||= index([[referencing_c16,referencing_d16,referencing_e16,referencing_f16],[referencing_c17,referencing_d17,referencing_e17,referencing_f17],[referencing_c18,referencing_d18,referencing_e18,referencing_f18],[referencing_c19,referencing_d19,referencing_e19,referencing_f19]],nil,excel_match(referencing_c22,[[referencing_c15,referencing_d15,referencing_e15,referencing_f15]],0.0)); end
   def common6; @common6 ||= divide(referencing_g50,referencing_m35); end
   def common7; @common7 ||= excel_equal?(referencing_d64,referencing_j34); end

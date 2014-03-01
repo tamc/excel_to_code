@@ -1,5 +1,6 @@
 # Head
 
+- Had another go at dealing with the way that blank cells become zeros when referenced in some ways but not others
 - Named references that are actually #REF! errors are correctly parsed and then turned into errors
 - Implemented the VALUE function
 

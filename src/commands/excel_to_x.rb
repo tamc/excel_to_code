@@ -838,6 +838,7 @@ class ExcelToX
     @replace_arrays_with_single_cells_replacer ||= ReplaceArraysWithSingleCellsAst.new
     @replace_string_joins_on_ranges_replacer ||= ReplaceStringJoinOnRangesAST.new
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
+    @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
 
     cells.each do |ref, ast|
       begin
@@ -858,6 +859,8 @@ class ExcelToX
         @replace_arithmetic_on_ranges_replacer.map(ast)
         @replace_string_joins_on_ranges_replacer.map(ast)
         @wrap_formulae_that_return_arrays_replacer.map(ast)
+        @replace_references_to_blanks_with_zeros.current_sheet_name = ref.first
+        @replace_references_to_blanks_with_zeros.map(ast)
       rescue  Exception => e
         log.fatal "Exception when simplifying #{ref}: #{ast}"
         raise

@@ -527,7 +527,6 @@ module ExampleSpreadsheet
   attach_function 'referencing_i47', [], ExcelValue.by_value
   attach_function 'referencing_j47', [], ExcelValue.by_value
   attach_function 'referencing_l47', [], ExcelValue.by_value
-  attach_function 'referencing_d11', [], ExcelValue.by_value
   # end of Referencing
   attach_function 'set_tables_b2', [ExcelValue.by_value], :void
   attach_function 'set_tables_c2', [ExcelValue.by_value], :void
@@ -574,7 +573,6 @@ module ExampleSpreadsheet
   attach_function 'tables_c12', [], ExcelValue.by_value
   attach_function 'tables_c13', [], ExcelValue.by_value
   attach_function 'tables_c14', [], ExcelValue.by_value
-  attach_function 'tables_d5', [], ExcelValue.by_value
   # end of Tables
   attach_function 's_innapropriate_sheet_name__c4', [], ExcelValue.by_value
   # end of (innapropriate) sheet name!
