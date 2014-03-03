@@ -1,5 +1,7 @@
 # Head
 
+- Can now isolate more than one worksheet at the same time
+
 # 0.2.18 - 2013 March 2nd
 
 - Had another go at dealing with the way that blank cells become zeros when referenced in some ways but not others

@@ -229,9 +229,13 @@ class ExcelToX
     # Setting this to false may make it easier to figure out errors
     self.extract_repeated_parts_of_formulae = true if @extract_repeated_parts_of_formulae == nil
     if self.isolate
-      self.cells_to_keep = { isolate.to_s => :all }
-      self.isolate = self.isolate.to_sym 
-      log.warn "Isolating #{@isolate} worksheet. No other sheets will be converted"
+      self.isolate = [self.isolate] unless self.isolate.is_a?(Array)
+      self.cells_to_keep ||= {}
+      self.isolate.each do |sheet|
+        self.cells_to_keep[sheet.to_s] = :all
+      end
+      self.isolate = self.isolate.map { |s| s.to_sym }
+      log.warn "Isolating #{@isolate} worksheet(s). No other sheets will be converted"
     end
   end
   
@@ -456,7 +460,8 @@ class ExcelToX
       # This is used in debugging large worksheets to limit 
       # the optimisation to a particular worksheet
       if isolate
-        extractor.only_extract_values = (isolate != name)
+        log.info "Only extracting values: #{!isolate.include?(name)}"
+        extractor.only_extract_values = !isolate.include?(name)
       end
 
       log.info "Extracting data from #{name}"
