@@ -1,6 +1,9 @@
 module ExcelFunctions
   
-  def excel_match(lookup_value,lookup_array,match_type = 0)
+  # FIXME: Excel doesn't use this algorithm for matching. Seems
+  # to do some bisecting. Only matters if doing an ordered search
+  # and the range is not in order
+  def excel_match(lookup_value,lookup_array,match_type = 1)
     return lookup_value if lookup_value.is_a?(Symbol)
     return lookup_array if lookup_array.is_a?(Symbol)
     return match_type if match_type.is_a?(Symbol)

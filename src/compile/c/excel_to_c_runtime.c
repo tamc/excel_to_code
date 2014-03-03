@@ -847,7 +847,7 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 }
 
 static ExcelValue excel_match_2(ExcelValue lookup_value, ExcelValue lookup_array ) {
-	return excel_match(lookup_value, lookup_array, ZERO);
+	return excel_match(lookup_value, lookup_array, ONE);
 }
 
 static ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelValue start_number_v) {

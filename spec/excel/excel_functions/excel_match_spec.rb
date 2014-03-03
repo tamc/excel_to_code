@@ -20,8 +20,8 @@ describe "ExcelFunctions: excel_match(lookup_value,lookup_array,match_type)" do
   end
   
   it "should treat nil as zero" do
-    FunctionTest.excel_match(0,[1,nil,0]).should == 2
-    FunctionTest.excel_match(nil,[1,0,nil]).should == 2
+    FunctionTest.excel_match(0,[nil,0,1]).should == 2
+    FunctionTest.excel_match(nil,[0,nil,1]).should == 2
     FunctionTest.excel_match(10.0,[10,100],nil).should == 1
   end
 

@@ -230,14 +230,14 @@ class RubyExampleSpreadsheet
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
   attr_accessor :tables_d2 # Default: "Column1"
-  attr_accessor :tables_b3 # Default: 1.0
+  attr_accessor :tables_b3 # Default: "A"
   attr_accessor :tables_c3 # Default: "A"
   def tables_d3; @tables_d3 ||= string_join(tables_b3,tables_c3); end
-  attr_accessor :tables_b4 # Default: 2.0
+  attr_accessor :tables_b4 # Default: "Z"
   attr_accessor :tables_c4 # Default: "B"
   def tables_d4; @tables_d4 ||= string_join(tables_b4,tables_c4); end
   def tables_f4; @tables_f4 ||= tables_c4; end
-  def tables_g4; @tables_g4 ||= excel_match("2B",[[tables_b4,tables_c4,tables_d4]],false); end
+  def tables_g4; @tables_g4 ||= excel_match("ZB",[[tables_b4,tables_c4,tables_d4]],false); end
   def tables_h4; @tables_h4 ||= excel_match("B",[[tables_c4,tables_d4]]); end
   def tables_b5; @tables_b5 ||= common33; end
   def tables_c5; @tables_c5 ||= sum(tables_c3,tables_c4); end
@@ -264,6 +264,7 @@ class RubyExampleSpreadsheet
   def tables_c12; @tables_c12 ||= tables_b5; end
   def tables_c13; @tables_c13 ||= common34; end
   def tables_c14; @tables_c14 ||= common34; end
+  def tables_g17; @tables_g17 ||= excel_if(more_than?(tables_c4,tables_d4),true); end
   def s_innapropriate_sheet_name__c4; @s_innapropriate_sheet_name__c4 ||= valuetypes_a3; end
   def ranges_f1; @ranges_f1 ||= nil; end
   def ranges_f2; @ranges_f2 ||= nil; end
@@ -485,9 +486,9 @@ class RubyExampleSpreadsheet
     @tables_b2 = "ColA"
     @tables_c2 = "ColB"
     @tables_d2 = "Column1"
-    @tables_b3 = 1.0
+    @tables_b3 = "A"
     @tables_c3 = "A"
-    @tables_b4 = 2.0
+    @tables_b4 = "Z"
     @tables_c4 = "B"
   end
 

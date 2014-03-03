@@ -573,6 +573,7 @@ module ExampleSpreadsheet
   attach_function 'tables_c12', [], ExcelValue.by_value
   attach_function 'tables_c13', [], ExcelValue.by_value
   attach_function 'tables_c14', [], ExcelValue.by_value
+  attach_function 'tables_g17', [], ExcelValue.by_value
   # end of Tables
   attach_function 's_innapropriate_sheet_name__c4', [], ExcelValue.by_value
   # end of (innapropriate) sheet name!

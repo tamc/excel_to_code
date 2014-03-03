@@ -115,11 +115,9 @@ int test_functions() {
   ExcelValue excel_match_array_5_v = new_excel_range(excel_match_array_5,1,3);
 
   // Two argument version
-  assert(excel_match_2(new_excel_number(10),excel_match_array_1_v).number == 1);
-  assert(excel_match_2(new_excel_number(100),excel_match_array_1_v).number == 2);
-  assert(excel_match_2(new_excel_number(1000),excel_match_array_1_v).type == ExcelError);
-  assert(excel_match_2(new_excel_number(0), excel_match_array_4_v).number == 2);
-  assert(excel_match_2(BLANK, excel_match_array_5_v).number == 2);
+  assert(excel_match_2(new_excel_number(14),excel_match_array_1_v).number == 1);
+  assert(excel_match_2(new_excel_number(110),excel_match_array_1_v).number == 2);
+  assert(excel_match_2(new_excel_number(-10),excel_match_array_1_v).type == ExcelError);
 
   // Three argument version	
   assert(excel_match(new_excel_number(10.0), excel_match_array_1_v, new_excel_number(0) ).number == 1);
