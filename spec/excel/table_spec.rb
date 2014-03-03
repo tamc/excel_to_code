@@ -108,5 +108,16 @@ describe "Table bug, not returning reference for whole table" do
 
  end
  
+describe "Table reference where the column name includes a hash" do
+  
+ before(:all) do
+    @table = Table.new("FirstTable",:sheet1,"B3:D7","1","# ColA","Col # B","ColC")
+  end
+    
+
+  it 'should be able to return a reference for [:table_reference, "FirstTable", "[#This Row],[\'# ColA]"]' do
+    @table.reference_for("FirstTable", "[#This Row],['# ColA]",:sheet1,"F5").should == [:sheet_reference, :sheet1, [:cell, :B5]]
+  end
+end
 
 end
