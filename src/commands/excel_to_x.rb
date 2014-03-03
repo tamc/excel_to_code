@@ -228,6 +228,8 @@ class ExcelToX
 
     # Setting this to false may make it easier to figure out errors
     self.extract_repeated_parts_of_formulae = true if @extract_repeated_parts_of_formulae == nil
+
+    # This setting is used for debugging, and makes the system only do the conversion on a subset of the the
     if self.isolate
       self.isolate = [self.isolate] unless self.isolate.is_a?(Array)
       self.cells_to_keep ||= {}
