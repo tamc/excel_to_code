@@ -289,6 +289,7 @@ class ExcelToX
     end
     # Then we parse them
     @named_references.each do |name, reference|
+      begin
       parsed = CachingFormulaParser.parse(reference)
       if parsed
         @named_references[name] = parsed
@@ -296,6 +297,10 @@ class ExcelToX
         $stderr.puts "Named reference #{name} #{reference} not parsed"
         exit
       end
+    rescue Exception
+        $stderr.puts "Named reference #{name} #{reference} not parsed"
+        raise
+    end
     end
     # Replace A$1:B2 with [A1, A2, B1, B2]
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new

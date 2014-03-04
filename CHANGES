@@ -1,5 +1,6 @@
 # Head
 
+- Better error message when named reference can't be parsed
 - Changed the default match_type in the MATCH function to be 1
 - Fixed a bug when a table has column names containing a # symbol
 - Can now isolate more than one worksheet at the same time
