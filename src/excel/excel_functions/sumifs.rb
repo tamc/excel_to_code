@@ -1,14 +1,14 @@
 module ExcelFunctions
-  
-  def sumifs(sum_range,*criteria)
+
+  def _filtered_range(range, *criteria)
     # First, get rid of the errors
-    return sum_range if sum_range.is_a?(Symbol)
+    return range if range.is_a?(Symbol)
     error = criteria.find { |a| a.is_a?(Symbol) }
-    return error if error
-    
+
     # Sort out the sum range
-    sum_range = [sum_range] unless sum_range.is_a?(Array)
-    sum_range = sum_range.flatten
+    range = [range] unless range.is_a?(Array)
+    range = range.flatten
+    return error if error
     
     # Sort out the criteria
     0.step(criteria.length-1,2).each do |i|
@@ -18,13 +18,12 @@ module ExcelFunctions
         criteria[i] = [criteria[i]]
       end
     end
-      
-    # This will be the final answer
-    accumulator = 0
+
+    filtered = []
     
     # Work through each part of the sum range
-    sum_range.each_with_index do |potential_sum,index|
-      next unless potential_sum.is_a?(Numeric)
+    range.each_with_index do |potential,index|
+      next unless potential.is_a?(Numeric)
       
       # If a criteria fails, this is set to false and no further criteria are evaluated
       pass = true
@@ -63,12 +62,15 @@ module ExcelFunctions
         break unless pass
       end # criteria loop
       
-      accumulator += potential_sum if pass
-        
-      end
-      
-      return accumulator
-      
+      filtered << potential if pass
     end
+
+    return filtered
+  end
+  
+  def sumifs(range,*criteria)
+    filtered = _filtered_range(range,*criteria)
+    sum(*filtered)
+  end
   
 end

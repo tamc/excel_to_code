@@ -1,5 +1,6 @@
 # Head
 
+- Refactored AVERAGEIFS and SUMIFS in ruby to be more like C
 - Better error message when named reference can't be parsed
 - Changed the default match_type in the MATCH function to be 1
 - Fixed a bug when a table has column names containing a # symbol
