@@ -1,5 +1,6 @@
 # Head
 
+- Can now partially replace SUMIFS in situations where it is being used as a form of lookup
 - Refactored AVERAGEIFS and SUMIFS in ruby to be more like C
 - Better error message when named reference can't be parsed
 - Changed the default match_type in the MATCH function to be 1

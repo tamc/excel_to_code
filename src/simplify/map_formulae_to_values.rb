@@ -161,11 +161,29 @@ class MapFormulaeToValues
   end
 
   def map_sumifs(ast)
-    sum_value = value(ast[2])
     values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
-    return if sum_value == :not_a_value
     return if values.any? { |a| a == :not_a_value }
-    ast.replace(formula_value( ast[1], sum_value, *values))
+    sum_value = value(ast[2])
+    if sum_value == :not_a_value
+      partially_map_sumifs(ast)
+    else
+      ast.replace(formula_value( ast[1], sum_value, *values))
+    end
+  end
+
+  def partially_map_sumifs(ast)
+    values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
+    sum_range = []
+    ast[2].each do |row|
+      next if row.is_a?(Symbol)
+      row.each do |cell|
+        next if cell.is_a?(Symbol)
+        sum_range << cell
+      end
+    end
+    sum_range_indexes = 0.upto(sum_range.length-1).to_a
+    filtered_range = @calculator._filtered_range(sum_range_indexes, *values)
+    ast.replace([:function, :SUM, *sum_range.values_at(*filtered_range)])
   end
 
   # [:function, "COUNT", range]
