@@ -467,7 +467,7 @@ class ExcelToX
       # This is used in debugging large worksheets to limit 
       # the optimisation to a particular worksheet
       if isolate
-        log.info "Only extracting values: #{!isolate.include?(name)}"
+        log.info "Only extracting values from #{name}: #{!isolate.include?(name)}"
         extractor.only_extract_values = !isolate.include?(name)
       end
 
