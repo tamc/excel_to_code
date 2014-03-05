@@ -1,14 +1,9 @@
 module ExcelFunctions
 
   def _filtered_range(range, *criteria)
-    # First, get rid of the errors
-    return range if range.is_a?(Symbol)
-    error = criteria.find { |a| a.is_a?(Symbol) }
-
     # Sort out the sum range
     range = [range] unless range.is_a?(Array)
     range = range.flatten
-    return error if error
     
     # Sort out the criteria
     0.step(criteria.length-1,2).each do |i|
@@ -23,7 +18,7 @@ module ExcelFunctions
     
     # Work through each part of the sum range
     range.each_with_index do |potential,index|
-      next unless potential.is_a?(Numeric)
+      #next unless potential.is_a?(Numeric)
       
       # If a criteria fails, this is set to false and no further criteria are evaluated
       pass = true
@@ -57,6 +52,8 @@ module ExcelFunctions
           else
             check_value == required_value
           end
+        when Symbol
+          check_value == required_value
         end # case check_value
                 
         break unless pass

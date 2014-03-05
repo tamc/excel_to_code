@@ -510,7 +510,8 @@ int test_functions() {
   assert(sumifs(new_excel_number(100),2,sumifs_array_14).number == 0);
 
   // ... should return an error if range argument is an error
-  assert(sumifs(REF,2,sumifs_array_13).type == ExcelError);
+  ExcelValue sumifs_array_15[] = {ONE, ONE};
+  assert(sumifs(REF,2,sumifs_array_15).type == ExcelError);
 
 
   // Test SUMIF

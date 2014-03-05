@@ -26,11 +26,11 @@ describe "ExcelFunctions: SUMIF" do
     FunctionTest.sumif(nil,nil, 100).should == 0
   end
   
-  it "should return an error if an argument is an error" do
-    FunctionTest.sumif(:error1,10,20).should == :error1
-    FunctionTest.sumif(1,:error2,20).should == :error2
-    FunctionTest.sumif(1,10,:error3).should == :error3
-    FunctionTest.sumif(:error1,:error2,:error3).should == :error3 # Note reversal due to SUMIFS
+  it "should deal with errors in arguments" do
+    FunctionTest.sumif(:error1,10,20).should == 0
+    FunctionTest.sumif(10,20,:error1).should == 0
+    FunctionTest.sumif(20,20,:error1).should == :error1
+    FunctionTest.sumif(1,:error2,20).should == 0
   end
   
   it "should be in the list of functions that can be mapped to ruby" do

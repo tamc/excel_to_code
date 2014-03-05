@@ -22,11 +22,12 @@ describe "ExcelFunctions: AVERAGEIFS" do
     FunctionTest.averageifs(100,nil,nil).should == :div0 
   end
   
-  it "should return an error if an argument is an error" do
-    FunctionTest.averageifs(:error1,10,20).should == :error1
-    FunctionTest.averageifs(1,:error2,20).should == :error2
-    FunctionTest.averageifs(1,10,:error3).should == :error3
-    FunctionTest.averageifs(:error1,:error2,:error3).should == :error1
+  it "should deal with errors" do
+    FunctionTest.averageifs(:error1,10,20).should == :div0
+    FunctionTest.averageifs(:error1,20,20).should == :error1
+    FunctionTest.averageifs(1,:error2,20).should == :div0
+    FunctionTest.averageifs(1,10,:error3).should == :div0
+    FunctionTest.averageifs(1,:error1,:error1).should == 1
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
