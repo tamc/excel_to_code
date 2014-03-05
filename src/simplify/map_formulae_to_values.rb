@@ -175,12 +175,16 @@ class MapFormulaeToValues
   def partially_map_sumifs(ast)
     values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
     sum_range = []
-    ast[2].each do |row|
-      next if row.is_a?(Symbol)
-      row.each do |cell|
-        next if cell.is_a?(Symbol)
-        sum_range << cell
+    if ast[2].first == :array
+      ast[2].each do |row|
+        next if row.is_a?(Symbol)
+        row.each do |cell|
+          next if cell.is_a?(Symbol)
+          sum_range << cell
+        end
       end
+    else
+      sum_range = [ast[2]]
     end
     sum_range_indexes = 0.upto(sum_range.length-1).to_a
     filtered_range = @calculator._filtered_range(sum_range_indexes, *values)
