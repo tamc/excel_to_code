@@ -183,7 +183,11 @@ class MapFormulaeToValues
     end
     sum_range_indexes = 0.upto(sum_range.length-1).to_a
     filtered_range = @calculator._filtered_range(sum_range_indexes, *values)
-    ast.replace([:function, :SUM, *sum_range.values_at(*filtered_range)])
+    if filtered_range.is_a?(Symbol)
+      ast.replace(value(filtered_range))
+    else
+      ast.replace([:function, :SUM, *sum_range.values_at(*filtered_range)])
+    end
   end
 
   # [:function, "COUNT", range]
