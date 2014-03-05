@@ -113,3 +113,4 @@
 # Partially map SUMIFS if criteria are all provided
 [:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "A"]], [:row, [:cell, :B10]]], [:string, "B"]]	[:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "A"]], [:row, [:cell, :B10]]], [:string, "B"]]
 [:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "A"]], [:row, [:string, "B"]]], [:string, "B"]]	[:function, :SUM, [:cell, :A2]]
+[:function, :SUMIFS, [:function, :INDIRECT, "A1:A2"], [:array, [:row, [:string, "A"]], [:row, [:string, "B"]]], [:string, "B"]]	[:function, :SUMIFS, [:function, :INDIRECT, "A1:A2"], [:array, [:row, [:string, "A"]], [:row, [:string, "B"]]], [:string, "B"]]

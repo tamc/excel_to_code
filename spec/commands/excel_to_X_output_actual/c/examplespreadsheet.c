@@ -1622,9 +1622,10 @@ static ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, 
 }
 
 
+// FIXME: Check if this deals with errors correctly
 static ExcelValue filter_range(ExcelValue original_range_v, int number_of_arguments, ExcelValue *arguments) {
   // First, set up the original_range
-  CHECK_FOR_PASSED_ERROR(original_range_v);
+  //CHECK_FOR_PASSED_ERROR(original_range_v);
 
   // Set up the sum range
   ExcelValue *original_range;

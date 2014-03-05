@@ -163,6 +163,7 @@ class MapFormulaeToValues
   def map_sumifs(ast)
     values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
     return if values.any? { |a| a == :not_a_value }
+    return unless [:sheet_reference, :cell, :area, :array, :number, :string, :boolean_true, :boolean_false].include?(ast[2].first)
     sum_value = value(ast[2])
     if sum_value == :not_a_value
       partially_map_sumifs(ast)
