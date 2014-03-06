@@ -18,10 +18,13 @@ class ReplaceArraysWithSingleCellsAst
     # Special case, only change if at the top level
     elsif ast[0] == :function && ast[1] == :CHOOSE && check_choose(ast)
       # Replacement made in check
+    # Special case, only change if at the top level
+    elsif ast[0] == :function && ast[1] == :IF && check_if(ast)
+      # Replacement made in check
     else
       do_map(ast)
-      ast
     end
+    ast
   end
 
   def do_map(ast)
@@ -70,6 +73,19 @@ class ReplaceArraysWithSingleCellsAst
         ast[i] = try_and_convert_array(ast[i])
       end
       i +=1
+    end
+    replacement_made
+  end
+
+  def check_if(ast)
+    replacement_made = false
+    if ast[3] && ast[3].first == :array
+      replacement_made = true
+      ast[3] = try_and_convert_array(ast[3])
+    end
+    if ast[4] && ast[4].first == :array
+      replacement_made = true
+      ast[4] = try_and_convert_array(ast[3])
     end
     replacement_made
   end
