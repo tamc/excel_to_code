@@ -207,6 +207,7 @@ class MapFormulaeToValues
     return map_index_with_only_two_arguments(ast) if ast.length == 4
 
     array_mapped = ast[2] 
+    return ast.replace(ast[2]) if ast[2].first == :error
     row_as_number = value(ast[3])
     column_as_number = value(ast[4])
 
@@ -225,6 +226,7 @@ class MapFormulaeToValues
   # [:function, "INDEX", array, row_number]
   def map_index_with_only_two_arguments(ast)
     array_mapped = ast[2]
+    return ast.replace(ast[2]) if ast[2].first == :error
     row_as_number = value(ast[3])
     return if row_as_number == :not_a_value
     array_as_values = array_as_values(array_mapped)
@@ -254,7 +256,7 @@ class MapFormulaeToValues
       ast.replace([:number, number_total])
     # FIXME: Will I be haunted by this? What if doing a sum of something that isn't a number
     # and so what is expected is a VALUE error?. YES. This doesn't work well.
-    elsif ast.length == 3 && ast[2].first != :array
+    elsif ast.length == 3 && [:cell, :sheet_reference].include?(ast[2].first)
       ast.replace(n(ast[2]))
     else
       new_ast = [:function, :SUM].concat(not_number_array)

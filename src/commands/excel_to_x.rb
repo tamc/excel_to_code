@@ -2,6 +2,7 @@
 require 'fileutils'
 require 'logger'
 require_relative '../excel_to_code'
+require 'pry'
 
 # FIXME: Correct case for all worksheet references
 # FIXME: Correct case and $ stripping from all cell references
@@ -852,6 +853,7 @@ class ExcelToX
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
     @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
 
+    #binding.pry
     cells.each do |ref, ast|
       begin
         @sheetless_cell_reference_replacer.worksheet = ref.first
@@ -940,6 +942,8 @@ class ExcelToX
       offset_replacement.count_replaced = 0
       indirect_replacement.count_replaced = 0
       references_that_need_updating = {}
+
+      #binding.pry
 
       @cells_with_formulae.each do |ref, ast|
         # FIXME: Shouldn't need to wrap ref.fist in an array
