@@ -258,6 +258,8 @@ class MapFormulaeToValues
     # and so what is expected is a VALUE error?. YES. This doesn't work well.
     elsif ast.length == 3 && [:cell, :sheet_reference].include?(ast[2].first)
       ast.replace(n(ast[2]))
+    elsif ast.length == 3 && ast[2][0] == :function && ast[2][1] == :ENSURE_IS_NUMBER
+      ast.replace(ast[2])
     else
       new_ast = [:function, :SUM].concat(not_number_array)
       new_ast.push([:number, number_total]) unless number_total == 0
