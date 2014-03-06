@@ -254,9 +254,8 @@ class MapFormulaeToValues
       ast.replace([:number, number_total])
     # FIXME: Will I be haunted by this? What if doing a sum of something that isn't a number
     # and so what is expected is a VALUE error?. YES. This doesn't work well.
-    #elsif number_total == 0 && not_number_array.size == 1
-    #  p not_number_array[0]
-    #  ast.replace(not_number_array[0])
+    elsif ast.length == 3 && ast[2].first != :array
+      ast.replace(n(ast[2]))
     else
       new_ast = [:function, :SUM].concat(not_number_array)
       new_ast.push([:number, number_total]) unless number_total == 0

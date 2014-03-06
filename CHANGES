@@ -1,5 +1,6 @@
 # Head
 
+- Now simplifies SUM() with single arguments to the single argument
 - Now deals with arrays that should be converted to single cells inside of IF statements
 - Altered how SUMIFS deals with passed errors in ruby verison (need to check C version)
 - Can now partially replace SUMIFS in situations where it is being used as a form of lookup

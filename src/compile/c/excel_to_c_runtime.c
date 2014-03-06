@@ -308,6 +308,9 @@ static ExcelValue ensure_is_number(ExcelValue maybe_number_v) {
   if(maybe_number_v.type == ExcelNumber) {
     return maybe_number_v;
   }
+  if(maybe_number_v.type == ExcelError) {
+    return maybe_number_v;
+  }
   NUMBER(maybe_number_v, maybe_number)
 	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(maybe_number);
