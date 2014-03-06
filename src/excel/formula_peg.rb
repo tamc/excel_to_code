@@ -18,7 +18,7 @@ class Formula < RubyPeg
   end
   
   def thing
-    function || array || brackets || any_reference || string || percentage || number || boolean || prefix || error || named_reference
+    percentage || function || array || brackets || any_reference || string || number || boolean || prefix || error || named_reference
   end
   
   def argument
@@ -93,7 +93,7 @@ class Formula < RubyPeg
   
   def percentage
     node :percentage do
-      terminal(/[-+]?[0-9]+\.?[0-9]*/) && ignore { terminal("%") }
+      (terminal(/[-+]?[0-9]+\.?[0-9]*/) || function) && ignore { terminal("%") }
     end
   end
   

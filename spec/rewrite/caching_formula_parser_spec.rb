@@ -9,7 +9,7 @@ describe CachingFormulaParser do
 
   it "should turn numbers into numeric values" do
     CachingFormulaParser.parse("1.31").should == [:number, 1.31]
-    CachingFormulaParser.parse("10%").should == [:percentage, 10]
+    CachingFormulaParser.parse("10%").should == [:number, 0.1]
   end
 
   it "should turn operators and comparators into symbols" do
@@ -66,6 +66,12 @@ describe CachingFormulaParser do
     CachingFormulaParser.parse('Control!#REF!').should == [:error, :'#REF!']
 
   end
+
+  it "should remove percentages straight away" do
+    CachingFormulaParser.parse("15.15%").should == [:number, 0.1515]
+    CachingFormulaParser.parse("ROUND(24.35)%").should == [:arithmetic, [:function, :ROUND, [:number, 24.35]], [:operator, :"/"], [:number, 100.0]]
+
+  end 
 
 end
 

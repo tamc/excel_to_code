@@ -1,6 +1,6 @@
 formula                         := space? expression+
 expression                       = string_join | comparison | arithmetic | thing
-thing                            = function | array | brackets | any_reference | string | percentage | number | boolean | prefix | error | named_reference 
+thing                            = percentage | function | array | brackets | any_reference | string | number | boolean | prefix | error | named_reference 
 argument                         = expression | null
 function                        := /[A-Z]+/ `'(' space argument? (space `',' space argument)* space `')'
 brackets                        := `'(' space expression+ space `')'
@@ -14,7 +14,7 @@ comparator                      := '>=' | '<=' | '<>' | '>' | '<' | '='
 string                          := `'"' /(""|[^"])*/ `'"'
 any_reference                    = external_reference | any_internal_reference
 any_internal_reference           = table_reference | local_table_reference | sheet_reference | sheetless_reference
-percentage                      := /[-+]?[0-9]+\.?[0-9]*/ `'%'
+percentage                      := (/[-+]?[0-9]+\.?[0-9]*/ | function) `'%'
 number                          := /[-+]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?/
 operator                        := '+' | '-' | '/' | '*' | '^'
 external_reference              := /\[\d+\]!?/ (any_internal_reference | named_reference)

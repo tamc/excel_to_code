@@ -1,5 +1,6 @@
 # Head
 
+- Can now parse some formulae with a trailing percentage suffix like ROUND(24.3,0)% 
 - If INDEX is passed an errors in both arguments, returns the error in its first argument
 - Now simplifies SUM() with single arguments to the single argument
 - Now deals with arrays that should be converted to single cells inside of IF statements

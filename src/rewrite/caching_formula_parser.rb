@@ -90,7 +90,12 @@ class CachingFormulaParser
   end
 
   def percentage(ast)
-    ast[1] = ast[1].to_f
+    if ast[1].is_a?(Array)
+      ast.replace([:arithmetic, map(ast[1]), operator([:operator, :'/']), number([:number, 100])])
+    else
+      ast[1] = ast[1].to_f / 100.0
+      ast[0] = :number
+    end
     @percentage_cache[ast] ||= ast
   end
 
