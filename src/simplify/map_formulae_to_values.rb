@@ -276,8 +276,13 @@ class MapFormulaeToValues
       array_as_values(ast).each do |row|
         row.each do |c|
           result = filter_numbers_and_not(c)
-          number_total += result.first
-          not_number_array.concat(result.last)
+          # We only replace the ast if what remains is straightforward links
+          if result.last.all? { |r| [:cell, :area, :sheet_reference].include?(r.first)}
+            number_total += result.first
+            not_number_array.concat(result.last)
+          else
+            return [0, [ast]]
+          end
         end
       end
     when :blank, :number, :percentage, :string, :boolean_true, :boolean_false
