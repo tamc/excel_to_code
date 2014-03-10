@@ -2670,9 +2670,9 @@ ExcelValue ranges_b3() {
   static ExcelValue result;
   if(variable_set[28] == 1) { return result;}
   static ExcelValue array1[6];
-  array1[0] = ZERO;
-  array1[1] = ZERO;
-  array1[2] = ZERO;
+  array1[0] = BLANK;
+  array1[1] = BLANK;
+  array1[2] = BLANK;
   array1[3] = ranges_f4();
   array1[4] = ranges_f5();
   array1[5] = ranges_f6();
@@ -2697,10 +2697,10 @@ ExcelValue ranges_b4() {
   static ExcelValue result;
   if(variable_set[31] == 1) { return result;}
   static ExcelValue array1[7];
-  array1[0] = ZERO;
-  array1[1] = ZERO;
-  array1[2] = ZERO;
-  array1[3] = ZERO;
+  array1[0] = BLANK;
+  array1[1] = BLANK;
+  array1[2] = BLANK;
+  array1[3] = BLANK;
   array1[4] = ranges_e5();
   array1[5] = ranges_f5();
   array1[6] = ranges_g5();
