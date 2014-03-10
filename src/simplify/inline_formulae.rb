@@ -1,5 +1,3 @@
-module BlankCell; end
-
 class InlineFormulaeAst
 
   attr_accessor :references, :current_sheet_name, :inline_ast
