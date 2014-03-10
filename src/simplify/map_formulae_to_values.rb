@@ -63,7 +63,7 @@ class MapFormulaeToValues
       case operator.last
       when :+ 
         ast.replace(n(right))
-      when :*, :/, :^
+      when :*
         ast.replace([:number, 0])
       end
     elsif r == 0

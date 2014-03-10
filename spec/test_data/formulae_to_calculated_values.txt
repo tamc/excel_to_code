@@ -28,7 +28,6 @@
 # Edge cases that we can do, even when don't know all the bits
 [:arithmetic, [:number, 1], [:operator, :*], [:cell, :A1]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:number, 0], [:operator, :*], [:cell, :A1]]	[:number, 0]
-[:arithmetic, [:number, 0], [:operator, :/], [:cell, :A1]]	[:number, 0]
 [:arithmetic, [:number, 0], [:operator, :+], [:cell, :A1]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:cell, :A1], [:operator, :*], [:number, 1]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:cell, :A1], [:operator, :/], [:number, 1]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
@@ -39,7 +38,6 @@
 [:arithmetic, [:cell, :A1], [:operator, :^], [:number, 0]]	[:number, 1]
 [:arithmetic, [:boolean_true], [:operator, :*], [:cell, :A1]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:boolean_false], [:operator, :*], [:cell, :A1]]	[:number, 0]
-[:arithmetic, [:boolean_false], [:operator, :/], [:cell, :A1]]	[:number, 0]
 [:arithmetic, [:boolean_false], [:operator, :+], [:cell, :A1]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:cell, :A1], [:operator, :*], [:boolean_true]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:cell, :A1], [:operator, :/], [:boolean_true]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
@@ -49,7 +47,6 @@
 [:arithmetic, [:cell, :A1], [:operator, :-], [:boolean_false]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:cell, :A1], [:operator, :^], [:boolean_false]]	[:number, 1]
 [:arithmetic, [:blank], [:operator, :*], [:cell, :A1]]	[:number, 0]
-[:arithmetic, [:blank], [:operator, :/], [:cell, :A1]]	[:number, 0]
 [:arithmetic, [:blank], [:operator, :+], [:cell, :A1]]	[:function, :ENSURE_IS_NUMBER, [:cell, :A1]]
 [:arithmetic, [:cell, :A1], [:operator, :*], [:blank]]	[:number, 0]
 [:arithmetic, [:cell, :A1], [:operator, :/], [:blank]]	[:error, :"#DIV/0!"]

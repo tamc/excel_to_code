@@ -1,5 +1,6 @@
 # Head
 
+- Stop replacing 0^X and 0/X with zero. If X is zero, then an error is the correct answer.
 - Inlined blanks are now returned as blanks not at zeros.
 - When extracting constants, now uses the integer numbers from one to ten that are defined as constants in the C runtime
 - Improved the annoying emergency bodge on array formulae extraction to interpret INDIRECTs within array formulae in more cases
