@@ -40,6 +40,7 @@ class InlineFormulaeAst
   
   # Should be of the form [:sheet_reference, sheet_name, reference]
   # FIXME: Can we rely on reference always being a [:cell, ref] at this stage?
+  # FIXME: NO! Because they won't be when they are used in EmergencyArrayFormulaReplaceIndirectBodge
   def sheet_reference(ast)
     return unless ast[2][0] == :cell
     sheet = ast[1].to_sym

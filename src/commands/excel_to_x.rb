@@ -661,10 +661,13 @@ class ExcelToX
     # FIXME: THIS IS THE MOST HORRIFIC BODGE. I HATE IT.
     emergency_indirect_replacement_bodge = EmergencyArrayFormulaReplaceIndirectBodge.new
     emergency_indirect_replacement_bodge.references = @values
+    emergency_indirect_replacement_bodge.tables = @tables
+    emergency_indirect_replacement_bodge.named_references = @named_references
     
     @formulae_array.each do |ref, details|
       @shared_string_replacer.map(details.last)
       emergency_indirect_replacement_bodge.current_sheet_name = ref.first
+      emergency_indirect_replacement_bodge.referring_cell = ref.last
       emergency_indirect_replacement_bodge.replace(details.last)
 
       named_reference_replacer.default_sheet_name = ref.first
@@ -853,7 +856,6 @@ class ExcelToX
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
     @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
 
-    #binding.pry
     cells.each do |ref, ast|
       begin
         @sheetless_cell_reference_replacer.worksheet = ref.first
@@ -942,8 +944,6 @@ class ExcelToX
       offset_replacement.count_replaced = 0
       indirect_replacement.count_replaced = 0
       references_that_need_updating = {}
-
-      #binding.pry
 
       @cells_with_formulae.each do |ref, ast|
         # FIXME: Shouldn't need to wrap ref.fist in an array
