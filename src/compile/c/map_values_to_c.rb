@@ -30,16 +30,7 @@ class MapValuesToC
   alias :null :blank
     
   def number(text)
-    n = case text
-    when /\./
-      text.to_f.to_s
-    when /e/i
-      text.to_f.to_s
-    else
-      text.to_i.to_s
-    end
-    
-    case n
+    case text.to_f
     when 0; "ZERO"
     when 1; "ONE"
     when 2; "TWO"
@@ -52,6 +43,14 @@ class MapValuesToC
     when 9; "NINE"
     when 10; "TEN"
     else   
+      n = case text
+      when /\./
+        text.to_f.to_s
+      when /e/i
+        text.to_f.to_s
+      else
+        text.to_i.to_s
+      end
       "new_excel_number(#{n})"
     end
   end
