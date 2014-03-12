@@ -946,22 +946,27 @@ class ExcelToX
       references_that_need_updating = {}
 
       @cells_with_formulae.each do |ref, ast|
-        # FIXME: Shouldn't need to wrap ref.fist in an array
-        inline_replacer.current_sheet_name = [ref.first]
-        inline_replacer.map(ast)
-        # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
-        value_replacer.map(ast)
-        column_and_row_function_replacement.current_reference = ref.last
-        if column_and_row_function_replacement.replace(ast)
-          references_that_need_updating[ref] = ast
+        begin
+          # FIXME: Shouldn't need to wrap ref.fist in an array
+          inline_replacer.current_sheet_name = [ref.first]
+          inline_replacer.map(ast)
+          # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
+          value_replacer.map(ast)
+          column_and_row_function_replacement.current_reference = ref.last
+          if column_and_row_function_replacement.replace(ast)
+            references_that_need_updating[ref] = ast
+          end
+          if offset_replacement.replace(ast)
+            references_that_need_updating[ref] = ast
+          end
+          if indirect_replacement.replace(ast)
+            references_that_need_updating[ref] = ast
+          end
+          @cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
+        rescue  Exception => e
+          log.fatal "Exception when replacing formulae with results in #{ref}: #{ast}"
+          raise
         end
-        if offset_replacement.replace(ast)
-          references_that_need_updating[ref] = ast
-        end
-        if indirect_replacement.replace(ast)
-          references_that_need_updating[ref] = ast
-        end
-        @cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
       end
 
       simplify(references_that_need_updating)
@@ -1048,8 +1053,13 @@ class ExcelToX
     r.references = @formulae
     r.inline_ast = inline_ast_decision
     @cells_with_formulae.each do |ref, ast|
-      r.current_sheet_name = [ref.first]
-      r.map(ast)
+      begin
+        r.current_sheet_name = [ref.first]
+        r.map(ast)
+      rescue  Exception => e
+        log.fatal "Exception when inlining formulae only used once in #{ref}: #{ast}"
+        raise
+      end
     end
   end
   
