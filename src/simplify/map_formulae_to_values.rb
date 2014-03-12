@@ -140,6 +140,27 @@ class MapFormulaeToValues
     ast.replace(formula_value( ast[1],*values))
   end
 
+  def map_if(ast)
+    condition_ast = ast[2]
+    true_option_ast = ast[3]
+    false_option_ast = ast[4] || [:boolean_false]
+
+    condition_value = value(condition_ast)
+    return if condition_value == :not_a_value
+
+    case condition_value
+    when Symbol
+      ast.replace(condition_ast)
+    when String
+      ast.replace([:error, :"#VALUE!"])
+    when false, 0
+      ast.replace(false_option_ast)
+    else
+      ast.replace(true_option_ast)
+    end
+    ast
+  end
+
   def map_right(ast)
     normal_function(ast, "")
   end

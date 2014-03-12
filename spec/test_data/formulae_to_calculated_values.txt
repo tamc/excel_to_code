@@ -67,15 +67,16 @@
 [:function, :PI]	[:number, 3.141592653589793]
 [:function, :COSH, [:number, 1]]	[:number, 1.5430806348152437]
 [:function, :IF,[:boolean_true],[:number, 1],[:number, 8]]	[:number, 1]
+[:function, :IF,[:boolean_true],[:blank],[:number, 8]]	[:blank]
+[:function, :IF,[:boolean_true], [:string,"Hello"]]	[:string, "Hello"]
+[:function, :IF, [:boolean_true], [:arithmetic, [:sheet_reference, :"G.40", [:cell, :J215]], [:operator, :-], [:sheet_reference, :"G.40", [:cell, :I215]]], [:sheet_reference, :"G.40", [:cell, :J274]]]	[:arithmetic, [:sheet_reference, :"G.40", [:cell, :J215]], [:operator, :-], [:sheet_reference, :"G.40", [:cell, :I215]]]
 [:function, :SUM, [:number, 1], [:number, 1], [:number, 1]]	[:number, 3]
 [:function, :COSH, [:arithmetic, [:number, 2], [:operator, :*], [:function, :PI]]]	[:number, 267.7467614837482]
-[:function, :IF,[:boolean_true], [:string,"Hello"]]	[:string, "Hello"]
 [:string_join, [:string, "Named"], [:string, "_"], [:string, "Reference"]]	 [:string, "Named_Reference"]
 [:function, :INDIRECT, [:string_join, [:string, "Named"], [:string, "_"], [:string, "Reference"]]]	[:function, :INDIRECT, [:string, "Named_Reference"]]
 [:function, :INDIRECT, [:string_join, [:string, "2007"], [:string, "!Year.Matrix"]]]	[:function, :INDIRECT, [:string, "2007!Year.Matrix"]]
 [:function, :SUM, [:array, [:row, [:boolean_true]], [:row, [:string, "Hello"]], [:row, [:number, 1]], [:row, [:number, 3.1415000000000002]], [:row, [:string, "Hello"]]]]	[:number, 4.141500000000001]
 [:function, :SUM, [:error, :"#NAME?"]]	[:error, :"#NAME?"]
-[:function, :IF,[:boolean_true],[:blank],[:number, 8]]	[:blank]
 
 # Edge cases
 [:prefix, "-", [:arithmetic, [:function, :INDEX, [:function, :INDIRECT, [:string_join, [:string, "2007"], [:string, "!Year.Matrix"]]], [:function, :MATCH, [:string, "Subtotal.Supply"], [:function, :INDIRECT, [:string_join, [:string, "2007"], [:string, "!Year.Modules"]]], [:number, 0]], [:function, :MATCH, [:string, "V.03"], [:function, :INDIRECT, [:string_join, [:string, "2007"], [:string, "!Year.Vectors"]]], [:number, 0]]], [:operator, :+], [:function, :INDEX, [:function, :INDIRECT, [:string_join, [:string, "2007"], [:string, "!Year.Matrix"]]], [:function, :MATCH, [:string, "Subtotal.Consumption"], [:function, :INDIRECT, [:string_join, [:string, "2007"], [:string, "!Year.Modules"]]], [:number, 0]], [:function, :MATCH, [:string, "V.03"], [:function, :INDIRECT, [:string_join, [:string, "2007"], [:string, "!Year.Vectors"]]], [:number, 0]]]]]	[:prefix, "-", [:arithmetic, [:function, :INDEX, [:function, :INDIRECT, [:string, "2007!Year.Matrix"]], [:function, :MATCH, [:string, "Subtotal.Supply"], [:function, :INDIRECT, [:string, "2007!Year.Modules"]], [:number, 0]], [:function, :MATCH, [:string, "V.03"], [:function, :INDIRECT, [:string, "2007!Year.Vectors"]], [:number, 0]]], [:operator, :+], [:function, :INDEX, [:function, :INDIRECT, [:string, "2007!Year.Matrix"]], [:function, :MATCH, [:string, "Subtotal.Consumption"], [:function, :INDIRECT, [:string, "2007!Year.Modules"]], [:number, 0]], [:function, :MATCH, [:string, "V.03"], [:function, :INDIRECT, [:string, "2007!Year.Vectors"]], [:number, 0]]]]]
