@@ -119,3 +119,8 @@
 
 # Combination of array and calcs
 [:function, :SUM, [:array, [:row, [:arithmetic, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string_join, [:string, "G.30.assumptions."], [:string, "Combustion"], [:string, "N2OEmissionsAfterEnergyEfficiency[Technology code]"]]]], [:operator, :*], [:sheet_reference, :"G.30 (data)", [:cell, :I3595]]]], [:row, [:arithmetic, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string_join, [:string, "G.30.assumptions."], [:string, "Combustion"], [:string, "N2OEmissionsAfterEnergyEfficiency[Technology code]"]]]], [:operator, :*], [:number, 1.0]]]]]	[:function, :SUM, [:array, [:row, [:arithmetic, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string, "G.30.assumptions.CombustionN2OEmissionsAfterEnergyEfficiency[Technology code]"]]], [:operator, :*], [:sheet_reference, :"G.30 (data)", [:cell, :I3595]]]], [:row, [:function, :ENSURE_IS_NUMBER, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string, "G.30.assumptions.CombustionN2OEmissionsAfterEnergyEfficiency[Technology code]"]]]]]]]
+
+# Partial mapping of SUM
+[:function, :SUM, [:array, [:row, [:multiply, [:cell, :A1], [:number, 10]]], [:row, [:number, 0]], [:row, [:number, 0]]], [:number, 0]]	[:function, :SUM, [:multiply, [:cell, :A1], [:number, 10]]]
+
+

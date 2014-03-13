@@ -1,5 +1,6 @@
 # Head
 
+- Improved the number of cases where SUM is partially eliminated
 - Now replaces IF statements at compile time if the condition can be evaluated
 - Stop replacing 0^X and 0/X with zero. If X is zero, then an error is the correct answer.
 - Inlined blanks are now returned as blanks not at zeros.

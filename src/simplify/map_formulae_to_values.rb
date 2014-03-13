@@ -294,17 +294,29 @@ class MapFormulaeToValues
     not_number_array = []
     case ast.first
     when :array
+      array_total = 0
+      array_not_numbers = []
+      # First we just have a go at splitting the array into a list of numbers
+      # and not numbers.
       array_as_values(ast).each do |row|
         row.each do |c|
           result = filter_numbers_and_not(c)
-          # We only replace the ast if what remains is straightforward links
-          if result.last.all? { |r| [:cell, :area, :sheet_reference].include?(r.first)}
-            number_total += result.first
-            not_number_array.concat(result.last)
-          else
-            return [0, [ast]]
-          end
+          array_total += result.first
+          array_not_numbers.concat(result.last)
         end
+      end
+      # If there are no not_numbers, or only one, we are good
+      if array_not_numbers.length <= 1
+        number_total += array_total
+        not_number_array.concat(array_not_numbers)
+      # If there are more than on not_numbers we aren't neccessarily good
+      # unless all those not numbers are simple
+      elsif array_not_numbers.all? { |c| [:cell, :area, :sheet_reference].include?(c.first)}
+        number_total += array_total
+        not_number_array.concat(array_not_numbers)
+      # Otherwise, leave that array alone
+      else
+        not_number_array.push(ast)
       end
     when :blank, :number, :percentage, :string, :boolean_true, :boolean_false
       number = @calculator.number_argument(value(ast))
