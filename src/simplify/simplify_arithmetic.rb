@@ -9,7 +9,9 @@ class SimplifyArithmeticAst
 
   def simplify_arithmetic(ast)
     return ast unless ast.is_a?(Array)
-    ast.each { |a| simplify_arithmetic(a) }
+    ast.each do |a| 
+      simplify_arithmetic(a) if a.is_a?(Array)
+    end
     case ast[0]
     when :arithmetic; arithmetic(ast)
     when :brackets; @brackets_to_remove << ast
