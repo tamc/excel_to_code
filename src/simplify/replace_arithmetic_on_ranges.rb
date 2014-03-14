@@ -14,7 +14,6 @@ class ReplaceArithmeticOnRangesAst
     # Three different options, array on the left, array on the right, or both
     # array on the left first
     if left.first == :array && right.first != :array
-      map(right)
       ast.replace(
         array_map(left) do |cell|
           [:comparison, map(cell), operator, right]
@@ -23,7 +22,6 @@ class ReplaceArithmeticOnRangesAst
 
     # array on the right next
     elsif left.first != :array && right.first == :array
-      map(left)
       ast.replace(
         array_map(right) do |cell|
           [:comparison, left, operator, map(cell)]
@@ -49,9 +47,6 @@ class ReplaceArithmeticOnRangesAst
           end
         end
       )
-    else
-      map(left)
-      map(right)
     end
   end
 
@@ -64,7 +59,6 @@ class ReplaceArithmeticOnRangesAst
     # Three different options, array on the left, array on the right, or both
     # array on the left first
     if left.first == :array && right.first != :array
-      map(right)
       ast.replace(
         array_map(left) do |cell|
           [:arithmetic, map(cell), operator, right]
@@ -73,7 +67,6 @@ class ReplaceArithmeticOnRangesAst
 
     # array on the right next
     elsif left.first != :array && right.first == :array
-      map(left)
       ast.replace(
         array_map(right) do |cell|
           [:arithmetic, left, operator, map(cell)]
@@ -99,9 +92,6 @@ class ReplaceArithmeticOnRangesAst
           end
         end
       )
-    else
-      map(left)
-      map(right)
     end
   end
 
