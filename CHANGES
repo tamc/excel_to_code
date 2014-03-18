@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.19 - 2013 March 18th
+
 - Fixed a bug in ReplaceArithmeticOnRangesAst where there was too much mapping going on
 - Improved the number of cases where SUM is partially eliminated
 - Now replaces IF statements at compile time if the condition can be evaluated

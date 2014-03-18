@@ -2,7 +2,6 @@
 require 'fileutils'
 require 'logger'
 require_relative '../excel_to_code'
-require 'pry'
 
 # FIXME: Correct case for all worksheet references
 # FIXME: Correct case and $ stripping from all cell references
