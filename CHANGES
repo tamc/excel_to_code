@@ -1,5 +1,7 @@
 # Head
 
+- Added an ExcelToTest class which generates a test file for a worksheet, but not the underlying code.
+
 # 0.2.19 - 2013 March 18th
 
 - Fixed a bug in ReplaceArithmeticOnRangesAst where there was too much mapping going on
