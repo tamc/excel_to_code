@@ -16,6 +16,13 @@ describe "ExcelFunctions: = less_than?()" do
     FunctionTest.less_than?(false,false).should == false
   end
 
+  it "should check the equality of inputs of different types" do
+    FunctionTest.less_than?(1,"hello").should == true
+    FunctionTest.less_than?("hello", true).should == true
+    FunctionTest.less_than?(true,"hello").should == false
+    FunctionTest.less_than?("hello", 1).should == false
+  end
+
   it "should check the equality of strings, ignoring case" do
     FunctionTest.less_than?("HELLO","world").should == true
     FunctionTest.less_than?("HELLO","hello").should == false

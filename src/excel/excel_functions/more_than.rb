@@ -10,16 +10,33 @@ module ExcelFunctions
     
     a = 0 if a == nil
     b = 0 if b == nil
-    
+
     case a
     when String
-      a.downcase > b.downcase
-    when TrueClass, FalseClass
-      a = a ? 1 : 0
-      b = b ? 1 : 0 if (b.is_a?(TrueClass) || b.is_a?(FalseClass))
-      a > b
-    else
-      a > b
+      case b
+      when String
+        a.downcase > b.downcase
+      when Numeric
+        true
+      when TrueClass, FalseClass
+        false
+      end
+    when TrueClass
+      !b.is_a?(TrueClass)
+    when FalseClass
+      case b
+      when TrueClass, FalseClass
+        false
+      else
+        true
+      end
+    when Numeric
+      case b
+      when Numeric
+        a > b
+      else 
+        false
+      end
     end
   end
   

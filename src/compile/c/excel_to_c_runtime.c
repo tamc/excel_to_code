@@ -1066,113 +1066,174 @@ static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
 	return value;
 }
 
+// Order is TRUE, FALSE, String, Number; Blank is zero
 static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
-	CHECK_FOR_PASSED_ERROR(a_v)
-	CHECK_FOR_PASSED_ERROR(b_v)
+  CHECK_FOR_PASSED_ERROR(a_v)
+  CHECK_FOR_PASSED_ERROR(b_v)
 
-	switch (a_v.type) {
-  	  case ExcelNumber:
-	  case ExcelBoolean: 
-	  case ExcelEmpty:
-		if((b_v.type == ExcelNumber) || (b_v.type == ExcelBoolean) || (b_v.type == ExcelEmpty)) {
-			if(a_v.number <= b_v.number) return FALSE;
-			return TRUE;
-		} 
-		return FALSE;
-	  case ExcelString:
-	  	if(b_v.type == ExcelString) {
-		  	if(strcasecmp(a_v.string,b_v.string) <= 0 ) return FALSE;
-			return TRUE;	  		
-		}
-		return FALSE;
-  	  case ExcelError:
-		return a_v;
-  	  case ExcelRange:
-  		return NA;
-  }
-  return FALSE;
+  if(a_v.type == ExcelEmpty) { a_v = ZERO; }
+  if(b_v.type == ExcelEmpty) { b_v = ZERO; }
+
+  switch (a_v.type) {
+    case ExcelString:
+      switch (b_v.type) {
+        case ExcelString:
+          if(strcasecmp(a_v.string,b_v.string) <= 0 ) {return FALSE;} else {return TRUE;} 
+        case ExcelNumber: 
+          return TRUE;
+        case ExcelBoolean:
+          return FALSE;
+        // Following shouldn't happen
+        case ExcelEmpty: 
+        case ExcelError: 
+        case ExcelRange:
+          return NA;
+      }
+    case ExcelBoolean: 
+      switch (b_v.type) {
+        case ExcelBoolean:
+          if(a_v.number == true) {
+            if (b_v.number == true) { return FALSE; } else { return TRUE; }
+          } else { // a_v == FALSE
+            return FALSE;
+          }
+        case ExcelString:
+        case ExcelNumber: 
+          return TRUE;
+        // Following shouldn't happen
+        case ExcelEmpty: 
+        case ExcelError: 
+        case ExcelRange:
+          return NA;
+      }
+    case ExcelNumber:
+      switch (b_v.type) {
+        case ExcelNumber:
+          if(a_v.number > b_v.number) { return TRUE; } else { return FALSE; }
+        case ExcelString:
+        case ExcelBoolean:
+          return FALSE;
+        // Following shouldn't happen
+        case ExcelEmpty: 
+        case ExcelError: 
+        case ExcelRange:
+          return NA;
+      }
+    // Following shouldn't happen
+    case ExcelEmpty: 
+    case ExcelError: 
+    case ExcelRange:
+      return NA;
+  } 
+  // Shouldn't reach here
+  return NA;
 }
 
 static ExcelValue more_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
-	CHECK_FOR_PASSED_ERROR(a_v)
-	CHECK_FOR_PASSED_ERROR(b_v)
-
-	switch (a_v.type) {
-  	  case ExcelNumber:
-	  case ExcelBoolean: 
-	  case ExcelEmpty:
-		if((b_v.type == ExcelNumber) || (b_v.type == ExcelBoolean) || (b_v.type == ExcelEmpty)) {
-			if(a_v.number < b_v.number) return FALSE;
-			return TRUE;
-		} 
-		return FALSE;
-	  case ExcelString:
-	  	if(b_v.type == ExcelString) {
-		  	if(strcasecmp(a_v.string,b_v.string) < 0 ) return FALSE;
-			return TRUE;	  		
-		}
-		return FALSE;
-  	  case ExcelError:
-		return a_v;
-  	  case ExcelRange:
-  		return NA;
+  ExcelValue opposite = less_than(a_v, b_v);
+  switch (opposite.type) {
+    case ExcelBoolean:
+      if(opposite.number == true) { return FALSE; } else { return TRUE; }
+    case ExcelError:
+      return opposite;
+    // Shouldn't reach below
+    case ExcelNumber:
+    case ExcelString:
+    case ExcelEmpty:
+    case ExcelRange:
+      return NA;
   }
-  return FALSE;
 }
 
-
+// Order is TRUE, FALSE, String, Number; Blank is zero
 static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
 
+  if(a_v.type == ExcelEmpty) { a_v = ZERO; }
+  if(b_v.type == ExcelEmpty) { b_v = ZERO; }
+
 	switch (a_v.type) {
-  	  case ExcelNumber:
-	  case ExcelBoolean: 
-	  case ExcelEmpty:
-		if((b_v.type == ExcelNumber) || (b_v.type == ExcelBoolean) || (b_v.type == ExcelEmpty)) {
-			if(a_v.number >= b_v.number) return FALSE;
-			return TRUE;
-		} 
-		return FALSE;
-	  case ExcelString:
-	  	if(b_v.type == ExcelString) {
-		  	if(strcasecmp(a_v.string,b_v.string) >= 0 ) return FALSE;
-			return TRUE;	  		
-		}
-		return FALSE;
-  	  case ExcelError:
-		return a_v;
-  	  case ExcelRange:
-  		return NA;
+    case ExcelString:
+      switch (b_v.type) {
+        case ExcelString:
+          if(strcasecmp(a_v.string, b_v.string) >= 0 )  {
+            return FALSE;
+          } else {
+            return TRUE;
+          }
+        case ExcelNumber:
+          return FALSE;
+        case ExcelBoolean:
+          return TRUE;
+        // The following shouldn't happen
+        // FIXME: Should abort if it does
+        case ExcelError:
+        case ExcelRange:
+        case ExcelEmpty:
+          return NA;
+      }
+  	case ExcelNumber:
+      switch(b_v.type) {
+        case ExcelNumber:
+          if(a_v.number < b_v.number) {
+            return TRUE;
+          } else {
+            return FALSE;
+          }
+        case ExcelBoolean:
+        case ExcelString:
+          return TRUE;
+        // The following shouldn't happen
+        // FIXME: Should abort if it does
+        case ExcelError:
+        case ExcelRange:
+        case ExcelEmpty:
+          return NA;
+      }
+    case ExcelBoolean:
+      switch(b_v.type) {
+        case ExcelBoolean: 
+          if(a_v.number == true) {
+            return FALSE;
+          } else { // a_v.number == false
+            if(b_v.number == true) {return TRUE;} else {return FALSE;}
+          }
+        case ExcelString:
+        case ExcelNumber:
+          return FALSE;
+        // The following shouldn't happen
+        // FIXME: Should abort if it does
+        case ExcelError:
+        case ExcelRange:
+        case ExcelEmpty:
+          return NA;
+      }
+    // The following shouldn't happen
+    // FIXME: Should abort if it does
+    case ExcelError:
+    case ExcelRange:
+    case ExcelEmpty:
+      return VALUE;
   }
-  return FALSE;
+  // Shouldn't reach here
+  return NA;
 }
 
 static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v) {
-	CHECK_FOR_PASSED_ERROR(a_v)
-	CHECK_FOR_PASSED_ERROR(b_v)
-
-	switch (a_v.type) {
-  	  case ExcelNumber:
-	  case ExcelBoolean: 
-	  case ExcelEmpty:
-		if((b_v.type == ExcelNumber) || (b_v.type == ExcelBoolean) || (b_v.type == ExcelEmpty)) {
-			if(a_v.number > b_v.number) return FALSE;
-			return TRUE;
-		} 
-		return FALSE;
-	  case ExcelString:
-	  	if(b_v.type == ExcelString) {
-		  	if(strcasecmp(a_v.string,b_v.string) > 0 ) return FALSE;
-			return TRUE;	  		
-		}
-		return FALSE;
-  	  case ExcelError:
-		return a_v;
-  	  case ExcelRange:
-  		return NA;
+  ExcelValue opposite = more_than(a_v, b_v);
+  switch (opposite.type) {
+    case ExcelBoolean:
+      if(opposite.number == true) { return FALSE; } else { return TRUE; }
+    case ExcelError:
+      return opposite;
+    // Shouldn't reach below
+    case ExcelNumber:
+    case ExcelString:
+    case ExcelEmpty:
+    case ExcelRange:
+      return VALUE;
   }
-  return FALSE;
 }
 
 static ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {

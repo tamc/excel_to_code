@@ -29,6 +29,13 @@ describe "ExcelFunctions: = more_than_or_equal?()" do
     FunctionTest.more_than_or_equal?(-1,nil).should == false
   end
 
+  it "should check the equality of inputs of different types" do
+    FunctionTest.more_than?(true,"hello").should == true
+    FunctionTest.more_than?("hello", 1).should == true
+    FunctionTest.more_than?(1,"hello").should == false
+    FunctionTest.more_than?("hello", true).should == false
+  end
+
   # it "should be able to check arrays" do
   #   FunctionTest.more_than_or_equal?([[1,2],[3,4]],2).should == [[false,true],[true,true]]
   #   FunctionTest.more_than_or_equal?(2,[[1,2],[3,4]]).should == [[true,true],[false,false]]

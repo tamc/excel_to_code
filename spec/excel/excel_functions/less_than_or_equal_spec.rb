@@ -20,6 +20,13 @@ describe "ExcelFunctions: = less_than_or_equal?()" do
     FunctionTest.less_than_or_equal?("HELLO","world").should == true
     FunctionTest.less_than_or_equal?("HELLO","hello").should == true
   end
+
+  it "should check the equality of inputs of different types" do
+    FunctionTest.less_than_or_equal?(1,"hello").should == true
+    FunctionTest.less_than_or_equal?("hello", true).should == true
+    FunctionTest.less_than_or_equal?(true,"hello").should == false
+    FunctionTest.less_than_or_equal?("hello", 1).should == false
+  end
   
   it "should treat nil values as zero" do
     FunctionTest.less_than_or_equal?(nil,0).should == true

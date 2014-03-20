@@ -13,13 +13,27 @@ module ExcelFunctions
     
     case a
     when String
-      a.downcase < b.downcase
-    when TrueClass, FalseClass
-      a = a ? 1 : 0
-      b = b ? 1 : 0 if (b.is_a?(TrueClass) || b.is_a?(FalseClass))
-      a < b
-    else
-      a < b
+      case b
+      when String
+        a.downcase < b.downcase
+      when Numeric
+        false
+      when TrueClass, FalseClass
+        true
+      end
+    when TrueClass
+      false
+    when FalseClass
+      b.is_a?(TrueClass)
+    when Numeric
+      case b
+      when Numeric
+        a < b
+      when String
+        true
+      when TrueClass, FalseClass
+        true
+      end
     end
   end
   

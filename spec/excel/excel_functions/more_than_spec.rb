@@ -8,6 +8,13 @@ describe "ExcelFunctions: = more_than?()" do
     FunctionTest.more_than?(1,0).should == true
     FunctionTest.more_than?(1.0,1).should == false
   end
+
+  it "should check the equality of inputs of different types" do
+    FunctionTest.more_than?(true,"hello").should == true
+    FunctionTest.more_than?("hello", 1).should == true
+    FunctionTest.more_than?(1,"hello").should == false
+    FunctionTest.more_than?("hello", true).should == false
+  end
   
   it "should check the equality of booleans" do
     FunctionTest.more_than?(false,false).should == false

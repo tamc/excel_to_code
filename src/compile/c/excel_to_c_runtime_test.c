@@ -154,6 +154,13 @@ int test_functions() {
   assert(more_than(BLANK,new_excel_number(-1)).number == true);
   assert(more_than(ONE,BLANK).number == true);
   assert(more_than(new_excel_number(-1),BLANK).number == false);
+  // .. of different types
+  assert(more_than(TRUE,new_excel_string("Hello")).number == true);
+  assert(more_than(FALSE,new_excel_string("Hello")).number == true);
+  assert(more_than(new_excel_string("Hello"), ONE).number == true);
+  assert(more_than(ONE,new_excel_string("Hello")).number == false);
+  assert(more_than(new_excel_string("Hello"), TRUE).number == false);
+  assert(more_than(new_excel_string("Hello"), FALSE).number == false);
 
   // Test less than on
   // .. numbers
@@ -174,6 +181,13 @@ int test_functions() {
   assert(less_than(BLANK,new_excel_number(-1)).number == false);
   assert(less_than(ONE,BLANK).number == false);
   assert(less_than(new_excel_number(-1),BLANK).number == true);
+  // .. of different types
+  assert(less_than(TRUE,new_excel_string("Hello")).number == false);
+  assert(less_than(FALSE,new_excel_string("Hello")).number == false);
+  assert(less_than(new_excel_string("Hello"), ONE).number == false);
+  assert(less_than(ONE,new_excel_string("Hello")).number == true);
+  assert(less_than(new_excel_string("Hello"), TRUE).number == true);
+  assert(less_than(new_excel_string("Hello"), FALSE).number == true);
 
   // Test FIND function
   // ... should find the first occurrence of one string in another, returning :value if the string doesn't match
