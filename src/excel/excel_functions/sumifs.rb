@@ -5,6 +5,12 @@ module ExcelFunctions
     range = [range] unless range.is_a?(Array)
     range = range.flatten
     
+    indexes = _filtered_range_indexes(range, *criteria)
+    return indexes if indexes.is_a?(Symbol)
+    range.values_at(*indexes)
+  end
+
+  def _filtered_range_indexes(range, *criteria)
     # Sort out the criteria
     0.step(criteria.length-1,2).each do |i|
       if criteria[i].is_a?(Array)
@@ -59,7 +65,7 @@ module ExcelFunctions
         break unless pass
       end # criteria loop
       
-      filtered << potential if pass
+      filtered << index if pass
     end
 
     return filtered

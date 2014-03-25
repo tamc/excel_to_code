@@ -123,4 +123,5 @@
 # Partial mapping of SUM
 [:function, :SUM, [:array, [:row, [:multiply, [:cell, :A1], [:number, 10]]], [:row, [:number, 0]], [:row, [:number, 0]]], [:number, 0]]	[:function, :SUM, [:multiply, [:cell, :A1], [:number, 10]]]
 
-
+# Partially map SUMIFS if only some criteria provided
+[:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "A"]], [:row, [:string, "B"]]], [:string, "B"], [:array, [:row, [:cell, :B1]], [:row, [:cell, :B2]]], [:cell, :Z10]]	[:function, :SUMIFS, [:array, [:row, [:cell, :A2]]], [:array, [:row, [:cell, :B2]]], [:cell, :Z10]]

@@ -181,12 +181,15 @@ class MapFormulaeToValues
     normal_function(ast,nil)
   end
 
+  OK_CHECK_RANGE_TYPES = [:sheet_reference, :cell, :area, :array, :number, :string, :boolean_true, :boolean_false]
+
   def map_sumifs(ast)
     values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
-    return if values.any? { |a| a == :not_a_value }
-    return unless [:sheet_reference, :cell, :area, :array, :number, :string, :boolean_true, :boolean_false].include?(ast[2].first)
+    return if values.all? { |a| a == :not_a_value } # Nothing to be done
+    return attempt_to_reduce_sumifs(ast) if values.any? { |a| a == :not_a_value } # Maybe a reduction to be done
+    return unless OK_CHECK_RANGE_TYPES.include?(ast[2].first)
     sum_value = value(ast[2])
-    if sum_value == :not_a_value
+    if sum_value == :not_a_value # i.e., a sheet_reference, :cell or :area
       partially_map_sumifs(ast)
     else
       ast.replace(formula_value( ast[1], sum_value, *values))
@@ -195,26 +198,53 @@ class MapFormulaeToValues
 
   def partially_map_sumifs(ast)
     values = ast[3..-1].map.with_index { |a,i| value(a, (i % 2) == 0 ? 0 : nil ) }
-    sum_range = []
-    if ast[2].first == :array
-      ast[2].each do |row|
-        next if row.is_a?(Symbol)
-        row.each do |cell|
-          next if cell.is_a?(Symbol)
-          sum_range << cell
-        end
-      end
+    sum_range = array_as_values(ast[2]).flatten(1)
+    indexes = @calculator._filtered_range_indexes(sum_range, *values)
+    if indexes.is_a?(Symbol)
+      new_ast = value(filtered_range)
     else
-      sum_range = [ast[2]]
+      new_ast = [:function, :SUM, *sum_range.values_at(*indexes)]
     end
-    sum_range_indexes = 0.upto(sum_range.length-1).to_a
-    filtered_range = @calculator._filtered_range(sum_range_indexes, *values)
-    if filtered_range.is_a?(Symbol)
-      ast.replace(value(filtered_range))
-    else
-      ast.replace([:function, :SUM, *sum_range.values_at(*filtered_range)])
+    if new_ast != ast
+      @replacements_made_in_the_last_pass += 1
+      ast.replace(new_ast)
     end
   end
+
+  # FIXME: Ends up making everything single column. Is that ok?!
+  def attempt_to_reduce_sumifs(ast)
+    return unless OK_CHECK_RANGE_TYPES.include?(ast[2].first)
+    # First combine into a series of checks
+    criteria_that_can_be_resolved = []
+    criteria_that_cant_be_resolved = []
+    ast[3..-1].each_slice(2) do |check|
+      # Give up unless we have something that can actually be used
+      return unless OK_CHECK_RANGE_TYPES.include?(check[0].first)
+      return unless OK_CHECK_RANGE_TYPES.include?(check[1].first)
+      check_range_value = value(check[0])
+      check_criteria_value = value(check[1])
+      if check_range_value == :not_a_value || check_criteria_value == :not_a_value
+        criteria_that_cant_be_resolved << check
+      else
+        criteria_that_can_be_resolved << [check_range_value, check_criteria_value]
+      end
+    end
+    return if criteria_that_can_be_resolved.empty?
+    sum_range = array_as_values(ast[2]).flatten(1)
+    indexes = @calculator._filtered_range_indexes(sum_range, *criteria_that_can_be_resolved.flatten(1))
+    return if indexes.is_a?(Symbol)
+    new_ast = [:function, :SUMIFS]
+    new_ast << ast_for_array(sum_range.values_at(*indexes))
+    criteria_that_cant_be_resolved.each do |check|
+      new_ast << ast_for_array(array_as_values(check.first).flatten(1).values_at(*indexes))
+      new_ast << check.last
+    end
+    if new_ast != ast
+      @replacements_made_in_the_last_pass += 1
+      ast.replace(new_ast)
+    end
+  end
+
 
   # [:function, "COUNT", range]
   def map_count(ast)
@@ -274,17 +304,32 @@ class MapFormulaeToValues
       not_number_array.concat(result.last)
     end
     if number_total == 0 && not_number_array.empty?
-      ast.replace([:number, number_total])
+      new_ast = [:number, number_total]
+      if new_ast != ast
+        @replacements_made_in_the_last_pass += 1
+        ast.replace(new_ast)
+      end
     # FIXME: Will I be haunted by this? What if doing a sum of something that isn't a number
     # and so what is expected is a VALUE error?. YES. This doesn't work well.
     elsif ast.length == 3 && [:cell, :sheet_reference].include?(ast[2].first)
-      ast.replace(n(ast[2]))
+      new_ast = n(ast[2])
+      if new_ast != ast
+        @replacements_made_in_the_last_pass += 1
+        ast.replace(new_ast)
+      end
     elsif ast.length == 3 && ast[2][0] == :function && ast[2][1] == :ENSURE_IS_NUMBER
-      ast.replace(ast[2])
+      new_ast = ast[2]
+      if new_ast != ast
+        @replacements_made_in_the_last_pass += 1
+        ast.replace(new_ast)
+      end
     else
       new_ast = [:function, :SUM].concat(not_number_array)
       new_ast.push([:number, number_total]) unless number_total == 0
-      ast.replace(new_ast)
+      if new_ast != ast
+        @replacements_made_in_the_last_pass += 1
+        ast.replace(new_ast)
+      end
     end
     ast
   end
@@ -344,6 +389,11 @@ class MapFormulaeToValues
     else
       nil
     end
+  end
+
+  # FIXME: Assumes single column. Not wise?
+  def ast_for_array(array)
+    [:array,*array.map { |row| [:row, row ]}]
   end
 
   ERRORS = {
