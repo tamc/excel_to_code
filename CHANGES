@@ -1,5 +1,6 @@
 # Head
 
+- Removed redundant ReplaceFormulaeWithCalculatedValues class and test - The underlying MapFormulaeToValues class is now used directly
 - Fixed comparisons to be able to compare values of different types (e.g., true is always greater than String in Excel)
 - Added an ExcelToTest class which generates a test file for a worksheet, but not the underlying code.
 
