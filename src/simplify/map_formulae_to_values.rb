@@ -220,7 +220,6 @@ class MapFormulaeToValues
     ast[3..-1].each_slice(2) do |check|
       # Give up unless we have something that can actually be used
       return unless OK_CHECK_RANGE_TYPES.include?(check[0].first)
-      return unless OK_CHECK_RANGE_TYPES.include?(check[1].first)
       check_range_value = value(check[0])
       check_criteria_value = value(check[1])
       if check_range_value == :not_a_value || check_criteria_value == :not_a_value
@@ -232,12 +231,17 @@ class MapFormulaeToValues
     return if criteria_that_can_be_resolved.empty?
     sum_range = array_as_values(ast[2]).flatten(1)
     indexes = @calculator._filtered_range_indexes(sum_range, *criteria_that_can_be_resolved.flatten(1))
-    return if indexes.is_a?(Symbol)
-    new_ast = [:function, :SUMIFS]
-    new_ast << ast_for_array(sum_range.values_at(*indexes))
-    criteria_that_cant_be_resolved.each do |check|
-      new_ast << ast_for_array(array_as_values(check.first).flatten(1).values_at(*indexes))
-      new_ast << check.last
+    if indexes.is_a?(Symbol)
+      return
+    elsif indexes.empty?
+      new_ast = [:number, 0]
+    else
+      new_ast = [:function, :SUMIFS]
+      new_ast << ast_for_array(sum_range.values_at(*indexes))
+      criteria_that_cant_be_resolved.each do |check|
+        new_ast << ast_for_array(array_as_values(check.first).flatten(1).values_at(*indexes))
+        new_ast << check.last
+      end
     end
     if new_ast != ast
       @replacements_made_in_the_last_pass += 1
