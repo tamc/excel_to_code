@@ -1,9 +1,11 @@
 # Head
 
+# 0.2.20 - 2013 March 31st
+
 - Attempts to simplify some SUMIFS statements, even if they can't be calculated entirely at compile time
 - Removed redundant ReplaceFormulaeWithCalculatedValues class and test - The underlying MapFormulaeToValues class is now used directly
 - Fixed comparisons to be able to compare values of different types (e.g., true is always greater than String in Excel)
-- Added an ExcelToTest class which generates a test file for a worksheet, but not the underlying code.
+- Added an ExcelToTest class which generates a test file for a workbook, but does not generate the code to implement the workbook.
 
 # 0.2.19 - 2013 March 18th
 
