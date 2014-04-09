@@ -4,7 +4,6 @@ require_relative '../src/excel_to_code'
 
 command = ExcelToC.new
 
-#FIXME: Add a version option
 opts = OptionParser.new do |opts|
   opts.banner = <<-END
 
@@ -20,18 +19,15 @@ END
   opts.separator ""
   opts.separator "Specific options:"
   
-  opts.on('-s','--settable WORKSHEET','Make it possible to set the values of cells in this worksheet at runtime. By default no values are settable.') do |sheet|
-    command.cells_that_can_be_set_at_runtime = { sheet => :all }
+  opts.on('-v','--version', 'Prints the version number of this code') do 
+    puts ExcelToCode.version
+    exit
   end
 
   opts.on('-o','--output-name NAME','Filename to give to c version of code (and associated ruby interface). Defaults to a folder with the same name as the excel file.') do |name|
     command.output_name = name
   end
-  
-  opts.on('-p','--prune-except WORKSHEET',"Remove all cells except those on this worksheet, or that are required to calculate values on that worksheet. By default keeps all cells.") do |sheet|
-    command.cells_to_keep = { sheet => :all }
-  end
-  
+
   opts.on('-c','--compile',"Compile the generated code (where relevant)") do
     command.actually_compile_code = true
   end
@@ -39,15 +35,20 @@ END
   opts.on('-r','--run-tests',"Compile the generated code and then run the tests") do
     command.actually_run_tests = true
   end
+
+  opts.on('-n','--named-references',"Transfer named references from spreadsheet to generated code") do
+    command.named_references_that_can_be_set_at_runtime = :where_possible
+    command.named_references_to_keep = :all
+  end
+
+  opts.on('-s','--settable WORKSHEET','Make it possible to set the values of cells in this worksheet at runtime. By default no values are settable.') do |sheet|
+    command.cells_that_can_be_set_at_runtime = { sheet => :all }
+  end
+
+  opts.on('-p','--prune-except WORKSHEET',"Remove all cells except those on this worksheet, or that are required to calculate values on that worksheet. By default keeps all cells.") do |sheet|
+    command.cells_to_keep = { sheet => :all }
+  end
   
-  opts.on('--sloppy-tests',"The generated tests treat blanks and zeros as equivalent and only require numbers to be approximately the same. This is the default.") do
-    command.sloppy_tests = true
-  end
-
-  opts.on('--precise-tests',"The generated tests treat blanks and zeros as different and requires numbers to be exactly the same.") do
-    command.sloppy_tests = false
-  end
-
   opts.on('--isolate WORKSHEET', "Only performs translation and optimiation of that one worksheet. Useful for debugging an incorrect translation of a large worksheet") do |sheet|
     command.isolate = sheet
   end
