@@ -540,7 +540,14 @@ class ExcelToX
   def transfer_named_references_to_keep_into_cells_to_keep
     log.info "Transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
-    @named_references_to_keep = @named_references.keys if @named_references_to_keep == :all
+    if @named_references_to_keep == :all
+      @named_references_to_keep = @named_references.keys 
+      # If the user has specified named_references_to_keep == :all, but there are none, fall back
+      if @named_references_to_keep.empty?
+        log.warn "named_references_to_keep == :all, but no named references found"
+        return
+      end
+    end
     @cells_to_keep ||= {}
     @named_references_to_keep.each do |name|
       ref = @named_references[name]
