@@ -482,6 +482,9 @@ int test_functions() {
   ExcelValue sumifs_array_9[] = { new_excel_number(10), new_excel_string("10.0")};
   assert(sumifs(new_excel_number(100),2,sumifs_array_9).number == 100);
 
+  ExcelValue sumifs_array_9b[] = { new_excel_string("10"), new_excel_number(10.0)};
+  assert(sumifs(new_excel_number(100),2,sumifs_array_9b).number == 100);
+
   ExcelValue sumifs_array_10[] = { sumifs_array_4_v, new_excel_string("CO2"), sumifs_array_5_v, new_excel_number(2)};
   assert(sumifs(sumifs_array_3_v,4, sumifs_array_10).number == 0);
 

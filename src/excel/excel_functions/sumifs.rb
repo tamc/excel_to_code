@@ -37,7 +37,14 @@ module ExcelFunctions
 
         pass = case check_value
         when String
-          check_value.downcase == required_value.to_s.downcase
+          case required_value
+          when String
+            check_value.downcase == required_value.downcase
+          when Numeric
+            check_value.to_f == required_value.to_f
+          else
+            check_value.downcase == required_value.to_s.downcase
+          end
         when true, false
           check_value == required_value
         when nil
