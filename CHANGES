@@ -1,5 +1,6 @@
 # Head
 
+- Fix ruby version of SUMIFS to match number criteria against string check values (already fixed in C version)
 - bin/excel_to_c and bin/excel_to_ruby options changed and added -n option to keep named references
 - default behaviour when named_references_to_keep = :all but no named references is then to keep all cells
 
