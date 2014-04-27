@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.22 - 2014 April 27th
+
 - Implemented a reset method in the ruby code so can perform repeated calculations on the same instance (already implemented in the generated C code)
 - Added named references to generated ruby code (already implemented in generated C code)
 - Added settting to allow the inline_formulae_that_are_only_used_once method to be skipped
