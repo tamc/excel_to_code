@@ -1,5 +1,7 @@
 # Head
 
+- Added settting to allow the inline_formulae_that_are_only_used_once method to be skipped
+
 # 0.2.21 - 2014 April 27th
 
 - Fix ruby version of SUMIFS to match number criteria against string check values (already fixed in C version)

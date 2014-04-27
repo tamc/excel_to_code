@@ -87,21 +87,27 @@ class ExcelToX
 
   # Optional attribute. Boolean. 
   #   * true - the generated tests are run
-  #   * false - the generated tests are not run
+  #   * false (default) - the generated tests are not run
   attr_accessor :actually_run_tests
   
   # This is the log file, if set it needs to respond to the same methods as the standard logger library
   attr_accessor :log
 
-  # Optional attribute. Boolean. Default true.
-  #   * true - empty cells and zeros are treated as being equivalent in tests. Numbers greater then 1 are only expected to match with assert_in_epsilon, numbers less than 1 are only expected to match with assert_in_delta
+  # Optional attribute. Boolean.
+  #   * true (default) - empty cells and zeros are treated as being equivalent in tests. Numbers greater then 1 are only expected to match with assert_in_epsilon, numbers less than 1 are only expected to match with assert_in_delta
   #   * false - empty cells and zeros are treated as being different in tests. Numbers must match to full accuracy.
   attr_accessor :sloppy_tests
 
-  # Optional attribute, Boolean. Default true
-  #   * true - the compiler attempts to extract bits of calculation that appear in more than one formula into separate methods. This should increase performance
+  # Optional attribute, Boolean.
+  #   * true (default) - the compiler attempts to inline any calculation that is done in another cell, but only referred to by this cell. This should increase performance
+  #   * false - the compiler leaves calculations in their original cells expanded. This may make debugging easier
+  attr_accessor :should_inline_formulae_that_are_only_used_once
+  
+  # Optional attribute, Boolean.
+  #   * true (default) - the compiler attempts to extract bits of calculation that appear in more than one formula into separate methods. This should increase performance
   #   * false - the compiler leaves calculations fully expanded. This may make debugging easier
   attr_accessor :extract_repeated_parts_of_formulae
+
 
   # Optional attribute, Array. Default nil
   # This is used to help debug large spreadsheets that aren't working correctly.
@@ -189,7 +195,7 @@ class ExcelToX
     filter_named_references
 
     replace_formulae_with_their_results
-    inline_formulae_that_are_only_used_once
+    inline_formulae_that_are_only_used_once if should_inline_formulae_that_are_only_used_once
     remove_any_cells_not_needed_for_outputs
     separate_formulae_elements if extract_repeated_parts_of_formulae
     replace_values_with_constants
@@ -228,6 +234,7 @@ class ExcelToX
 
     # Setting this to false may make it easier to figure out errors
     self.extract_repeated_parts_of_formulae = true if @extract_repeated_parts_of_formulae == nil
+    self.should_inline_formulae_that_are_only_used_once = true if @should_inline_formulae_that_are_only_used_once == nil
 
     # This setting is used for debugging, and makes the system only do the conversion on a subset of the the
     if self.isolate
