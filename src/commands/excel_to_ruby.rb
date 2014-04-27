@@ -38,6 +38,33 @@ class ExcelToRuby < ExcelToX
     c.rewrite(@formulae, @worksheet_c_names, o)
     o.puts
     
+    # Output the named references
+
+    # Getters
+    o.puts "# Start of named references"
+    c.settable = lambda { |ref| false }
+    named_references_ast = {}
+    @named_references_to_keep.each do |ref|
+      c_name = ref.is_a?(Array) ? c_name_for(ref) : ["", c_name_for(ref)]
+      named_references_ast[c_name] = @named_references[ref]
+    end
+
+    c.rewrite(named_references_ast, @worksheet_c_names, o)
+
+    # Setters
+    m = MapNamedReferenceToRubySetter.new
+    m.cells_that_can_be_set_at_runtime = cells_that_can_be_set_at_runtime
+    m.sheet_names = @worksheet_c_names
+    @named_references_that_can_be_set_at_runtime.each do |ref|
+      c_name = c_name_for(ref)
+      ast = @named_references[ref]
+      o.puts "  def #{c_name}=(newValue)"
+      o.puts "    @#{c_name} = newValue"
+      o.puts m.map(ast)
+      o.puts "  end"
+    end
+    o.puts "# End of named references"
+
     log.info "Starting to write initializer"
     o.puts
     o.puts "  # starting initializer"
@@ -50,6 +77,7 @@ class ExcelToRuby < ExcelToX
     o.puts ""
     log.info "Finished writing initializer"
               
+
     o.puts "end"
     close(o)
     log.info "Finished writing code"

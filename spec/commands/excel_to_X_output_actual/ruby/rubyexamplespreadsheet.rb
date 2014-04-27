@@ -472,4 +472,6 @@ class RubyExampleSpreadsheet
     @tables_c4 = "B"
   end
 
+# Start of named references
+# End of named references
 end

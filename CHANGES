@@ -1,5 +1,6 @@
 # Head
 
+- Added named references to generated ruby code (already implemented in generated C code)
 - Added settting to allow the inline_formulae_that_are_only_used_once method to be skipped
 
 # 0.2.21 - 2014 April 27th

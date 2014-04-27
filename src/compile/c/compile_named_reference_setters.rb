@@ -31,8 +31,8 @@ class MapNamedReferenceToCSetter
   def sheet_reference(sheet,reference)
     s = sheet_names[sheet]
     c = map(reference)
-    return "  // #{s}_#{c} not settable" unless settable(sheet, c)
-    "  set_#{s}_#{c}(#{@new_value_name});"
+    return not_settable_code(s,c) unless settable(sheet, c)
+    settable_code(s,c)
   end
 
   def array(*rows)
@@ -48,8 +48,7 @@ class MapNamedReferenceToCSetter
     end.flatten.join("\n")
     
     @new_value_name = "newValue"
-
-    "  ExcelValue *array = newValue.array;\n#{result}"
+    array_code(result)
   end
 
   def settable(sheet, reference)
@@ -59,7 +58,35 @@ class MapNamedReferenceToCSetter
     settable_refs.include?(reference.upcase.to_sym) 
   end
 
+  def not_settable_code(s,c)
+    "  // #{s}_#{c} not settable"
+  end
+
+  def settable_code(s,c)
+    "  set_#{s}_#{c}(#{@new_value_name});"
+  end
+
+  def array_code(result)
+    "  ExcelValue *array = newValue.array;\n#{result}"
+  end
+
 end
+
+class MapNamedReferenceToRubySetter < MapNamedReferenceToCSetter
+  def not_settable_code(s,c)
+    "    # @#{s}_#{c} not settable"
+  end
+
+  def settable_code(s,c)
+    "    @#{s}_#{c} = #{@new_value_name}"
+  end
+
+  def array_code(result)
+    "    array = newValue\n#{result}"
+  end
+end
+
+
 
 class CompileNamedReferenceSetters
 
