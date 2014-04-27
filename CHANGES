@@ -1,17 +1,19 @@
 # Head
 
+# 0.2.21 - 2014 April 27th
+
 - Fix ruby version of SUMIFS to match number criteria against string check values (already fixed in C version)
 - bin/excel_to_c and bin/excel_to_ruby options changed and added -n option to keep named references
 - default behaviour when named_references_to_keep = :all but no named references is then to keep all cells
 
-# 0.2.20 - 2013 March 31st
+# 0.2.20 - 2014 March 31st
 
 - Attempts to simplify some SUMIFS statements, even if they can't be calculated entirely at compile time
 - Removed redundant ReplaceFormulaeWithCalculatedValues class and test - The underlying MapFormulaeToValues class is now used directly
 - Fixed comparisons to be able to compare values of different types (e.g., true is always greater than String in Excel)
 - Added an ExcelToTest class which generates a test file for a workbook, but does not generate the code to implement the workbook.
 
-# 0.2.19 - 2013 March 18th
+# 0.2.19 - 2014 March 18th
 
 - Fixed a bug in ReplaceArithmeticOnRangesAst where there was too much mapping going on
 - Improved the number of cases where SUM is partially eliminated
@@ -32,19 +34,19 @@
 - Fixed a bug when a table has column names containing a # symbol
 - Can now isolate more than one worksheet at the same time
 
-# 0.2.18 - 2013 March 2nd
+# 0.2.18 - 2014 March 2nd
 
 - Had another go at dealing with the way that blank cells become zeros when referenced in some ways but not others
 - Named references that are actually #REF! errors are correctly parsed and then turned into errors
 - Implemented the VALUE function
 
-# 0.2.17 - 2013 February 11th
+# 0.2.17 - 2014 February 11th
 
 - Changed how SUMIF, SUMIFS, and AVERAGEIFS treat blanks in criteria (now consider them to be zeros)
 - Add missing cells if they are referenced 
 - Adjust the way that ISBLANK() is replaced with a value at compile time
 
-# 0.2.16 - 2013 February 10th
+# 0.2.16 - 2014 February 10th
 
 - Fixed bug in response when LEFT and RIGHT are passed negative values
 - Implemented LEN function in C runtime
@@ -74,7 +76,7 @@
 - Fixed bug in C compilation when specifying :all cells in a sheet are settable
 - Switched off warnings in default C build script
 
-# 0.2.15 - 2013 February 6th
+# 0.2.15 - 2014 February 6th
 
 - SUMIF now copes with criteria ranges that are different in size from sum ranges
 - Optional attribute on excel_to_x: extract_repeated_parts_of_formulae. Setting it to false may make it easier to localise errors
@@ -82,58 +84,58 @@
 - OFFSET replacement now deals with errors in arguments
 - Reworked the way that ranges are dealt with when cells are expected (may not be right)
 
-# 0.2.14 - 2013 February 4th
+# 0.2.14 - 2014 February 4th
 
 - Optimised the array formula expansion a tiny bit
 - Aborts earlier if unable to replace a ROW or COLUMN function
 - When inlining, don't inline into a COLUMN or ROW function
 
-# 0.2.13 - 2013 February 3rd
+# 0.2.13 - 2014 February 3rd
 
 - Now fails earlier if external references are found
 - Extra logging messages when expanding array formulae
 
-# 0.2.12 - 2013 February 3rd
+# 0.2.12 - 2014 February 3rd
 
 - Reworked the SimplifyArithmetic routine to make fewer passes.
 
-# 0.2.11 - 2013 February 2nd
+# 0.2.11 - 2014 February 2nd
 
 - Implemented the FORECAST function
 - Implemented the AVERAGEIFS function
 - Implemented ExcelToCode.version and display this when running the program or listing errors
 - Updated how to add a missing function docs
 
-# 0.2.10 - 2013 February 1st
+# 0.2.10 - 2014 February 1st
 
 - Now aborts earlier in the process if the spreadsheet contains functions that haven't yet been implemented in excel_to_code
 
-# 0.2.9 - 2013 January 31st
+# 0.2.9 - 2014 January 31st
 
 - implemented the TRANSPOSE function (removed at compile time, only works in array formulae)
 
-# 0.2.8 - 2013 January 31st
+# 0.2.8 - 2014 January 31st
 
 - implemented the ISBLANK function in ruby and C
 
-# 0.2.7 - 2013 January 30th
+# 0.2.7 - 2014 January 30th
 
 - implemented the EXP function in ruby and C
 
-# 0.2.6 - 2013 January 30th
+# 0.2.6 - 2014 January 30th
 
 - implemented the ROW() function (so long as it can be replaced at runtime)
 - implemented the COLUMN() function without arguments
 
-# 0.2.5 - 2013 January 13th
+# 0.2.5 - 2014 January 13th
 
 - named_references_to_keep and named_references_that_can_be_set_at_runtime can now be passed a block which will be called with each named reference. Returning true will make the named reference kept / settable
 
-# 0.2.4 - 2013 January 13th
+# 0.2.4 - 2014 January 13th
 
 - Now checks whether sheet names and named references provided by the user actually exist, and if not, aborts
 
-# 0.2.3 - 2013 January 4th
+# 0.2.3 - 2014 January 4th
 
 - Implemented the LOWER function in ruby
 - Removed the run_in_memory option, it no longer does anything.
