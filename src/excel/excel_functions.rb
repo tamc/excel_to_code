@@ -3,6 +3,7 @@ end
 
 # Support functions
 require_relative 'excel_functions/number_argument'
+require_relative 'excel_functions/reset'
 
 # Constants
 require_relative 'excel_functions/pi'
