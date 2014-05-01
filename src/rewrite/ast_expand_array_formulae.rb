@@ -176,16 +176,41 @@ class AstExpandArrayFormulae
   end
   
   def array?(*args)
-    args.any? { |a| a.first == :array }
+    args.any? { |a| a.first == :array || function_that_returns_an_array?(a) }
+  end
+
+  def function_that_returns_an_array?(ast)
+    return false unless ast[0] == :function
+    return false unless ast[1] == :INDEX
+    return false if ast.length < 4
+    return false if (ast[3][0] == :number && ast[3][1].to_f != 0.0) && (ast[4][0] == :number && ast[4][1].to_f != 0.0)
+    # Might contain a zero or null for the row or column number
+    true
   end
   
   def array_ast_to_ruby_array(array_ast)
+    return function_to_ruby_array(array_ast) if function_that_returns_an_array?(array_ast)
     return [[array_ast]] unless array_ast.first == :array
     array_ast[1..-1].map do |row_ast|
       row_ast[1..-1].map do |cell|
         cell
       end
     end
+  end
+
+  # This handles the special case of INDEX which might return an array
+  def function_to_ruby_array(ast)
+    return [[ast]] unless ast[0] == :function && ast[1] == :INDEX
+    return [[ast]] unless ast[2][0] == :array
+    rows = ast[2].length - 1
+    columns = ast[2][1].length - 1
+    array = Array.new(rows) { Array.new(columns) }
+    1.upto(rows).each do |row|
+      1.upto(columns).each do |column|
+        array[row-1][column-1] = [:function, :INDEX, ast, [:number, row], [:number, column]]
+      end
+    end
+    array
   end
   
 end

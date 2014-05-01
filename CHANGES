@@ -1,5 +1,7 @@
 # Head
 
+- Fixed the conversion of INDEX formulae that return arrays when they are inside array formulae
+
 # 0.2.22 - 2014 April 27th
 
 - Implemented a reset method in the ruby code so can perform repeated calculations on the same instance (already implemented in the generated C code)
