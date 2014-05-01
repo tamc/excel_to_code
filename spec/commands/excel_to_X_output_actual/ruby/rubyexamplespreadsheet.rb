@@ -354,6 +354,8 @@ class RubyExampleSpreadsheet
   def common8; @common8 ||= sum(tables_b3,tables_b4); end
   def common9; @common9 ||= sum(tables_b3,tables_c3,tables_d3,tables_b4,tables_c4,tables_d4); end
 
+# Start of named references
+# End of named references
 
   # starting initializer
   def initialize
@@ -472,6 +474,4 @@ class RubyExampleSpreadsheet
     @tables_c4 = "B"
   end
 
-# Start of named references
-# End of named references
 end
