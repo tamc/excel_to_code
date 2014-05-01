@@ -1,5 +1,6 @@
 # Head
 
+- Fixed the simplification of SUMIFS when a criteria is blank
 - Fixed the conversion of INDEX formulae that return arrays when they are inside array formulae
 
 # 0.2.22 - 2014 April 27th

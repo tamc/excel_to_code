@@ -202,6 +202,8 @@ class MapFormulaeToValues
     indexes = @calculator._filtered_range_indexes(sum_range, *values)
     if indexes.is_a?(Symbol)
       new_ast = value(filtered_range)
+    elsif indexes.empty?
+      new_ast = [:number, 0]
     else
       new_ast = [:function, :SUM, *sum_range.values_at(*indexes)]
     end
