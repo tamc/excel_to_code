@@ -1,5 +1,7 @@
 # Head
 
+- Tightened dependency version numbers in gemspec to eliminate warnings when building gem
+
 # 0.2.24 - 2014 May 16th
 
 - Fixed the simplification of SUMIFS when it has errors as arguments
