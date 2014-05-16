@@ -201,7 +201,7 @@ class MapFormulaeToValues
     sum_range = array_as_values(ast[2]).flatten(1)
     indexes = @calculator._filtered_range_indexes(sum_range, *values)
     if indexes.is_a?(Symbol)
-      new_ast = value(filtered_range)
+      new_ast = ast_for_value(indexes)
     elsif indexes.empty?
       new_ast = [:number, 0]
     else

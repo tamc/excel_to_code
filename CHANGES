@@ -1,5 +1,7 @@
 # Head
 
+- Fixed the simplification of SUMIFS when it has errors as arguments
+
 # 0.2.23 - 2014 May 7th
 
 - Fixed the simplification of SUMIFS when a criteria is blank
