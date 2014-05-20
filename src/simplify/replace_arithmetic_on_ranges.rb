@@ -2,7 +2,17 @@ class ReplaceArithmeticOnRangesAst
     
   def map(ast)
     return ast unless ast.is_a?(Array)
-    ast.each { |a| map(a) }
+    ast.each do |a| 
+      next unless a.is_a?(Array)
+      case ast.first
+      when :error, :null, :space, :prefeix, :boolean_true, :boolean_false, :number, :string
+        next
+      when :sheet_reference, :table_reference, :local_table_reference
+        next
+      else
+        map(a)
+      end
+    end
     arithmetic(ast) if ast.first == :arithmetic
     comparison(ast) if ast.first == :comparison
     ast
@@ -111,26 +121,4 @@ class ReplaceArithmeticOnRangesAst
     end
   end
     
-end
-  
-
-class ReplaceArithmeticOnRanges
-    
-  def self.replace(*args)
-    self.new.replace(*args)
-  end
-  
-  def replace(input,output)
-    rewriter = ReplaceArithmeticOnRangesAst.new
-    input.each_line do |line|
-      # Looks to match lines with references
-      if line =~ /:arithmetic/ && line =~ /:array/
-        content = line.split("\t")
-        ast = eval(content.pop)
-        output.puts "#{content.join("\t")}\t#{rewriter.map(ast).inspect}"
-      else
-        output.puts line
-      end
-    end
-  end
 end
