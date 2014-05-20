@@ -2,8 +2,18 @@ class ReplaceStringJoinOnRangesAST
     
   def map(ast)
     return ast unless ast.is_a?(Array)
+    ast.each do |a| 
+      next unless a.is_a?(Array)
+      case ast.first
+      when :error, :null, :space, :prefeix, :boolean_true, :boolean_false, :number, :string
+        next
+      when :sheet_reference, :table_reference, :local_table_reference
+        next
+      else
+        map(a)
+      end
     string_join(ast) if ast[0] == :string_join
-    ast.each { |a| map(a) }
+    end
     ast
   end
   
@@ -45,29 +55,5 @@ class ReplaceStringJoinOnRangesAST
     cell = row[column_index+1]
     return [:error, "#VALUE!"] unless cell
     map(cell)
-  end
-
-    
-end
-  
-
-class ReplaceStringJoinOnRanges
-    
-  def self.replace(*args)
-    self.new.replace(*args)
-  end
-  
-  def replace(input,output)
-    rewriter = ReplaceStringJoinOnRangesAST.new
-    input.each_line do |line|
-      # Looks to match lines with references
-      if line =~ /:string_join/ && line =~ /:array/
-        content = line.split("\t")
-        ast = eval(content.pop)
-        output.puts "#{content.join("\t")}\t#{rewriter.map(ast).inspect}"
-      else
-        output.puts line
-      end
-    end
   end
 end
