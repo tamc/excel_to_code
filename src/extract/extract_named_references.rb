@@ -1,53 +1,72 @@
-require 'nokogiri'
+require 'ox'
 
-class ExtractNamedReferences < Nokogiri::XML::SAX::Document 
+class ExtractNamedReferences < ::Ox::Sax
 
-  attr_accessor :parsing, :input, :output
+  attr_accessor :named_references
+  attr_accessor :state
 
   def self.extract(input)
     self.new.extract(input)
   end
 
-  def initialize
-    super
-    @sheet_names = []
-  end
-
-  def extract(input)
-    @input, @output = input, {}
-    @sheet = nil
+  def extract(input_xml)
+    @state = :not_parsing
+    @sheet_names = [] # This keeps track of the sheet names
+    @named_references = {}
+    @localSheetId = nil
     @name = nil
-    @reference = nil
-    parser = Nokogiri::XML::SAX::Parser.new(self)
-    parser.parse(@input)
-    @output
+    @reference = []
+    Ox.sax_parse(self, input_xml, :convert_special => true)
+    @named_references
   end
 
-  def start_element(name,attributes)
-    if name == "sheet"
-      @sheet_names << attributes.assoc('name').last
-    elsif name == "definedName"
-      @sheet = attributes.assoc('localSheetId') && @sheet_names[attributes.assoc('localSheetId').last.to_i].downcase.to_sym
-      @name =  attributes.assoc('name').last.downcase.to_sym
-      @reference = ""
+  def start_element(name)
+    case name
+    when :sheet
+      @state = :parsing_sheet_name
+    when :definedName
+      @state = :parsing_named_reference
+    end
+  end
+
+
+  def attr(name, value)
+    case state
+    when :parsing_sheet_name
+      @sheet_names << value if name == :name
+    when :parsing_named_reference
+      @localSheetId = value.to_i if name == :localSheetId
+      @name = value.downcase.to_sym if name == :name
     end
   end
 
   def end_element(name)
-    return unless name == "definedName"
-    if @sheet
-      @output[[@sheet, @name]] = @reference.gsub('$', '')
-    else
-      @output[@name] = @reference.gsub('$', '')
+    case name
+    when :sheet
+      @state = :not_parsing
+    when :definedName
+      @state = :not_parsing
+
+      reference = @reference.join.gsub('$','')
+
+      @named_references[key] = reference
+
+      @localSheetId = nil
+      @name = nil
+      @reference = []
     end
-    @sheet = nil
-    @name = nil
-    @reference = nil
   end
 
-  def characters(string)
-    return unless @reference
-    @reference << string
+  def text(text)
+    return unless state == :parsing_named_reference
+    @reference << text
+  end
+
+
+  def key
+    return @name unless @localSheetId
+    sheet = @sheet_names[@localSheetId].downcase.to_sym
+    [sheet, @name]
   end
 
 end
