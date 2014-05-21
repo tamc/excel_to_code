@@ -5,7 +5,7 @@ class ReplaceStringJoinOnRangesAST
     ast.each do |a| 
       next unless a.is_a?(Array)
       case ast.first
-      when :error, :null, :space, :prefeix, :boolean_true, :boolean_false, :number, :string
+      when :error, :null, :space, :prefix, :boolean_true, :boolean_false, :number, :string
         next
       when :sheet_reference, :table_reference, :local_table_reference
         next
