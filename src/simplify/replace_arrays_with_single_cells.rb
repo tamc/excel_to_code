@@ -37,7 +37,7 @@ class ReplaceArraysWithSingleCellsAst
         right = try_and_convert_array(right)
         ast.replace([:arithmetic, left, op, right])
       else
-        ast[1..-1].each { |a| do_map(a) }
+        map_if_required(ast)
       end
     when :string_join
       strings = ast[1..-1]
@@ -45,7 +45,7 @@ class ReplaceArraysWithSingleCellsAst
         strings = strings.map { |s| try_and_convert_array(s) }
         ast.replace([:string_join, *strings])
       else
-        ast[1..-1].each { |a| do_map(a) }
+        map_if_required(strings)
       end
     when :function
       if ast[1] == :SUMIF && ast[3].first == :array
@@ -57,10 +57,27 @@ class ReplaceArraysWithSingleCellsAst
       elsif ast[1] == :INDIRECT && check_indirect(ast)
         # Replacement made in check function
       else
-        ast[2..-1].each { |a| do_map(a) }
+        map_if_required(ast)
       end
     else
-      ast[1..-1].each { |a| do_map(a) }
+      map_if_required(ast)
+    end
+  end
+
+  # This tries to speed up the process by not recursively
+  # checking arguments that we know won't be interesting
+  def map_if_required(arguments)
+    return arguments unless arguments.is_a?(Array)
+    arguments.each do |a|
+      next unless a.is_a?(Array)
+      case a.first
+      when :error, :null, :space, :prefix, :boolean_true, :boolean_false, :number, :string
+        next
+      when :sheet_reference, :table_reference, :local_table_reference
+        next
+      else
+        do_map(a)
+      end
     end
   end
 
