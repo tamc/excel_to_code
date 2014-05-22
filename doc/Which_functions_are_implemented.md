@@ -219,7 +219,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * GCD -- Returns the greatest common divisor
 * INT -- Rounds a number down to the nearest integer -- _R_ _C_
 * LCM -- Returns the least common multiple
-* LN -- Returns the natural logarithm of a number
+* LN -- Returns the natural logarithm of a number -- _R_ _C_
 * LOG -- Returns the logarithm of a number to a specified base
 * LOG10 -- Returns the base-10 logarithm of a number
 * MDETERM -- Returns the matrix determinant of an array

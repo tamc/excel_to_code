@@ -40,6 +40,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'LARGE' => 'large',
     :'LEFT' => 'left',
     :'LEN' => 'len',
+    :'LN' => 'ln',
     :'LOG' => 'log',
     :'LOWER' => 'lower',
     :'MATCH' => 'excel_match',

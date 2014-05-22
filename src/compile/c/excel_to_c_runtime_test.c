@@ -685,6 +685,12 @@ int test_functions() {
   assert(excel_log_2(new_excel_number(8),new_excel_number(2)).number == 3.0);
   assert(excel_log_2(new_excel_number(8),new_excel_number(0)).type == ExcelError);
 
+  // Test LN
+  assert(ln(new_excel_number(10)).number == 2.302585092994046);
+  assert(ln(new_excel_number(8)).number == 2.0794415416798357);
+  assert(ln(new_excel_number(0)).type == ExcelError);
+  assert(ln(new_excel_number(-1)).type == ExcelError);
+
   // Test MMULT (Matrix multiplication)
   ExcelValue mmult_1[] = { ONE, TWO, THREE, FOUR};
   ExcelValue mmult_2[] = { FOUR, THREE, TWO, ONE};

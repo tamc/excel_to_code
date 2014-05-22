@@ -1,5 +1,6 @@
 # Head
 
+- Implemented the LN function in ruby and C
 - Tweaks to the array formulae code to try and speed it up
 - Tightened dependency version numbers in gemspec to eliminate warnings when building gem
 
