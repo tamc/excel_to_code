@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.25 - 2014 May 23rd
+
 - Implemented the LN function in ruby and C
 - Tweaks to the array formulae code to try and speed it up
 - Tightened dependency version numbers in gemspec to eliminate warnings when building gem
