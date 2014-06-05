@@ -3,6 +3,7 @@ class IdentifyDependencies
   attr_accessor :references
   attr_accessor :dependencies
   attr_accessor :current_sheet
+  attr_accessor :circular_reference_check
   
   def initialize(references = {}, dependencies = {})
     @references = references
@@ -11,20 +12,24 @@ class IdentifyDependencies
       hash[key] = {}
     end
     @current_sheet = []
+    @circular_reference_check = {}
   end
   
   def add_depedencies_for(sheet,cell = :all)
     if cell == :all
       references.each do |ref,ast|
         next unless ref.first == sheet
+        circular_reference_check.clear
         recursively_add_dependencies_for(sheet,ref.last)
       end
     else
+      circular_reference_check.clear
       recursively_add_dependencies_for(sheet,cell)
     end
   end
     
   def recursively_add_dependencies_for(sheet,cell)
+    return if circular_reference?([sheet, cell])
     return if dependencies[sheet].has_key?(cell)
     dependencies[sheet][cell] = true
     ast = references[[sheet,cell]]
@@ -32,6 +37,15 @@ class IdentifyDependencies
     current_sheet.push(sheet)
     map(ast)
     current_sheet.pop
+  end
+
+  def circular_reference?(ref)
+    if circular_reference_check[ref]
+      raise ExcelToCodeException.new("Possible circular reference in #{circular_reference_check.keys} #{ref}")
+    else
+      circular_reference_check[ref] = true
+    end
+    false
   end
   
   def map(ast)
