@@ -678,22 +678,27 @@ class ExcelToX
     emergency_indirect_replacement_bodge.named_references = @named_references
     
     @formulae_array.each do |ref, details|
-      @shared_string_replacer.map(details.last)
-      emergency_indirect_replacement_bodge.current_sheet_name = ref.first
-      emergency_indirect_replacement_bodge.referring_cell = ref.last
-      emergency_indirect_replacement_bodge.replace(details.last)
+      begin
+        @shared_string_replacer.map(details.last)
+        emergency_indirect_replacement_bodge.current_sheet_name = ref.first
+        emergency_indirect_replacement_bodge.referring_cell = ref.last
+        emergency_indirect_replacement_bodge.replace(details.last)
 
-      named_reference_replacer.default_sheet_name = ref.first
-      named_reference_replacer.map(details.last)
-      table_reference_replacer.worksheet = ref.first
-      table_reference_replacer.referring_cell = ref.last
-      table_reference_replacer.map(details.last)
-      @replace_ranges_with_array_literals_replacer.map(details.last)
-      transpose_function_replacer.map(details.last)
-      simplify_arithmetic_replacer.map(details.last)
-      # FIXME: Seem to need to do this twice, second time to eliminate brackets?!
-      simplify_arithmetic_replacer.map(details.last)
-      expand_array_formulae_replacer.map(details.last)
+        named_reference_replacer.default_sheet_name = ref.first
+        named_reference_replacer.map(details.last)
+        table_reference_replacer.worksheet = ref.first
+        table_reference_replacer.referring_cell = ref.last
+        table_reference_replacer.map(details.last)
+        @replace_ranges_with_array_literals_replacer.map(details.last)
+        transpose_function_replacer.map(details.last)
+        simplify_arithmetic_replacer.map(details.last)
+        # FIXME: Seem to need to do this twice, second time to eliminate brackets?!
+        simplify_arithmetic_replacer.map(details.last)
+        expand_array_formulae_replacer.map(details.last)
+      rescue  Exception => e
+        log.fatal "Exception when expanding array formulae #{ref}: #{details}"
+        raise
+      end
     end
 
     log.info "Rewriting array formulae into conventional formulae"

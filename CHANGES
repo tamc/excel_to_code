@@ -1,5 +1,7 @@
 # Head
 
+- Added a better error message if expanding array formulae fails
+
 # 0.2.25 - 2014 May 23rd
 
 - Implemented the LN function in ruby and C
