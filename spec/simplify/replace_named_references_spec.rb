@@ -10,6 +10,7 @@ A2\t[:named_reference, "Local"]
 A3\t[:sheet_reference,"otherSheet",[:named_reference, "Local"]]
 A4\t[:sheet_reference,"otherSheet",[:named_reference, "Local"]]
 A5\t[:named_reference, "missing"]
+A6\t[:sheet_reference,"otherSheet",[:named_reference, "Global"]]
 END
 
 named_references = {
@@ -25,6 +26,7 @@ A2\t[:sheet_reference, "thisSheet", [:area, "A1:A10"]]
 A3\t[:sheet_reference, "otherSheet", [:area, "A1:A10"]]
 A4\t[:sheet_reference, "otherSheet", [:area, "A1:A10"]]
 A5\t[:error, :"#NAME?"]
+A6\t[:sheet_reference, "thisSheet", [:area, "A1:A10"]]
 END
     
 input = StringIO.new(input)
