@@ -12,7 +12,7 @@ class IdentifyDependencies
       hash[key] = {}
     end
     @current_sheet = []
-    @circular_reference_check = {}
+    @circular_reference_check = [] 
   end
   
   def add_depedencies_for(sheet,cell = :all)
@@ -35,15 +35,21 @@ class IdentifyDependencies
     ast = references[[sheet,cell]]
     return unless ast
     current_sheet.push(sheet)
-    map(ast)
+    begin
+      map(ast)
+    rescue ExcelToCodeException
+      puts "[#{sheet}, #{cell}] => #{ast}"
+      raise
+    end
     current_sheet.pop
+    circular_reference_check.pop
   end
 
   def circular_reference?(ref)
-    if circular_reference_check[ref]
-      raise ExcelToCodeException.new("Possible circular reference in #{circular_reference_check.keys} #{ref}")
+    if circular_reference_check.include?(ref)
+      raise ExcelToCodeException.new("Possible circular reference in #{circular_reference_check} #{ref}")
     else
-      circular_reference_check[ref] = true
+      circular_reference_check.push(ref)
     end
     false
   end

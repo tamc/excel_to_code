@@ -65,5 +65,27 @@ describe IdentifyDependencies do
     expect { identifier.add_depedencies_for(:sheet2) }.to raise_error(ExcelToCodeException)
   end
 
+  it "should not be dumb in its circular reference checks" do
+    references = {
+      [:sheet2, :A1] => [:cell, :A2],
+      [:sheet2, :A2] => [:arithmetic, [:sheet_reference,:sheet3,[:cell,:A1]], [:operator, :+], [:sheet_reference, :sheet3, [:cell, :A1]]],
+      [:sheet3, :A1] => [:number, 10],
+    }
+    dependencies = {
+      :sheet2 => {
+        :A1 => true,
+        :A2 => true,
+      },
+      :sheet3 => {
+        :A1 => true
+      }
+    }
+
+    identifier = IdentifyDependencies.new
+    identifier.references = references
+    identifier.add_depedencies_for(:sheet2)
+    identifier.dependencies.should == dependencies
+  end
+
 
 end # / describe
