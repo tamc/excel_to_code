@@ -87,5 +87,27 @@ describe IdentifyDependencies do
     identifier.dependencies.should == dependencies
   end
 
+  it "should not be dumb in its circular reference checks" do
+    references = {
+      [:'XII.b', :F228] => [:arithmetic, [:function, :INDEX, [:array, [:row, [:number, 0.0]], [:row, [:number, 0.0]], [:row, [:number, 0.0]], [:row, [:number, 0.0]]], [:function, :MATCH, [:sheet_reference, :Control, [:cell, :E33]], [:array, [:row, [:number, 1.0]], [:row, [:number, 2.0]], [:row, [:number, 3.0]], [:row, [:number, 4.0]]], [:number, 0.0]]], [:operator, :*], [:function, :INDEX, [:array, [:row, [:inlined_blank]], [:row, [:inlined_blank]], [:row, [:inlined_blank]], [:row, [:inlined_blank]]], [:function, :MATCH, [:sheet_reference, :Control, [:cell, :E33]], [:array, [:row, [:number, 1.0]], [:row, [:number, 2.0]], [:row, [:number, 3.0]], [:row, [:number, 4.0]]], [:number, 0.0]]]],
+      [:'XII.b', :F348] => [:arithmetic, [:sheet_reference, :"XII.b", [:cell, :F223]], [:operator, :+], [:sheet_reference, :"XII.b", [:cell, :F228]]],
+      [:'2007', :J25] => [:function, :IFERROR, [:sheet_reference, :"XII.b", [:cell, :F348]], [:number, 0.0]],
+      [:'2007', :J32] => [:function, :ENSURE_IS_NUMBER, [:arithmetic, [:sheet_reference, :"2007", [:cell, :J24]], [:operator, :+], [:sheet_reference, :"2007", [:cell, :J25]]]],
+      [:'2007', :J109] => [:function, :ENSURE_IS_NUMBER, [:function, :ENSURE_IS_NUMBER, [:sheet_reference, :"2007", [:cell, :J32]]]],
+      [:'Intermediate output', :AY7] => [:sheet_reference, :"2007", [:cell, :J109]]
+    }
+    dependencies = {
+      :"2007" => {:J109=>true, :J32=>true, :J24=>true, :J25=>true},
+      :Control => {:E33=>true},
+      :"Intermediate output" => {:AY7=>true},
+      :"XII.b" => {:F348=>true, :F223=>true, :F228=>true}
+    }
+
+    identifier = IdentifyDependencies.new
+    identifier.references = references
+    identifier.add_depedencies_for(:'Intermediate output')
+    identifier.dependencies.should == dependencies
+  end
+
 
 end # / describe

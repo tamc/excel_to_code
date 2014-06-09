@@ -33,15 +33,16 @@ class IdentifyDependencies
     return if dependencies[sheet].has_key?(cell)
     dependencies[sheet][cell] = true
     ast = references[[sheet,cell]]
-    return unless ast
-    current_sheet.push(sheet)
-    begin
-      map(ast)
-    rescue ExcelToCodeException
-      puts "[#{sheet}, #{cell}] => #{ast}"
-      raise
+    if ast
+      current_sheet.push(sheet)
+      begin
+        map(ast)
+      rescue ExcelToCodeException
+        puts "[:'#{sheet}', :#{cell}] => #{ast}"
+        raise
+      end
+      current_sheet.pop
     end
-    current_sheet.pop
     circular_reference_check.pop
   end
 
