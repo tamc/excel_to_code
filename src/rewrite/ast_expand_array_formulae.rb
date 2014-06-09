@@ -162,14 +162,15 @@ class AstExpandArrayFormulae
     args = args.map.with_index { |a,i| (!ok_to_be_an_array[i] && a.first.length == 1) ? Array.new(max_columns,a.flatten(1)).transpose : a }
     
     # Now iterate through
-    # FIXME: Fails if areas aren't matching sizes
     ast.replace( [:array, *max_rows.times.map do |row|
       [:row, *max_columns.times.map do |column| 
         [:function, ast[1], *args.map.with_index do |a,i|
           if ok_to_be_an_array[i]
             a
-          else
+          elsif a[row]
             a[row][column] || [:error, :"#N/A"]
+          else
+            [:error, :"#N/A"]
           end
         end]
       end]

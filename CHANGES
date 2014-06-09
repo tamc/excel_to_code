@@ -3,6 +3,7 @@
 - When pruning cells, now checks for circular references
 - Added a better error message if expanding array formulae fails
 - Now doesn't mistakenly inline sheet specific named references
+- Made the array formula expansion more robust to mismatched array sizes
 
 # 0.2.25 - 2014 May 23rd
 
