@@ -73,3 +73,5 @@ examples/offsetindirect
 examples/betterif.rb
 examples/test_betterif.rb
 examples/betterif
+
+*.swo
