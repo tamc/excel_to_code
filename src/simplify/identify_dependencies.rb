@@ -30,18 +30,19 @@ class IdentifyDependencies
     
   def recursively_add_dependencies_for(sheet,cell)
     return if circular_reference?([sheet, cell])
-    return if dependencies[sheet].has_key?(cell)
-    dependencies[sheet][cell] = true
-    ast = references[[sheet,cell]]
-    if ast
-      current_sheet.push(sheet)
-      begin
-        map(ast)
-      rescue ExcelToCodeException
-        puts "[:'#{sheet}', :#{cell}] => #{ast}"
-        raise
+    unless dependencies[sheet].has_key?(cell)
+      dependencies[sheet][cell] = true
+      ast = references[[sheet,cell]]
+      if ast
+        current_sheet.push(sheet)
+        begin
+          map(ast)
+        rescue ExcelToCodeException
+          puts "[:'#{sheet}', :#{cell}] => #{ast}"
+          raise
+        end
+        current_sheet.pop
       end
-      current_sheet.pop
     end
     circular_reference_check.pop
   end
