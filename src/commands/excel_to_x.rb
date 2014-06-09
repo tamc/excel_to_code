@@ -904,7 +904,6 @@ class ExcelToX
 
   # These types of cells don't conatain formulae and can therefore be skipped
   VALUE_TYPE = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true}
-  INLINE_TYPE = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true}
   
   def inline_ast_decision  
     @inline_ast_decision ||= lambda do |sheet, cell, references|
@@ -914,8 +913,14 @@ class ExcelToX
       else
         ast = references[[sheet,cell]]
         if ast
-          if INLINE_TYPE[ast.first]
-            true
+          case ast.first
+          when :number, :string; true
+          when :blank, :null; true
+          when :error; true
+          when :boolean_true, :boolean_false; true
+          when :cell; true
+          when :sheet_reference
+            ast[2][0] != :named_reference
           else
             false
           end
