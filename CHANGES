@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.26 - 2014 June 10th
+
 - When pruning cells, now checks for circular references
 - Added a better error message if expanding array formulae fails
 - Now doesn't mistakenly inline sheet specific named references
