@@ -106,6 +106,10 @@ class Table
       end
     end
   end
+
+  def all
+    ast_for_area @area.excel_start, @area.excel_finish
+  end
   
   def ast_for_area(start,finish)
     [:sheet_reference,@worksheet,[:area,start.to_sym,finish.to_sym]]

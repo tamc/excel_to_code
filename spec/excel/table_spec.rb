@@ -94,6 +94,10 @@ describe Table do
     @table.includes?(:sheet1,"A3").should == false
     @table.includes?(:sheet1,"D8").should == false
   end
+
+  it 'should be able to return a reference for table#all' do
+    @table.all.should == [:sheet_reference, :sheet1, [:area, :B3, :D7]]
+  end
 end
 
 describe "Table bug, not returning reference for whole table" do
