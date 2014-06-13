@@ -46,7 +46,7 @@ class ExcelToRuby < ExcelToX
     named_references_ast = {}
     @named_references_to_keep.each do |ref|
       c_name = ref.is_a?(Array) ? c_name_for(ref) : ["", c_name_for(ref)]
-      named_references_ast[c_name] = @named_references[ref]
+      named_references_ast[c_name] = @named_references[ref] || @table_areas[ref]
     end
 
     c.rewrite(named_references_ast, @worksheet_c_names, o)
@@ -57,7 +57,7 @@ class ExcelToRuby < ExcelToX
     m.sheet_names = @worksheet_c_names
     @named_references_that_can_be_set_at_runtime.each do |ref|
       c_name = c_name_for(ref)
-      ast = @named_references[ref]
+      ast = @named_references[ref] || @table_areas[ref]
       o.puts "  def #{c_name}=(newValue)"
       o.puts "    @#{c_name} = newValue"
       o.puts m.map(ast)

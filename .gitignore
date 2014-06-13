@@ -25,6 +25,9 @@ examples/offsets/
 examples/offsets.rb
 examples/global/
 examples/test_offsets.rb
+examples/keepingtables.rb
+examples/test_keepingtables.rb
+examples/keepingtables/
 spec/commands/excel_to_ruby_output_actual
 spec/test_data/ExampleSpreadsheet
 *.o

@@ -32,7 +32,9 @@ class ExcelToX
   # should be setable, or an array of cell names on that sheet that should be settable (e.g., A1)
   attr_accessor :cells_that_can_be_set_at_runtime
 
-  # Optional attribute. Specifies which named references to be turned into setters
+  # Optional attribute. Specifies which named references to be turned into setters. 
+  #
+  # NB: Named references are assumed to include table names.
   #
   # Should be an array of strings. Each string is a named reference. Case sensitive.
   # To specify a named reference scoped to a worksheet, use ['worksheet', 'named reference'] instead
@@ -63,6 +65,8 @@ class ExcelToX
   attr_accessor :cells_to_keep
  
   # Optional attribute. Specifies which named references should be included in the output
+  #
+  # NB: Named references are assumed to include table names.
   #
   # Should be an array of strings. Each string is a named reference. Case sensitive.
   #
@@ -423,7 +427,11 @@ class ExcelToX
       new_named_references_to_keep = @named_references.keys.select do |named_reference|
         named_references_to_keep.call(named_reference)
       end
-      @named_references_to_keep = new_named_references_to_keep
+      table_references_to_keep = @table_areas.keys.select do |table_name|
+        named_references_to_keep.call(table_name)
+      end
+
+      @named_references_to_keep = new_named_references_to_keep.concat(table_references_to_keep)
     end
 
     return unless named_references_to_keep.is_a?(Array)
@@ -431,8 +439,8 @@ class ExcelToX
 
     # Now we need to check the user specified named references actually exist
     named_references_to_keep.each.with_index do |named_reference, i|
-      next if @named_references.has_key?(named_reference)
-      log.warn "Named reference #{named_reference.inspect} in named_references_to_keep has not been found in the spreadsheet: #{@named_references.keys.inspect}"
+      next if @named_references.has_key?(named_reference) || @table_areas.has_key?(named_reference)
+      $stderr.puts "Named reference #{named_reference.inspect} in named_references_to_keep has not been found in the spreadsheet: #{@named_references.keys.inspect}"
       exit
     end
   end
@@ -446,7 +454,10 @@ class ExcelToX
       new_named_references_that_can_be_set_at_runtime = @named_references.keys.select do |named_reference|
         named_references_that_can_be_set_at_runtime.call(named_reference)
       end
-      @named_references_that_can_be_set_at_runtime = new_named_references_that_can_be_set_at_runtime
+      table_references_that_can_be_set_at_runtime = @table_areas.keys.select do |table_name|
+        named_references_that_can_be_set_at_runtime.call(table_name)
+      end
+      @named_references_that_can_be_set_at_runtime = new_named_references_that_can_be_set_at_runtime.concat(table_references_that_can_be_set_at_runtime)
     end
 
     return unless named_references_that_can_be_set_at_runtime.is_a?(Array)
@@ -454,8 +465,8 @@ class ExcelToX
 
     # Now we need to check the user specified named references actually exist
     named_references_that_can_be_set_at_runtime.each.with_index do |named_reference, i|
-      next if @named_references.has_key?(named_reference)
-      log.error "Named reference #{named_reference.inspect} in named_references_that_can_be_set_at_runtime has not been found in the spreadsheet: #{@named_references.keys.inspect}"
+      next if @named_references.has_key?(named_reference) || @table_areas.has_key?(named_reference)
+      $stderr.puts "Named reference #{named_reference.inspect} in named_references_that_can_be_set_at_runtime has not been found in the spreadsheet: #{@named_references.keys.inspect}"
       exit
     end
   end
@@ -491,6 +502,7 @@ class ExcelToX
     @worksheets_dimensions = extractor.worksheets_dimensions
     @table_rids = extractor.table_rids
     @tables = {}
+    @table_areas = {}
     extract_tables
   end
   
@@ -499,6 +511,7 @@ class ExcelToX
   # reference and contains the table data. Then we consolidate all the data
   # from individual table files into a single table file for the worksheet.
   def extract_tables
+    log.info "Extracting Tables"
     @table_rids.each do |worksheet_name, array_of_table_rids|
       xml_filename = @worksheet_xmls[worksheet_name]
       xml_for_rids = {}
@@ -512,11 +525,22 @@ class ExcelToX
       array_of_table_rids.each do |rid| 
         xml(File.join('worksheets', xml_for_rids[rid])) do |i|
           ExtractTable.extract(worksheet_name, i).each do |table_name, details|
-            @tables[table_name.downcase] = Table.new(table_name, *details)
+            name = table_name.downcase
+            table = Table.new(table_name, *details)
+            @tables[name] = table
+            @table_areas[name.to_sym] = table.all
           end
         end
       end
     end
+
+    # Replace A$1:B2 with [A1, A2, B1, B2]
+    @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
+
+    @table_areas.each do |name, reference|
+      @table_areas[name] = @replace_ranges_with_array_literals_replacer.map(reference)
+    end
+    
   end
 
   def check_all_functions_implemented
@@ -548,7 +572,7 @@ class ExcelToX
     log.info "Transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
     if @named_references_to_keep == :all
-      @named_references_to_keep = @named_references.keys 
+      @named_references_to_keep = @named_references.keys + @table_areas.keys 
       # If the user has specified named_references_to_keep == :all, but there are none, fall back
       if @named_references_to_keep.empty?
         log.warn "named_references_to_keep == :all, but no named references found"
@@ -557,7 +581,7 @@ class ExcelToX
     end
     @cells_to_keep ||= {}
     @named_references_to_keep.each do |name|
-      ref = @named_references[name]
+      ref = @named_references[name] || @table_areas[name]
       if ref
         add_ref_to_hash(ref, @cells_to_keep)
       else
@@ -573,7 +597,7 @@ class ExcelToX
     return if @named_references_that_can_be_set_at_runtime == :where_possible # in this case will be done in #work_out_which_named_references_can_be_set_at_runtime
     @cells_that_can_be_set_at_runtime ||= {}
     @named_references_that_can_be_set_at_runtime.each do |name|
-      ref = @named_references[name]
+      ref = @named_references[name] || @table_areas[name]
       if ref
         add_ref_to_hash(ref, @cells_that_can_be_set_at_runtime)
       else
@@ -761,7 +785,7 @@ class ExcelToX
     # In some situations also need to add the named references 
     if @named_references_to_keep
       @named_references_to_keep.each do |name|
-        ref = @named_references[name]
+        ref = @named_references[name] || @table_areas[name]
         if ref.first == :sheet_reference
           s = ref[1]
           c = Reference.for(ref[2][1]).unfix.to_sym
@@ -853,11 +877,6 @@ class ExcelToX
       end
     end
 
-    @named_references.each do |name, ref|
-      if named_references_that_can_be_set_at_runtime.include?(name)
-        @named_references_that_can_be_set_at_runtime << name
-      end
-    end
   end
     
   def simplify(cells = @formulae)
