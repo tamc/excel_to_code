@@ -140,15 +140,15 @@ class ExcelToX
     # These gets the named references, worksheet names and shared strings out of the excel
     extract_data_from_workbook
     
+    # This gets all the formulae, values and tables out of the worksheets
+    extract_data_from_worksheets
+    
     # This checks that the user inputs of which cells to keep are in the right
     # format and refer to sheets and references that actually exist
     clean_cells_that_can_be_set_at_runtime
     clean_cells_to_keep
     clean_named_references_to_keep
     clean_named_references_that_can_be_set_at_runtime
-
-    # This gets all the formulae, values and tables out of the worksheets
-    extract_data_from_worksheets
 
     # This is an early check that the functions in the extracted data have 
     # all got an implementation in, at least, the ruby code
