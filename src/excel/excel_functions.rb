@@ -111,3 +111,5 @@ require_relative 'excel_functions/ensure_is_number'
 require_relative 'excel_functions/value'
 
 require_relative 'excel_functions/ln'
+
+require_relative 'excel_functions/iserr'

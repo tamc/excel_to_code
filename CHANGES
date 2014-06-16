@@ -1,5 +1,7 @@
 # Head
 
+- Implemented the ISERR() function in ruby
+
 # 0.2.28 - 2014 June 16th
 
 - Fixed a bug that would lead to some numbers being truncated to integers in the C version of the output
