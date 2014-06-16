@@ -29,6 +29,7 @@ class MapValuesToC
   
   alias :null :blank
     
+  # FIXME: Refactor to do proper integer check
   def number(text)
     case text.to_f
     when 0; "ZERO"
@@ -43,7 +44,7 @@ class MapValuesToC
     when 9; "NINE"
     when 10; "TEN"
     else   
-      n = case text
+      n = case text.to_s
       when /\./
         text.to_f.to_s
       when /e/i
