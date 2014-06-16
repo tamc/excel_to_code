@@ -221,6 +221,28 @@ int test_functions() {
   assert(iferror(new_excel_string("ok"),ONE).type == ExcelString);
   assert(iferror(VALUE,ONE).type == ExcelNumber);		
 
+  // Test the ISERR function
+  assert(iserr(NA).type == ExcelBoolean);
+  assert(iserr(NA).number == 0);
+  assert(iserr(DIV0).type == ExcelBoolean);
+  assert(iserr(DIV0).type == ExcelBoolean);
+  assert(iserr(REF).number == 1);
+  assert(iserr(REF).type == ExcelBoolean);
+  assert(iserr(VALUE).number == 1);
+  assert(iserr(VALUE).type == ExcelBoolean);
+  assert(iserr(NAME).number == 1);
+  assert(iserr(NAME).number == 1);
+  assert(iserr(BLANK).type == ExcelBoolean);
+  assert(iserr(BLANK).type == ExcelBoolean);
+  assert(iserr(TRUE).type == ExcelBoolean);
+  assert(iserr(TRUE).type == ExcelBoolean);
+  assert(iserr(FALSE).number == 0);
+  assert(iserr(FALSE).number == 0);
+  assert(iserr(ONE).number == 0);
+  assert(iserr(ONE).number == 0);
+  assert(iserr(new_excel_string("Hello")).number == 0);
+  assert(iserr(new_excel_string("Hello")).number == 0);
+
   // Test the INDEX function
   ExcelValue index_array_1[] = { new_excel_number(10), new_excel_number(20), BLANK };
   ExcelValue index_array_1_v_column = new_excel_range(index_array_1,3,1);

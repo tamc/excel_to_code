@@ -63,6 +63,7 @@ static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_loo
 static ExcelValue hlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v);
 static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v, ExcelValue match_type_v);
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
+static ExcelValue iserr(ExcelValue value);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 static ExcelValue excel_isnumber(ExcelValue number);
@@ -1076,6 +1077,19 @@ static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
 	if(value.type == ExcelError) return value_if_error;
 	return value;
 }
+
+static ExcelValue iserr(ExcelValue value) {
+	if(value.type == ExcelError) {
+    if(value.number == NA.number) {
+      return FALSE;
+    } else {
+      return TRUE;
+    }
+  } else {
+    return FALSE;
+  }
+}
+
 
 // Order is TRUE, FALSE, String, Number; Blank is zero
 static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
