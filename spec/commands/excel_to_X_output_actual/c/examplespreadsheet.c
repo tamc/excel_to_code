@@ -678,6 +678,9 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 	
 	if(row_number > rows) return REF;
 	if(column_number > columns) return REF;
+
+  if(row_number == 0 && rows == 1) row_number = 1;
+  if(column_number == 0 && columns == 1) column_number = 1;
 		
 	if(row_number == 0) { // We need the whole column
 		if(column_number < 1) return REF;

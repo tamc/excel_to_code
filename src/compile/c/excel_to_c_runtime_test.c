@@ -290,6 +290,10 @@ int test_functions() {
   assert(excel_index(index_array_2_v,BLANK,new_excel_number(2.0)).type == ExcelRange);
   // ... it should return an error if an argument is an error
   assert(excel_index(NA,NA,NA).type == ExcelError);
+  // ... it should return a single value if single column and passed zero as column number
+  assert(excel_index(index_array_1_v_column,new_excel_number(2.0), ZERO).number == 20);
+  assert(excel_index(index_array_1_v_row,ZERO, new_excel_number(2.0)).number == 20);
+
 
   // LEFT(string,[characters])
   // ... should return the left n characters from a string

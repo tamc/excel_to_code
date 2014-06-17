@@ -19,6 +19,13 @@ describe "ExcelFunctions: INDEX(array,row_number,[column_number])" do
     FunctionTest.index([[10,"pear"],[100,"bear"],[nil,"apple"]],0.0,2.0).should == [["pear"],["bear"],["apple"]]
   end
 
+  it "should return just a single value if given a zero row or column number, but there is only one row or column" do
+    FunctionTest.index([[10],["pear"]],2.0, 1).should == "pear"
+    FunctionTest.index([[10],["pear"]],2.0, 0).should == "pear"
+    FunctionTest.index([[10,"pear"]],1, 2).should == "pear"
+    FunctionTest.index([[10,"pear"]],0, 2).should == "pear"
+  end
+
   it "should return a :ref error when given arguments outside array range" do
     FunctionTest.index([[10],["pear"]],-1).should == :ref
     FunctionTest.index([[10],["pear"]],3).should == :ref
