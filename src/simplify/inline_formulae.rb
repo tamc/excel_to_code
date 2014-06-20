@@ -11,10 +11,17 @@ class InlineFormulaeAst
   
   def map(ast)
     return ast unless ast.is_a?(Array)
-    if respond_to?(ast[0])
-      send(ast[0], ast) 
-    else # In this case needs to be an else because don't want to map first argument in OFFSET(cell_to_offset_from_shouldn't_be_mapped, rows, columns)
-      ast.each { |a| map(a) }
+    case ast[0]
+    when :function
+      function(ast)
+    when :sheet_reference
+      sheet_reference(ast)
+    when :cell
+      cell(ast)
+    else
+      ast.each do |a| 
+        map(a) if a.is_a?(Array)
+      end
     end
     ast
   end
