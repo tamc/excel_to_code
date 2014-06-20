@@ -1,128 +1,61 @@
 require_relative '../spec_helper'
 
-describe InlineFormulae do
-  
-it "should recursively work through formulae, inlining references where not important to function" do
+describe InlineFormulaeAst do
 
-input = <<END
-A1\t[:cell, :"$A$2"]
-A2\t[:cell, :"A3"]
-A3\t[:number, 1]
-A4\t[:sheet_reference,:sheet2,[:cell,:"A1"]]
-A5\t[:sheet_reference,:sheet3,[:cell,:"A5"]]
-A6\t[:function, :OFFSET, [:cell, :"$A$2"], [:cell, :"A3"], [:sheet_reference,:sheet2,[:cell,:"A1"]]]
-A7\t[:function, :OFFSET, [:function, :INDIRECT, [:string_join, [:string, "G."], [:sheet_reference, :sheet3, [:cell, :A5]], [:string, ".choice"]]], [:number, 0.0], [:number, -1.0]]
-A8\t[:function, :COLUMN, [:sheet_reference, :sheet3, [:cell, :A5]]]
-A9\t[:function, :ROW, [:sheet_reference, :sheet3, [:cell, :A5]]]
-END
+  it "should replace references to other cell with the contents of that cell" do
 
-references = {
-  [:sheet1, :A1] => [:cell, :"$A$2"],
-  [:sheet1, :A2] => [:cell, :"A3"],
-  [:sheet1, :A3] => [:number, 1],
-  [:sheet2, :A1] => [:cell, :"A2"],
-  [:sheet2, :A2] => [:sheet_reference,:sheet3,[:cell,:A1]],
-  [:sheet3, :A1] => [:number, 5],
-  [:sheet3, :A5] => [:number, 10]    
-}
+    references = {
+      [:sheet1, :A2] => [:cell, :"A3"]
+    }
+    r = InlineFormulaeAst.new(references, :sheet1)
+    r.map([:cell, :A2]).should == [:cell, :A3]
+    r.map([:sheet_reference, :sheet1, [:cell, :A2]]).should == [:cell, :A3]
+    r.map([:function, :sum, [:sheet_reference, :sheet1, [:cell, :A2]]]).should == [:function, :sum, [:cell, :A3]]
+  end
 
-expected_output = <<END
-A1\t[:number, 1]
-A2\t[:number, 1]
-A3\t[:number, 1]
-A4\t[:number, 5]
-A5\t[:number, 10]
-A6\t[:function, :OFFSET, [:cell, :"$A$2"], [:number, 1], [:number, 5]]
-A7\t[:function, :OFFSET, [:function, :INDIRECT, [:string_join, [:string, "G."], [:number, 10], [:string, ".choice"]]], [:number, 0.0], [:number, -1.0]]
-A8\t[:function, :COLUMN, [:sheet_reference, :sheet3, [:cell, :A5]]]
-A9\t[:function, :ROW, [:sheet_reference, :sheet3, [:cell, :A5]]]
-END
-    
-input = StringIO.new(input)
-output = StringIO.new
-r = InlineFormulae.new
-r.references = references
-r.default_sheet_name = :sheet1
-r.replace(input,output)
-output.string.should == expected_output
-end
+  it "should not replace references to otehr cells when they are used as arguments in OFFSET, ROW and COLUMN functions" do
+    references = {
+      [:sheet1, :A2] => [:cell, :"A3"]
+    }
+    r = InlineFormulaeAst.new(references, :sheet1)
+    r.map([:function, :ROW, [:cell, :A2]]).should == [:function, :ROW, [:cell, :A2]]
+    r.map([:function, :COLUMN, [:cell, :A2]]).should == [:function, :COLUMN, [:cell, :A2]]
+    r.map([:function, :OFFSET, [:cell, :A2], [:cell, :A2]]).should == [:function, :OFFSET, [:cell, :A2], [:cell, :A3]]
+  end
 
 
-it "should accept a block, which can be used to decide whether to inline a particualr reference or not" do
+  it "should accept a block, which can be used to decide whether to inline a particular reference or not" do
 
-input = <<END
-A1\t[:cell, :"$A$2"]
-A2\t[:cell, :A3]
-A3\t[:number, 1]
-A4\t[:sheet_reference,:sheet2,[:cell,:A1]]
-A5\t[:sheet_reference,:sheet3,[:cell,:A5]]
-A6\t[:sheet_reference,:sheet1,[:cell, :"$A$2"]]
-A7\t[:sheet_reference,:sheet2,[:cell, :"$A$2"]]
-A8\t[:cell, :B8]
-A9\t[:sheet_reference,:sheet2,[:cell, :"$B$8"]]
-END
+    references = {
+      [:sheet1, :A2] => [:string, "Yes"],
+      [:sheet1, :B1] => [:string, "No"]
+    }
+    inline_ast_decision = lambda do |sheet, cell, references|
+      cell != :B1
+    end
+    r = InlineFormulaeAst.new(references, :sheet1, inline_ast_decision)
+    r.map([:string_join, [:cell, :A2], [:cell, :B1]]).should == [:string_join, [:string, "Yes"], [:cell, :B1]]
+  end
 
-references = {
-  [:sheet1, :A1] => [:cell, :"$A$2"],
-  [:sheet1, :A2] => [:cell, :A3],
-  [:sheet1, :A3] => [:number, 1],
-  [:sheet2, :A1] => [:cell, :A2],
-  [:sheet2, :A2] => [:sheet_reference,:sheet3,[:cell,:A1]],
-  [:sheet3, :A1] => [:number, 5],
-  [:sheet3, :A5] => [:number, 10]    
-}
+  it "If the reference refers to a cell that doesn't exist in the Excel input, add the missing cell to the references hash as a [:blank] cell" do
 
-inline_ast_decision = lambda do |sheet,cell,references|
-  if sheet == :sheet2 && cell == :A2
-    false
-  elsif sheet == :sheet3
-    false
-  else
-    true
+    ast = [:cell, :A2]
+
+    references = {
+      [:sheet1, :A1] => ast
+    }
+
+    current_sheet_name = :sheet1
+
+    r = InlineFormulaeAst.new(references, current_sheet_name)
+
+    r.map(ast).should == [:inlined_blank]
+
+    references.should == {
+      [:sheet1, :A1] => [:inlined_blank],
+      [:sheet1, :A2] => [:blank]
+    }
+
   end
 end
 
-expected_output = <<END
-A1\t[:number, 1]
-A2\t[:number, 1]
-A3\t[:number, 1]
-A4\t[:sheet_reference, :sheet2, [:cell, :A2]]
-A5\t[:sheet_reference, :sheet3, [:cell, :A5]]
-A6\t[:number, 1]
-A7\t[:sheet_reference, :sheet2, [:cell, :"$A$2"]]
-A8\t[:inlined_blank]
-A9\t[:inlined_blank]
-END
-  
-input = StringIO.new(input)
-output = StringIO.new
-r = InlineFormulae.new
-r.references = references
-r.default_sheet_name = :sheet1
-r.inline_ast = inline_ast_decision
-r.replace(input,output)
-output.string.should == expected_output
-end
-
-it "If the reference refers to a cell that doesn't exist in the Excel input, add the missing cell to the references hash as a [:blank] cell" do
-
-  ast = [:cell, :A2]
-
-  references = {
-    [:sheet1, :A1] => ast
-  }
-
-  current_sheet_name = :sheet1
-
-  r = InlineFormulaeAst.new(references, current_sheet_name)
-  
-  r.map(ast).should == [:inlined_blank]
-
-  references.should == {
-    [:sheet1, :A1] => [:inlined_blank],
-    [:sheet1, :A2] => [:blank]
-  }
-
-end
-
-end
