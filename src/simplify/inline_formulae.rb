@@ -45,8 +45,8 @@ class InlineFormulaeAst
     ref = ast[2][1].to_s.upcase.gsub('$','').to_sym
     # FIXME: Need to check if valid worksheet and return [:error, "#REF!"] if not
     # Now check user preference on this
-    ast_to_inline = ast_to_inline(sheet, ref)
     return unless inline_ast.call(sheet,ref, references)
+    ast_to_inline = ast_or_blank(sheet, ref)
     @count_replaced += 1
     current_sheet_name.push(sheet)
     map(ast_to_inline)
@@ -58,8 +58,8 @@ class InlineFormulaeAst
   def cell(ast)
     sheet = current_sheet_name.last
     ref = ast[1].to_s.upcase.gsub('$', '').to_sym
-    ast_to_inline = ast_to_inline(sheet, ref)
     if inline_ast.call(sheet, ref, references)
+      ast_to_inline = ast_or_blank(sheet, ref)
       @count_replaced += 1
       map(ast_to_inline)
       ast.replace(ast_to_inline)
@@ -69,7 +69,7 @@ class InlineFormulaeAst
     end
   end
 
-  def ast_to_inline(sheet, ref)
+  def ast_or_blank(sheet, ref)
     ast_to_inline = references[[sheet, ref]]
     return ast_to_inline if ast_to_inline
     # Need to add a new blank cell and return ast for an inlined blank
