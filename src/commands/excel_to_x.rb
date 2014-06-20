@@ -933,19 +933,17 @@ class ExcelToX
   
   def inline_ast_decision  
     @inline_ast_decision ||= lambda do |sheet, cell, references|
-      if must_keep?([sheet,cell])
+      ref = [sheet,cell]
+      if must_keep?(ref)
         false
       else
-        ast = references[[sheet,cell]]
+        ast = references[ref]
         if ast
           case ast.first
           when :number, :string; true
           when :blank, :null; true
           when :error; true
           when :boolean_true, :boolean_false; true
-          when :cell; true
-          when :sheet_reference
-            ast[2][0] != :named_reference
           else
             false
           end
