@@ -923,11 +923,17 @@ class ExcelToX
 
   # These types of cells don't conatain formulae and can therefore be skipped
   VALUE_TYPE = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true}
+
+  def must_keep?(ref)
+    must_keep_in_sheet = @cells_that_can_be_set_at_runtime[ref.first]
+    return false unless must_keep_in_sheet
+    return true if must_keep_in_sheet == :all
+    must_keep_in_sheet.include?(ref.last)
+  end
   
   def inline_ast_decision  
     @inline_ast_decision ||= lambda do |sheet, cell, references|
-      references_to_keep = @cells_that_can_be_set_at_runtime[sheet]
-      if references_to_keep && (references_to_keep == :all || references_to_keep.include?(cell))
+      if must_keep?([sheet,cell])
         false
       else
         ast = references[[sheet,cell]]
