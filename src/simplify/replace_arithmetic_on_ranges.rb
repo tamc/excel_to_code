@@ -9,6 +9,8 @@ class ReplaceArithmeticOnRangesAst
         next
       when :sheet_reference, :table_reference, :local_table_reference
         next
+      when :function
+        function(ast)
       else
         map(a)
       end
@@ -16,6 +18,21 @@ class ReplaceArithmeticOnRangesAst
     arithmetic(ast) if ast.first == :arithmetic
     comparison(ast) if ast.first == :comparison
     ast
+  end
+
+  # FIXME: Generalise this? Combine with Array formulae?
+  def function(ast)
+    unless ast[1] == :RIGHT && ast[2][0] == :array
+      ast.each { |a| map(a) }
+      return
+    end
+    ast.replace(
+      array_map(ast[2]) do |cell|
+        a = ast.dup
+        a[2] = cell
+        a
+      end
+    )
   end
 
   # FIXME: DRY THIS UP
