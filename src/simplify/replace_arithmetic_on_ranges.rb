@@ -22,7 +22,7 @@ class ReplaceArithmeticOnRangesAst
 
   # FIXME: Generalise this? Combine with Array formulae?
   def function(ast)
-    unless ast[1] == :RIGHT && ast[2][0] == :array
+    unless [:RIGHT, :LEFT].include?(ast[1]) && ast[2][0] == :array
       ast.each { |a| map(a) }
       return
     end
