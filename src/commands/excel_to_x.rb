@@ -503,6 +503,7 @@ class ExcelToX
     @table_rids = extractor.table_rids
     @tables = {}
     @table_areas = {}
+    @table_data = {}
     extract_tables
   end
   
@@ -529,6 +530,7 @@ class ExcelToX
             table = Table.new(table_name, *details)
             @tables[name] = table
             @table_areas[name.to_sym] = table.all
+            @table_data[name.to_sym] = table.data
           end
         end
       end
@@ -539,6 +541,10 @@ class ExcelToX
 
     @table_areas.each do |name, reference|
       @table_areas[name] = @replace_ranges_with_array_literals_replacer.map(reference)
+    end
+
+    @table_data.each do |name, reference|
+      @table_data[name] = @replace_ranges_with_array_literals_replacer.map(reference)
     end
     
   end
@@ -687,7 +693,7 @@ class ExcelToX
     log.info "Expanding #{@formulae_array.size} array formulae"
     # FIMXE: Refactor this
 
-    named_reference_replacer = ReplaceNamedReferencesAst.new(@named_references)
+    named_reference_replacer = ReplaceNamedReferencesAst.new(@named_references, nil, @table_data)
     table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     expand_array_formulae_replacer = AstExpandArrayFormulae.new
@@ -885,13 +891,15 @@ class ExcelToX
     @shared_string_replacer ||= ReplaceSharedStringAst.new(@shared_strings)
     @replace_arithmetic_on_ranges_replacer ||= ReplaceArithmeticOnRangesAst.new
     @wrap_formulae_that_return_arrays_replacer ||= WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
-    @named_reference_replacer ||= ReplaceNamedReferencesAst.new(@named_references) 
+    @named_reference_replacer ||= ReplaceNamedReferencesAst.new(@named_references, nil, @table_data) 
     @table_reference_replacer ||= ReplaceTableReferenceAst.new(@tables)
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     @replace_arrays_with_single_cells_replacer ||= ReplaceArraysWithSingleCellsAst.new
     @replace_string_joins_on_ranges_replacer ||= ReplaceStringJoinOnRangesAST.new
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
     @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
+
+    require 'pry'; binding.pry
 
     cells.each do |ref, ast|
       begin
@@ -919,6 +927,7 @@ class ExcelToX
         raise
       end
     end
+    require 'pry'; binding.pry
   end
 
   # These types of cells don't conatain formulae and can therefore be skipped
@@ -997,6 +1006,7 @@ class ExcelToX
           inline_replacer.current_sheet_name = [ref.first]
           inline_replacer.map(ast)
           # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
+          require 'pry'; binding.pry if ref == [:"Outputs - Summary table", :E77]
           value_replacer.map(ast)
           column_and_row_function_replacement.current_reference = ref.last
           if column_and_row_function_replacement.replace(ast)

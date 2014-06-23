@@ -1,9 +1,10 @@
 class NamedReferences
   
-  attr_accessor :named_references
+  attr_accessor :named_references, :table_data
   
-  def initialize(refs)
+  def initialize(refs, tables = {})
     @named_references = refs
+    @table_data = tables
   end
   
   def reference_for(sheet,named_reference)
@@ -11,6 +12,7 @@ class NamedReferences
     named_reference = named_reference.downcase.to_sym
     @named_references[[sheet, named_reference]] ||
     @named_references[named_reference] ||
+    @table_data[named_reference] ||
     [:error, :"#NAME?"]
   end
   
@@ -18,11 +20,11 @@ end
 
 class ReplaceNamedReferencesAst
   
-  attr_accessor :named_references, :default_sheet_name
+  attr_accessor :named_references, :default_sheet_name, :table_data
   
-  def initialize(named_references, default_sheet_name = nil)
-    @named_references, @default_sheet_name = named_references, default_sheet_name
-    @named_references = NamedReferences.new(@named_references) unless @named_references.is_a?(NamedReferences)
+  def initialize(named_references, default_sheet_name = nil, table_data = {})
+    @named_references, @default_sheet_name, @table_data = named_references, default_sheet_name, table_data
+    @named_references = NamedReferences.new(@named_references, @table_data) unless @named_references.is_a?(NamedReferences)
   end
   
   def map(ast)
