@@ -899,7 +899,7 @@ class ExcelToX
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
     @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
 
-    require 'pry'; binding.pry
+    #require 'pry'; binding.pry
 
     cells.each do |ref, ast|
       begin
@@ -927,7 +927,7 @@ class ExcelToX
         raise
       end
     end
-    require 'pry'; binding.pry
+    #require 'pry'; binding.pry
   end
 
   # These types of cells don't conatain formulae and can therefore be skipped
@@ -1006,7 +1006,7 @@ class ExcelToX
           inline_replacer.current_sheet_name = [ref.first]
           inline_replacer.map(ast)
           # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
-          require 'pry'; binding.pry if ref == [:"Outputs - Summary table", :E77]
+          #require 'pry'; binding.pry if ref == [:"Outputs - Summary table", :E77]
           value_replacer.map(ast)
           column_and_row_function_replacement.current_reference = ref.last
           if column_and_row_function_replacement.replace(ast)
