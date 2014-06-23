@@ -43,14 +43,14 @@ class RubyExampleSpreadsheet
   attr_accessor :ranges_f5 # Default: 2.0
   attr_accessor :ranges_g5 # Default: 3.0
   attr_accessor :ranges_f6 # Default: 3.0
-  def referencing_a1; @referencing_a1 ||= referencing_c4; end
-  def referencing_a2; @referencing_a2 ||= referencing_c4; end
+  def referencing_a1; @referencing_a1 ||= common0; end
+  def referencing_a2; @referencing_a2 ||= referencing_a1; end
   attr_accessor :referencing_a4 # Default: 10.0
-  def referencing_b4; @referencing_b4 ||= common0; end
-  def referencing_c4; @referencing_c4 ||= add(common0,1.0); end
+  def referencing_b4; @referencing_b4 ||= common1; end
+  def referencing_c4; @referencing_c4 ||= common0; end
   def referencing_a5; @referencing_a5 ||= 3.0; end
-  def referencing_b8; @referencing_b8 ||= referencing_c4; end
-  def referencing_b9; @referencing_b9 ||= common1; end
+  def referencing_b8; @referencing_b8 ||= referencing_a1; end
+  def referencing_b9; @referencing_b9 ||= common2; end
   def referencing_b11; @referencing_b11 ||= "Named"; end
   def referencing_c11; @referencing_c11 ||= "Reference"; end
   attr_accessor :referencing_c15 # Default: 1.0
@@ -74,10 +74,10 @@ class RubyExampleSpreadsheet
   attr_accessor :referencing_e19 # Default: 0.651
   attr_accessor :referencing_f19 # Default: 0.651
   attr_accessor :referencing_c22 # Default: 4.0
-  def referencing_d22; @referencing_d22 ||= index(common2,1.0,1.0); end
-  def referencing_d23; @referencing_d23 ||= index(common2,2.0,1.0); end
-  def referencing_d24; @referencing_d24 ||= index(common2,3.0,1.0); end
-  def referencing_d25; @referencing_d25 ||= index(common2,4.0,1.0); end
+  def referencing_d22; @referencing_d22 ||= index(common3,1.0,1.0); end
+  def referencing_d23; @referencing_d23 ||= index(common3,2.0,1.0); end
+  def referencing_d24; @referencing_d24 ||= index(common3,3.0,1.0); end
+  def referencing_d25; @referencing_d25 ||= index(common3,4.0,1.0); end
   def referencing_c31; @referencing_c31 ||= "Technology efficiencies -- hot water -- annual mean"; end
   def referencing_o31; @referencing_o31 ||= "% of input energy"; end
   def referencing_f33; @referencing_f33 ||= "Electricity (delivered to end user)"; end
@@ -224,8 +224,8 @@ class RubyExampleSpreadsheet
   attr_accessor :referencing_e70 # Default: "Gamma"
   attr_accessor :referencing_f70 # Default: 3.0
   attr_accessor :referencing_e72 # Default: "Beta"
-  def referencing_f72; @referencing_f72 ||= common6; end
-  def referencing_g72; @referencing_g72 ||= common6; end
+  def referencing_f72; @referencing_f72 ||= common7; end
+  def referencing_g72; @referencing_g72 ||= common7; end
   def tables_a1; @tables_a1 ||= 0; end
   attr_accessor :tables_b2 # Default: "ColA"
   attr_accessor :tables_c2 # Default: "ColB"
@@ -239,7 +239,7 @@ class RubyExampleSpreadsheet
   def tables_f4; @tables_f4 ||= tables_c4; end
   def tables_g4; @tables_g4 ||= excel_match("ZB",[[tables_b4,tables_c4,tables_d4]],false); end
   def tables_h4; @tables_h4 ||= excel_match("B",[[tables_c4,tables_d4]]); end
-  def tables_b5; @tables_b5 ||= common8; end
+  def tables_b5; @tables_b5 ||= common9; end
   def tables_c5; @tables_c5 ||= sum(tables_c3,tables_c4); end
   def tables_e6; @tables_e6 ||= tables_b2; end
   def tables_f6; @tables_f6 ||= tables_c2; end
@@ -253,17 +253,17 @@ class RubyExampleSpreadsheet
   def tables_e9; @tables_e9 ||= tables_b3; end
   def tables_f9; @tables_f9 ||= tables_c3; end
   def tables_g9; @tables_g9 ||= tables_d3; end
-  def tables_c10; @tables_c10 ||= common1; end
+  def tables_c10; @tables_c10 ||= common2; end
   def tables_e10; @tables_e10 ||= tables_b4; end
   def tables_f10; @tables_f10 ||= tables_c4; end
   def tables_g10; @tables_g10 ||= tables_d4; end
-  def tables_c11; @tables_c11 ||= common8; end
+  def tables_c11; @tables_c11 ||= common9; end
   def tables_e11; @tables_e11 ||= tables_b5; end
   def tables_f11; @tables_f11 ||= tables_c5; end
   def tables_g11; @tables_g11 ||= 0; end
   def tables_c12; @tables_c12 ||= tables_b5; end
-  def tables_c13; @tables_c13 ||= common9; end
-  def tables_c14; @tables_c14 ||= common9; end
+  def tables_c13; @tables_c13 ||= common10; end
+  def tables_c14; @tables_c14 ||= common10; end
   def tables_g17; @tables_g17 ||= excel_if(more_than?(tables_c4,tables_d4),true); end
   def s_innapropriate_sheet_name__c4; @s_innapropriate_sheet_name__c4 ||= valuetypes_a3; end
   def ranges_f1; @ranges_f1 ||= nil; end
@@ -347,12 +347,13 @@ class RubyExampleSpreadsheet
   def referencing_i47; @referencing_i47 ||= nil; end
   def referencing_j47; @referencing_j47 ||= nil; end
   def referencing_l47; @referencing_l47 ||= nil; end
-  def common0; @common0 ||= add(referencing_a4,1.0); end
-  def common1; @common1 ||= sum(tables_b5,tables_c5); end
-  def common2; @common2 ||= index([[referencing_c16,referencing_d16,referencing_e16,referencing_f16],[referencing_c17,referencing_d17,referencing_e17,referencing_f17],[referencing_c18,referencing_d18,referencing_e18,referencing_f18],[referencing_c19,referencing_d19,referencing_e19,referencing_f19]],nil,excel_match(referencing_c22,[[referencing_c15,referencing_d15,referencing_e15,referencing_f15]],0.0)); end
-  def common6; @common6 ||= sum([[multiply(excel_equal?(referencing_e72,referencing_e68),referencing_f68)],[multiply(excel_equal?(referencing_e72,referencing_e69),referencing_f69)],[multiply(excel_equal?(referencing_e72,referencing_e70),referencing_f70)]]); end
-  def common8; @common8 ||= sum(tables_b3,tables_b4); end
-  def common9; @common9 ||= sum(tables_b3,tables_c3,tables_d3,tables_b4,tables_c4,tables_d4); end
+  def common0; @common0 ||= add(add(referencing_a4,1.0),1.0); end
+  def common1; @common1 ||= add(referencing_a4,1.0); end
+  def common2; @common2 ||= sum(tables_b5,tables_c5); end
+  def common3; @common3 ||= index([[referencing_c16,referencing_d16,referencing_e16,referencing_f16],[referencing_c17,referencing_d17,referencing_e17,referencing_f17],[referencing_c18,referencing_d18,referencing_e18,referencing_f18],[referencing_c19,referencing_d19,referencing_e19,referencing_f19]],nil,excel_match(referencing_c22,[[referencing_c15,referencing_d15,referencing_e15,referencing_f15]],0.0)); end
+  def common7; @common7 ||= sum([[multiply(excel_equal?(referencing_e72,referencing_e68),referencing_f68)],[multiply(excel_equal?(referencing_e72,referencing_e69),referencing_f69)],[multiply(excel_equal?(referencing_e72,referencing_e70),referencing_f70)]]); end
+  def common9; @common9 ||= sum(tables_b3,tables_b4); end
+  def common10; @common10 ||= sum(tables_b3,tables_c3,tables_d3,tables_b4,tables_c4,tables_d4); end
 
 # Start of named references
 # End of named references

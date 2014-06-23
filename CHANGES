@@ -1,5 +1,6 @@
 # Head
 
+- Implemented 0.0 as a format in the TEXT function
 - RIGHT can now be applied to an array
 - Fixed INDEX when passed zero as a row or column number when only one row or column wide
 - Implemented the ISERR() function in ruby and in C

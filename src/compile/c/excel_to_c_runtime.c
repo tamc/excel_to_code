@@ -2074,6 +2074,11 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     sprintf(s, "%d%%",(int) round(number_v.number*100));
     free_later(s);
     result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"0.0") == 0) {
+    s = malloc(100);
+    sprintf(s, "%0.1f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
   } else {
     return format_v;
   }

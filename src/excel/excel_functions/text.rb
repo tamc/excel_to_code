@@ -17,8 +17,10 @@ module ExcelFunctions
     case format
     when '0%'
       "#{(number * 100).round}%"
+    when /0\.(0+)/
+      sprintf("%.#{$1.length}f", number)
     else
-      format
+      raise ExcelToCodeException.new("in TEXT function format #{format} not yet supported by excel_to_code")
     end
   end
   

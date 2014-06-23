@@ -1,6 +1,6 @@
 // /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx approximately translated into C
 // definitions
-#define NUMBER_OF_REFS 348
+#define NUMBER_OF_REFS 349
 #define EXCEL_FILENAME  "/Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"
 // end of definitions
 
@@ -2081,6 +2081,11 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     sprintf(s, "%d%%",(int) round(number_v.number*100));
     free_later(s);
     result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"0.0") == 0) {
+    s = malloc(100);
+    sprintf(s, "%0.1f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
   } else {
     return format_v;
   }
@@ -2549,9 +2554,10 @@ ExcelValue referencing_l47();
 ExcelValue common0();
 ExcelValue common1();
 ExcelValue common2();
-ExcelValue common6();
-ExcelValue common8();
+ExcelValue common3();
+ExcelValue common7();
 ExcelValue common9();
+ExcelValue common10();
 // starting the value constants
 static ExcelValue constant1 = {.type = ExcelString, .string = "Hello"};
 static ExcelValue constant2 = {.type = ExcelNumber, .number = 3.1415};
@@ -2843,18 +2849,11 @@ static ExcelValue ranges_f6_variable;
 ExcelValue ranges_f6() { if(variable_set[37] == 1) { return ranges_f6_variable; } else { return ranges_f6_default(); } }
 void set_ranges_f6(ExcelValue newValue) { variable_set[37] = 1; ranges_f6_variable = newValue; }
 
-ExcelValue referencing_a1() {
-  static ExcelValue result;
-  if(variable_set[38] == 1) { return result;}
-  result = referencing_c4();
-  variable_set[38] = 1;
-  return result;
-}
-
+ExcelValue referencing_a1() { return common0(); }
 ExcelValue referencing_a2() {
   static ExcelValue result;
   if(variable_set[39] == 1) { return result;}
-  result = referencing_c4();
+  result = referencing_a1();
   variable_set[39] = 1;
   return result;
 }
@@ -2866,15 +2865,8 @@ static ExcelValue referencing_a4_variable;
 ExcelValue referencing_a4() { if(variable_set[40] == 1) { return referencing_a4_variable; } else { return referencing_a4_default(); } }
 void set_referencing_a4(ExcelValue newValue) { variable_set[40] = 1; referencing_a4_variable = newValue; }
 
-ExcelValue referencing_b4() { return common0(); }
-ExcelValue referencing_c4() {
-  static ExcelValue result;
-  if(variable_set[42] == 1) { return result;}
-  result = add(common0(),ONE);
-  variable_set[42] = 1;
-  return result;
-}
-
+ExcelValue referencing_b4() { return common1(); }
+ExcelValue referencing_c4() { return common0(); }
 ExcelValue referencing_a5() {
   static ExcelValue result;
   if(variable_set[43] == 1) { return result;}
@@ -2886,12 +2878,12 @@ ExcelValue referencing_a5() {
 ExcelValue referencing_b8() {
   static ExcelValue result;
   if(variable_set[44] == 1) { return result;}
-  result = referencing_c4();
+  result = referencing_a1();
   variable_set[44] = 1;
   return result;
 }
 
-ExcelValue referencing_b9() { return common1(); }
+ExcelValue referencing_b9() { return common2(); }
 ExcelValue referencing_b11() { return constant16; }
 ExcelValue referencing_c11() { return constant17; }
 ExcelValue referencing_c15_default() {
@@ -3044,7 +3036,7 @@ void set_referencing_c22(ExcelValue newValue) { variable_set[68] = 1; referencin
 ExcelValue referencing_d22() {
   static ExcelValue result;
   if(variable_set[69] == 1) { return result;}
-  result = excel_index(common2(),ONE,ONE);
+  result = excel_index(common3(),ONE,ONE);
   variable_set[69] = 1;
   return result;
 }
@@ -3052,7 +3044,7 @@ ExcelValue referencing_d22() {
 ExcelValue referencing_d23() {
   static ExcelValue result;
   if(variable_set[70] == 1) { return result;}
-  result = excel_index(common2(),TWO,ONE);
+  result = excel_index(common3(),TWO,ONE);
   variable_set[70] = 1;
   return result;
 }
@@ -3060,7 +3052,7 @@ ExcelValue referencing_d23() {
 ExcelValue referencing_d24() {
   static ExcelValue result;
   if(variable_set[71] == 1) { return result;}
-  result = excel_index(common2(),THREE,ONE);
+  result = excel_index(common3(),THREE,ONE);
   variable_set[71] = 1;
   return result;
 }
@@ -3068,7 +3060,7 @@ ExcelValue referencing_d24() {
 ExcelValue referencing_d25() {
   static ExcelValue result;
   if(variable_set[72] == 1) { return result;}
-  result = excel_index(common2(),FOUR,ONE);
+  result = excel_index(common3(),FOUR,ONE);
   variable_set[72] = 1;
   return result;
 }
@@ -3938,8 +3930,8 @@ static ExcelValue referencing_e72_variable;
 ExcelValue referencing_e72() { if(variable_set[218] == 1) { return referencing_e72_variable; } else { return referencing_e72_default(); } }
 void set_referencing_e72(ExcelValue newValue) { variable_set[218] = 1; referencing_e72_variable = newValue; }
 
-ExcelValue referencing_f72() { return common6(); }
-ExcelValue referencing_g72() { return common6(); }
+ExcelValue referencing_f72() { return common7(); }
+ExcelValue referencing_g72() { return common7(); }
 ExcelValue tables_a1() {
   static ExcelValue result;
   if(variable_set[221] == 1) { return result;}
@@ -4048,7 +4040,7 @@ ExcelValue tables_h4() {
   return result;
 }
 
-ExcelValue tables_b5() { return common8(); }
+ExcelValue tables_b5() { return common9(); }
 ExcelValue tables_c5() {
   static ExcelValue result;
   if(variable_set[235] == 1) { return result;}
@@ -4154,7 +4146,7 @@ ExcelValue tables_g9() {
   return result;
 }
 
-ExcelValue tables_c10() { return common1(); }
+ExcelValue tables_c10() { return common2(); }
 ExcelValue tables_e10() {
   static ExcelValue result;
   if(variable_set[249] == 1) { return result;}
@@ -4179,7 +4171,7 @@ ExcelValue tables_g10() {
   return result;
 }
 
-ExcelValue tables_c11() { return common8(); }
+ExcelValue tables_c11() { return common9(); }
 ExcelValue tables_e11() {
   static ExcelValue result;
   if(variable_set[253] == 1) { return result;}
@@ -4212,8 +4204,8 @@ ExcelValue tables_c12() {
   return result;
 }
 
-ExcelValue tables_c13() { return common9(); }
-ExcelValue tables_c14() { return common9(); }
+ExcelValue tables_c13() { return common10(); }
+ExcelValue tables_c14() { return common10(); }
 ExcelValue tables_g17() {
   static ExcelValue result;
   if(variable_set[259] == 1) { return result;}
@@ -4342,7 +4334,7 @@ ExcelValue referencing_l47() { return BLANK; }
 ExcelValue common0() {
   static ExcelValue result;
   if(variable_set[342] == 1) { return result;}
-  result = add(referencing_a4(),ONE);
+  result = add(add(referencing_a4(),ONE),ONE);
   variable_set[342] = 1;
   return result;
 }
@@ -4350,8 +4342,7 @@ ExcelValue common0() {
 ExcelValue common1() {
   static ExcelValue result;
   if(variable_set[343] == 1) { return result;}
-  ExcelValue array0[] = {tables_b5(),tables_c5()};
-  result = sum(2, array0);
+  result = add(referencing_a4(),ONE);
   variable_set[343] = 1;
   return result;
 }
@@ -4359,6 +4350,15 @@ ExcelValue common1() {
 ExcelValue common2() {
   static ExcelValue result;
   if(variable_set[344] == 1) { return result;}
+  ExcelValue array0[] = {tables_b5(),tables_c5()};
+  result = sum(2, array0);
+  variable_set[344] = 1;
+  return result;
+}
+
+ExcelValue common3() {
+  static ExcelValue result;
+  if(variable_set[345] == 1) { return result;}
   static ExcelValue array0[16];
   array0[0] = referencing_c16();
   array0[1] = referencing_d16();
@@ -4384,13 +4384,13 @@ ExcelValue common2() {
   array1[3] = referencing_f15();
   ExcelValue array1_ev = new_excel_range(array1,1,4);
   result = excel_index(array0_ev,BLANK,excel_match(referencing_c22(),array1_ev,ZERO));
-  variable_set[344] = 1;
+  variable_set[345] = 1;
   return result;
 }
 
-ExcelValue common6() {
+ExcelValue common7() {
   static ExcelValue result;
-  if(variable_set[345] == 1) { return result;}
+  if(variable_set[346] == 1) { return result;}
   static ExcelValue array1[3];
   array1[0] = multiply(excel_equal(referencing_e72(),referencing_e68()),referencing_f68());
   array1[1] = multiply(excel_equal(referencing_e72(),referencing_e69()),referencing_f69());
@@ -4398,15 +4398,6 @@ ExcelValue common6() {
   ExcelValue array1_ev = new_excel_range(array1,3,1);
   ExcelValue array0[] = {array1_ev};
   result = sum(1, array0);
-  variable_set[345] = 1;
-  return result;
-}
-
-ExcelValue common8() {
-  static ExcelValue result;
-  if(variable_set[346] == 1) { return result;}
-  ExcelValue array0[] = {tables_b3(),tables_b4()};
-  result = sum(2, array0);
   variable_set[346] = 1;
   return result;
 }
@@ -4414,9 +4405,18 @@ ExcelValue common8() {
 ExcelValue common9() {
   static ExcelValue result;
   if(variable_set[347] == 1) { return result;}
+  ExcelValue array0[] = {tables_b3(),tables_b4()};
+  result = sum(2, array0);
+  variable_set[347] = 1;
+  return result;
+}
+
+ExcelValue common10() {
+  static ExcelValue result;
+  if(variable_set[348] == 1) { return result;}
   ExcelValue array0[] = {tables_b3(),tables_c3(),tables_d3(),tables_b4(),tables_c4(),tables_d4()};
   result = sum(6, array0);
-  variable_set[347] = 1;
+  variable_set[348] = 1;
   return result;
 }
 

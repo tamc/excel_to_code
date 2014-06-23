@@ -701,6 +701,7 @@ int test_functions() {
   assert(strcmp(text(BLANK, new_excel_string("0%")).string, "0%") == 0);
   assert(strcmp(text(new_excel_number(1.0), BLANK).string, "") == 0);
   assert(strcmp(text(new_excel_string("ASGASD"), new_excel_string("0%")).string, "ASGASD") == 0);
+  assert(strcmp(text(new_excel_number(1.1518), new_excel_string("0.0")).string, "1.2") == 0);
 
   // Test LOG
   // One argument variant assumes LOG base 10
