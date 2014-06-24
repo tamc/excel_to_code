@@ -9,7 +9,6 @@ describe ExcelToC do
     puts "Writing to #{actual}"
     command = ExcelToC.new
     command.excel_file = excel
-    command.xml_directory = File.join(actual,'xml')
     command.output_directory = File.join(actual,'c')
     command.output_name = "ExampleSpreadsheet"
     #command.cells_that_can_be_set_at_runtime = {

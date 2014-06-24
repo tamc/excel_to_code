@@ -9,7 +9,6 @@ describe ExcelToRuby do
     puts "Writing to #{actual}"
     command = ExcelToRuby.new
     command.excel_file = excel
-    command.xml_directory = File.join(actual,'xml')
     command.output_directory = File.join(actual,'ruby')
     command.output_name = "RubyExampleSpreadsheet"
     #command.cells_that_can_be_set_at_runtime = {

@@ -201,7 +201,9 @@ class ExcelToX
     # These compile and run the code version of the excel (implemented in subclasses)
     compile_code
     run_tests
-    
+
+    cleanup
+
     log.info "The generated code is available in #{File.join(output_directory)}"
   end
   
@@ -210,7 +212,10 @@ class ExcelToX
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
     
     self.output_directory ||= Dir.pwd
-    self.xml_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'xml')
+    unless self.xml_directory
+      self.xml_directory ||= Dir.mktmpdir
+      @delete_xml_directory_at_end = true
+    end
     
     self.output_name ||= "Excelspreadsheet"
     
@@ -230,7 +235,7 @@ class ExcelToX
     self.extract_repeated_parts_of_formulae = true if @extract_repeated_parts_of_formulae == nil
     self.should_inline_formulae_that_are_only_used_once = true if @should_inline_formulae_that_are_only_used_once == nil
 
-    # This setting is used for debugging, and makes the system only do the conversion on a subset of the the
+    # This setting is used for debugging, and makes the system only do the conversion on a subset of the worksheets
     if self.isolate
       self.isolate = [self.isolate] unless self.isolate.is_a?(Array)
       self.cells_to_keep ||= {}
@@ -241,7 +246,6 @@ class ExcelToX
       log.warn "Isolating #{@isolate} worksheet(s). No other sheets will be converted"
     end
   end
-  
 
   # Creates any directories that are needed
   def sort_out_output_directories    
@@ -1318,6 +1322,11 @@ class ExcelToX
     @ruby_module_name = output_name.sub(/^[a-z\d]*/) { $&.capitalize }
     @ruby_module_name = @ruby_module_name.gsub(/(?:_|(\/))([a-z\d]*)/i) { "#{$1}#{$2.capitalize}" }.gsub('/', '::')
     @ruby_module_name
+  end
+
+  def cleanup
+    log.info "Cleaning up"
+    FileUtils.remove_entry(self.xml_directory) if @delete_xml_directory_at_end
   end
 
 end
