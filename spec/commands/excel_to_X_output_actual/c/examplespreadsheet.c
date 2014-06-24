@@ -2086,8 +2086,13 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     sprintf(s, "%0.1f",number_v.number);
     free_later(s);
     result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"0000") == 0) {
+    s = malloc(100);
+    sprintf(s, "%04.0f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
   } else {
-    return format_v;
+    return new_excel_string("Text format not recognised");
   }
 
   // inspect_excel_value(result);
