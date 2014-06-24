@@ -120,16 +120,6 @@ class ExcelToX
   # cells on tha sheet and nothing else.
   attr_accessor :isolate
 
-  # Deprecated
-  def run_in_memory=(boolean)
-    $stderr.puts "The run_in_memory switch is deprecated (it is now always true). Please remove calls to it"
-  end 
-  
-  # Deprecated
-  def intermediate_directory=(dirname)
-    $stderr.puts "The intermediate_directory switch is deprecated (nowdays, no intermediate files are written). Please remove calls to it"
-  end
-
   # This is the main method. Once all the above attributes have been set, it should be called to actually do the work.
   def go!
     # This sorts out the settings
