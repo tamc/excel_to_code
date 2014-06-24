@@ -19,6 +19,8 @@ module ExcelFunctions
       "#{(number * 100).round}%"
     when /0\.(0+)/
       sprintf("%.#{$1.length}f", number)
+    when /^(0+)$/
+      sprintf("%0#{$1.length}.0f", number)
     else
       raise ExcelToCodeException.new("in TEXT function format #{format} not yet supported by excel_to_code")
     end

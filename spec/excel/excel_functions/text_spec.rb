@@ -14,6 +14,12 @@ describe "ExcelFunctions: TEXT" do
     FunctionTest.text(1.134, "0.00").should == "1.13"
   end
 
+  it "should turn a number into an integer with extra zeros if needed if 0000" do
+    # FIXME: Excel rounds up, programs see to round to even
+    FunctionTest.text(12.51, "0000").should == "0013"
+    FunctionTest.text(12500.51, "0000").should == "12501"
+  end
+
   it "should pass non-numbers through unchanged" do
     FunctionTest.text("Asdasddf","0%").should == "Asdasddf"
   end
