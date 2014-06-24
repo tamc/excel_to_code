@@ -2,7 +2,6 @@ require_relative '../src/excel_to_code'
 this_directory = File.dirname(__FILE__)
 command = ExcelToC.new
 command.excel_file = File.join(this_directory,'arrayformulatest.xlsx')
-command.output_directory = this_directory
 command.output_name = 'arrayformulatest'
 command.actually_compile_code = true
 command.actually_run_tests = true

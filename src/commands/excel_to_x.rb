@@ -209,7 +209,7 @@ class ExcelToX
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
     
-    self.output_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),language)
+    self.output_directory ||= Dir.pwd
     self.xml_directory ||= File.join(File.dirname(excel_file),File.basename(excel_file,".*"),'xml')
     
     self.output_name ||= "Excelspreadsheet"
