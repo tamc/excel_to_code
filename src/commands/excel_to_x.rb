@@ -1,6 +1,7 @@
 # coding: utf-8
 require 'fileutils'
 require 'logger'
+require 'tmpdir'
 require_relative '../excel_to_code'
 
 # FIXME: Correct case for all worksheet references
