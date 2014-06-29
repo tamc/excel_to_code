@@ -140,6 +140,12 @@ class MapFormulaeToValues
     ast.replace(formula_value( ast[1],*values))
   end
 
+  def map_text(ast)
+    values = ast[2..-1].map { |a| value(a, nil) }
+    return if values.any? { |a| a == :not_a_value }
+    ast.replace(formula_value( ast[1],*values))
+  end
+
   def map_if(ast)
     condition_ast = ast[2]
     true_option_ast = ast[3]

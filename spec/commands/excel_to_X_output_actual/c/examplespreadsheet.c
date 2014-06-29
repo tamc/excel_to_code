@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
+#include <locale.h>
 
 #ifndef NUMBER_OF_REFS
   #define NUMBER_OF_REFS 0
@@ -2039,6 +2040,8 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   	return new_excel_number(sum);
 }
 
+// FIXME: This could do with being done properly, rather than
+// on a case by case basis.
 static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
   CHECK_FOR_PASSED_ERROR(number_v)
   CHECK_FOR_PASSED_ERROR(format_v)
@@ -2078,12 +2081,58 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
   if(strcmp(format_v.string,"0%") == 0) {
     // FIXME: Too little? 
     s = malloc(100);
-    sprintf(s, "%d%%",(int) round(number_v.number*100));
+    sprintf(s, "%0.0f%%", number_v.number*100);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"0.0%") == 0) {
+    // FIXME: Too little? 
+    s = malloc(100);
+    sprintf(s, "%0.1f%%", number_v.number*100);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"0") == 0) {
+    s = malloc(100);
+    sprintf(s, "%0.0f",number_v.number);
     free_later(s);
     result = new_excel_string(s);
   } else if(strcmp(format_v.string,"0.0") == 0) {
     s = malloc(100);
     sprintf(s, "%0.1f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"0.00") == 0) {
+    s = malloc(100);
+    sprintf(s, "%0.2f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"#,##") == 0) {
+    s = malloc(100);
+    setlocale(LC_ALL,"");
+    sprintf(s, "%'0.0f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"#,##0") == 0) {
+    s = malloc(100);
+    setlocale(LC_ALL,"");
+    sprintf(s, "%'0.0f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"#,##0.0") == 0) {
+    s = malloc(100);
+    setlocale(LC_ALL,"");
+    sprintf(s, "%'0.1f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"#,##0.00") == 0) {
+    s = malloc(100);
+    setlocale(LC_ALL,"");
+    sprintf(s, "%'0.2f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"#,##0.000") == 0) {
+    s = malloc(100);
+    setlocale(LC_ALL,"");
+    sprintf(s, "%'0.3f",number_v.number);
     free_later(s);
     result = new_excel_string(s);
   } else if(strcmp(format_v.string,"0000") == 0) {

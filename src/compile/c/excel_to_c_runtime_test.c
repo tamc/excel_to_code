@@ -698,12 +698,18 @@ int test_functions() {
   // Test TEXT
   assert(strcmp(text(new_excel_number(1.0), new_excel_string("0%")).string, "100%") == 0);
   assert(strcmp(text(new_excel_string("1"), new_excel_string("0%")).string, "100%") == 0);
+  assert(strcmp(text(new_excel_string("0.00251"), new_excel_string("0.0%")).string, "0.3%") == 0);
   assert(strcmp(text(BLANK, new_excel_string("0%")).string, "0%") == 0);
   assert(strcmp(text(new_excel_number(1.0), BLANK).string, "") == 0);
   assert(strcmp(text(new_excel_string("ASGASD"), new_excel_string("0%")).string, "ASGASD") == 0);
+  assert(strcmp(text(new_excel_number(1.1518), new_excel_string("0")).string, "1") == 0);
   assert(strcmp(text(new_excel_number(1.1518), new_excel_string("0.0")).string, "1.2") == 0);
+  assert(strcmp(text(new_excel_number(1.1518), new_excel_string("0.00")).string, "1.15") == 0);
   assert(strcmp(text(new_excel_number(12.51), new_excel_string("0000")).string, "0013") == 0);
   assert(strcmp(text(new_excel_number(125101), new_excel_string("0000")).string, "125101") == 0);
+  assert(strcmp(text(new_excel_number(123456789.123456), new_excel_string("#,##")).string, "123,456,789") == 0);
+  assert(strcmp(text(new_excel_number(123456789.123456), new_excel_string("#,##0")).string, "123,456,789") == 0);
+  assert(strcmp(text(new_excel_number(123456789.123456), new_excel_string("#,##0.0")).string, "123,456,789.1") == 0);
 
   // Test LOG
   // One argument variant assumes LOG base 10

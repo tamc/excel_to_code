@@ -46,3 +46,5 @@ There are some how to guides in the doc folder.
 5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
 6. The generated C version does not multithread and will give bad results if you try
 7. Newlines are removed from strings
+8. The generated code uses floating point, rather than fully precise arithmetic, so results can differ slightly
+9. The generated code uses the sprintf approach to rounding (even-odd) rather than excel's 0.5 rounds away from zero.

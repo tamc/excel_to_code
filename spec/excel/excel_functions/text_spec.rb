@@ -6,12 +6,22 @@ describe "ExcelFunctions: TEXT" do
     FunctionTest.text(1, "0%").should == "100%"
     FunctionTest.text(0.196, "0%").should == "20%"
     FunctionTest.text("0.196", "0%").should == "20%"
+    FunctionTest.text("0.196", "0.0%").should == "19.6%"
   end
 
   it "should turn a number into a float with the appropriate number of decimal places if 0.0" do
+    FunctionTest.text(1.184, "0").should == "1"
+    FunctionTest.text(1.184, 0).should == "1"
     FunctionTest.text(1.184, "0.0").should == "1.2"
     FunctionTest.text(1.134, "0.0").should == "1.1"
     FunctionTest.text(1.134, "0.00").should == "1.13"
+    FunctionTest.text(1.134, "0.000").should == "1.134"
+  end
+
+  it "should turn a number into a float commas separating thousands if #,##" do
+    FunctionTest.text(123456789.123456, "#,##").should == "123,456,789"
+    FunctionTest.text(123456789.123456, "#,##0").should == "123,456,789"
+    FunctionTest.text(123456789.123456, "#,##0.0").should == "123,456,789.1"
   end
 
   it "should turn a number into an integer with extra zeros if needed if 0000" do

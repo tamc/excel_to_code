@@ -1,7 +1,7 @@
 # Head
 
 - Now replaces table references that have been interpreted as named references
-- Implemented 0.0 and 0000 as formats in the TEXT function
+- Implemented 0.0 and 0000 and #,## as formats in the TEXT function
 - RIGHT and LEFT can now be applied to an array
 - Fixed INDEX when passed zero as a row or column number when only one row or column wide
 - Implemented the ISERR() function in ruby and in C
