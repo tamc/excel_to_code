@@ -2052,6 +2052,10 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     return new_excel_string("");
   }
 
+  if(format_v.type == ExcelNumber && format_v.number == 0) {
+    format_v = new_excel_string("0");
+  }
+
   if(number_v.type == ExcelString) {
  	 	s = number_v.string;
 		if (s == NULL || *s == '\0' || isspace(*s)) {

@@ -703,6 +703,7 @@ int test_functions() {
   assert(strcmp(text(new_excel_number(1.0), BLANK).string, "") == 0);
   assert(strcmp(text(new_excel_string("ASGASD"), new_excel_string("0%")).string, "ASGASD") == 0);
   assert(strcmp(text(new_excel_number(1.1518), new_excel_string("0")).string, "1") == 0);
+  assert(strcmp(text(new_excel_number(1.1518), ZERO).string, "1") == 0);
   assert(strcmp(text(new_excel_number(1.1518), new_excel_string("0.0")).string, "1.2") == 0);
   assert(strcmp(text(new_excel_number(1.1518), new_excel_string("0.00")).string, "1.15") == 0);
   assert(strcmp(text(new_excel_number(12.51), new_excel_string("0000")).string, "0013") == 0);
