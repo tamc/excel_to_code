@@ -221,7 +221,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * LCM -- Returns the least common multiple
 * LN -- Returns the natural logarithm of a number -- _R_ _C_
 * LOG -- Returns the logarithm of a number to a specified base
-* LOG10 -- Returns the base-10 logarithm of a number
+* LOG10 -- Returns the base-10 logarithm of a number -- _R_ _C_ (just converted into LOG() with a single argument)
 * MDETERM -- Returns the matrix determinant of an array
 * MINVERSE -- Returns the matrix inverse of an array
 * MMULT -- Returns the matrix product of two arrays -- _R_ _C_ but posibly only when as array formula

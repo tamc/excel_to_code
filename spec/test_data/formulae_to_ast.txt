@@ -167,3 +167,6 @@ SUM(IFERROR((IND.Tech!$AJ$94:$DC$94=$F$31)*(IND.Tech!$AJ$93:$DC$93=F$32)*(IND.Te
 
 # Parses percent suffixes
 ROUND(24.35,0)%	[:percentage, [:function, "ROUND", [:number, "24.35"], [:number, "0"]]]
+
+# Parses LOG10 functions
+LOG10(300)	[:function, "LOG10", [:number, "300"]]

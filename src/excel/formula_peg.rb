@@ -27,7 +27,7 @@ class Formula < RubyPeg
   
   def function
     node :function do
-      terminal(/[A-Z]+/) && ignore { terminal("(") } && space && optional { argument } && any_number_of { (space && ignore { terminal(",") } && space && argument) } && space && ignore { terminal(")") }
+      terminal(/(LOG10)|[A-Z]+/) && ignore { terminal("(") } && space && optional { argument } && any_number_of { (space && ignore { terminal(",") } && space && argument) } && space && ignore { terminal(")") }
     end
   end
   

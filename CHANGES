@@ -5,6 +5,7 @@
 - RIGHT and LEFT can now be applied to an array
 - Fixed INDEX when passed zero as a row or column number when only one row or column wide
 - Implemented the ISERR() function in ruby and in C
+- Implmeneted the LOG10() function
 
 # 0.2.28 - 2014 June 16th
 

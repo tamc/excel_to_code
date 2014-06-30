@@ -57,6 +57,7 @@ class MapFormulaeToC < MapValuesToC
     :'LEFT2' => 'left',
     :'LEN' => 'len',
     :'LN' => 'ln',
+    :'LOG10' => 'excel_log',
     :'LOG1' => 'excel_log',
     :'LOG2' => 'excel_log_2',
     :'MATCH2' => 'excel_match_2',
