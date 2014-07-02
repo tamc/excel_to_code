@@ -1,5 +1,7 @@
 # Head
 
+# 0.2.29 - 2014 July 2nd
+
 - Now replaces table references that have been interpreted as named references
 - Implemented 0.0 and 0000 and #,## as formats in the TEXT function
 - RIGHT and LEFT can now be applied to an array
