@@ -1,5 +1,7 @@
 # Head
 
+- Implemented 0.000 in C version of TEXT function (already works in ruby version)
+
 # 0.2.29 - 2014 July 2nd
 
 - Now replaces table references that have been interpreted as named references
