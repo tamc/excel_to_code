@@ -1,5 +1,8 @@
 # Head
 
+- Added --rakefile and ---makefile and --no-rakefile and --no-makefile switches to excel_to_c
+- By default, now generates a Rakefile
+
 # 0.2.30 - 2014 July 3rd
 
 - Implemented 0.000 in C version of TEXT function (already works in ruby version)

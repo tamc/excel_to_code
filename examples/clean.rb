@@ -5,6 +5,7 @@ include FileUtils
 exit unless File.expand_path(Dir.pwd) == File.expand_path(File.dirname(__FILE__))
 
 rm_f "Makefile"
+rm_f "Rakefile"
 
 %w{offsets model offsetindirect model2 arrayformulatest global 2050Model 2050Model-html eu-html blank eu smallnumbers stringexample getsetranges excelspreadsheet string utf8-strings utf8strings rangesinsteadofcells betterif rangearrayformulaesa keepingtables}.each do |name|
   rm_f "#{name}.c"
