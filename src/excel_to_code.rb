@@ -1,5 +1,5 @@
 class ExcelToCode
-  def self.version() "0.2.29" end
+  def self.version() "0.2.30" end
 end
 
 require_relative 'commands'
