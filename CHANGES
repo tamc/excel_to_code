@@ -1,10 +1,12 @@
 # Head
 
+# 0.3.0 - 2014 July 24th
+
 - Shim extension not needed on generated Ruby to C interface code (BREAKING CHANGE), which means that excel_to_c generates a more-or-less drop in replacement for excel_to_ruby 
 - Added --rakefile and ---makefile and --no-rakefile and --no-makefile switches to excel_to_c
 - By default, now generates a Rakefile (BREAKING CHANGE)
 
-# 0.2.30 - 2014 July 3rd
+# 0.2.30 - 2014 July 24th
 
 - Implemented 0.000 in C version of TEXT function (already works in ruby version)
 
