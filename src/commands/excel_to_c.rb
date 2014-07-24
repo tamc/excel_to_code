@@ -180,7 +180,7 @@ class ExcelToC < ExcelToX
 require 'ffi'
 require 'singleton'
 
-class #{ruby_module_name}Shim
+class #{ruby_module_name}
 
   # WARNING: this is not thread safe
   def initialize
@@ -188,7 +188,7 @@ class #{ruby_module_name}Shim
   end
 
   def reset
-    #{ruby_module_name}.reset
+    C.reset
   end
 
   def method_missing(name, *arguments)
@@ -202,8 +202,8 @@ class #{ruby_module_name}Shim
   end
 
   def get(name)
-    return 0 unless #{ruby_module_name}.respond_to?(name)
-    ruby_value_from_excel_value(#{ruby_module_name}.send(name))
+    return 0 unless C.respond_to?(name)
+    ruby_value_from_excel_value(C.send(name))
   end
 
   def ruby_value_from_excel_value(excel_value)
@@ -216,11 +216,11 @@ class #{ruby_module_name}Shim
       r = excel_value[:rows]
       c = excel_value[:columns]
       p = excel_value[:array]
-      s = #{ruby_module_name}::ExcelValue.size
+      s = C::ExcelValue.size
       a = Array.new(r) { Array.new(c) }
       (0...r).each do |row|
         (0...c).each do |column|
-          a[row][column] = ruby_value_from_excel_value(#{ruby_module_name}::ExcelValue.new(p + (((row*c)+column)*s)))
+          a[row][column] = ruby_value_from_excel_value(C::ExcelValue.new(p + (((row*c)+column)*s)))
         end
       end 
       return a
@@ -233,11 +233,11 @@ class #{ruby_module_name}Shim
   def set(name, ruby_value)
     name = name.to_s
     name = "set_\#{name[0..-2]}" if name.end_with?('=')
-    return false unless #{ruby_module_name}.respond_to?(name)
-    #{ruby_module_name}.send(name, excel_value_from_ruby_value(ruby_value))
+    return false unless C.respond_to?(name)
+    C.send(name, excel_value_from_ruby_value(ruby_value))
   end
 
-  def excel_value_from_ruby_value(ruby_value, excel_value = #{ruby_module_name}::ExcelValue.new)
+  def excel_value_from_ruby_value(ruby_value, excel_value = C::ExcelValue.new)
     case ruby_value
     when Numeric
       excel_value[:type] = :ExcelNumber
@@ -261,10 +261,10 @@ class #{ruby_module_name}Shim
         excel_value[:columns] = ruby_value.size
       end
       ruby_values = ruby_value.flatten
-      pointer = FFI::MemoryPointer.new(#{ruby_module_name}::ExcelValue, ruby_values.size)
+      pointer = FFI::MemoryPointer.new(C::ExcelValue, ruby_values.size)
       excel_value[:array] = pointer
       ruby_values.each.with_index do |v,i|
-        excel_value_from_ruby_value(v, #{ruby_module_name}::ExcelValue.new(pointer[i]))
+        excel_value_from_ruby_value(v, C::ExcelValue.new(pointer[i]))
       end
     when Symbol
       excel_value[:type] = :ExcelError
@@ -275,28 +275,26 @@ class #{ruby_module_name}Shim
     excel_value
   end
 
-end
-    
 
-module #{ruby_module_name}
-  extend FFI::Library
-  ffi_lib  File.join(File.dirname(__FILE__),FFI.map_library_name('#{name}'))
-  ExcelType = enum :ExcelEmpty, :ExcelNumber, :ExcelString, :ExcelBoolean, :ExcelError, :ExcelRange
-                
-  class ExcelValue < FFI::Struct
-    layout :type, ExcelType,
-  	       :number, :double,
-  	       :string, :pointer,
-         	 :array, :pointer,
-           :rows, :int,
-           :columns, :int             
-  end
+  module C 
+    extend FFI::Library
+    ffi_lib  File.join(File.dirname(__FILE__),FFI.map_library_name('#{name}'))
+    ExcelType = enum :ExcelEmpty, :ExcelNumber, :ExcelString, :ExcelBoolean, :ExcelError, :ExcelRange
+                  
+    class ExcelValue < FFI::Struct
+      layout :type, ExcelType,
+             :number, :double,
+             :string, :pointer,
+             :array, :pointer,
+             :rows, :int,
+             :columns, :int             
+    end
   
 END
     o.puts code
     o.puts
-    o.puts "  # use this function to reset all cell values"
-    o.puts "  attach_function 'reset', [], :void"
+    o.puts "    # use this function to reset all cell values"
+    o.puts "    attach_function 'reset', [], :void"
 
 
     worksheets do |name, xml_filename|
@@ -307,7 +305,7 @@ END
       if settable_refs
         settable_refs = @formulae.keys.select { |k| k.first == name }.map { |k| k.last } if settable_refs == :all
         settable_refs.each do |ref|
-          o.puts "  attach_function 'set_#{c_name}_#{ref.downcase}', [ExcelValue.by_value], :void"
+          o.puts "    attach_function 'set_#{c_name}_#{ref.downcase}', [ExcelValue.by_value], :void"
         end
       end
 
@@ -321,26 +319,27 @@ END
       end
               
       getable_refs.each do |ref|
-        o.puts "  attach_function '#{c_name}_#{ref.downcase}', [], ExcelValue.by_value"
+        o.puts "    attach_function '#{c_name}_#{ref.downcase}', [], ExcelValue.by_value"
       end
         
-      o.puts "  # end of #{name}"
+      o.puts "    # end of #{name}"
     end
 
-    o.puts "  # Start of named references"
+    o.puts "    # Start of named references"
     # Getters
     @named_references_to_keep.each do |name|
-      o.puts "  attach_function '#{c_name_for(name)}', [], ExcelValue.by_value"
+      o.puts "    attach_function '#{c_name_for(name)}', [], ExcelValue.by_value"
     end
 
     # Setters
     @named_references_that_can_be_set_at_runtime.each do |name|
-      o.puts "  attach_function 'set_#{c_name_for(name)}', [ExcelValue.by_value], :void"
+      o.puts "    attach_function 'set_#{c_name_for(name)}', [ExcelValue.by_value], :void"
     end
 
-    o.puts "  # End of named references"
+    o.puts "    # End of named references"
 
-    o.puts "end"  
+    o.puts "  end # C module"  
+    o.puts "end # #{ruby_module_name}"  
     close(o)
   end
   
@@ -360,7 +359,7 @@ END
     o.puts "    methods = methods_matching(/^test_/)"
     o.puts "  end" 
     o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
-    o.puts "  def init_spreadsheet; #{ruby_module_name}Shim.new end"
+    o.puts "  def init_spreadsheet; #{ruby_module_name}.new end"
     
     CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
     o.puts "end"

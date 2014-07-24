@@ -2109,6 +2109,11 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     sprintf(s, "%0.2f",number_v.number);
     free_later(s);
     result = new_excel_string(s);
+  } else if(strcmp(format_v.string,"0.000") == 0) {
+    s = malloc(100);
+    sprintf(s, "%0.3f",number_v.number);
+    free_later(s);
+    result = new_excel_string(s);
   } else if(strcmp(format_v.string,"#,##") == 0) {
     s = malloc(100);
     setlocale(LC_ALL,"");

@@ -9,7 +9,7 @@ class TestExampleSpreadsheet < Minitest::Unit::TestCase
     methods = methods_matching(/^test_/)
   end
   def worksheet; @worksheet ||= init_spreadsheet; end
-  def init_spreadsheet; ExampleSpreadsheetShim.new end
+  def init_spreadsheet; ExampleSpreadsheet.new end
   def test_valuetypes_a1; assert_equal(true, worksheet.valuetypes_a1); end
   def test_valuetypes_a2; assert_equal("Hello", worksheet.valuetypes_a2); end
   def test_valuetypes_a3; assert_in_delta(1.0, worksheet.valuetypes_a3, 0.002); end
