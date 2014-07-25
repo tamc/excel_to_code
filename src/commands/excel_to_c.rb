@@ -109,65 +109,74 @@ class ExcelToC < ExcelToX
   # is set properly
   def write_build_script
     log.info "Writing Build script"
+    write_makefile if create_makefile
+    write_rakefile if create_rakefile
+  end
+
+  def write_makefile
+    log.info "Writing Makefile"
 
     name = output_name.downcase
+    o = output("Makefile")
 
-    if create_makefile 
-      log.info "Writing Makefile"
-      o = output("Makefile")
-      
-      # Target for shared library
-      shared_library_name = FFI.map_library_name(name)
-      o.puts "#{shared_library_name}: #{name}.o"
-      o.puts "\tgcc -shared -o #{shared_library_name} #{name}.o"
-      o.puts
-      
-      # Target for compiled version
-      o.puts "#{name}.o:"
-      o.puts "\tgcc -fPIC -c #{name}.c"
-      o.puts
-      
-      # Target for cleaning
-      o.puts "clean:"
-      o.puts "\trm #{name}.o"
-      o.puts "\trm #{shared_library_name}"
-      
-      close(o)
-    end
+    # Target for shared library
+    shared_library_name = FFI.map_library_name(name)
+    o.puts "#{shared_library_name}: #{name}.o"
+    o.puts "\tgcc -shared -o #{shared_library_name} #{name}.o"
+    o.puts
 
-    if create_rakefile
-      log.info "Writing Rakefile"
-      o = output("Rakefile")
-      o.puts "require 'ffi'"
-      o.puts ""
-      o.puts "this_directory = File.dirname(__FILE__)"
-      o.puts ""
-      o.puts "COMPILER = 'gcc'"
-      o.puts "COMPILE_FLAGS = '-fPIC'"
-      o.puts "SHARED_LIBRARY_FLAGS = '-shared -fPIC'"
-      o.puts ""
-      o.puts "OUTPUT = FFI.map_library_name '#{name}'"
-      o.puts "OUTPUT_DIR = this_directory" 
-      o.puts "SOURCE = '#{name}.c'"
-      o.puts "OBJECT = '#{name}.o'"
-      o.puts ""
-      o.puts "task :default => [:build]"
-      o.puts ""
-      o.puts "desc 'Build the 2050 model, then install it'"
-      o.puts "task :build => [OUTPUT]"
-      o.puts ""
-      o.puts "file OUTPUT => OBJECT do"
-      o.puts '  puts "Turning #{OBJECT} and putting it in #{OUTPUT_DIR} as #{OUTPUT}"'
-      o.puts '  puts "Note that this is a really large c file, it may take tens of minutes to compile."'
-      o.puts '  sh "#{COMPILER} #{SHARED_LIBRARY_FLAGS} -o #{File.join(OUTPUT_DIR,OUTPUT)} #{OBJECT}"'
-      o.puts 'end'
-      o.puts ''
-      o.puts 'file OBJECT => SOURCE do'
-      o.puts '  puts "Building #{SOURCE}"'
-      o.puts '  puts "Note that this is a really large c file, it may take tens of minutes to compile."'
-      o.puts '  sh "#{COMPILER} #{COMPILE_FLAGS} -o #{OBJECT} -c #{SOURCE}"'
-      o.puts 'end'
-    end
+    # Target for compiled version
+    o.puts "#{name}.o:"
+    o.puts "\tgcc -fPIC -c #{name}.c"
+    o.puts
+
+    # Target for cleaning
+    o.puts "clean:"
+    o.puts "\trm #{name}.o"
+    o.puts "\trm #{shared_library_name}"
+
+    close(o)
+  end
+
+  def write_rakefile
+    log.info "Writing Rakefile"
+
+    o = output("Rakefile")
+    name = output_name.downcase
+    o.puts "require 'ffi'"
+    o.puts
+
+    o.puts "this_directory = File.dirname(__FILE__)"
+    o.puts
+    o.puts "COMPILER = 'gcc'"
+    o.puts "COMPILE_FLAGS = '-fPIC'"
+    o.puts "SHARED_LIBRARY_FLAGS = '-shared -fPIC'"
+    o.puts
+
+    o.puts "OUTPUT = FFI.map_library_name '#{name}'"
+    o.puts "OUTPUT_DIR = this_directory" 
+    o.puts "SOURCE = '#{name}.c'"
+    o.puts "OBJECT = '#{name}.o'"
+    o.puts
+
+    o.puts "task :default => [:build]"
+    o.puts
+    o.puts "desc 'Build the 2050 model, then install it'"
+    o.puts "task :build => [OUTPUT]"
+    o.puts
+
+    o.puts "file OUTPUT => OBJECT do"
+    o.puts '  puts "Turning #{OBJECT} and putting it in #{OUTPUT_DIR} as #{OUTPUT}"'
+    o.puts '  puts "Note that this is a really large c file, it may take tens of minutes to compile."'
+    o.puts '  sh "#{COMPILER} #{SHARED_LIBRARY_FLAGS} -o #{File.join(OUTPUT_DIR,OUTPUT)} #{OBJECT}"'
+    o.puts 'end'
+    o.puts
+
+    o.puts 'file OBJECT => SOURCE do'
+    o.puts '  puts "Building #{SOURCE}"'
+    o.puts '  puts "Note that this is a really large c file, it may take tens of minutes to compile."'
+    o.puts '  sh "#{COMPILER} #{COMPILE_FLAGS} -o #{OBJECT} -c #{SOURCE}"'
+    o.puts 'end'
   end
   
   def write_fuby_ffi_interface
@@ -369,8 +378,11 @@ END
   
   def compile_code
     return unless actually_compile_code || actually_run_tests
-    puts "Compiling the resulting c code"
-    puts `cd #{File.join(output_directory)}; make clean; make`
+    name = output_name.downcase
+    log.info "Compiling"
+    puts `cd #{output_directory}`
+    puts `gcc -fPIC -o #{name}.o -c #{name}.c`
+    puts `gcc -shared -fPIC -o #{FFI.map_library_name(name)} #{name}.o`
   end
   
   def run_tests
