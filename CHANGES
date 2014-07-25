@@ -1,5 +1,9 @@
 # Head
 
+# 0.3.1 - 2014 July 25th
+
+- Fixed so that compiling and testing works even if --no-rakefile is specified
+
 # 0.3.0 - 2014 July 24th
 
 - Shim extension not needed on generated Ruby to C interface code (BREAKING CHANGE), which means that excel_to_c generates a more-or-less drop in replacement for excel_to_ruby 
