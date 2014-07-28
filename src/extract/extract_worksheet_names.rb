@@ -1,23 +1,39 @@
-require 'nokogiri'
+require 'ox'
 
-class ExtractWorksheetNames < Nokogiri::XML::SAX::Document 
+class ExtractWorksheetNames < ::Ox::Sax
 
-    attr_accessor :input, :output
+    attr_accessor :output
   
     def self.extract(*args)
       self.new.extract(*args)
     end
 
-    def extract(input)
-      @input, @output = input, {}
-      parser = Nokogiri::XML::SAX::Parser.new(self)
-      parser.parse(input)
-      output
+    def extract(input_xml)
+      @output = {}
+      @state = :not_parsing
+      Ox.sax_parse(self, input_xml, :convert_special => true)
+      @output
     end
   
-  def start_element(name,attributes)
-    return false unless name == "sheet"
-    output[attributes.assoc('name').last] = attributes.assoc('r:id').last
+  def start_element(name)
+    return false unless name == :sheet
+    @state = :parsing
+  end
+
+  def attr(attr_name, value)
+    return unless @state == :parsing
+    case attr_name
+    when :name
+      @name = value
+    when :"r:id"
+      @rid = value
+    end
+  end
+
+  def end_element(name)
+    return false unless name == :sheet
+    output[@name] = @rid
+    @state = :not_parsing
   end
   
 end
