@@ -78,3 +78,5 @@ examples/test_betterif.rb
 examples/betterif
 
 *.swo
+
+examples/Rakefile
