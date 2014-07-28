@@ -1,5 +1,9 @@
 # Head
 
+# 0.3.2 - 2014 July 28th
+
+- Replaced Nokogiri with Ox
+
 # 0.3.1 - 2014 July 25th
 
 - Fixed so that compiling and testing works even if --no-rakefile is specified

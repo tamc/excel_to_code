@@ -1,7 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'nokogiri'
-gem 'ox' # Will soon replace nokogiri
+gem 'ox' 
 gem 'ffi'
 gem 'rubypeg'
 
