@@ -5,7 +5,6 @@ Gem::Specification.new do |s|
   s.version = ExcelToCode.version
   s.license = "MIT"
   s.add_runtime_dependency 'rubypeg', '~> 0'
-  s.add_runtime_dependency 'nokogiri', '~> 1.5', '>= 1.5.0'
   s.add_runtime_dependency 'rspec', '~> 2.7', '>= 2.7.0'
   s.add_runtime_dependency 'ffi', '~> 1.0', '>= 1.0.11'
   s.add_runtime_dependency 'ox', '~> 2.0', '>= 2.0.12'
