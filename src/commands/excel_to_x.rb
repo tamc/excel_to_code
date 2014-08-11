@@ -877,7 +877,7 @@ class ExcelToX
         @named_references_to_keep << name
       end
     end
-
+    @named_references_to_keep.uniq!
   end
     
   def simplify(cells = @formulae)
