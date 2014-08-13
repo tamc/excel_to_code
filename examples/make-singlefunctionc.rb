@@ -6,6 +6,6 @@ command.output_directory = this_directory
 command.output_name = 'singlefunctionc'
 command.actually_compile_code = true
 command.actually_run_tests = true
-command.named_references_that_can_be_set_at_runtime = [:input]
-command.named_references_to_keep = [:output]
+command.named_references_that_can_be_set_at_runtime = [:input, :inputs]
+command.named_references_to_keep = [:output, :outputs]
 command.go!

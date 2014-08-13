@@ -3,8 +3,8 @@ require 'singleton'
 
 class Singlefunctionc
 
-  INPUT_NAMES = {"input"=>0}
-  OUTPUT_NAMES = ["output", "input"]
+  INPUT_NAMES = {"input"=>0, "inputs"=>1}
+  OUTPUT_NAMES = ["output", "outputs", "input", "inputs"]
 
   def initialize
     reset
@@ -12,7 +12,7 @@ class Singlefunctionc
 
   def reset
     @need_to_recalculate = true
-    @inputs = [100.0] # Defaults
+    @inputs = [100.0, [[10.0, 20.0, 30.0, 40.0]]] # Defaults
     @outputs = {}
     C.reset
   end
@@ -129,6 +129,6 @@ class Singlefunctionc
     
     # use this function to reset all cell values
     attach_function 'reset', [], :void
-    attach_function 'run', [ExcelValue.by_value], :pointer
+    attach_function 'run', [ExcelValue.by_value, ExcelValue.by_value], :pointer
   end # C module
 end # Singlefunctionc

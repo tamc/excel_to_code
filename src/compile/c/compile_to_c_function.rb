@@ -10,21 +10,31 @@ class CompileToCFunction
     self.new.rewrite(*args)
   end
   
-  def rewrite(formulae, sheet_names, output)
+  def rewrite(formulae, sheet_names, output, order = formulae.keys)
     @variable_set_counter ||= 0
 
     mapper = MapFormulaeToCFunction.new
     mapper.sheet_names = sheet_names
-    formulae.each do |ref, ast|
+
+    order.each do |ref|
+      ast = formulae[ref]
+      next unless ast
       begin
         worksheet = ref.first
         cell = ref.last
         mapper.worksheet = worksheet
+        mapper.counter = @variable_set_counter
+
         worksheet_c_name = mapper.sheet_names[worksheet.to_s] || worksheet.to_s
         calculation = mapper.map(ast)
         name = worksheet_c_name.length > 0 ? "#{worksheet_c_name}_#{cell.downcase}" : cell.downcase
 
+        mapper.initializers.each do |i|
+          output.puts "  #{i}".gsub(/^  static ExcelValue/,'  ExcelValue')
+        end
+
         output.puts "  ExcelValue #{name} = #{calculation};"
+        @variable_set_counter = mapper.counter
         mapper.reset
       rescue Exception => e
         puts "Exception at #{ref} #{ast}"

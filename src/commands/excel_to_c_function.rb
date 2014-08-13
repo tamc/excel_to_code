@@ -35,6 +35,8 @@ class ExcelToCFunction < ExcelToC
     end
 
     o.puts "void * run(#{arguments.join(',')}) {"
+    o.puts
+    o.puts "  // Transfer arguments into local variables"
 
     formulae_to_include = @formulae.dup
 
@@ -42,6 +44,14 @@ class ExcelToCFunction < ExcelToC
       ast = @named_references[ref]
       case ast[0]
       when :array
+        cols = ast[1].length-1
+        ast[1..-1].map.with_index do |row,j|
+          row[1..-1].map.with_index do |cell,i|
+            raise Exception.new("Named reference #{name} contains #{ast} which isn't sheet_references") unless cell.first == :sheet_reference
+            o.puts "  ExcelValue #{c_name_for_worksheet_name(cell[1])}_#{Reference.for(cell[2][1]).unfix.downcase.to_s} = ((ExcelValue*) #{c_name_for(ref)}.array)[#{(j*cols)+i}];"
+            formulae_to_include.delete([cell[1], cell[2][1]])
+          end
+        end
       when :sheet_reference
         o.puts "  ExcelValue #{c_name_for_worksheet_name(ast[1])}_#{Reference.for(ast[2][1]).unfix.downcase.to_s} = #{c_name_for(ref)};"
         formulae_to_include.delete([ast[1], ast[2][1]])
@@ -52,22 +62,31 @@ class ExcelToCFunction < ExcelToC
     end
     variable_set_counter = 0
     
+    o.puts
+    o.puts "  // Start doing the calculations"
+
+    formulae_order = SortIntoCalculationOrder.new.sort(formulae_to_include)
+
     c = CompileToCFunction.new
     c.variable_set_counter = variable_set_counter
     # Output the elements from each worksheet in turn
-    c.rewrite(formulae_to_include, @worksheet_c_names, o)
+    c.rewrite(formulae_to_include, @worksheet_c_names, o, formulae_order)
 
     m = MapFormulaeToCFunction.new
+    m.counter = c.variable_set_counter
+
     m.sheet_names = @worksheet_c_names
 
     o.puts
     o.puts "  // Preparing results to return"
     o.puts "  ExcelValue *result_array = new_excel_value_array(#{@named_references_to_keep.size});"
+    results = []
     @named_references_to_keep.each.with_index do |ref, i|
       ast = @named_references[ref] || @table_areas[ref]
-      p ast
-      o.puts "  result_array[#{i}] = #{m.map(ast)}; // #{ref}"
+      results << "  result_array[#{i}] = #{m.map(ast)}; // #{ref}"
     end
+    o.puts "  "+m.initializers.join("\n  ")
+    o.puts results.join("\n")
     o.puts "  return result_array;"
 
 
@@ -80,10 +99,27 @@ class ExcelToCFunction < ExcelToC
 
   def default_value_for_named_reference(name)
     ast = @named_references[name]
-    case ast.first
-    when :sheet_reference
-      # FIXME: EVAL!
-      eval(MapValuesToRuby.new.map(@values[[ast[1], ast[2][1]]]))
+    begin
+      case ast.first
+      when :sheet_reference
+        # FIXME: EVAL!
+        eval(MapValuesToRuby.new.map(@values[[ast[1], ast[2][1]]]))
+      when :array
+        ast[1..-1].map do |row|
+          row[1..-1].map do |cell|
+            raise Exception.new("Named reference #{name} contains #{ast} which isn't sheet_references") unless cell.first == :sheet_reference
+            value_ast = @values[[cell[1], cell[2][1]]]
+            if value_ast
+              eval(MapValuesToRuby.new.map(value_ast))
+            else
+              nil 
+            end
+          end
+        end
+      end
+    rescue Exception => e
+      puts "Exception when finding default value for named reference #{name} => #{ast}"
+      raise
     end
   end
 

@@ -5,7 +5,7 @@ class MapFormulaeToC < MapValuesToC
   attr_accessor :sheet_names
   attr_accessor :worksheet
   attr_reader :initializers
-  attr_reader :counter
+  attr_accessor :counter
   
   def initialize
     reset
