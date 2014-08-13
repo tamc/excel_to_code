@@ -3,11 +3,6 @@ require_relative 'excel_to_x'
 require 'ffi'
 
 class ExcelToCFunction < ExcelToC
-
-  # Skip this bit
-  def replace_values_with_constants
-    # Skipping superclass implementation
-  end
     
   def write_out_excel_as_code
     log.info "Writing C code"
@@ -62,6 +57,20 @@ class ExcelToCFunction < ExcelToC
     end
     variable_set_counter = 0
     
+    o.puts
+    o.puts "  // Set up the constants"
+    mapper = MapValuesToCStructs.new
+    @constants.each do |ref, ast|
+      begin
+        calculation = mapper.map(ast)
+        o.puts "  const ExcelValue #{ref} = #{calculation};"
+      rescue Exception => e
+        puts "Exception at #{ref} #{ast}"
+        raise
+      end
+    end          
+
+
     o.puts
     o.puts "  // Start doing the calculations"
 
