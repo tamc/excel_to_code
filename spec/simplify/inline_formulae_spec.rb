@@ -8,9 +8,9 @@ describe InlineFormulaeAst do
       [:sheet1, :A2] => [:cell, :"A3"]
     }
     r = InlineFormulaeAst.new(references, :sheet1)
-    r.map([:cell, :A2]).should == [:cell, :A3]
-    r.map([:sheet_reference, :sheet1, [:cell, :A2]]).should == [:cell, :A3]
-    r.map([:function, :sum, [:sheet_reference, :sheet1, [:cell, :A2]]]).should == [:function, :sum, [:cell, :A3]]
+    r.map([:cell, :A2]).should == [:inlined_blank]
+    r.map([:sheet_reference, :sheet1, [:cell, :A2]]).should == [:inlined_blank]
+    r.map([:function, :sum, [:sheet_reference, :sheet1, [:cell, :A2]]]).should == [:function, :sum, [:inlined_blank]]
   end
 
   it "should not replace references to otehr cells when they are used as arguments in OFFSET, ROW and COLUMN functions" do
@@ -20,7 +20,7 @@ describe InlineFormulaeAst do
     r = InlineFormulaeAst.new(references, :sheet1)
     r.map([:function, :ROW, [:cell, :A2]]).should == [:function, :ROW, [:cell, :A2]]
     r.map([:function, :COLUMN, [:cell, :A2]]).should == [:function, :COLUMN, [:cell, :A2]]
-    r.map([:function, :OFFSET, [:cell, :A2], [:cell, :A2]]).should == [:function, :OFFSET, [:cell, :A2], [:cell, :A3]]
+    r.map([:function, :OFFSET, [:cell, :A2], [:cell, :A2]]).should == [:function, :OFFSET, [:cell, :A2], [:inlined_blank]]
   end
 
 
