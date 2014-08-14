@@ -36,7 +36,7 @@ class ExcelToCFunction < ExcelToC
     formulae_to_include = @formulae.dup
 
     @named_references_that_can_be_set_at_runtime.each do |ref|
-      ast = @named_references[ref]
+      ast = @pristine_named_references[ref]
       case ast[0]
       when :array
         cols = ast[1].length-1
@@ -91,7 +91,7 @@ class ExcelToCFunction < ExcelToC
     o.puts "  ExcelValue *result_array = new_excel_value_array(#{@named_references_to_keep.size});"
     results = []
     @named_references_to_keep.each.with_index do |ref, i|
-      ast = @named_references[ref] || @table_areas[ref]
+      ast = @pristine_named_references[ref] || @table_areas[ref]
       results << "  result_array[#{i}] = #{m.map(ast)}; // #{ref}"
     end
     o.puts "  "+m.initializers.join("\n  ")
@@ -107,19 +107,27 @@ class ExcelToCFunction < ExcelToC
   end
 
   def default_value_for_named_reference(name)
-    ast = @named_references[name]
+    ast = @pristine_named_references[name]
+    m = MapValuesToRuby.new
+    m.constants = @constants
     begin
       case ast.first
       when :sheet_reference
-        # FIXME: EVAL!
-        eval(MapValuesToRuby.new.map(@values[[ast[1], ast[2][1]]]))
+        value_ast = @values[[ast[1], ast[2][1]]]
+        if value_ast
+          # FIXME: EVAL!
+          eval(m.map(value_ast))
+        else
+          nil 
+        end
       when :array
         ast[1..-1].map do |row|
           row[1..-1].map do |cell|
             raise Exception.new("Named reference #{name} contains #{ast} which isn't sheet_references") unless cell.first == :sheet_reference
             value_ast = @values[[cell[1], cell[2][1]]]
             if value_ast
-              eval(MapValuesToRuby.new.map(value_ast))
+              # FIXME: EVAL!
+              eval(m.map(value_ast))
             else
               nil 
             end

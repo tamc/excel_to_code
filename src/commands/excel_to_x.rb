@@ -312,13 +312,16 @@ class ExcelToX
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
 
     @named_references.each do |name, reference|
-      @named_references[name] = deep_copy(@replace_ranges_with_array_literals_replacer.map(reference))
+      @named_references[name] = @replace_ranges_with_array_literals_replacer.map(reference)
     end
-  end
 
-  def deep_copy(ast)
-    return ast unless ast.is_a?(Array)
-    ast.map { |e| deep_copy(e) }
+    # The named references may get optimised during the processing. We keep a clean
+    # copy here, in case we need it to create the C or ruby files
+    @pristine_named_references = {}
+    @named_references.each do |name, reference|
+      # eval(reference.inspect) is a way of doing a deep copy
+      @pristine_named_references[name] = eval(reference.inspect)
+    end
   end
 
   # Excel keeps a list of worksheet names. To get the mapping between
