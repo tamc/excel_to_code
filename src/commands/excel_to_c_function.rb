@@ -36,7 +36,7 @@ class ExcelToCFunction < ExcelToC
     formulae_to_include = @formulae.dup
 
     @named_references_that_can_be_set_at_runtime.each do |ref|
-      ast = @pristine_named_references[ref]
+      ast = @pristine_named_references[ref] || @table_areas[ref]
       case ast[0]
       when :array
         cols = ast[1].length-1
@@ -107,7 +107,7 @@ class ExcelToCFunction < ExcelToC
   end
 
   def default_value_for_named_reference(name)
-    ast = @pristine_named_references[name]
+    ast = @pristine_named_references[name] || @table_areas[ref]
     m = MapValuesToRuby.new
     m.constants = @constants
     begin
