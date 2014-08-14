@@ -198,6 +198,7 @@ class ExcelToX
 
     # This actually creates the code (implemented in subclasses)
     write_code
+    write_tests
     
     # These compile and run the code version of the excel (implemented in subclasses)
     compile_code
@@ -1241,6 +1242,46 @@ class ExcelToX
     end
     return settable_cells
   end
+
+  # This should be implemented by a sub class
+  def write_code
+  end
+
+  # This should be implemented by a sub class
+  def compile_code
+  end
+
+  # A common method for creating a ruby test suite for this spreadsheet
+  def write_tests
+    log.info "Writing tests" 
+
+    name = output_name.downcase
+    o = output("test_#{name}.rb")    
+    o.puts "# coding: utf-8"
+    o.puts "# Test for #{name}"
+    o.puts  "require 'minitest/autorun'"
+    o.puts  "require_relative '#{output_name.downcase}'"
+    o.puts
+    o.puts "class Test#{ruby_module_name} < Minitest::Unit::TestCase"
+    o.puts "  def self.runnable_methods"
+    o.puts "    puts 'Overriding minitest to run tests in a defined order'"
+    o.puts "    methods = methods_matching(/^test_/)"
+    o.puts "  end" 
+    o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
+    o.puts "  def init_spreadsheet; #{ruby_module_name}.new end"
+    
+    CompileToRubyUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
+    o.puts "end"
+    close(o)
+  end
+
+  # This should be implemented by a sub class
+  def run_tests
+    return unless actually_run_tests
+    puts "Running the resulting tests"
+    puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
+  end
+
   
   # UTILITY FUNCTIONS
 

@@ -24,7 +24,6 @@ class ExcelToC < ExcelToX
     write_out_excel_as_code
     write_build_script
     write_fuby_ffi_interface
-    write_tests
   end
     
   def write_out_excel_as_code
@@ -352,30 +351,6 @@ END
     close(o)
   end
   
-  def write_tests
-    log.info "Writing tests" 
-
-    name = output_name.downcase
-    o = output("test_#{name}.rb")    
-    o.puts "# coding: utf-8"
-    o.puts "# Test for #{name}"
-    o.puts  "require 'minitest/autorun'"
-    o.puts  "require_relative '#{output_name.downcase}'"
-    o.puts
-    o.puts "class Test#{ruby_module_name} < Minitest::Unit::TestCase"
-    o.puts "  def self.runnable_methods"
-    o.puts "    puts 'Overriding minitest to run tests in a defined order'"
-    o.puts "    methods = methods_matching(/^test_/)"
-    o.puts "  end" 
-    o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
-    o.puts "  def init_spreadsheet; #{ruby_module_name}.new end"
-    
-    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
-    o.puts "end"
-    close(o)
-  end
-
-  
   def compile_code
     return unless actually_compile_code || actually_run_tests
     name = output_name.downcase
@@ -383,12 +358,6 @@ END
     puts `cd #{output_directory}`
     puts `gcc -fPIC -o #{name}.o -c #{name}.c`
     puts `gcc -shared -fPIC -o #{FFI.map_library_name(name)} #{name}.o`
-  end
-  
-  def run_tests
-    return unless actually_run_tests
-    puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
   end
   
 end

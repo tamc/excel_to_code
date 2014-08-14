@@ -1,10 +1,15 @@
 # coding: utf-8
-# All tests for /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx
+# Test for rubyexamplespreadsheet
 require 'minitest/autorun'
 require_relative 'rubyexamplespreadsheet'
 
 class TestRubyExampleSpreadsheet < Minitest::Unit::TestCase
-  def worksheet; @worksheet ||= RubyExampleSpreadsheet.new; end
+  def self.runnable_methods
+    puts 'Overriding minitest to run tests in a defined order'
+    methods = methods_matching(/^test_/)
+  end
+  def worksheet; @worksheet ||= init_spreadsheet; end
+  def init_spreadsheet; RubyExampleSpreadsheet.new end
   def test_valuetypes_a1; assert_equal(true, worksheet.valuetypes_a1); end
   def test_valuetypes_a2; assert_equal("Hello", worksheet.valuetypes_a2); end
   def test_valuetypes_a3; assert_in_delta(1.0, worksheet.valuetypes_a3, 0.002); end

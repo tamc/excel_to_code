@@ -14,11 +14,6 @@ class ExcelToRuby < ExcelToX
   
   # These actually create the code version of the excel
   def write_code
-    write_out_excel_as_code
-    write_out_test_as_code
-  end
-    
-  def write_out_excel_as_code
     log.info "Starting to write out code"
     
     o = output("#{output_name.downcase}.rb")
@@ -81,33 +76,6 @@ class ExcelToRuby < ExcelToX
     o.puts "end"
     close(o)
     log.info "Finished writing code"
-  end
-
-  def write_out_test_as_code
-    o = output("test_#{output_name.downcase}.rb")
-    
-    o.puts "# coding: utf-8"
-    o.puts "# All tests for #{excel_file}"
-    o.puts "require 'minitest/autorun'"
-    o.puts "require_relative '#{output_name.downcase}'"
-    o.puts
-    o.puts "class Test#{ruby_module_name} < Minitest::Unit::TestCase"
-    o.puts "  def worksheet; @worksheet ||= #{ruby_module_name}.new; end"
-
-    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
-
-    o.puts "end"   
-    close(o)
-  end
-  
-  def compile_code
-    # Not needed
-  end
-  
-  def run_tests
-    return unless actually_run_tests
-    puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
   end
   
 end
