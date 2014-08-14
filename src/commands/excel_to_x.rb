@@ -1275,11 +1275,11 @@ class ExcelToX
     close(o)
   end
 
-  # This should be implemented by a sub class
+  # A common method for running the tests defined in write_tests above
   def run_tests
     return unless actually_run_tests
     puts "Running the resulting tests"
-    Dir.chidir(output_directory) do
+    Dir.chdir(output_directory) do
       puts `ruby "test_#{output_name.downcase}.rb"`
     end
   end
