@@ -355,9 +355,10 @@ END
     return unless actually_compile_code || actually_run_tests
     name = output_name.downcase
     log.info "Compiling"
-    puts `cd #{output_directory}`
-    puts `gcc -fPIC -o #{name}.o -c #{name}.c`
-    puts `gcc -shared -fPIC -o #{FFI.map_library_name(name)} #{name}.o`
+    Dir.chdir(output_directory) do 
+      puts `gcc -fPIC -o #{name}.o -c #{name}.c`
+      puts `gcc -shared -fPIC -o #{FFI.map_library_name(name)} #{name}.o`
+    end
   end
   
 end

@@ -1279,7 +1279,9 @@ class ExcelToX
   def run_tests
     return unless actually_run_tests
     puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
+    Dir.chidir(output_directory) do
+      puts `ruby "test_#{output_name.downcase}.rb"`
+    end
   end
 
   
