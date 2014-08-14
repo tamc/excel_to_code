@@ -15,4 +15,8 @@ class MapFormulaeToCFunction < MapFormulaeToC
     "#{sheet_names[sheet]}_#{map(reference).to_s.downcase}"
   end
 
+  def common(number)
+    "common#{number}"
+  end
+
 end

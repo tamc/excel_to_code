@@ -1175,7 +1175,7 @@ class ExcelToX
     index = 0
     repeated_element_ast = {}
     repeated_elements.each do |ast, count|
-      repeated_element_ast[ast.dup] = [:cell, "common#{index}"]
+      repeated_element_ast[ast.dup] = [:common, index]
       index +=1 
     end
 
@@ -1189,7 +1189,7 @@ class ExcelToX
 
     # FIXME: Is this best? Seems to work
     repeated_element_ast.each do |repeated_ast, common_ast|
-      @formulae[["", common_ast[1]]] = repeated_ast
+      @formulae[[nil, "common#{common_ast[1]}".to_sym]] = repeated_ast
     end
 
   end

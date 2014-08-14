@@ -9,15 +9,15 @@ describe ReplaceCommonElementsInFormulae do
     }
 
     common = {
-      [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]] => [:cell, "common0"]
+      [:array, [:row, [:cell, "A1"], [:cell, "A2"], [:cell, "A3"]]] => [:common, 0]
     }
 
     expected_output = {
-      ["sheet1", "A1"] => [:function, "INDEX", [:cell, "common0"], [:number, 2]]
+      ["sheet1", "A1"] => [:function, "INDEX", [:common, 0], [:number, 2]]
     }
 
     expected_count = {
-      [:cell, "common0"] => 1
+      [:common, 0] => 1
     }
 
     r = ReplaceCommonElementsInFormulae.new

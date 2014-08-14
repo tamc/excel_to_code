@@ -107,6 +107,10 @@ class MapFormulaeToRuby < MapValuesToRuby
     end
   end
   
+  def common(number)
+    "common#{number}"
+  end
+
   def cell(reference)
     reference.to_s.downcase.gsub('$','')
   end

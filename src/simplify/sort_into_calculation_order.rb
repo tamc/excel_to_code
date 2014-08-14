@@ -56,12 +56,13 @@ class SortIntoCalculationOrder
     add_ordered_references_for(ref)
   end
   
+  def common(number)
+    ref = [nil, "common#{number}".to_sym]
+    add_ordered_references_for(ref)
+  end
+
   def cell(reference)
-    if reference =~ /^common\d+/i
-      ref = ["", reference]
-    else
-      ref = [current_sheet.last, reference.to_s.gsub('$','').to_sym]
-    end
+    ref = [current_sheet.last, reference.to_s.gsub('$','').to_sym]
     add_ordered_references_for(ref)
   end
    

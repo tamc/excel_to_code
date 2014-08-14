@@ -301,13 +301,12 @@ class MapFormulaeToC
     "#{arguments_size}, #{array_name}"
   end
   
+  def common(number)
+    "common#{number}()"
+  end
+
   def cell(reference)
-    # FIXME: What a cludge.
-    if reference =~ /common\d+/
-      "#{reference}()"
-    else
-      reference.to_s.downcase.gsub('$','')
-    end
+    reference.to_s.downcase.gsub('$','')
   end
   
   def sheet_reference(sheet,reference)

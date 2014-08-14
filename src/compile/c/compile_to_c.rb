@@ -44,7 +44,7 @@ class CompileToC
         # Other functions just have a getter
         else
           # In simple cases, don't bother memoizing the result
-          simple = (ast[0] == :constant) || (ast[0] == :cell && ast[1] =~ /common\d+/) || (ast[0] == :blank) || (ast[0] == :error)
+          simple = (ast[0] == :constant) || (ast[0] == :common) || (ast[0] == :blank) || (ast[0] == :error)
 
           if simple
             output.puts "#{static_or_not}ExcelValue #{name}() { return #{calculation}; }"
@@ -66,7 +66,7 @@ class CompileToC
         mapper.reset
       rescue Exception => e
         puts "Exception at #{ref} #{ast}"
-        if ref.first == "" # Then it is a common method, helpful to indicate where it comes from
+        if ref.first == nil # Then it is a common method, helpful to indicate where it comes from
           s = /#{ref.last}/io
           formulae.each do |r, a|
             puts "Referenced in #{r}" if a.to_s =~ s

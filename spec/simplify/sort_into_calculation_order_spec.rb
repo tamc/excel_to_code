@@ -7,17 +7,21 @@ describe SortIntoCalculationOrder do
       [:sheet1, :A1] => [:cell, :"$A$2"],
       [:sheet1, :A2] => [:cell, :A3],
       [:sheet1, :A3] => [:number, 1],
+      [:sheet1, :A4] => [:common, 0],
       [:sheet2, :A1] => [:cell, :A2],
       [:sheet2, :A2] => [:sheet_reference,:sheet3,[:cell,:A1]],
       [:sheet2, :A3] => [:cell, :A2],
       [:sheet3, :A1] => [:number, 5],
-      [:sheet3, :A5] => [:number, 10]    
+      [:sheet3, :A5] => [:number, 10],
+      [nil, :common0] => [:number, 10]    
     }
 
     calculation_order = [
       [:sheet1,:A3],
       [:sheet1,:A2],
       [:sheet1,:A1],
+      [nil, :common0],
+      [:sheet1,:A4],
       [:sheet3,:A1],
       [:sheet2,:A2],
       [:sheet2,:A1],
