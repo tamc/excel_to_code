@@ -1,4 +1,4 @@
-require_relative 'map_values_to_c'
+require_relative 'map_formulae_to_c'
 
 class MapFormulaeToCFunction < MapFormulaeToC
   
