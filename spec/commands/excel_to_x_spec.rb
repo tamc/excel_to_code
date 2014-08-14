@@ -28,4 +28,16 @@ describe ExcelToX do
     c.clean_named_references_to_keep
     c.named_references_to_keep.should == [ :keeper, :keep_table ]
   end
+
+  it "Should have a c_name_for method that converts names into C compatible variants" do
+    c = ExcelToX.new
+    c.c_name_for("sheet1").should == "sheet1"
+    c.c_name_for("A name with (unaceptable) characters").should == "a_name_with_unaceptable_characters"
+    c.c_name_for("A clashing name").should == "a_clashing_name"
+    c.c_name_for("A (clashing) name").should == "a_clashing_name2"
+    c.c_name_for("A [clashing] name").should == "a_clashing_name3"
+    c.c_name_for("a [clashing]  name").should == "a_clashing_name4"
+    c.c_name_for("2010").should == "s2010"
+    c.c_name_for("(Not appropriate!)").should == "s_not_appropriate_"
+  end
 end
