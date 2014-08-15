@@ -22,12 +22,6 @@ describe "ExcelFunctions: = excel_equal?()" do
     FunctionTest.excel_equal?(nil,"HELLO").should == false
     FunctionTest.excel_equal?("hello",nil).should == false
   end
-  
-  it "should be able to check arrays" do
-    FunctionTest.excel_equal?([[1,2],[3,4]],2).should == [[false,true],[false,false]]
-    FunctionTest.excel_equal?(2,[[1,2],[3,4]]).should == [[false,true],[false,false]]
-    FunctionTest.excel_equal?([[1,2],[3,4]],[[1,2],[3,4]]).should == [[true,true],[true,true]]
-  end
 
   it "should return error if either argument is an error" do
     FunctionTest.excel_equal?(:error,1).should == :error

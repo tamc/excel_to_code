@@ -1,5 +1,4 @@
 require_relative 'number_argument'
-require_relative 'apply_to_range'
 
 module ExcelFunctions
   

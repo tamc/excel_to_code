@@ -1,5 +1,3 @@
-require_relative 'apply_to_range'
-
 module ExcelFunctions
   
   def not_equal?(a,b)

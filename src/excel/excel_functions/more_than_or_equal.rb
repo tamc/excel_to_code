@@ -1,5 +1,3 @@
-require_relative 'apply_to_range'
-
 module ExcelFunctions
   
   def more_than_or_equal?(a,b)
