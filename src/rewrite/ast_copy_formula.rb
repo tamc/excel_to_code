@@ -1,6 +1,3 @@
-require_relative '../excel'
-require_relative '../util/not_supported_exception'
-
 class AstCopyFormula
   attr_accessor :rows_to_move
   attr_accessor :columns_to_move

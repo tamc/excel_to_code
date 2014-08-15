@@ -1,2 +1,0 @@
-class NotSupportedException < Exception
-end

@@ -1,5 +1,3 @@
-require_relative '../../util/not_supported_exception'
-
 class MapValuesToCStructs
 
   def map(ast)

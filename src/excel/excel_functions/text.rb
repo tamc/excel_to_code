@@ -28,7 +28,7 @@ module ExcelFunctions
     when /0\.(0+)/
       sprintf("%.#{$1.length}f", number)
     else
-      raise ExcelToCodeException.new("in TEXT function format #{format} not yet supported by excel_to_code")
+      raise NotSupportedException.new("in TEXT function format #{format} not yet supported by excel_to_code")
     end
   end
   

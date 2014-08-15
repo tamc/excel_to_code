@@ -8,10 +8,6 @@ require_relative '../excel_to_code'
 # FIXME: Correct case and $ stripping from all cell references
 # FIXME: Replacing with c compatible names everywhere
 
-# Used to throw normally fatal errors
-class ExcelToCodeException < Exception; end
-class XMLFileNotFoundException < Exception; end
-
 class ExcelToX
   
   # Required attribute. The source excel file. This must be .xlsx not .xls

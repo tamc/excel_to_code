@@ -58,7 +58,7 @@ class CachingFormulaParser
   end
 
   def external_reference(ast)
-    raise ExcelToCodeException.new("Sorry, ExcelToCode cannot cope with external references (#{ast.inspect}. Please strip them from the workbook before attempting to compile it.")
+    raise NotSupportedException.new("Sorry, ExcelToCode cannot cope with external references (#{ast.inspect}. Please strip them from the workbook before attempting to compile it.")
   end
 
   def sheet_reference(ast)
