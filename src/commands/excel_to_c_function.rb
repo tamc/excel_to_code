@@ -107,7 +107,7 @@ class ExcelToCFunction < ExcelToC
   end
 
   def default_value_for_named_reference(name)
-    ast = @pristine_named_references[name] || @table_areas[ref]
+    ast = @pristine_named_references[name] || @table_areas[name]
     m = MapValuesToRuby.new
     m.constants = @constants
     begin
