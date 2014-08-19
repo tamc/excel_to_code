@@ -1,6 +1,7 @@
 # Head
 
 - Added an ExcelToCFunction class which allows excel files to turned into a single C functions (not thread safe yet though).
+- Cleaned up redundant code
 
 # 0.3.2 - 2014 July 28th
 
