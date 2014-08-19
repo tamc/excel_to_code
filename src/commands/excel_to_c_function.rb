@@ -36,7 +36,7 @@ class ExcelToCFunction < ExcelToC
     formulae_to_include = @formulae.dup
 
     @named_references_that_can_be_set_at_runtime.each do |ref|
-      ast = @pristine_named_references[ref] || @table_areas[ref]
+      ast = @pristine_named_references[ref] || @pristine_table_areas[ref]
       case ast[0]
       when :array
         cols = ast[1].length-1
@@ -91,7 +91,7 @@ class ExcelToCFunction < ExcelToC
     o.puts "  ExcelValue *result_array = new_excel_value_array(#{@named_references_to_keep.size});"
     results = []
     @named_references_to_keep.each.with_index do |ref, i|
-      ast = @pristine_named_references[ref] || @table_areas[ref]
+      ast = @pristine_named_references[ref] || @pristine_table_areas[ref]
       results << "  result_array[#{i}] = #{m.map(ast)}; // #{ref}"
     end
     o.puts "  "+m.initializers.join("\n  ")
@@ -107,7 +107,7 @@ class ExcelToCFunction < ExcelToC
   end
 
   def default_value_for_named_reference(name)
-    ast = @pristine_named_references[name] || @table_areas[name]
+    ast = @pristine_named_references[name] || @pristine_table_areas[name]
     m = MapValuesToRuby.new
     m.constants = @constants
     begin

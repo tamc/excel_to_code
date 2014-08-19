@@ -502,6 +502,7 @@ class ExcelToX
     @table_rids = extractor.table_rids
     @tables = {}
     @table_areas = {}
+    @pristine_table_areas = {} # A copy kept that doesn't get manipulated
     @table_data = {}
     extract_tables
   end
@@ -540,6 +541,11 @@ class ExcelToX
 
     @table_areas.each do |name, reference|
       @table_areas[name] = @replace_ranges_with_array_literals_replacer.map(reference)
+    end
+
+    # Take a copy of the reference that won't get manipulated later
+    @table_areas.each do |name, reference|
+      @pristine_table_areas[name] = eval(reference.inspect)
     end
 
     @table_data.each do |name, reference|
