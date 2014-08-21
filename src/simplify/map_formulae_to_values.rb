@@ -110,6 +110,13 @@ class MapFormulaeToValues
   def percentage(ast)
     ast.replace(ast_for_value(value([:percentage, ast[1]])))
   end
+
+  # [:brackets, something_simple]
+  def brackets(ast)
+    return unless ast.size == 2
+    @replacements_made_in_the_last_pass += 1
+    ast.replace(ast[1])
+  end
   
   # [:string_join, stringA, stringB, ...]
   def string_join(ast)
@@ -450,6 +457,7 @@ class MapFormulaeToValues
   
   def ast_for_value(value)
     return value if value.is_a?(Array) && value.first.is_a?(Symbol)
+    # FIXME: Having this here leads to overcounting
     @replacements_made_in_the_last_pass += 1
     ast = case value
     when Numeric; [:number,value]
