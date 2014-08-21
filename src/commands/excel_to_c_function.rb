@@ -25,10 +25,24 @@ class ExcelToCFunction < ExcelToC
     o.puts '// Start of the file specific functions'
     o.puts
     
+    o.puts "  // Set up the constants"
+    mapper = MapValuesToCStructs.new
+    @constants.each do |ref, ast|
+      begin
+        calculation = mapper.map(ast)
+        o.puts "static const ExcelValue #{ref} = #{calculation};"
+      rescue Exception => e
+        puts "Exception at #{ref} #{ast}"
+        raise
+      end
+    end
+    o.puts
+    
     arguments = @named_references_that_can_be_set_at_runtime.map do |ref|
       "ExcelValue #{c_name_for(ref)}"
     end
 
+    o.puts "// This method simulates the Excel Model"
     o.puts "void * run(#{arguments.join(',')}) {"
     o.puts
     o.puts "  // Transfer arguments into local variables"
@@ -51,26 +65,11 @@ class ExcelToCFunction < ExcelToC
         o.puts "  ExcelValue #{c_name_for_worksheet_name(ast[1])}_#{Reference.for(ast[2][1]).unfix.downcase.to_s} = #{c_name_for(ref)};"
         formulae_to_include.delete([ast[1], ast[2][1]])
       else
-        p ref, ast
-        exit
+        raise ExcelToCodeException.new("Can't deal with named fererence #{ref} #{ast}")
       end
     end
     variable_set_counter = 0
     
-    o.puts
-    o.puts "  // Set up the constants"
-    mapper = MapValuesToCStructs.new
-    @constants.each do |ref, ast|
-      begin
-        calculation = mapper.map(ast)
-        o.puts "  const ExcelValue #{ref} = #{calculation};"
-      rescue Exception => e
-        puts "Exception at #{ref} #{ast}"
-        raise
-      end
-    end          
-
-
     o.puts
     o.puts "  // Start doing the calculations"
 
