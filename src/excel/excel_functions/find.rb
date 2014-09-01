@@ -8,6 +8,10 @@ module ExcelFunctions
     # nils are treated as empty strings
     find_text ||= ""
     within_text ||= ""
+
+    # Other things should be turned into a string
+    find_text = find_text.to_s
+    within_text = within_text.to_s
     
     # there are some cases where the start_number is remapped
     case start_number

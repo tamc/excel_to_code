@@ -37,6 +37,18 @@ describe "ExcelFunctions: FIND(text,within_text,[start_num])" do
     FunctionTest.find(nil,nil).should == 1
     FunctionTest.find("a",nil).should == :value
   end
+
+  it "should turn its arguments into strings if they are not" do
+    FunctionTest.find(1,1000).should == 1
+    FunctionTest.find(0,1000).should == 1
+    FunctionTest.find(3,1000).should == :value
+    FunctionTest.find('1',1000).should == 1
+    FunctionTest.find('0',1000).should == 1
+    FunctionTest.find('3',1000).should == :value
+    FunctionTest.find(1,'1000').should == 1
+    FunctionTest.find(0,'1000').should == 1
+    FunctionTest.find(3,'1000').should == :value
+  end
     
   it "should return an error if any argument is an error" do
     FunctionTest.find("one","onetwothree",:error3).should == :error3
