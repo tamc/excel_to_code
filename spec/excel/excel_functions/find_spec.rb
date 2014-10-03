@@ -40,13 +40,13 @@ describe "ExcelFunctions: FIND(text,within_text,[start_num])" do
 
   it "should turn its arguments into strings if they are not" do
     FunctionTest.find(1,1000).should == 1
-    FunctionTest.find(0,1000).should == 1
+    FunctionTest.find(0,1000).should == 2
     FunctionTest.find(3,1000).should == :value
     FunctionTest.find('1',1000).should == 1
-    FunctionTest.find('0',1000).should == 1
+    FunctionTest.find('0',1000).should == 2
     FunctionTest.find('3',1000).should == :value
     FunctionTest.find(1,'1000').should == 1
-    FunctionTest.find(0,'1000').should == 1
+    FunctionTest.find(0,'1000').should == 2
     FunctionTest.find(3,'1000').should == :value
   end
     

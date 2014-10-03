@@ -183,6 +183,10 @@ class MapFormulaeToValues
     normal_function(ast, "")
   end
 
+  def map_find(ast)
+    normal_function(ast, "")
+  end
+
   def map_isblank(ast)
     normal_function(ast,nil)
   end
