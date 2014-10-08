@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.3 - 2014 October 7th
+
 - Ruby version of FIND function now works when arguments are not strings
 
 # 0.3.2 - 2014 July 28th
