@@ -142,6 +142,7 @@ class ExcelToX
     # format and refer to sheets and references that actually exist
     clean_cells_that_can_be_set_at_runtime
     clean_cells_to_keep
+    convert_named_references_into_simple_form
     clean_named_references_to_keep
     clean_named_references_that_can_be_set_at_runtime
 
@@ -308,11 +309,22 @@ class ExcelToX
         raise
       end
     end
+
+  end
+
+  # Named references can be simple cell references, 
+  # or they can be ranges, or errors, or table references
+  # this function converts all the different types into
+  # arrays of cell references
+  def convert_named_references_into_simple_form
     # Replace A$1:B2 with [A1, A2, B1, B2]
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
+    table_reference_replacer = ReplaceTableReferenceAst.new(@tables)
 
     @named_references.each do |name, reference|
-      @named_references[name] = @replace_ranges_with_array_literals_replacer.map(reference)
+      reference = table_reference_replacer.map(reference)
+      reference = @replace_ranges_with_array_literals_replacer.map(reference)
+      @named_references[name] = reference
     end
 
   end
