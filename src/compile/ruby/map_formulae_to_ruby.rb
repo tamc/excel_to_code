@@ -51,6 +51,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'MIN' => 'min',
     :'MMULT' => 'mmult',
     :'MOD' => 'mod',
+    :'NPV' => 'npv',
     :'PI' => 'pi',
     :'PMT' => 'pmt',
     :'POWER' => 'power',

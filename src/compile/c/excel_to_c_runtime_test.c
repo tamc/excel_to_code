@@ -959,6 +959,27 @@ int test_functions() {
   assert(value(new_excel_string("1")).number == 1);
   assert(value(new_excel_string("A1A")).type == ExcelError);
 
+
+  // NPV(rate, flow1, flow2)
+  ExcelValue npv_array1[] = { new_excel_number(110) };
+  assert(npv(new_excel_number(0.1), 1, npv_array1).type == ExcelNumber);
+  assert(npv(new_excel_number(0.1), 1, npv_array1).number-100 < 0.001);
+
+  ExcelValue npv_array2[] = { new_excel_number(110), new_excel_number(121) };
+  assert((npv(new_excel_number(0.1), 2, npv_array2).number - 200) < 0.001);
+
+  ExcelValue npv_array3[] = { new_excel_number(110), new_excel_number(121)};
+  ExcelValue npv_array3_v = new_excel_range(npv_array3,2,1);
+  ExcelValue npv_array4[] = { npv_array3_v };
+
+  assert((npv(new_excel_number(0.1), 1,  npv_array4).number - 200) < 0.001);
+
+  assert(npv(new_excel_number(-1.0), 1, npv_array1).type == ExcelError);
+  assert(npv(BLANK, 1, npv_array1).number == 110);
+
+  ExcelValue npv_array5[] = { BLANK };
+  assert(npv(new_excel_number(0.1), 1, npv_array5).number == 0);
+
   // Release memory
   free_all_allocated_memory();
 

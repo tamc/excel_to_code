@@ -1,5 +1,6 @@
 # Head
 
+- Implemented the NPV function in ruby and C
 - Copes when named references contain table references
 
 # 0.3.3 - 2014 October 7th

@@ -90,6 +90,7 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue negative(ExcelValue a_v);
+static ExcelValue npv(ExcelValue rate, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
 static ExcelValue power(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue pv_3(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v);
@@ -1315,6 +1316,44 @@ static ExcelValue sum(int array_size, ExcelValue *array) {
     }
 	}
 	return new_excel_number(total);
+}
+
+static ExcelValue npv(ExcelValue rate_v, int number_of_arguments, ExcelValue *arguments) {
+	CHECK_FOR_PASSED_ERROR(rate_v)
+	NUMBER(rate_v, rate)
+	CHECK_FOR_CONVERSION_ERROR
+  if(rate == -1) { return DIV0; }
+
+  double npv = 0;
+  int n = 1;
+  int i;
+  int j;
+  double v;
+  ExcelValue r;
+  ExcelValue r2;
+  ExcelValue *range;
+
+  for(i=0;i<number_of_arguments;i++) {
+    r = arguments[i];
+    if(r.type == ExcelError) { return r; }
+    if(r.type == ExcelRange) {
+      range = r.array;
+      for(j=0;j<(r.columns*r.rows);j++) {
+        r2 = range[j];
+        if(r2.type == ExcelError) { return r2; }
+        v = number_from(r2);
+        if(conversion_error) { conversion_error = 0; return VALUE; }
+        npv = npv + (v/pow(1+rate, n));
+        n++;
+      }
+    } else {
+      v = number_from(r);
+      if(conversion_error) { conversion_error = 0; return VALUE; }
+      npv = npv + (v/pow(1+rate, n));
+      n++;
+    }
+  }
+  return new_excel_number(npv);
 }
 
 static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {

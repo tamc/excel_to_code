@@ -121,7 +121,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * MIRR -- Returns the internal rate of return where positive and negative cash flows are financed at different rates
 * NOMINAL -- Returns the annual nominal interest rate
 * NPER -- Returns the number of periods for an investment
-* NPV -- Returns the net present value of an investment based on a series of periodic cash flows and a discount rate
+* NPV -- Returns the net present value of an investment based on a series of periodic cash flows and a discount rate - _R_ _C_
 * ODDFPRICE -- Returns the price per $100 face value of a security with an odd first period
 * ODDFYIELD -- Returns the yield of a security with an odd first period
 * ODDLPRICE -- Returns the price per $100 face value of a security with an odd last period

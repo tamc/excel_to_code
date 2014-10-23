@@ -113,3 +113,5 @@ require_relative 'excel_functions/value'
 require_relative 'excel_functions/ln'
 
 require_relative 'excel_functions/iserr'
+
+require_relative 'excel_functions/npv'

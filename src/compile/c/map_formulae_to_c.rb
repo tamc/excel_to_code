@@ -66,6 +66,7 @@ class MapFormulaeToC < MapValuesToC
     :'MIN' => 'min',
     :'MMULT' => 'mmult',
     :'MOD' => 'mod',
+    :'NPV' => 'npv',
     :'PMT' => 'pmt',
     :'PV3' => 'pv_3',
     :'PV4' => 'pv_4',
@@ -154,6 +155,10 @@ class MapFormulaeToC < MapValuesToC
 
   def function_averageifs(average_range,*criteria)
     "#{FUNCTIONS[:AVERAGEIFS]}(#{map(average_range)}, #{map_arguments_to_array(criteria)})"
+  end
+
+  def function_npv(rate,*cash_flows)
+    "#{FUNCTIONS[:NPV]}(#{map(rate)}, #{map_arguments_to_array(cash_flows)})"
   end
 
   def function_if(condition, true_case, false_case = [:boolean_false])
