@@ -48,3 +48,4 @@ There are some how to guides in the doc folder.
 7. Newlines are removed from strings
 8. The generated code uses floating point, rather than fully precise arithmetic, so results can differ slightly
 9. The generated code uses the sprintf approach to rounding (even-odd) rather than excel's 0.5 rounds away from zero.
+10. Ranges like this: Sheet1!A10:Sheet1!B20 and 3D ranges don't work
