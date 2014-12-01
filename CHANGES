@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.4 - 2014 December 1st
+
 - Fixed bug when output directory has been set and option set to compile and test C code
 - Implemented the NPV function in ruby and C
 - Copes when named references contain table references
