@@ -1705,6 +1705,10 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 		if( (used_length + current_string_length + 1) > allocated_length) {
 			allocated_length += 100;
 			string = realloc(string,allocated_length);
+      if(!string) {
+        printf("Out of memory in string join realloc trying to increase to %d", allocated_length);
+        exit(-1);
+      }
 		}
 		memcpy(string + used_length, current_string, current_string_length);
 		if(must_free_current_string == 1) {
@@ -1713,6 +1717,10 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 		used_length = used_length + current_string_length;
 	}
 	string = realloc(string,used_length+1);
+  if(!string) {
+    printf("Out of memory in string join realloc trying to increase to %d", used_length+1);
+    exit(-1);
+  }
   string[used_length] = '\0';
 	free_later(string);
 	return new_excel_string(string);
@@ -2301,17 +2309,19 @@ static ExcelValue value(ExcelValue string_v) {
 	return new_excel_number(a);
 }
 
+// Allows numbers to be 0.1% different
 static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
-	CHECK_FOR_PASSED_ERROR(a_v)
-	CHECK_FOR_PASSED_ERROR(b_v)
 
+  if(a_v.type == ExcelEmpty && b_v.type == ExcelNumber && b_v.number == 0) return TRUE;
+  if(b_v.type == ExcelEmpty && a_v.type == ExcelNumber && a_v.number == 0) return TRUE;
+      
 	if(a_v.type != b_v.type) return FALSE;
 	
   float epsilon, difference;
 
 	switch (a_v.type) {
   	case ExcelNumber:
-      if(b_v.number == 0) {
+      if(b_v.number == 0.0) {
         epsilon = a_v.number * 0.001;
       } else {
         epsilon = b_v.number * 0.001;
@@ -2329,7 +2339,8 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
 	  	if(strcasecmp(a_v.string,b_v.string) != 0 ) return FALSE;
 		  return TRUE;
   	case ExcelError:
-		  return a_v;
+			if(a_v.number != b_v.number) return FALSE;
+			return TRUE;
   	case ExcelRange:
   		return NA;
   }

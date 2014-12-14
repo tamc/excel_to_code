@@ -980,6 +980,10 @@ int test_functions() {
   ExcelValue npv_array5[] = { BLANK };
   assert(npv(new_excel_number(0.1), 1, npv_array5).number == 0);
 
+  // Assertion
+  assert_equal(NA, NA, "NA == NA");
+  assert_equal(ZERO, new_excel_number(0), "ZERO == ZERO");
+
   // Release memory
   free_all_allocated_memory();
 
