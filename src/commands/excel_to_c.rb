@@ -8,11 +8,14 @@ class ExcelToC < ExcelToX
   attr_accessor :create_rakefile
   # If true, creates a Makefile, if false, doesn't (default false)
   attr_accessor :create_makefile
+  # If true, writes tests in C rather than in ruby
+  attr_accessor :write_tests_in_c
   
   def set_defaults
     super
     @create_rakefile = true if @create_rakefile == nil
     @create_makefile = false if @create_makefile == nil
+    @write_tests_in_c = false if @write_tests_in_c == nil
   end
 
   def language
@@ -24,7 +27,11 @@ class ExcelToC < ExcelToX
     write_out_excel_as_code
     write_build_script
     write_fuby_ffi_interface
-    write_tests
+    if write_tests_in_c
+      write_tests_as_c
+    else
+      write_tests_as_ruby
+    end
   end
     
   def write_out_excel_as_code
@@ -352,8 +359,8 @@ END
     close(o)
   end
   
-  def write_tests
-    log.info "Writing tests" 
+  def write_tests_as_ruby
+    log.info "Writing tests in ruby" 
 
     name = output_name.downcase
     o = output("test_#{name}.rb")    
@@ -370,11 +377,26 @@ END
     o.puts "  def worksheet; @worksheet ||= init_spreadsheet; end"
     o.puts "  def init_spreadsheet; #{ruby_module_name}.new end"
     
-    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
+    CompileToRubyUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
     o.puts "end"
     close(o)
   end
 
+  def write_tests_as_c
+    log.info "Writing tests in C" 
+
+    name = output_name.downcase
+    o = output("test_#{name}.c")    
+    o.puts "#include \"#{name}.c\""
+    o.puts "int main() {"
+    o.puts "  printf(\"\\n\\nRunning tests on #{name}\\n\\n\");"
+    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
+    o.puts "  printf(\"\\n\\nFinished tests on #{name}\\n\\n\");"
+    o.puts "  return 0;"
+    o.puts "}"
+    close(o)
+  end
+  
   
   def compile_code
     return unless actually_compile_code || actually_run_tests
@@ -387,7 +409,11 @@ END
   def run_tests
     return unless actually_run_tests
     puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
+    if write_tests_as_c
+      puts `cd #{File.join(output_directory)}; gcc "test_#{output_name.downcase}.c"; ./a.out`
+    else
+      puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
+    end
   end
   
 end

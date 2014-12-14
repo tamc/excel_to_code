@@ -587,17 +587,17 @@ static ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
 	if(a_v.type != b_v.type) return FALSE;
 	
 	switch (a_v.type) {
-  	  case ExcelNumber:
+  	case ExcelNumber:
 	  case ExcelBoolean: 
 	  case ExcelEmpty: 
 			if(a_v.number != b_v.number) return FALSE;
 			return TRUE;
 	  case ExcelString:
 	  	if(strcasecmp(a_v.string,b_v.string) != 0 ) return FALSE;
-		return TRUE;
-  	  case ExcelError:
-		return a_v;
-  	  case ExcelRange:
+		  return TRUE;
+  	case ExcelError:
+		  return a_v;
+  	case ExcelRange:
   		return NA;
   }
   return FALSE;
@@ -2307,6 +2307,58 @@ static ExcelValue value(ExcelValue string_v) {
 	CHECK_FOR_CONVERSION_ERROR
 	return new_excel_number(a);
 }
+
+static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)
+	CHECK_FOR_PASSED_ERROR(b_v)
+
+	if(a_v.type != b_v.type) return FALSE;
+	
+  float epsilon, difference;
+
+	switch (a_v.type) {
+  	case ExcelNumber:
+      if(b_v.number == 0) {
+        epsilon = a_v.number * 0.001;
+      } else {
+        epsilon = b_v.number * 0.001;
+      }
+      if(epsilon < 0) epsilon = -epsilon;
+      difference = a_v.number - b_v.number;
+      if(difference < 0) difference = -difference;
+      if(difference <= epsilon) return TRUE;
+      return FALSE;
+	  case ExcelBoolean: 
+	  case ExcelEmpty: 
+			if(a_v.number != b_v.number) return FALSE;
+			return TRUE;
+	  case ExcelString:
+	  	if(strcasecmp(a_v.string,b_v.string) != 0 ) return FALSE;
+		  return TRUE;
+  	case ExcelError:
+		  return a_v;
+  	case ExcelRange:
+  		return NA;
+  }
+  return FALSE;
+}
+  
+
+static void assert_equal(ExcelValue actual, ExcelValue expected, char location[]) {
+  ExcelValue comparison = roughly_equal(actual, expected);
+  if(comparison.type == ExcelBoolean && comparison.number == 1) {
+    putchar('.');
+  } else {
+    printf("\n\nFailed at %s\n", location);
+    printf("Expected: ");
+    inspect_excel_value(expected);
+    printf("Got:      ");
+    inspect_excel_value(actual);
+    putchar('\n');
+  }
+}
+
+
 // End of the generic c functions
 
 // Start of the file specific functions

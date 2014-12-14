@@ -74,6 +74,10 @@ END
     command.create_rakefile = false
   end
 
+  opts.on('--write-tests-in-c', "Write tests in pure C (normally written in ruby") do
+    command.write_tests_in_c = true
+  end
+
   opts.on("-h", "--help", "Show this message") do
     puts opts
     exit

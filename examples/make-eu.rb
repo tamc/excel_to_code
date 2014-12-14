@@ -7,4 +7,5 @@ command.output_directory = this_directory
 command.output_name = 'eu'
 command.actually_compile_code = true
 command.actually_run_tests = true
+command.write_tests_in_c = true
 command.go!

@@ -94,7 +94,7 @@ class ExcelToRuby < ExcelToX
     o.puts "class Test#{ruby_module_name} < Minitest::Unit::TestCase"
     o.puts "  def worksheet; @worksheet ||= #{ruby_module_name}.new; end"
 
-    CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
+    CompileToRubyUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
 
     o.puts "end"   
     close(o)
