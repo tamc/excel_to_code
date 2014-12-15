@@ -722,6 +722,7 @@ int test_functions() {
   assert(strcmp(text(new_excel_number(123456789.123456), new_excel_string("#,##")).string, "123,456,789") == 0);
   assert(strcmp(text(new_excel_number(123456789.123456), new_excel_string("#,##0")).string, "123,456,789") == 0);
   assert(strcmp(text(new_excel_number(123456789.123456), new_excel_string("#,##0.0")).string, "123,456,789.1") == 0);
+  assert(strcmp(text(new_excel_number(123456789.123456), new_excel_string("!#,##0.0")).string, "Text format not recognised") == 0);
 
   // Test LOG
   // One argument variant assumes LOG base 10

@@ -2129,77 +2129,40 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     return format_v;
   }
 
+  // FIXME: Too little? 
+  s = malloc(100);
+  setlocale(LC_ALL,"");
+
   if(strcmp(format_v.string,"0%") == 0) {
-    // FIXME: Too little? 
-    s = malloc(100);
-    sprintf(s, "%0.0f%%", number_v.number*100);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%0.0f%%", number_v.number*100);
   } else if(strcmp(format_v.string,"0.0%") == 0) {
-    // FIXME: Too little? 
-    s = malloc(100);
-    sprintf(s, "%0.1f%%", number_v.number*100);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%0.1f%%", number_v.number*100);
   } else if(strcmp(format_v.string,"0") == 0) {
-    s = malloc(100);
-    sprintf(s, "%0.0f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%0.0f",number_v.number);
   } else if(strcmp(format_v.string,"0.0") == 0) {
-    s = malloc(100);
-    sprintf(s, "%0.1f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%0.1f",number_v.number);
   } else if(strcmp(format_v.string,"0.00") == 0) {
-    s = malloc(100);
-    sprintf(s, "%0.2f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%0.2f",number_v.number);
   } else if(strcmp(format_v.string,"0.000") == 0) {
-    s = malloc(100);
-    sprintf(s, "%0.3f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%0.3f",number_v.number);
   } else if(strcmp(format_v.string,"#,##") == 0) {
-    s = malloc(100);
-    setlocale(LC_ALL,"");
-    sprintf(s, "%'0.0f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%'0.0f",number_v.number);
   } else if(strcmp(format_v.string,"#,##0") == 0) {
-    s = malloc(100);
-    setlocale(LC_ALL,"");
-    sprintf(s, "%'0.0f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%'0.0f",number_v.number);
   } else if(strcmp(format_v.string,"#,##0.0") == 0) {
-    s = malloc(100);
-    setlocale(LC_ALL,"");
-    sprintf(s, "%'0.1f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%'0.1f",number_v.number);
   } else if(strcmp(format_v.string,"#,##0.00") == 0) {
-    s = malloc(100);
-    setlocale(LC_ALL,"");
-    sprintf(s, "%'0.2f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%'0.2f",number_v.number);
   } else if(strcmp(format_v.string,"#,##0.000") == 0) {
-    s = malloc(100);
-    setlocale(LC_ALL,"");
-    sprintf(s, "%'0.3f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%'0.3f",number_v.number);
   } else if(strcmp(format_v.string,"0000") == 0) {
-    s = malloc(100);
-    sprintf(s, "%04.0f",number_v.number);
-    free_later(s);
-    result = new_excel_string(s);
+    snprintf(s, 99, "%04.0f",number_v.number);
   } else {
-    return new_excel_string("Text format not recognised");
+    snprintf(s, 99, "Text format not recognised");
   }
 
+  free_later(s);
+  result = new_excel_string(s);
   // inspect_excel_value(result);
   return result;
 }
