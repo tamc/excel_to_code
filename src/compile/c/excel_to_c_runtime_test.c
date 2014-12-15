@@ -983,6 +983,12 @@ int test_functions() {
   // Assertion
   assert_equal(NA, NA, "NA == NA");
   assert_equal(ZERO, new_excel_number(0), "ZERO == ZERO");
+  assert_equal(new_excel_number(-0.0), new_excel_number(0.0), "Negative ZERO == ZERO");
+  assert_equal(new_excel_number(0.0), new_excel_number(-0.0), "ZERO == negative ZERO");
+  assert_equal(new_excel_number(0.000000001), new_excel_number(0.0), "Almost zero == zero");
+  assert_equal(new_excel_number(-0.000000001), new_excel_number(0.0), "Almost negative zero == zero");
+  assert_equal(new_excel_number(0.000000001), new_excel_number(-0.0), "Almost zero == negative zero");
+  assert_equal(new_excel_number(-0.000000001), new_excel_number(-0.0), "Almost negative zero ==negative zero");
 
   // Release memory
   free_all_allocated_memory();

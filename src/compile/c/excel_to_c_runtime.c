@@ -2321,8 +2321,9 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
 
 	switch (a_v.type) {
   	case ExcelNumber:
+      // FIXME: Arbitrary choice of epsilons
       if(b_v.number == 0.0) {
-        epsilon = a_v.number * 0.001;
+        epsilon = 0.000001;
       } else {
         epsilon = b_v.number * 0.001;
       }
