@@ -2331,6 +2331,7 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
       difference = a_v.number - b_v.number;
       if(difference < 0) difference = -difference;
       if(difference <= epsilon) return TRUE;
+      // For debuging: printf("a: %e b:%e d: %e e: %e", a_v.number, b_v.number, difference, epsilon);
       return FALSE;
 	  case ExcelBoolean: 
 	  case ExcelEmpty: 
@@ -2349,7 +2350,7 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
 }
   
 
-static void assert_equal(ExcelValue actual, ExcelValue expected, char location[]) {
+static void assert_equal(ExcelValue expected, ExcelValue actual, char location[]) {
   ExcelValue comparison = roughly_equal(actual, expected);
   if(comparison.type == ExcelBoolean && comparison.number == 1) {
     putchar('.');

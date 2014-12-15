@@ -1,6 +1,16 @@
 #include "excel_to_c_runtime.c"
 
 int test_functions() {
+  // Assertions
+  assert_equal(NA, NA, "NA == NA");
+  assert_equal(ZERO, new_excel_number(0), "ZERO == ZERO");
+  assert_equal(new_excel_number(-0.0), new_excel_number(0.0), "Negative ZERO == ZERO");
+  assert_equal(new_excel_number(0.0), new_excel_number(-0.0), "ZERO == negative ZERO");
+  assert_equal(new_excel_number(0.0), new_excel_number(1e-10), "Expected zero, got almost zero");
+  assert_equal(new_excel_number(0.0), new_excel_number(-1e-10), "Expected zero, got negative almost zero");
+  assert_equal(new_excel_number(-0.0), new_excel_number(1e-10), "Expected negative zero, got almost zero");
+  assert_equal(new_excel_number(-0.0), new_excel_number(-1e-10), "Expected negative zero, got negative almost zero");
+
   // Test ABS
   assert(excel_abs(ONE).number == 1);
   assert(excel_abs(new_excel_number(-1)).number == 1);
@@ -980,21 +990,11 @@ int test_functions() {
   ExcelValue npv_array5[] = { BLANK };
   assert(npv(new_excel_number(0.1), 1, npv_array5).number == 0);
 
-  // Assertion
-  assert_equal(NA, NA, "NA == NA");
-  assert_equal(ZERO, new_excel_number(0), "ZERO == ZERO");
-  assert_equal(new_excel_number(-0.0), new_excel_number(0.0), "Negative ZERO == ZERO");
-  assert_equal(new_excel_number(0.0), new_excel_number(-0.0), "ZERO == negative ZERO");
-  assert_equal(new_excel_number(0.000000001), new_excel_number(0.0), "Almost zero == zero");
-  assert_equal(new_excel_number(-0.000000001), new_excel_number(0.0), "Almost negative zero == zero");
-  assert_equal(new_excel_number(0.000000001), new_excel_number(-0.0), "Almost zero == negative zero");
-  assert_equal(new_excel_number(-0.000000001), new_excel_number(-0.0), "Almost negative zero ==negative zero");
-
   // Release memory
   free_all_allocated_memory();
 
   // Yay!
-  printf("All tests passed\n");
+  printf("\nFinished tests\n");
 
   return 0;
 }
