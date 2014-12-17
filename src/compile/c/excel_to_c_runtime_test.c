@@ -471,6 +471,11 @@ int test_functions() {
   ExcelValue string_join_array_6[] = {new_excel_string("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"), new_excel_string("012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789")};
   assert(string_join(2, string_join_array_6).string[0] == '0');
   free_all_allocated_memory();
+  // Should deal with some edge cases
+  ExcelValue string_join_array_7[] = { NA };
+  assert_equal(NA, string_join(1, string_join_array_7), "String_join should return an error when passed an error");
+  ExcelValue string_join_array_8[] = { new_excel_range(string_join_array_7, 1, 1) };
+  assert_equal(VALUE, string_join(1, string_join_array_8), "String_join should return VALUE when passed a range");
 
   // Test SUBTOTAL function
   ExcelValue subtotal_array_1[] = {new_excel_number(10),new_excel_number(100),BLANK};

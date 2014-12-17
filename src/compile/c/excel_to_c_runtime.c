@@ -1683,7 +1683,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 		  	  printf("Out of memory in string join");
 		  	  exit(-1);
 		  	}
-			must_free_current_string = 1;				  
+			  must_free_current_string = 1;				  
 			  snprintf(current_string,20,"%g",current_v.number);
 			  break;
 		  case ExcelBoolean:
@@ -1697,8 +1697,10 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
         current_string = "";
         break;
       case ExcelError:
+        free(string);
         return current_v;
 	  	case ExcelRange:
+        free(string);
         return VALUE;
 		}
 		current_string_length = strlen(current_string);
@@ -1715,7 +1717,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 			free(current_string);
 		}
 		used_length = used_length + current_string_length;
-	}
+	} // Finished looping through passed strings
 	string = realloc(string,used_length+1);
   if(!string) {
     printf("Out of memory in string join realloc trying to increase to %d", used_length+1);
