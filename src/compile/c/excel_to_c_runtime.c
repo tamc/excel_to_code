@@ -781,14 +781,14 @@ static ExcelValue large(ExcelValue range_v, ExcelValue k_v) {
   int i; 
   for(i = 0; i < range_size; i++ ) {
     x_v = array_v[i];
-    if(x_v.type == ExcelError) { return x_v; };
+    if(x_v.type == ExcelError) { free(sorted); return x_v; };
     if(x_v.type == ExcelNumber) {
       sorted[sorted_size] = x_v.number;
       sorted_size++;
     }
   }
   // Check other bound
-  if(k > sorted_size) { return NUM; }
+  if(k > sorted_size) { free(sorted); return NUM; }
 
   qsort(sorted, sorted_size, sizeof (double), compare_doubles);
 
@@ -1807,6 +1807,8 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
 	  exit(-1);
   }
   char *s;
+  char *new_comparator;
+
   for(i = 0; i < number_of_criteria; i++) {
     current_value = arguments[(i*2)+1];
     
@@ -1814,26 +1816,38 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
       s = current_value.string;
       if(s[0] == '<') {
         if( s[1] == '>') {
+          new_comparator = strndup(s+2,strlen(s)-2);
+          free_later(new_comparator);
           criteria[i].type = NotEqual;
-          criteria[i].comparator = new_excel_string(strndup(s+2,strlen(s)-2));
+          criteria[i].comparator = new_excel_string(new_comparator);
         } else if(s[1] == '=') {
+          new_comparator = strndup(s+2,strlen(s)-2);
+          free_later(new_comparator);
           criteria[i].type = LessThanOrEqual;
-          criteria[i].comparator = new_excel_string(strndup(s+2,strlen(s)-2));
+          criteria[i].comparator = new_excel_string(new_comparator);
         } else {
+          new_comparator = strndup(s+1,strlen(s)-1);
+          free_later(new_comparator);
           criteria[i].type = LessThan;
-          criteria[i].comparator = new_excel_string(strndup(s+1,strlen(s)-1));
+          criteria[i].comparator = new_excel_string(new_comparator);
         }
       } else if(s[0] == '>') {
         if(s[1] == '=') {
+          new_comparator = strndup(s+2,strlen(s)-2);
+          free_later(new_comparator);
           criteria[i].type = MoreThanOrEqual;
-          criteria[i].comparator = new_excel_string(strndup(s+2,strlen(s)-2));
+          criteria[i].comparator = new_excel_string(new_comparator);
         } else {
+          new_comparator = strndup(s+1,strlen(s)-1);
+          free_later(new_comparator);
           criteria[i].type = MoreThan;
-          criteria[i].comparator = new_excel_string(strndup(s+1,strlen(s)-1));
+          criteria[i].comparator = new_excel_string(new_comparator);
         }
       } else if(s[0] == '=') {
+        new_comparator = strndup(s+1,strlen(s)-1);
+        free_later(new_comparator);
         criteria[i].type = Equal;
-        criteria[i].comparator = new_excel_string(strndup(s+1,strlen(s)-1));          
+        criteria[i].comparator = new_excel_string(new_comparator);
       } else {
         criteria[i].type = Equal;
         criteria[i].comparator = current_value;          
@@ -1974,6 +1988,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
           }
           break;
         case ExcelRange:
+          free(criteria);
           return VALUE;            
       }
       if(passed == 0) break;
@@ -1981,6 +1996,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
     if(passed == 1) {
       current_value = original_range[j];
       if(current_value.type == ExcelError) {
+        free(criteria);
         return current_value;
       } else if(current_value.type == ExcelNumber) {
         filtered_range[number_of_filtered_values] = current_value;
@@ -2043,19 +2059,19 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
     current_value = arguments[a];
     switch(current_value.type) {
       case ExcelRange:
-        if(current_value.rows != rows || current_value.columns != columns) return VALUE;
+        if(current_value.rows != rows || current_value.columns != columns) { free(ranges);  return VALUE; }
         ranges[a] = current_value.array;
         break;
       case ExcelError:
-		free(ranges);
+		    free(ranges);
         return current_value;
         break;
       case ExcelEmpty:
-		free(ranges);
+		    free(ranges);
         return VALUE;
         break;
       default:
-        if(rows != 1 && columns !=1) return VALUE;
+        if(rows != 1 && columns !=1) { free(ranges); return VALUE; }
         ranges[a] = (ExcelValue*) new_excel_value_array(1);
         ranges[a][0] = arguments[a];
         break;
@@ -2077,7 +2093,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
 		}
 	}
 	free(ranges);
-  	return new_excel_number(sum);
+  return new_excel_number(sum);
 }
 
 // FIXME: This could do with being done properly, rather than
