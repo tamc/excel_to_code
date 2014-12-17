@@ -52,16 +52,16 @@ class MapValuesToC
       else
         text.to_i.to_s
       end
-      "new_excel_number(#{n})"
+      "EXCEL_NUMBER(#{n})"
     end
   end
   
   def percentage(text)
-    "new_excel_number(#{(text.to_f / 100.0).to_s})"
+    "EXCEL_NUMBER(#{(text.to_f / 100.0).to_s})"
   end
   
   def string(text)
-    "new_excel_string(#{text.inspect})"
+    "EXCEL_STRING(#{text.inspect})"
   end
   
   ERRORS = {

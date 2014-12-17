@@ -250,7 +250,7 @@ class MapFormulaeToC < MapValuesToC
     
     # Then we need to assign it to an excel value
     range_name = array_name+"_ev"
-    initializers << "ExcelValue #{range_name} = new_excel_range(#{array_name},#{number_of_rows},#{number_of_columns});"
+    initializers << "ExcelValue #{range_name} = EXCEL_RANGE(#{array_name},#{number_of_rows},#{number_of_columns});"
 
     range_name
   end

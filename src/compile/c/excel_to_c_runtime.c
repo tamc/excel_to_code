@@ -149,9 +149,9 @@ void reset() {
 
 // Handy macros
 
-#define new_excel_number(numberdouble) ((ExcelValue) {.type = ExcelNumber, .number = numberdouble})
-#define new_excel_string(stringchar) ((ExcelValue) {.type = ExcelString, .string = stringchar})
-#define new_excel_range(arrayofvalues, rangerows, rangecolumns) ((ExcelValue) {.type = ExcelRange, .array = arrayofvalues, .rows = rangerows, .columns = rangecolumns})
+#define EXCEL_NUMBER(numberdouble) ((ExcelValue) {.type = ExcelNumber, .number = numberdouble})
+#define EXCEL_STRING(stringchar) ((ExcelValue) {.type = ExcelString, .string = stringchar})
+#define EXCEL_RANGE(arrayofvalues, rangerows, rangecolumns) ((ExcelValue) {.type = ExcelRange, .array = arrayofvalues, .rows = rangerows, .columns = rangecolumns})
 
 static void * new_excel_value_array(int size) {
 	ExcelValue *pointer = malloc(sizeof(ExcelValue)*size); // Freed later
@@ -305,7 +305,7 @@ static ExcelValue add(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
-	return new_excel_number(a + b);
+	return EXCEL_NUMBER(a + b);
 }
 
 static ExcelValue ensure_is_number(ExcelValue maybe_number_v) {
@@ -317,7 +317,7 @@ static ExcelValue ensure_is_number(ExcelValue maybe_number_v) {
   }
   NUMBER(maybe_number_v, maybe_number)
 	CHECK_FOR_CONVERSION_ERROR
-	return new_excel_number(maybe_number);
+	return EXCEL_NUMBER(maybe_number);
 }
 
 static ExcelValue excel_log(ExcelValue number) {
@@ -334,7 +334,7 @@ static ExcelValue excel_log_2(ExcelValue number_v, ExcelValue base_v) {
   if(n<=0) { return NUM; }
   if(b<=0) { return NUM; }
 
-  return	new_excel_number(log(n)/log(b));
+  return	EXCEL_NUMBER(log(n)/log(b));
 }
 
 static ExcelValue ln(ExcelValue number_v) {
@@ -344,7 +344,7 @@ static ExcelValue ln(ExcelValue number_v) {
 
   if(n<=0) { return NUM; }
 
-  return	new_excel_number(log(n));
+  return	EXCEL_NUMBER(log(n));
 }
 
 static ExcelValue excel_exp(ExcelValue number_v) {
@@ -352,7 +352,7 @@ static ExcelValue excel_exp(ExcelValue number_v) {
 	NUMBER(number_v, n)
 	CHECK_FOR_CONVERSION_ERROR
 
-  return	new_excel_number(exp(n));
+  return	EXCEL_NUMBER(exp(n));
 }
 
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
@@ -430,7 +430,7 @@ static ExcelValue average(int array_size, ExcelValue *array) {
 	struct average_result r = calculate_average(array_size, array);
 	if(r.has_error == true) return r.error;
 	if(r.count == 0) return DIV0;
-	return new_excel_number(r.sum/r.count);
+	return EXCEL_NUMBER(r.sum/r.count);
 }
 
 static ExcelValue forecast(ExcelValue required_x_v, ExcelValue known_y, ExcelValue known_x) {
@@ -498,7 +498,7 @@ static ExcelValue forecast(ExcelValue required_x_v, ExcelValue known_y, ExcelVal
   b = b_numerator / b_denominator;
   a = mean_y.number - (b*mean_x.number);
 
-  return new_excel_number(a + (b*required_x));
+  return EXCEL_NUMBER(a + (b*required_x));
 }
 
 static ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) {
@@ -536,7 +536,7 @@ static ExcelValue count(int array_size, ExcelValue *array) {
 			 break;
 		 }
 	 }
-	 return new_excel_number(n);
+	 return EXCEL_NUMBER(n);
 }
 
 static ExcelValue counta(int array_size, ExcelValue *array) {
@@ -560,7 +560,7 @@ static ExcelValue counta(int array_size, ExcelValue *array) {
   		  break;
     }
 	 }
-	 return new_excel_number(n);
+	 return EXCEL_NUMBER(n);
 }
 
 static ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
@@ -570,7 +570,7 @@ static ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
 	if(b == 0) return DIV0;
-	return new_excel_number(a / b);
+	return EXCEL_NUMBER(a / b);
 }
 
 static ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
@@ -694,7 +694,7 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 			}			
 			result_index++;
 		}
-		return new_excel_range(result,rows,1);
+		return EXCEL_RANGE(result,rows,1);
 	} else if(column_number == 0 ) { // We need the whole row
 		if(row_number < 1) return REF;
 		ExcelValue *result = (ExcelValue*) new_excel_value_array(columns);
@@ -712,7 +712,7 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 			}
 			result_index++;
 		}
-		return new_excel_range(result,1,columns);
+		return EXCEL_RANGE(result,1,columns);
 	} else { // We need a precise point
 		if(row_number < 1) return REF;
 		if(column_number < 1) return REF;
@@ -792,7 +792,7 @@ static ExcelValue large(ExcelValue range_v, ExcelValue k_v) {
 
   qsort(sorted, sorted_size, sizeof (double), compare_doubles);
 
-  ExcelValue result = new_excel_number(sorted[sorted_size - k]);
+  ExcelValue result = EXCEL_NUMBER(sorted[sorted_size - k]);
   free(sorted);
   return result;
 }
@@ -836,7 +836,7 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 			for(i = 0; i < size; i++ ) {
 				x = array[i];
 				if(x.type == ExcelEmpty) x = ZERO;
-				if(excel_equal(lookup_value,x).number == true) return new_excel_number(i+1);
+				if(excel_equal(lookup_value,x).number == true) return EXCEL_NUMBER(i+1);
 			}
 			return NA;
 			break;
@@ -846,10 +846,10 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 				if(x.type == ExcelEmpty) x = ZERO;
 				if(more_than(x,lookup_value).number == true) {
 					if(i==0) return NA;
-					return new_excel_number(i);
+					return EXCEL_NUMBER(i);
 				}
 			}
-			return new_excel_number(size);
+			return EXCEL_NUMBER(size);
 			break;
 		case -1:
 			for(i = 0; i < size; i++ ) {
@@ -857,10 +857,10 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 				if(x.type == ExcelEmpty) x = ZERO;
 				if(less_than(x,lookup_value).number == true) {
 					if(i==0) return NA;
-					return new_excel_number(i);
+					return EXCEL_NUMBER(i);
 				}
 			}
-			return new_excel_number(size-1);
+			return EXCEL_NUMBER(size-1);
 			break;
 	}
 	return NA;
@@ -904,7 +904,7 @@ static ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelVa
 	within_text_offset = within_text + (start_number - 1);
 	result = strstr(within_text_offset,find_text);
 	if(result) {
-		return new_excel_number(result - within_text + 1);
+		return EXCEL_NUMBER(result - within_text + 1);
 	}
 	return VALUE;
 }
@@ -969,7 +969,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 		free(string);
 	}
 	free_later(left_string);
-	return new_excel_string(left_string);
+	return EXCEL_STRING(left_string);
 }
 
 static ExcelValue left_1(ExcelValue string_v) {
@@ -1012,7 +1012,7 @@ static ExcelValue len(ExcelValue string_v) {
 	if(string_must_be_freed == 1) {
 		free(string);
 	}
-	return new_excel_number(length);
+	return EXCEL_NUMBER(length);
 }
 
 static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) {
@@ -1071,7 +1071,7 @@ static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) 
     free(string);
   }
   free_later(right_string);
-  return new_excel_string(right_string);
+  return EXCEL_STRING(right_string);
 }
 
 static ExcelValue right_1(ExcelValue string_v) {
@@ -1272,7 +1272,7 @@ static ExcelValue subtract(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
-	return new_excel_number(a - b);
+	return EXCEL_NUMBER(a - b);
 }
 
 static ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
@@ -1281,7 +1281,7 @@ static ExcelValue multiply(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
-	return new_excel_number(a * b);
+	return EXCEL_NUMBER(a * b);
 }
 
 static ExcelValue sum(int array_size, ExcelValue *array) {
@@ -1308,7 +1308,7 @@ static ExcelValue sum(int array_size, ExcelValue *array) {
         break;
     }
 	}
-	return new_excel_number(total);
+	return EXCEL_NUMBER(total);
 }
 
 static ExcelValue npv(ExcelValue rate_v, int number_of_arguments, ExcelValue *arguments) {
@@ -1346,7 +1346,7 @@ static ExcelValue npv(ExcelValue rate_v, int number_of_arguments, ExcelValue *ar
       n++;
     }
   }
-  return new_excel_number(npv);
+  return EXCEL_NUMBER(npv);
 }
 
 static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
@@ -1380,7 +1380,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
 		any_number_found = 1;
 		biggest_number_found = 0;
 	}
-	return new_excel_number(biggest_number_found);	
+	return EXCEL_NUMBER(biggest_number_found);	
 }
 
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
@@ -1414,7 +1414,7 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 		any_number_found = 1;
 		smallest_number_found = 0;
 	}
-	return new_excel_number(smallest_number_found);	
+	return EXCEL_NUMBER(smallest_number_found);	
 }
 
 static ExcelValue mmult_error(ExcelValue a_v, ExcelValue b_v) {
@@ -1429,7 +1429,7 @@ static ExcelValue mmult_error(ExcelValue a_v, ExcelValue b_v) {
       result[(i*columns) + j] = VALUE;
     }
   }
-  return new_excel_range(result, rows, columns);
+  return EXCEL_RANGE(result, rows, columns);
 }
 
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v) {
@@ -1461,10 +1461,10 @@ static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v) {
         if(b.type != ExcelNumber) { return mmult_error(a_v, b_v); }
         sum = sum + (a.number * b.number);
       }
-      result[(i*b_columns)+j] = new_excel_number(sum);
+      result[(i*b_columns)+j] = EXCEL_NUMBER(sum);
     }
   }
-  return new_excel_range(result, a_rows, b_columns);
+  return EXCEL_RANGE(result, a_rows, b_columns);
 }
 
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
@@ -1475,14 +1475,14 @@ static ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
 	if(b == 0) return DIV0;
-	return new_excel_number(fmod(a,b));
+	return EXCEL_NUMBER(fmod(a,b));
 }
 
 static ExcelValue negative(ExcelValue a_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	NUMBER(a_v, a)
 	CHECK_FOR_CONVERSION_ERROR
-	return new_excel_number(-a);
+	return EXCEL_NUMBER(-a);
 }
 
 static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v) {
@@ -1495,8 +1495,8 @@ static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelVa
 	NUMBER(present_value_v,present_value)
 	CHECK_FOR_CONVERSION_ERROR
 	
-	if(rate == 0) return new_excel_number(-(present_value / number_of_periods));
-	return new_excel_number(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
+	if(rate == 0) return EXCEL_NUMBER(-(present_value / number_of_periods));
+	return EXCEL_NUMBER(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
 }
 
 static ExcelValue pv_3(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v) {
@@ -1546,7 +1546,7 @@ static ExcelValue pv_5(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v, E
   // Add on the final value
   present_value = present_value - (fv/pow(1+rate,nper));
   
-  return new_excel_number(present_value);
+  return EXCEL_NUMBER(present_value);
 }
 
 
@@ -1561,7 +1561,7 @@ static ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
   if(isnan(result) == 1) {
     return NUM;
   } else {
-    return new_excel_number(result);
+    return EXCEL_NUMBER(result);
   }
 }
 static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order_v) {
@@ -1602,7 +1602,7 @@ static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order
     }
   }
   if(found == false) { return NA; }
-  return new_excel_number(ranked);
+  return EXCEL_NUMBER(ranked);
 }
 
 static ExcelValue rank_2(ExcelValue number_v, ExcelValue range_v) {
@@ -1619,7 +1619,7 @@ static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v) 
 		
 	double multiple = pow(10,decimal_places);
 	
-	return new_excel_number( round(number * multiple) / multiple );
+	return EXCEL_NUMBER( round(number * multiple) / multiple );
 }
 
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v) {
@@ -1632,7 +1632,7 @@ static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v) {
 		
 	double multiple = pow(10,decimal_places);
 	
-	return new_excel_number( trunc(number * multiple) / multiple );	
+	return EXCEL_NUMBER( trunc(number * multiple) / multiple );	
 }
 
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
@@ -1644,8 +1644,8 @@ static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
 	CHECK_FOR_CONVERSION_ERROR
 		
 	double multiple = pow(10,decimal_places);
-	if(number < 0) return new_excel_number( floor(number * multiple) / multiple );
-	return new_excel_number( ceil(number * multiple) / multiple );	
+	if(number < 0) return EXCEL_NUMBER( floor(number * multiple) / multiple );
+	return EXCEL_NUMBER( ceil(number * multiple) / multiple );	
 }
 
 static ExcelValue excel_int(ExcelValue number_v) {
@@ -1654,7 +1654,7 @@ static ExcelValue excel_int(ExcelValue number_v) {
 	NUMBER(number_v, number)
 	CHECK_FOR_CONVERSION_ERROR
 		
-	return new_excel_number(floor(number));
+	return EXCEL_NUMBER(floor(number));
 }
 
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
@@ -1725,7 +1725,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
   }
   string[used_length] = '\0';
 	free_later(string);
-	return new_excel_string(string);
+	return EXCEL_STRING(string);
 }
 
 static ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelValue *arguments) {
@@ -1798,7 +1798,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
       if(original_range_columns != 1) return VALUE;
       ExcelValue *tmp_array2 =  (ExcelValue*) new_excel_value_array(1);
       tmp_array2[0] = current_value;
-      criteria_range[i] =  new_excel_range(tmp_array2,1,1);
+      criteria_range[i] =  EXCEL_RANGE(tmp_array2,1,1);
     }
   }
   
@@ -1821,35 +1821,35 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = NotEqual;
-          criteria[i].comparator = new_excel_string(new_comparator);
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else if(s[1] == '=') {
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = LessThanOrEqual;
-          criteria[i].comparator = new_excel_string(new_comparator);
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = LessThan;
-          criteria[i].comparator = new_excel_string(new_comparator);
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
         }
       } else if(s[0] == '>') {
         if(s[1] == '=') {
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = MoreThanOrEqual;
-          criteria[i].comparator = new_excel_string(new_comparator);
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = MoreThan;
-          criteria[i].comparator = new_excel_string(new_comparator);
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
         }
       } else if(s[0] == '=') {
         new_comparator = strndup(s+1,strlen(s)-1);
         free_later(new_comparator);
         criteria[i].type = Equal;
-        criteria[i].comparator = new_excel_string(new_comparator);
+        criteria[i].comparator = EXCEL_STRING(new_comparator);
       } else {
         criteria[i].type = Equal;
         criteria[i].comparator = current_value;          
@@ -2008,7 +2008,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
   }
   // Tidy up
   free(criteria);
-  return new_excel_range(filtered_range, number_of_filtered_values, 1);
+  return EXCEL_RANGE(filtered_range, number_of_filtered_values, 1);
 }
 
 static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
@@ -2095,7 +2095,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
 		}
 	}
 	free(ranges);
-  return new_excel_number(sum);
+  return EXCEL_NUMBER(sum);
 }
 
 // FIXME: This could do with being done properly, rather than
@@ -2114,11 +2114,11 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
   }
 
   if(format_v.type == ExcelEmpty) {
-    return new_excel_string("");
+    return EXCEL_STRING("");
   }
 
   if(format_v.type == ExcelNumber && format_v.number == 0) {
-    format_v = new_excel_string("0");
+    format_v = EXCEL_STRING("0");
   }
 
   if(number_v.type == ExcelString) {
@@ -2128,7 +2128,7 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
 		}	        
 		n = strtod (s, &p);
 		if(*p == '\0') {
-		  number_v = new_excel_number(n);
+		  number_v = EXCEL_NUMBER(n);
 		}
   }
 
@@ -2173,7 +2173,7 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
   }
 
   free_later(s);
-  result = new_excel_string(s);
+  result = EXCEL_STRING(s);
   // inspect_excel_value(result);
   return result;
 }
@@ -2287,7 +2287,7 @@ static ExcelValue value(ExcelValue string_v) {
 	CHECK_FOR_PASSED_ERROR(string_v)
 	NUMBER(string_v, a)
 	CHECK_FOR_CONVERSION_ERROR
-	return new_excel_number(a);
+	return EXCEL_NUMBER(a);
 }
 
 // Allows numbers to be 0.1% different
