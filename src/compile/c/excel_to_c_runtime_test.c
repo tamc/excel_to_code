@@ -454,7 +454,7 @@ int test_functions() {
   assert(string_join(2, string_join_array_1).string[11] == '\0');
   // ... should cope with an arbitrary number of arguments
   assert(string_join(3, string_join_array_2).string[11] == '!');
-  assert(string_join(3, string_join_array_3).string[12] == '\0');
+  assert_equal(new_excel_string("Top 10"), string_join(2, string_join_array_3), "String join with numbers");
   // ... should convert values to strings as it goes
   assert(string_join(2, string_join_array_3).string[4] == '1');
   assert(string_join(2, string_join_array_3).string[5] == '0');
