@@ -2047,7 +2047,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   int rows;
   int columns;
   ExcelValue current_value;
-  ExcelValue **ranges = malloc(sizeof(ExcelValue *)*number_of_arguments); // Added free statements
+  ExcelValue **ranges = malloc(sizeof(ExcelValue *)*number_of_arguments);
   if(ranges == 0) {
 	  printf("Out of memory in sumproduct\n");
 	  exit(-1);
@@ -2310,8 +2310,8 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
 	switch (a_v.type) {
   	case ExcelNumber:
       // FIXME: Arbitrary choice of epsilons
-      if(b_v.number == 0.0) {
-        epsilon = 0.000001;
+      if(b_v.number > -1e-6 && b_v.number < 1e-6) {
+        epsilon = 1e-6;
       } else {
         epsilon = b_v.number * 0.001;
       }
