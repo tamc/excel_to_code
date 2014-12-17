@@ -29,9 +29,8 @@ class ExcelToC < ExcelToX
     write_fuby_ffi_interface
     if write_tests_in_c
       write_tests_as_c
-    else
-      write_tests_as_ruby
     end
+    write_tests_as_ruby
   end
     
   def write_out_excel_as_code
@@ -391,6 +390,7 @@ END
     o.puts "int main() {"
     o.puts "  printf(\"\\n\\nRunning tests on #{name}\\n\\n\");"
     CompileToCUnitTest.rewrite(Hash[@references_to_test_array], sloppy_tests, @worksheet_c_names, @constants, o)
+    o.puts "  free_all_allocated_memory();"
     o.puts "  printf(\"\\n\\nFinished tests on #{name}\\n\\n\");"
     o.puts "  return 0;"
     o.puts "}"
@@ -411,9 +411,8 @@ END
     log.info "Running the resulting tests"
     if write_tests_as_c
       puts `cd #{File.join(output_directory)}; gcc "test_#{output_name.downcase}.c"; ./a.out`
-    else
-      puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
     end
+    puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
   end
   
 end

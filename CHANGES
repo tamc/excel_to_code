@@ -1,5 +1,6 @@
 # Head
 
+- If choose to generate tests in pure C, will still produce Ruby version
 - Now replaces values with constants in named references
 - Fixed some memory leaks in the C runtime
 - Fixed bug in RIGHT() and LEFT() which would give empty strings when number of characters requested was greater than the size of the string passed
