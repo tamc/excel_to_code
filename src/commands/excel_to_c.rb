@@ -408,7 +408,7 @@ END
   
   def run_tests
     return unless actually_run_tests
-    puts "Running the resulting tests"
+    log.info "Running the resulting tests"
     if write_tests_as_c
       puts `cd #{File.join(output_directory)}; gcc "test_#{output_name.downcase}.c"; ./a.out`
     else
