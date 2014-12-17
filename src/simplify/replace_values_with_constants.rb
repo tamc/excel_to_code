@@ -12,7 +12,6 @@ class MapValuesToConstants
   
   def map(ast)
     return ast unless ast.is_a?(Array)
-    operator = ast[0]
     if replace?(ast)
       ast.replace([:constant, constants[ast.dup]])
     else
@@ -38,26 +37,3 @@ class MapValuesToConstants
 
 end
 
-
-class ReplaceValuesWithConstants
-  
-  attr_accessor :rewriter
-  
-  def self.replace(*args)
-    self.new.replace(*args)
-  end
-  
-  def replace(input,output)
-    @rewriter ||= MapValuesToConstants.new
-    input.each_line do |line|
-      begin
-        ref, ast = line.split("\t")
-        output.puts "#{ref}\t#{rewriter.map(eval(ast)).inspect}"
-      rescue Exception => e
-        puts "Exception at line #{line}"
-        raise
-      end
-    end
-
-  end
-end
