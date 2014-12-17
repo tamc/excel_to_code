@@ -80,3 +80,5 @@ examples/betterif
 *.swo
 
 examples/Rakefile
+
+src/compile/c/a.out.dSYM/Contents/Info.plist
