@@ -1032,6 +1032,11 @@ class ExcelToX
         end
       end
 
+      @named_references.each do |ref, ast|
+        inline_replacer.current_sheet_name = ref.is_a?(Array) ? [ref.first] : []
+        inline_replacer.map(ast)
+      end
+
       simplify(references_that_need_updating)
 
       replacements_made_in_the_last_pass += inline_replacer.count_replaced
@@ -1206,6 +1211,10 @@ class ExcelToX
     # First do it in the formulae
     r = MapValuesToConstants.new
     @formulae.each do |ref, ast|
+      r.map(ast)
+    end
+
+    @named_references.each do |ref, ast|
       r.map(ast)
     end
 

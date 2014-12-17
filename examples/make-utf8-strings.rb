@@ -8,4 +8,5 @@ command.output_name = 'utf8strings'
 command.actually_compile_code = true
 command.actually_run_tests = true
 command.cells_that_can_be_set_at_runtime = { '2015' => ['B3'] }
+command.named_references_to_keep = :all
 command.go!
