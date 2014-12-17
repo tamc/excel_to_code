@@ -6,6 +6,7 @@ describe "ExcelFunctions: RIGHT(string,[characters])" do
     FunctionTest.right("ONE").should == "E"
     FunctionTest.right("ONE",1).should == "E"
     FunctionTest.right("ONE",3).should == "ONE"
+    FunctionTest.right("ONE", 100).should == "ONE"
   end
 
   it "should turn numbers into strings before processing" do

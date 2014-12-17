@@ -322,6 +322,7 @@ int test_functions() {
   assert(left_1(NA).type == ExcelError);
   assert(left(new_excel_string("ONE"),NA).type == ExcelError);
   assert(left(new_excel_string("ONE"),new_excel_number(-10)).type == ExcelError);
+  assert_equal(new_excel_string("ONE"), left(new_excel_string("ONE"), new_excel_number(100)), "LEFT if number of characters greater than string length");
 
   // Test less than or equal to
   // .. numbers
@@ -951,6 +952,7 @@ int test_functions() {
   assert(right_1(NA).type == ExcelError);
   assert(right(new_excel_string("ONE"),NA).type == ExcelError);
   assert(right(new_excel_string("ONE"),new_excel_number(-10)).type == ExcelError);
+  assert_equal(new_excel_string("ONE"), right(new_excel_string("ONE"), new_excel_number(100)), "RIGHT if number of characters greater than string length");
 
   // LEN(string)
   assert(len(BLANK).type == ExcelNumber);

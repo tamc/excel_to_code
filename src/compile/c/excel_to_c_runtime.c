@@ -929,10 +929,10 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	char *string;
 	int string_must_be_freed = 0;
 	switch (string_v.type) {
-  	  case ExcelString:
+  	case ExcelString:
   		string = string_v.string;
   		break;
-  	  case ExcelNumber:
+  	case ExcelNumber:
 		  string = malloc(20); // Freed
 		  if(string == 0) {
 			  printf("Out of memory in left");
@@ -944,15 +944,19 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	  case ExcelBoolean:
 	  	if(string_v.number == true) {
 	  		string = "TRUE";
-		} else {
-			string = "FALSE";
-		}
-		break;
+		  } else {
+			  string = "FALSE";
+		  }
+		  break;
 	  case ExcelEmpty:	  	 
-  	  case ExcelError:
-  	  case ExcelRange:
-		return string_v;
+  	case ExcelError:
+  	case ExcelRange:
+		  return string_v;
 	}
+
+  if(number_of_characters > strlen(string)) {
+    number_of_characters = strlen(string);
+  }
 	
 	char *left_string = malloc(number_of_characters+1); // Freed
 	if(left_string == 0) {
@@ -979,10 +983,10 @@ static ExcelValue len(ExcelValue string_v) {
 	char *string;
 	int string_must_be_freed = 0;
 	switch (string_v.type) {
-  	  case ExcelString:
+  	case ExcelString:
   		string = string_v.string;
   		break;
-  	  case ExcelNumber:
+  	case ExcelNumber:
 		  string = malloc(20); // Freed
 		  if(string == 0) {
 			  printf("Out of memory in len");
@@ -994,14 +998,14 @@ static ExcelValue len(ExcelValue string_v) {
 	  case ExcelBoolean:
 	  	if(string_v.number == true) {
 	  		string = "TRUE";
-		} else {
-			string = "FALSE";
-		}
-		break;
+		  } else {
+			  string = "FALSE";
+		  }
+		  break;
 	  case ExcelEmpty:	  	 
-  	  case ExcelError:
-  	  case ExcelRange:
-		return string_v;
+  	case ExcelError:
+  	case ExcelRange:
+		  return string_v;
 	}
 
   int length = strlen(string);
@@ -1027,10 +1031,10 @@ static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) 
 	char *string;
 	int string_must_be_freed = 0;
 	switch (string_v.type) {
-  	  case ExcelString:
+  	case ExcelString:
   		string = string_v.string;
   		break;
-  	  case ExcelNumber:
+  	case ExcelNumber:
 		  string = malloc(20); // Freed
 		  if(string == 0) {
 			  printf("Out of memory in right");
@@ -1042,14 +1046,14 @@ static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) 
 	  case ExcelBoolean:
 	  	if(string_v.number == true) {
 	  		string = "TRUE";
-		} else {
-			string = "FALSE";
-		}
-		break;
+		  } else {
+			  string = "FALSE";
+		  }
+		  break;
 	  case ExcelEmpty:	  	 
-  	  case ExcelError:
-  	  case ExcelRange:
-		return string_v;
+  	case ExcelError:
+  	case ExcelRange:
+		  return string_v;
 	}
 	
 	char *right_string = malloc(number_of_characters+1); // Freed
@@ -1058,20 +1062,16 @@ static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) 
 	  exit(-1);
 	}
   int length = strlen(string);
-  if(length < number_of_characters) {
-    if(string_must_be_freed == 1) {
-      free(string);
-    }
-    return new_excel_string("");
-  } else {
-    memcpy(right_string,string+length-number_of_characters,number_of_characters);
-    right_string[number_of_characters] = '\0';
-    if(string_must_be_freed == 1) {
-      free(string);
-    }
-    free_later(right_string);
-    return new_excel_string(right_string);
+  if(number_of_characters > length) {
+    number_of_characters = length;
   }
+  memcpy(right_string,string+length-number_of_characters,number_of_characters);
+  right_string[number_of_characters] = '\0';
+  if(string_must_be_freed == 1) {
+    free(string);
+  }
+  free_later(right_string);
+  return new_excel_string(right_string);
 }
 
 static ExcelValue right_1(ExcelValue string_v) {

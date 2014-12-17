@@ -1,5 +1,7 @@
 # Head
 
+- Fixed some memory leaks in the C runtime
+- Fixed bug in RIGHT() and LEFT() which would give empty strings when number of characters requested was greater than the size of the string passed
 - Can now generate tests in pure C as well as in Ruby using a new --write-tests-in-c option
 
 # 0.3.4 - 2014 December 1st

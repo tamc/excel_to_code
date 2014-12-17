@@ -8,6 +8,7 @@ module ExcelFunctions
     string = "TRUE" if string == true
     string = "FALSE" if string == false
     string = string.to_s
+    characters = string.length if characters > string.length
     string.slice(string.length-characters,characters) || ""
   end
   
