@@ -1,12 +1,14 @@
 # Head
 
+# 0.3.5 - 2014 December 18th
+
 - Fixed a bug in the C version of string_join when joining some strings with more than 100 characters
 - Generated C file now uses EXCEL_STRING, EXCEL_NUMBER and EXCEL_RANGE macro names instead of more confusing new_excel_string, new_excel_number and new_excel_range
-- If choose to generate tests in pure C, will still produce Ruby version
 - Now replaces values with constants in named references
 - Fixed some memory leaks in the C runtime
 - Fixed bug in RIGHT() and LEFT() which would give empty strings when number of characters requested was greater than the size of the string passed
 - Can now generate tests in pure C as well as in Ruby using a new --write-tests-in-c option
+- If choose to generate tests in pure C, will still produce Ruby version
 
 # 0.3.4 - 2014 December 1st
 
