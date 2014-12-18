@@ -1705,7 +1705,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 		}
 		current_string_length = strlen(current_string);
 		if( (used_length + current_string_length + 1) > allocated_length) {
-			allocated_length += 100;
+			allocated_length = used_length + current_string_length + 1 + 100;
 			string = realloc(string,allocated_length);
       if(!string) {
         printf("Out of memory in string join realloc trying to increase to %d", allocated_length);

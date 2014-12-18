@@ -1,5 +1,6 @@
 # Head
 
+- Fixed a bug in the C version of string_join when joining some strings with more than 100 characters
 - Generated C file now uses EXCEL_STRING, EXCEL_NUMBER and EXCEL_RANGE macro names instead of more confusing new_excel_string, new_excel_number and new_excel_range
 - If choose to generate tests in pure C, will still produce Ruby version
 - Now replaces values with constants in named references

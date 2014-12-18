@@ -470,7 +470,9 @@ int test_functions() {
   // Should deal with very long string joins
   ExcelValue string_join_array_6[] = {EXCEL_STRING("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"), EXCEL_STRING("012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789")};
   assert(string_join(2, string_join_array_6).string[0] == '0');
-  free_all_allocated_memory();
+  // Even ones that are greater than 200 characters
+  ExcelValue string_join_array_6b[] = {EXCEL_STRING("Can we increase crop yields? Between 1987 and 2007 they increased by around 1.9% per year globally, but over recent years the        annual % increase has been lower than this. Current average food energy yields are "), EXCEL_STRING("Can we increase crop yields? Between 1987 and 2007 they increased by around 1.9% per year globally, but over recent years the        annual % increase has been lower than this. Current average food energy yields are ")};
+  assert_equal(EXCEL_STRING("Can we increase crop yields? Between 1987 and 2007 they increased by around 1.9% per year globally, but over recent years the        annual % increase has been lower than this. Current average food energy yields are Can we increase crop yields? Between 1987 and 2007 they increased by around 1.9% per year globally, but over recent years the        annual % increase has been lower than this. Current average food energy yields are "), string_join(2, string_join_array_6b), "String join > 200 character");
   // Should deal with some edge cases
   ExcelValue string_join_array_7[] = { NA };
   assert_equal(NA, string_join(1, string_join_array_7), "String_join should return an error when passed an error");
