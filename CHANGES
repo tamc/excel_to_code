@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.6 - 2014 December 19th
+
 - Fixed a stupid bug causing it always writes the tests in C
 
 # 0.3.5 - 2014 December 18th
