@@ -1,5 +1,7 @@
 # Head
 
+- Fixed a stupid bug causing it always writes the tests in C
+
 # 0.3.5 - 2014 December 18th
 
 - Fixed a bug in the C version of string_join when joining some strings with more than 100 characters

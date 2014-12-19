@@ -409,7 +409,7 @@ END
   def run_tests
     return unless actually_run_tests
     log.info "Running the resulting tests"
-    if write_tests_as_c
+    if write_tests_in_c
       puts `cd #{File.join(output_directory)}; gcc "test_#{output_name.downcase}.c"; ./a.out`
     end
     puts `cd #{File.join(output_directory)}; ruby "test_#{output_name.downcase}.rb"`
