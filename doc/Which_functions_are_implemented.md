@@ -153,7 +153,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * INFO -- Returns information about the current operating environment
 * ISBLANK -- Returns TRUE if the value is blank -- _R_ _C_
 * ISERR -- Returns TRUE if the value is any error value except ##N/A -- _R_ _C_
-* ISERROR -- Returns TRUE if the value is any error value
+* ISERROR -- Returns TRUE if the value is any error value -- _R_ _C_
 * ISEVEN -- Returns TRUE if the number is even
 * ISLOGICAL -- Returns TRUE if the value is a logical value
 * ISNA -- Returns TRUE if the value is the ##N/A error value

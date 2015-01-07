@@ -47,6 +47,7 @@ class MapFormulaeToC < MapValuesToC
     :'IF3' => 'excel_if',
     :'IFERROR' => 'iferror',
     :'ISERR' => 'iserr',
+    :'ISERROR' => 'iserror',
     :'INDEX2' => 'excel_index_2',
     :'INDEX3' => 'excel_index',
     :'INT' => 'excel_int',

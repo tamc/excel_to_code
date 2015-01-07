@@ -252,6 +252,18 @@ int test_functions() {
   assert(iserr(ONE).number == 0);
   assert(iserr(EXCEL_STRING("Hello")).number == 0);
   assert(iserr(EXCEL_STRING("Hello")).number == 0);
+  
+  // Test the ISERROR function
+  assert_equal(iserror(NA), TRUE, "ISERROR(NA)");
+  assert_equal(iserror(DIV0), TRUE, "ISERROR(DIV0)");
+  assert_equal(iserror(REF), TRUE, "ISERROR(REF)");
+  assert_equal(iserror(VALUE), TRUE, "ISERROR(VALUE)");
+  assert_equal(iserror(NAME), TRUE, "ISERROR(NAME)");
+  assert_equal(iserror(BLANK), FALSE, "ISERROR(BLANK)");
+  assert_equal(iserror(TRUE), FALSE, "ISERROR(TRUE)");
+  assert_equal(iserror(FALSE), FALSE, "ISERROR(FALSE)");
+  assert_equal(iserror(ONE), FALSE, "ISERROR(ONE)");
+  assert_equal(iserror(EXCEL_STRING("Hello")), FALSE, "ISERROR('Hello')");
 
   // Test the INDEX function
   ExcelValue index_array_1[] = { EXCEL_NUMBER(10), EXCEL_NUMBER(20), BLANK };

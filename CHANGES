@@ -1,5 +1,7 @@
 # Head
 
+- Implemented the ISERROR() function
+
 # 0.3.6 - 2014 December 19th
 
 - Fixed a stupid bug causing it always writes the tests in C

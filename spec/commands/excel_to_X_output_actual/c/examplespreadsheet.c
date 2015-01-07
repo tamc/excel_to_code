@@ -72,6 +72,7 @@ static ExcelValue hlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v,
 static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v, ExcelValue match_type_v);
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
 static ExcelValue iserr(ExcelValue value);
+static ExcelValue iserror(ExcelValue value);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
 static ExcelValue excel_index_2(ExcelValue array_v, ExcelValue row_number_v);
 static ExcelValue excel_isnumber(ExcelValue number);
@@ -1101,6 +1102,15 @@ static ExcelValue iserr(ExcelValue value) {
     return FALSE;
   }
 }
+
+static ExcelValue iserror(ExcelValue value) {
+	if(value.type == ExcelError) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
+
 
 
 // Order is TRUE, FALSE, String, Number; Blank is zero
