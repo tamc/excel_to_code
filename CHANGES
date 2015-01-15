@@ -1,8 +1,10 @@
 # Head
 
+- Tiny wording tweak to the external reference reporting
+
 # 0.3.7 - 2015 January 15
 
-- Reports more detail when it finds a named reference
+- Reports more detail when it finds an external reference
 - Implemented the ISERROR() function
 
 # 0.3.6 - 2014 December 19th

@@ -14,14 +14,16 @@ class ExternalReferenceException < ExcelToCodeException
   def message
     <<-END
 
+
     Sorry, ExcelToCode can't handle external references
 
-    It found one at #{ref}
-    The full formula was #{formula_text}
+    It found one in #{ref.join("!")}
+    The formula was #{formula_text}
     Which was parsed to #{full_ast}
     Which seemed to have an external reference at #{reference_ast}
+    Note, the [0], [1], [2] ...  are the way Excel stores the names of the external files. 
     
-    Please remove the external reference from the Excel and try again"
+    Please remove the external reference from the Excel and try again.
 
     END
   end
@@ -54,7 +56,7 @@ class CachingFormulaParser
   def parse(text)
     ast = Formula.parse(text)
     @text = text # Kept in case of Exception below
-    @full_ast = ast # Kept in case of Exception below
+    @full_ast = ast.to_ast[1] # Kept in case of Exception below
     if ast
       map(ast.to_ast[1])
     else
