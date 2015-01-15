@@ -910,6 +910,7 @@ class ExcelToX
     @replace_string_joins_on_ranges_replacer ||= ReplaceStringJoinOnRangesAST.new
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
     @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
+    @fix_subtotal_of_subtotals ||= FixSubtotalOfSubtotals.new(@formulae)
 
     #require 'pry'; binding.pry
 
@@ -934,6 +935,7 @@ class ExcelToX
         @wrap_formulae_that_return_arrays_replacer.map(ast)
         @replace_references_to_blanks_with_zeros.current_sheet_name = ref.first
         @replace_references_to_blanks_with_zeros.map(ast)
+        @fix_subtotal_of_subtotals.map(ast)
       rescue  Exception => e
         log.fatal "Exception when simplifying #{ref}: #{ast}"
         raise

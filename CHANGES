@@ -1,5 +1,6 @@
 # Head
 
+- Fix SUBTOTAL to not count other SUBTOTALs
 - Tweak the logging of the initial unzip of the excel into xml to be quieter
 - Altered the output of the default logger to be less noisy
 
