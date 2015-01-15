@@ -1,5 +1,7 @@
 # Head
 
+- Altered the output of the default logger to be less noisy
+
 # 0.3.8 - 2015 January 15
 
 - Tiny wording tweak to the external reference reporting

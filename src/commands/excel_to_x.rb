@@ -228,7 +228,12 @@ class ExcelToX
     self.output_directory = File.expand_path(output_directory)
     
     # Set up our log file
-    self.log ||= Logger.new(STDOUT)
+    unless self.log
+      self.log = Logger.new(STDOUT)
+      log.formatter = proc do |severity, datetime, progname, msg|
+        "#{datetime.strftime("%H:%M")}\t#{msg}\n"
+      end
+    end
 
     # By default, tests allow empty cells and zeros to be treated as equivalent, and numbers only have to match to a 0.001 epsilon (if expected>1) or 0.001 delta (if expected<1)
     self.sloppy_tests ||= true
