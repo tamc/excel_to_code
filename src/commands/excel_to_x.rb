@@ -262,8 +262,8 @@ class ExcelToX
   
   # FIXME: Replace these with pure ruby versions?
   def unzip_excel
-    log.info `rm -fr '#{xml_directory}'` # Force delete
-    log.info `unzip '#{excel_file}' -d '#{xml_directory}'` # If don't force delete, make sure that force the zip to overwrite old files 
+    log.info "Removing any old xml #{`rm -fr '#{xml_directory}'`}" # Force delete
+    log.info "Unziping excel into xml #{`unzip -q '#{excel_file}' -d '#{xml_directory}'`}" # If don't force delete, make sure that force the zip to overwrite old files 
   end
   
   # The excel workbook.xml and allied relationship files knows about
