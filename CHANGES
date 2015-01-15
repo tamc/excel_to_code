@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.7 - 2015 January 15
+
 - Reports more detail when it finds a named reference
 - Implemented the ISERROR() function
 
