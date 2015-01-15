@@ -80,8 +80,13 @@ class ExtractDataFromWorksheet < ::Ox::Sax
       return if only_extract_values
 
       unless @formula.empty?
-        formula_text = @formula.join.gsub(/[\r\n]+/,'')
-        ast = @fp.parse(formula_text)
+        begin
+          formula_text = @formula.join.gsub(/[\r\n]+/,'')
+          ast = @fp.parse(formula_text)
+        rescue ExternalReferenceException => e
+          e.ref = key # Attach the sheet and reference to the exception
+          raise
+        end
         unless ast
           $stderr.puts "Could not parse #{@sheet_name} #{@ref} #{formula_text}"
           exit

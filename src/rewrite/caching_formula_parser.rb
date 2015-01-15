@@ -1,5 +1,32 @@
 require 'singleton'
 
+class ExternalReferenceException < ExcelToCodeException
+
+  attr_accessor :reference_ast
+  attr_accessor :full_ast
+  attr_accessor :formula_text
+  attr_accessor :ref
+
+  def initialize(reference_ast, full_ast, formula_text)
+    @reference_ast, @full_ast, @formula_text = reference_ast, full_ast, formula_text
+  end
+
+  def message
+    <<-END
+
+    Sorry, ExcelToCode can't handle external references
+
+    It found one at #{ref}
+    The full formula was #{formula_text}
+    Which was parsed to #{full_ast}
+    Which seemed to have an external reference at #{reference_ast}
+    
+    Please remove the external reference from the Excel and try again"
+
+    END
+  end
+end
+
 class CachingFormulaParser
   include Singleton
 
@@ -26,6 +53,8 @@ class CachingFormulaParser
 
   def parse(text)
     ast = Formula.parse(text)
+    @text = text # Kept in case of Exception below
+    @full_ast = ast # Kept in case of Exception below
     if ast
       map(ast.to_ast[1])
     else
@@ -57,8 +86,9 @@ class CachingFormulaParser
     ast
   end
 
+  # We can't deal with external references at the moment
   def external_reference(ast)
-    raise ExcelToCodeException.new("Sorry, ExcelToCode cannot cope with external references (#{ast.inspect}. Please strip them from the workbook before attempting to compile it.")
+    raise ExternalReferenceException.new(ast, @full_ast, @text)
   end
 
   def sheet_reference(ast)
