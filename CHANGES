@@ -1,5 +1,9 @@
 # Head
 
+# 0.3.10 - 2015 January 16
+
+- Fix unitialzed constant error
+
 # 0.3.9 - 2015 January 15
 
 - Fix SUBTOTAL to not count other SUBTOTALs
