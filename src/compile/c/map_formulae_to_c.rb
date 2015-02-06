@@ -31,6 +31,7 @@ class MapFormulaeToC < MapValuesToC
     :'AND' => 'excel_and',
     :'AVERAGE' => 'average',
     :'AVERAGEIFS' => 'averageifs',
+    :'CHAR' => 'excel_char',
     :'CHOOSE' => 'choose',
     :'CONCATENATE' => 'string_join',
     :'COSH' => 'cosh',

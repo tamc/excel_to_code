@@ -347,7 +347,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 
 * ASC -- Changes full-width (double-byte) English letters or katakana within a character string to half-width (single-byte) characters
 * BAHTTEXT -- Converts a number to text, using the ß (baht) currency format
-* CHAR -- Returns the character specified by the code number
+* CHAR -- Returns the character specified by the code number -- _R_ _C_
 * CLEAN -- Removes all nonprintable characters from text
 * CODE -- Returns a numeric code for the first character in a text string
 * CONCATENATE -- Joins several text items into one text item -- _R_ _C_

@@ -117,3 +117,5 @@ require_relative 'excel_functions/iserr'
 require_relative 'excel_functions/npv'
 
 require_relative 'excel_functions/iserror'
+
+require_relative 'excel_functions/char'

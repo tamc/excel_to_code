@@ -58,6 +58,7 @@ static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue average(int array_size, ExcelValue *array);
 static ExcelValue averageifs(ExcelValue average_range_v, int number_of_arguments, ExcelValue *arguments);
+static ExcelValue excel_char(ExcelValue number_v);
 static ExcelValue ensure_is_number(ExcelValue maybe_number_v);
 static ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
@@ -298,6 +299,23 @@ static ExcelValue excel_abs(ExcelValue a_v) {
 	} else {
 		return (ExcelValue) {.type = ExcelNumber, .number = -a};
 	}
+}
+
+static ExcelValue excel_char(ExcelValue a_v) {
+	CHECK_FOR_PASSED_ERROR(a_v)	
+	NUMBER(a_v, a)
+	CHECK_FOR_CONVERSION_ERROR
+  if(a <= 0) { return VALUE; }
+  if(a >= 256) { return VALUE; }
+  a = floor(a);
+	char *string = malloc(1); // Freed later
+	if(string == 0) {
+	  printf("Out of memory in char");
+	  exit(-1);
+	}
+  string[0] = a;
+  free_later(string);
+  return EXCEL_STRING(string);
 }
 
 static ExcelValue add(ExcelValue a_v, ExcelValue b_v) {

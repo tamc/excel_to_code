@@ -1012,6 +1012,16 @@ int test_functions() {
   ExcelValue npv_array5[] = { BLANK };
   assert(npv(EXCEL_NUMBER(0.1), 1, npv_array5).number == 0);
 
+  // CHAR
+  assert_equal(VALUE, excel_char(ZERO), "excel_char(0) == VALUE");
+  assert_equal(VALUE, excel_char(EXCEL_NUMBER(256)), "excel_char(256) == VALUE");
+  assert_equal(VALUE, excel_char(BLANK), "excel_char() == VALUE");
+  assert_equal(VALUE, excel_char(EXCEL_STRING("adsfa")), "excel_char('nonsense') == VALUE");
+  assert_equal(DIV0, excel_char(DIV0), "excel_char(DIV0) == DIV0");
+  assert_equal(EXCEL_STRING("\x01"), excel_char(ONE), "excel_char(1) == '\x01'");
+  assert_equal(EXCEL_STRING("a"), excel_char(EXCEL_NUMBER(97)), "excel_char(97) == 'a'");
+  assert_equal(EXCEL_STRING("a"), excel_char(EXCEL_NUMBER(97.5)), "excel_char(97.5) == 'a'");
+
   // Release memory
   free_all_allocated_memory();
 

@@ -21,6 +21,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'AVERAGE' => 'average',
     :'AVERAGEIFS' => 'averageifs',
     :'CELL' => 'cell',
+    :'CHAR' => 'char',
     :'CHOOSE' => 'choose',
     :'CONCATENATE' => 'string_join',
     :'COSH' => 'cosh',
