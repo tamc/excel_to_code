@@ -231,7 +231,12 @@ class ExcelToX
     unless self.log
       self.log = Logger.new(STDOUT)
       log.formatter = proc do |severity, datetime, progname, msg|
-        "#{datetime.strftime("%H:%M")}\t#{msg}\n"
+        case severity
+        when "ERROR"; "\n\033[41#{datetime.strftime("%H:%M")}\t#{msg}\033[0m\n\n"
+        when "WARN"; "\033[31m#{datetime.strftime("%H:%M")}\t#{msg}\033[0m\n"
+        when "INFO"; "\033[34m#{datetime.strftime("%H:%M")}\t#{msg}\033[0m\n"
+        else; "#{datetime.strftime("%H:%M")}\t#{msg}\n"
+        end
       end
     end
 

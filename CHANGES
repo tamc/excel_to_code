@@ -1,5 +1,7 @@
 # Head
 
+- Default logging now uses colours to indicate severity
+
 # 0.3.10 - 2015 January 16
 
 - Fix unitialzed constant error
