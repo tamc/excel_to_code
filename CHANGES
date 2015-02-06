@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.11 - 2015 February 6
+
 - Implemented the CHAR function in C and Ruby
 - Default logging now uses colours to indicate severity
 
