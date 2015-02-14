@@ -49,7 +49,6 @@ Control!#REF!	[:sheet_reference, "Control", [:error, "#REF!"]]
 'sheet 1'!$C:$AZ"	[:sheet_reference, "sheet 1", [:column_range, "$C", "$AZ"]]
 '2007.0'!Year.Matrix"	[:sheet_reference, "2007.0", [:named_reference, "Year.Matrix"]]
 'G.20 (data)'!Q1149:'G.20 (data)'!Q1153	[:sheet_reference, "G.20 (data)", [:area, "Q1149", "Q1153"]]
-TEXT(SUM('G.20 (data)'!Q1149:'G.20 (data)'!Q1153)	[:function, "TEXT"]
 
 # parses external references
 INDEX([1]!Modules[Module], MATCH($C5, [1]!Modules[Code], 0))	[:function, "INDEX", [:external_reference, "[1]!", [:table_reference, "Modules", "Module"]], [:function, "MATCH", [:cell, "$C5"], [:external_reference, "[1]!", [:table_reference, "Modules", "Code"]], [:number, "0"]]]

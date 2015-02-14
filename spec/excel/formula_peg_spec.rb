@@ -2,7 +2,10 @@ require_relative '../spec_helper'
 require 'textpeg2rubypeg'
 
 describe Formula do
-  
+
+  # The parser is written as formula_peg.txt and then compiled into formula_peg.rb
+  # This method checks whether formula_peg.txt has been updated, and if so, updated
+  # formula_peg.rb 
   before(:all) do
     text_peg = File.join(File.dirname(__FILE__),'..','..','src','excel','formula_peg.txt')
     ruby_peg = File.join(File.dirname(__FILE__),'..','..','src','excel','formula_peg.rb') 
@@ -21,7 +24,18 @@ describe Formula do
     end  
   end
   
-  checks = test_data('formulae_to_ast.txt').each_line.map.with_index { |line,i| [i,line] }.find_all { |line| line.last =~ /\[:/ }.map { |line| line.last =~ /(.*?)(\[:.*)/; [line.first,$1,$2] }
+  # The test data is stored in formulae_to_ast.txt in the format:
+  # Formula as text <tab> Expected ast for formula <newline>
+  # Anything that doesn't look like that is skipped.
+  checks = test_data('formulae_to_ast.txt').each_line.map.with_index do |line,i| 
+    [i,line]
+  end.find_all do |line|
+    line.last =~ /\[:/ 
+  end.map do |line|
+    line.last =~ /(.*?)(\[:.*)/
+    [line.first,$1,$2]
+  end
+
   checks.each do |c|
     it "converts #{c[1].strip} into #{c[2].strip} (line #{c[0]+1} of formulae_to_ast.txt)" do
       desired = eval(c[2].strip)
