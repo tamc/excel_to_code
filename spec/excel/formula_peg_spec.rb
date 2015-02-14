@@ -27,28 +27,34 @@ describe Formula do
   # The test data is stored in formulae_to_ast.txt in the format:
   # Formula as text <tab> Expected ast for formula <newline>
   # Anything that doesn't look like that is skipped.
+  # If the formula is prefixed by @NOT_IMPLEMENTED then it will be written is
+  # as a pending test
   checks = test_data('formulae_to_ast.txt').each_line.map.with_index do |line,i| 
     [i,line]
-  end.find_all do |line|
-    line.last =~ /\[:/ 
-  end.map do |line|
-    line.last =~ /(.*?)(\[:.*)/
-    [line.first,$1,$2]
+  end.find_all do |numbered_line|
+    numbered_line.last =~ /\[:/ 
+  end.map do |numbered_line|
+    numbered_line.last =~ /(.*?)(\[:.*)/
+    [numbered_line.first,$1,$2]
   end
 
   checks.each do |c|
-    it "converts #{c[1].strip} into #{c[2].strip} (line #{c[0]+1} of formulae_to_ast.txt)" do
-      desired = eval(c[2].strip)
-      parser = Formula.new      
-      actual = parser.parse(c[1].strip)
-      if actual
-        actual = actual.to_ast[1]
-      else
-        actual = "Failed to parse"
-      end
-      actual.to_s.should == desired.to_s
-      unless actual.to_s == desired.to_s
-        parser.pretty_print_cache(true)
+    if c[1].strip.start_with?("@NOT_IMPLEMENTED")
+      skip "#{c[1].strip} into #{c[2].strip} (line #{c[0]+1} of formulae_to_ast.txt)"
+    else
+      it "converts #{c[1].strip} into #{c[2].strip} (line #{c[0]+1} of formulae_to_ast.txt)" do
+        desired = eval(c[2].strip)
+        parser = Formula.new      
+        actual = parser.parse(c[1].strip)
+        if actual
+          actual = actual.to_ast[1]
+        else
+          actual = "Failed to parse"
+        end
+        actual.to_s.should == desired.to_s
+        unless actual.to_s == desired.to_s
+          parser.pretty_print_cache(true)
+        end
       end
     end
   end

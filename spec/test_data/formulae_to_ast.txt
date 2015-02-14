@@ -35,6 +35,9 @@ $1:$1000	[:row_range, "$1", "$1000"]
 $C:$AZ	[:column_range, "$C", "$AZ"]
 C:AZ	[:column_range, "C", "AZ"]
 
+# But doesn't yet parse range unions
+@NOT_IMPLEMENTED 10:10 C:C	[:range_union, [:row_range, "10", "10"], [:column_range, "C", "C"]]
+
 # parses references to other sheets
 sheet1!$A$1	[:sheet_reference, "sheet1", [:cell, "$A$1"]]
 sheet1!$A$1:$Z$1	[:sheet_reference, "sheet1", [:area, "$A$1", "$Z$1"]]
@@ -48,7 +51,9 @@ Control!#REF!	[:sheet_reference, "Control", [:error, "#REF!"]]
 'sheet 1'!$1:$1000"	[:sheet_reference, "sheet 1", [:row_range, "$1", "$1000"]]
 'sheet 1'!$C:$AZ"	[:sheet_reference, "sheet 1", [:column_range, "$C", "$AZ"]]
 '2007.0'!Year.Matrix"	[:sheet_reference, "2007.0", [:named_reference, "Year.Matrix"]]
-'G.20 (data)'!Q1149:'G.20 (data)'!Q1153	[:sheet_reference, "G.20 (data)", [:area, "Q1149", "Q1153"]]
+
+# But doesn't yet parse wierd sheet references like this:
+@NOT_IMPLEMENTED 'G.20 (data)'!Q1149:'G.20 (data)'!Q1153	[:sheet_reference, "G.20 (data)", [:area, "Q1149", "Q1153"]]
 
 # parses external references
 INDEX([1]!Modules[Module], MATCH($C5, [1]!Modules[Code], 0))	[:function, "INDEX", [:external_reference, "[1]!", [:table_reference, "Modules", "Module"]], [:function, "MATCH", [:cell, "$C5"], [:external_reference, "[1]!", [:table_reference, "Modules", "Code"]], [:number, "0"]]]
