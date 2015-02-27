@@ -1,5 +1,6 @@
 # Head
 
+- Fixed a bug which meant that COLUMN and ROW and OFFSET functions would sometimes not be correctly replaced
 - Tinkered with tests
 
 # 0.3.11 - 2015 February 6
