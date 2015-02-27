@@ -956,7 +956,11 @@ class ExcelToX
   def must_keep?(ref)
     must_keep_in_sheet = @cells_that_can_be_set_at_runtime[ref.first]
     return false unless must_keep_in_sheet
-    return true if must_keep_in_sheet == :all
+    if must_keep_in_sheet == :all
+      # Only keep cells that actually exist
+      return true if @values[ref]
+      return false
+    end
     must_keep_in_sheet.include?(ref.last)
   end
   

@@ -1,5 +1,7 @@
 # Head
 
+- Fixed a bug when specifying :all cells in a sheet to be settable, and empty cells on that sheet are referenced
+
 # 0.3.12 - 2015 February 27
 
 - Fixed a bug which meant that COLUMN and ROW and OFFSET functions would sometimes not be correctly replaced
