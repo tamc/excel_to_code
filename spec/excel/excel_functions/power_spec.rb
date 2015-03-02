@@ -2,9 +2,16 @@ require_relative '../../spec_helper.rb'
 
 describe "ExcelFunctions: power(number,number)" do
   
-  it "should return sum of its arguments" do
+  it "should return power of its arguments" do
+    FunctionTest.power(2,0).should == 1
     FunctionTest.power(2,3).should == 8
     FunctionTest.power(4.0,0.5).should == 2.0
+  end
+
+  it "should return NUM when trying to take roots of negative numbers" do
+    FunctionTest.power(-4,2).should == 16
+    FunctionTest.power(-4,0).should == 1
+    FunctionTest.power(-4,0.5).should == :num
   end
       
   it "should treat nil as zero" do

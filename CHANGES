@@ -1,5 +1,6 @@
 # Head
 
+- Roots of negative numbers now return an error, like excel
 - Fixed a bug when specifying :all cells in a sheet to be settable, and empty cells on that sheet are referenced
 
 # 0.3.12 - 2015 February 27
