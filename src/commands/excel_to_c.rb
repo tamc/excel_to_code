@@ -239,7 +239,7 @@ class #{ruby_module_name}
         end
       end 
       return a
-    when :ExcelError; [:value,:name,:div0,:ref,:na][excel_value[:number]]
+    when :ExcelError; [:value,:name,:div0,:ref,:na,:num][excel_value[:number]]
     else
       raise Exception.new("ExcelValue type \u0023{excel_value[:type].inspect} not recognised")
     end
