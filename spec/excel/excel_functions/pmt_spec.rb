@@ -19,6 +19,10 @@ describe "ExcelFunctions: PMT(rate,number_of_periods,present_value) - optional a
   it "should treat nil as zero" do
     FunctionTest.pmt(nil,1,nil).should == 0
   end
+
+  it "should return num if number_of_periods is zero" do
+    FunctionTest.pmt(0.0,0.0,0.0).should == :num
+  end
   
   it "should return an error if an argument is an error" do
     FunctionTest.pmt(:error1,10,100).should == :error1

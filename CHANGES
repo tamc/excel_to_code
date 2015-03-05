@@ -1,5 +1,7 @@
 # Head
 
+- Fixed PMT to return NUM error when number of periods is zero
+
 # 0.3.13 - 2015 March 2
 
 - Roots of negative numbers now return an error, like excel
