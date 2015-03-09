@@ -45,7 +45,6 @@ There are some how to guides in the doc folder.
 4. Doesn't implement references that involve range unions and lists (but does implement standard ranges)
 5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
 6. The generated C version does not multithread and will give bad results if you try
-7. Newlines are removed from strings
-8. The generated code uses floating point, rather than fully precise arithmetic, so results can differ slightly
-9. The generated code uses the sprintf approach to rounding (even-odd) rather than excel's 0.5 rounds away from zero.
-10. Ranges like this: Sheet1!A10:Sheet1!B20 and 3D ranges don't work
+7. The generated code uses floating point, rather than fully precise arithmetic, so results can differ slightly
+8. The generated code uses the sprintf approach to rounding (even-odd) rather than excel's 0.5 rounds away from zero.
+90. Ranges like this: Sheet1!A10:Sheet1!B20 and 3D ranges don't work

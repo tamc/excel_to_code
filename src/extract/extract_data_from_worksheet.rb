@@ -69,7 +69,7 @@ class ExtractDataFromWorksheet < ::Ox::Sax
       when 's'; [:shared_string, value.to_i]
       when 'n'; [:number, value.to_f]
       when 'e'; [:error, value.to_sym]
-      when 'str'; [:string, value.gsub(/_x[0-9A-F]{4}_/,'').freeze]
+      when 'str'; [:string, convert_excels_unicode_escaping(value).freeze]
       else
         $stderr.puts "Value of type #{@value_type} not known #{@sheet_name} #{@ref}"
         exit
@@ -143,6 +143,15 @@ class ExtractDataFromWorksheet < ::Ox::Sax
       @value << text
     when :f
       @formula << text
+    end
+  end
+
+  # Excel encodes unicode as _x000D_ where the 000D
+  # is the unicode codepoint
+  def convert_excels_unicode_escaping(excel_string)
+    excel_string.gsub(/_x([0-9A-F]{4})_/) do 
+      unicode_codepoint = $1
+      [unicode_codepoint.hex].pack("U")
     end
   end
 

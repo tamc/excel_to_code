@@ -77,4 +77,10 @@ describe ExtractDataFromWorksheet do
     extractor.values.length.should == 16
   end
 
+  it "should convert Excels _x000D_ style escaping into proper unicode" do
+    extractor = ExtractDataFromWorksheet.new
+    extractor.convert_excels_unicode_escaping("One").should == "One"
+    extractor.convert_excels_unicode_escaping("A_x000D_B_x000D_C").should == "A\rB\rC"
+  end
+
 end
