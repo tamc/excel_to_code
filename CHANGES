@@ -1,5 +1,6 @@
 # Head
 
+- Now detects and reports more kinds of external references
 - Improved the way that the conversion treats newlines and other special characters in strings by dealing with excel unicode escaping of the form _x000D_
 - Added missing NUM conversion to ruby interface to C version
 - Fixed PMT to return NUM error when number of periods is zero

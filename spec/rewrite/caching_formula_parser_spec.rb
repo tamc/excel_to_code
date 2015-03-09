@@ -73,5 +73,14 @@ describe CachingFormulaParser do
 
   end 
 
+  it "should catch external references" do
+    expect { CachingFormulaParser.parse("[1]Sheet1!B1") }.to raise_error(ExternalReferenceException)
+    expect { CachingFormulaParser.parse("'[1] Output tab'!B1") }.to raise_error(ExternalReferenceException)
+    CachingFormulaParser.parse("'a [1] Output tab'!B1").should == [:sheet_reference, :"a [1] Output tab", [:cell, :B1]]
+
+
+
+  end
+
 end
 

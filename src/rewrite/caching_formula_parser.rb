@@ -94,6 +94,11 @@ class CachingFormulaParser
   end
 
   def sheet_reference(ast)
+    # Sheet names shouldn't start with [1], because those are 
+    # external references
+    if ast[1] =~ /^\[\d+\]/
+       raise ExternalReferenceException.new(ast, @full_ast, @text)
+    end
     ast[1] = ast[1].to_sym
     ast[2] = map(ast[2])
     # We do this to deal with Control!#REF! style rerferences
