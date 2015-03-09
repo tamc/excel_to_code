@@ -13,7 +13,7 @@ describe InlineFormulaeAst do
     r.map([:function, :sum, [:sheet_reference, :sheet1, [:cell, :A2]]]).should == [:function, :sum, [:inlined_blank]]
   end
 
-  it "should not replace references to otehr cells when they are used as arguments in OFFSET, ROW and COLUMN functions" do
+  it "should not replace references to other cells when they are used as arguments in OFFSET, ROW and COLUMN functions" do
     references = {
       [:sheet1, :A2] => [:cell, :"A3"]
     }
