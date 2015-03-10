@@ -1,5 +1,7 @@
 # Head
 
+- Fixed a bug in VLOOKUP when the lookup value is an empty cell
+
 # 0.3.14 - 2015 March 10
 
 - Fixed bug in ruby version of power

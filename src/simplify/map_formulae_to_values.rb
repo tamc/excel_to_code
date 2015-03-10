@@ -191,6 +191,14 @@ class MapFormulaeToValues
     normal_function(ast,nil)
   end
 
+  def map_vlookup(ast)
+    normal_function(ast,nil)
+  end
+
+  def map_hlookup(ast)
+    normal_function(ast, nil)
+  end
+
   OK_CHECK_RANGE_TYPES = [:sheet_reference, :cell, :area, :array, :number, :string, :boolean_true, :boolean_false]
 
   def map_sumifs(ast)
