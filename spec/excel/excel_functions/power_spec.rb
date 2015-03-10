@@ -6,6 +6,7 @@ describe "ExcelFunctions: power(number,number)" do
     FunctionTest.power(2,0).should == 1
     FunctionTest.power(2,3).should == 8
     FunctionTest.power(4.0,0.5).should == 2.0
+    FunctionTest.power(0.5,0.5).should ==0.7071067811865476 
   end
 
   it "should return NUM when trying to take roots of negative numbers" do

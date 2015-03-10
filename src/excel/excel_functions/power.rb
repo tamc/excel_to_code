@@ -11,7 +11,7 @@ module ExcelFunctions
     return b if b.is_a?(Symbol)
 
     return 1 if b ==0 # Special case so can do the following negative number check
-    return :num if a < 1 && b < 1
+    return :num if a < 0 && b < 1
     
     a**b
   end
