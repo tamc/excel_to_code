@@ -1,5 +1,6 @@
 # Head
 
+- Be more permissive of newlines in strings and formulae
 - Raise an Exception if fail to parse a formulae
 
 # 0.3.15 - 2015 March 10

@@ -26,7 +26,7 @@ class ExtractSharedStrings < ::Ox::Sax
   def text(string)
     return unless @current
     # FIXME: SHOULDN'T ELINMATE NEWLINES
-    @current << string.gsub("\n","")
+    @current << string#.gsub("\n","")
   end
   
 end

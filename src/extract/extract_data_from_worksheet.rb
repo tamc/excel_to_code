@@ -81,7 +81,7 @@ class ExtractDataFromWorksheet < ::Ox::Sax
 
       unless @formula.empty?
         begin
-          formula_text = @formula.join.gsub(/[\r\n]+/,'')
+          formula_text = @formula.join
           ast = @fp.parse(formula_text)
         rescue ExcelToCodeException => e
           e.ref = key if e.respond_to?(:ref) # Attach the sheet and reference to the exception
