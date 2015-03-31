@@ -12,7 +12,7 @@ it "should compile basic values and give precise tests when sloppy = false" do
 
   input = {
     ["sheet1", "A1"] => [:number, "1"],
-    ["sheet1", "A2"] => [:string, "Hello"],
+    ["sheet1", "A2"] => [:string, "Hello\n"],
     ["sheet1", "A3"] => [:error, :"#NAME?"],
     ["sheet1", "A4"] => [:boolean_true],
     ["sheet1", "A5"] => [:boolean_false],
@@ -22,7 +22,7 @@ it "should compile basic values and give precise tests when sloppy = false" do
 
 expected = <<END
   def test_sheet1_a1; assert_equal(1, worksheet.sheet1_a1); end
-  def test_sheet1_a2; assert_equal("Hello", worksheet.sheet1_a2); end
+  def test_sheet1_a2; assert_equal("Hello", worksheet.sheet1_a2.gsub(/[\\n\\r]+/,'')); end
   def test_sheet1_a3; assert_equal(:name, worksheet.sheet1_a3); end
   def test_sheet1_a4; assert_equal(true, worksheet.sheet1_a4); end
   def test_sheet1_a5; assert_equal(false, worksheet.sheet1_a5); end
@@ -38,7 +38,7 @@ input = {
   ["sheet1", "A1"] => [:number, "1000"],
   ["sheet1", "A2"] => [:number, "0.1"],
   ["sheet1", "A3"] => [:number, "0"],
-  ["sheet1", "A4"] => [:string, "Hello"],
+  ["sheet1", "A4"] => [:string, "Hello\r"],
   ["sheet1", "A5"] => [:error, :"#NAME?"],
   ["sheet1", "A6"] => [:boolean_true],
   ["sheet1", "A7"] => [:boolean_false],
@@ -49,7 +49,7 @@ expected = <<END
   def test_sheet1_a1; assert_in_epsilon(1000, worksheet.sheet1_a1, 0.002); end
   def test_sheet1_a2; assert_in_delta(0.1, worksheet.sheet1_a2, 0.002); end
   def test_sheet1_a3; assert_in_delta(0, (worksheet.sheet1_a3||0), 0.002); end
-  def test_sheet1_a4; assert_equal("Hello", worksheet.sheet1_a4); end
+  def test_sheet1_a4; assert_equal("Hello", worksheet.sheet1_a4.gsub(/[\\n\\r]+/,'')); end
   def test_sheet1_a5; assert_equal(:name, worksheet.sheet1_a5); end
   def test_sheet1_a6; assert_equal(true, worksheet.sheet1_a6); end
   def test_sheet1_a7; assert_equal(false, worksheet.sheet1_a7); end

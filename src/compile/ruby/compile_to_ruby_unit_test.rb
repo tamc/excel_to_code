@@ -37,6 +37,8 @@ class CompileToRubyUnitTest
         else
           o.puts "  def #{test_name}; assert_equal(#{value}, #{full_reference}); end"
         end
+      when :string
+        o.puts "  def #{test_name}; assert_equal(#{value.gsub(/(\\n|\\r|\r|\n)+/,'')}, #{full_reference}.gsub(/[\\n\\r]+/,'')); end"
       when :number
         if sloppy
           if value.to_f.abs <= 1
