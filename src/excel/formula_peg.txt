@@ -41,7 +41,7 @@ boolean                          = boolean_true | boolean_false
 boolean_true                    := `'TRUE'
 boolean_false                   := `'FALSE'
 prefix                          := /[-+]/ thing
-space                            = `/[ \n]*/
+space                            = `/[ \n\r]*/
 null                            := &','
 error                           := '#REF!' | '#NAME?' | '#VALUE!' | '#DIV/0!' | '#N/A' | '#NUM!'
 

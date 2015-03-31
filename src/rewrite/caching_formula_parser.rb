@@ -29,6 +29,32 @@ class ExternalReferenceException < ExcelToCodeException
   end
 end
 
+class ParseFailedException < ExcelToCodeException
+
+  attr_accessor :formula_text
+  attr_accessor :ref
+
+  def initialize(formula_text)
+    @formula_text = formula_text
+  end
+
+  def message
+    <<-END
+
+
+    Sorry, ExcelToCode couldn't parse one of the formulae
+
+    It was in #{ref.join("!")}
+    The formula was #{formula_text}
+
+    Please report the problem at http://github.com/tamc/excel_to_code/issues
+
+    END
+  end
+
+end
+
+
 class CachingFormulaParser
   include Singleton
 
@@ -56,10 +82,11 @@ class CachingFormulaParser
   def parse(text)
     ast = Formula.parse(text)
     @text = text # Kept in case of Exception below
-    @full_ast = ast.to_ast[1] # Kept in case of Exception below
     if ast
+      @full_ast = ast.to_ast[1] # Kept in case of Exception below
       map(ast.to_ast[1])
     else
+      raise ParseFailedException.new(text)
       nil
     end
   end

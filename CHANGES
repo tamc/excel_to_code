@@ -1,5 +1,7 @@
 # Head
 
+- Raise an Exception if fail to parse a formulae
+
 # 0.3.15 - 2015 March 10
 
 - Fixed a bug in VLOOKUP when the lookup value is an empty cell

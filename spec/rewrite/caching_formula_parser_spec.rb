@@ -82,5 +82,9 @@ describe CachingFormulaParser do
 
   end
 
+  it "should report failures to parse" do
+    expect { CachingFormulaParser.parse("{NOT PARSABLE}") }.to raise_error(ParseFailedException)
+  end
+
 end
 

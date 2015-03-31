@@ -83,8 +83,8 @@ class ExtractDataFromWorksheet < ::Ox::Sax
         begin
           formula_text = @formula.join.gsub(/[\r\n]+/,'')
           ast = @fp.parse(formula_text)
-        rescue ExternalReferenceException => e
-          e.ref = key # Attach the sheet and reference to the exception
+        rescue ExcelToCodeException => e
+          e.ref = key if e.respond_to?(:ref) # Attach the sheet and reference to the exception
           raise
         end
         unless ast

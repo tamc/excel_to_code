@@ -230,7 +230,7 @@ class Formula < RubyPeg
   end
   
   def space
-    ignore { terminal(/[ \n]*/) }
+    ignore { terminal(/[ \n\r]*/) }
   end
   
   def null
