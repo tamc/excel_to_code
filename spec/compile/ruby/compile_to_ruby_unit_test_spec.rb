@@ -22,7 +22,7 @@ it "should compile basic values and give precise tests when sloppy = false" do
 
 expected = <<END
   def test_sheet1_a1; assert_equal(1, worksheet.sheet1_a1); end
-  def test_sheet1_a2; assert_equal("Hello", worksheet.sheet1_a2.gsub(/[\\n\\r]+/,'')); end
+  def test_sheet1_a2; assert_equal("Hello", worksheet.sheet1_a2.to_s.gsub(/[\\n\\r]+/,'')); end
   def test_sheet1_a3; assert_equal(:name, worksheet.sheet1_a3); end
   def test_sheet1_a4; assert_equal(true, worksheet.sheet1_a4); end
   def test_sheet1_a5; assert_equal(false, worksheet.sheet1_a5); end
@@ -49,7 +49,7 @@ expected = <<END
   def test_sheet1_a1; assert_in_epsilon(1000, worksheet.sheet1_a1, 0.002); end
   def test_sheet1_a2; assert_in_delta(0.1, worksheet.sheet1_a2, 0.002); end
   def test_sheet1_a3; assert_in_delta(0, (worksheet.sheet1_a3||0), 0.002); end
-  def test_sheet1_a4; assert_equal("Hello", worksheet.sheet1_a4.gsub(/[\\n\\r]+/,'')); end
+  def test_sheet1_a4; assert_equal("Hello", worksheet.sheet1_a4.to_s.gsub(/[\\n\\r]+/,'')); end
   def test_sheet1_a5; assert_equal(:name, worksheet.sheet1_a5); end
   def test_sheet1_a6; assert_equal(true, worksheet.sheet1_a6); end
   def test_sheet1_a7; assert_equal(false, worksheet.sheet1_a7); end
