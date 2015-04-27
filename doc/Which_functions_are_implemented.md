@@ -177,7 +177,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 
 ## Lookup and reference functions
 
-* ADDRESS -- Returns a reference as text to a single cell in a worksheet
+* ADDRESS -- Returns a reference as text to a single cell in a worksheet -- _R_
 * AREAS -- Returns the number of areas in a reference
 * CHOOSE -- _R_ _C_ Chooses a value from a list of values
 * COLUMN -- Returns the column number of a reference

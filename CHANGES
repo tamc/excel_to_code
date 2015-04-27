@@ -3,6 +3,7 @@
 - Be more permissive of newlines in strings and formulae
 - Raise an Exception if fail to parse a formulae
 - Generated ruby tests now ignore differences in newlines in strings
+- Implemented the ADDRESS function in Ruby
 
 # 0.3.15 - 2015 March 10
 

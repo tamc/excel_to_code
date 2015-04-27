@@ -17,6 +17,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'>' => 'more_than?',
     :'>=' => 'more_than_or_equal?',
     :'ABS' => 'abs',
+    :'ADDRESS' => 'address',
     :'AND' => 'excel_and',
     :'AVERAGE' => 'average',
     :'AVERAGEIFS' => 'averageifs',
