@@ -17,7 +17,7 @@ class ExternalReferenceException < ExcelToCodeException
 
     Sorry, ExcelToCode can't handle external references
 
-    It found one in #{ref.join("!")}
+    It found one in #{ref && ref.join("!")}
     The formula was #{formula_text}
     Which was parsed to #{full_ast}
     Which seemed to have an external reference at #{reference_ast}
@@ -44,7 +44,7 @@ class ParseFailedException < ExcelToCodeException
 
     Sorry, ExcelToCode couldn't parse one of the formulae
 
-    It was in #{ref.join("!")}
+    It was in #{ref && ref.join("!")}
     The formula was #{formula_text}
 
     Please report the problem at http://github.com/tamc/excel_to_code/issues
