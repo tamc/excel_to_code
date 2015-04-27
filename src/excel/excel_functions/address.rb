@@ -36,8 +36,8 @@ module ExcelFunctions
     return :value if abs_num < 1
     return :value if abs_num > 4
     
-    row = row_num.to_s
-    column = Reference.column_letters_for_column_number[column_num].to_s
+    row = row_num.to_i.to_s
+    column = Reference.column_letters_for_column_number[column_num.to_i].to_s
     
     ref = case abs_num
     when 1; "$"+column+"$"+row

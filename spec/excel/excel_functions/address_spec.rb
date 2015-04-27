@@ -30,6 +30,7 @@ describe "ExcelFunctions: ADDRESS" do
     FunctionTest.address(1,1,4).should == "A1"
     FunctionTest.address(1,1,4,true).should == "A1"
     FunctionTest.address(1,1,4,true,"sheet1").should == "'sheet1'!A1"
+    FunctionTest.address(1.7,3.9).should == "$C$1"
   end
 
   it "should return an error when given inappropriate arguments" do
