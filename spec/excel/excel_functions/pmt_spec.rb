@@ -6,6 +6,7 @@ describe "ExcelFunctions: PMT(rate,number_of_periods,present_value) - optional a
     FunctionTest.pmt(0.1,10,100).should be_within(0.01).of(-16.27)
     FunctionTest.pmt(0.0123,99.1,123.32).should be_within(0.01).of(-2.159)
     FunctionTest.pmt(0,2,10).should be_within(0.01).of(-5)
+    FunctionTest.pmt(0,2,10,0).should be_within(0.01).of(-5)
   end
 
   it "should work if arguments are given as strings, so long as the strings contain numbers" do
