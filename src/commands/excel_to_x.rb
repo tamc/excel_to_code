@@ -917,6 +917,8 @@ class ExcelToX
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
     @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
     @fix_subtotal_of_subtotals ||= FixSubtotalOfSubtotals.new(@formulae)
+    # FIXME: Bodge to put it here as well, but seems to be required
+    column_and_row_function_replacement = ReplaceColumnAndRowFunctionsAST.new
 
     #require 'pry'; binding.pry
 
@@ -939,6 +941,8 @@ class ExcelToX
         @replace_arithmetic_on_ranges_replacer.map(ast)
         @replace_string_joins_on_ranges_replacer.map(ast)
         @wrap_formulae_that_return_arrays_replacer.map(ast)
+        column_and_row_function_replacement.current_reference = ref.last
+        column_and_row_function_replacement.replace(ast)
         @replace_references_to_blanks_with_zeros.current_sheet_name = ref.first
         @replace_references_to_blanks_with_zeros.map(ast)
         @fix_subtotal_of_subtotals.map(ast)
@@ -947,7 +951,6 @@ class ExcelToX
         raise
       end
     end
-    #require 'pry'; binding.pry
   end
 
   # These types of cells don't conatain formulae and can therefore be skipped
