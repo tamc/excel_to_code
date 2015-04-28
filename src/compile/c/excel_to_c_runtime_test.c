@@ -425,6 +425,8 @@ int test_functions() {
   assert((pmt(EXCEL_NUMBER(0.1),EXCEL_NUMBER(10),EXCEL_NUMBER(100)).number - -16.27) < 0.01);
   assert((pmt(EXCEL_NUMBER(0.0123),EXCEL_NUMBER(99.1),EXCEL_NUMBER(123.32)).number - -2.159) < 0.01);
   assert((pmt(EXCEL_NUMBER(0),EXCEL_NUMBER(2),EXCEL_NUMBER(10)).number - -5) < 0.01);
+  assert((pmt_4(EXCEL_NUMBER(0),EXCEL_NUMBER(2),EXCEL_NUMBER(10), EXCEL_NUMBER(0)).number - -5) < 0.01);
+  assert((pmt_5(EXCEL_NUMBER(0),EXCEL_NUMBER(2),EXCEL_NUMBER(10), EXCEL_NUMBER(0), EXCEL_NUMBER(0)).number - -5) < 0.01);
 
   // Test power
   // ... should return power of its arguments

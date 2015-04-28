@@ -4,7 +4,7 @@
 - Raise an Exception if fail to parse a formulae
 - Generated ruby tests now ignore differences in newlines in strings
 - Implemented the ADDRESS function in Ruby
-- PMT now excepts 4 or 5 arguments in the ruby version (though only the default zero arguments are supported)
+- PMT now excepts 4 or 5 arguments in the ruby and C versions (though only the default zero arguments are supported)
 
 # 0.3.15 - 2015 March 10
 
