@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.16 - 2015 May 12
+
 - Be more permissive of newlines in strings and formulae
 - Raise an Exception if fail to parse a formulae
 - Generated ruby tests now ignore differences in newlines in strings
