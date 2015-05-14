@@ -85,6 +85,7 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue negative(ExcelValue a_v);
+static ExcelValue number_or_zero(ExcelValue maybe_number_v);
 static ExcelValue npv(ExcelValue rate, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
 static ExcelValue pmt_4(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v, ExcelValue final_value_v);
@@ -339,6 +340,16 @@ static ExcelValue ensure_is_number(ExcelValue maybe_number_v) {
   NUMBER(maybe_number_v, maybe_number)
 	CHECK_FOR_CONVERSION_ERROR
 	return EXCEL_NUMBER(maybe_number);
+}
+
+static ExcelValue number_or_zero(ExcelValue maybe_number_v) {
+  if(maybe_number_v.type == ExcelNumber) {
+    return maybe_number_v;
+  }
+  if(maybe_number_v.type == ExcelError) {
+    return maybe_number_v;
+  }
+  return ZERO;
 }
 
 static ExcelValue excel_log(ExcelValue number) {

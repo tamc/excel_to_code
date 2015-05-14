@@ -69,6 +69,7 @@ class MapFormulaeToC < MapValuesToC
     :'MMULT' => 'mmult',
     :'MOD' => 'mod',
     :'NPV' => 'npv',
+    :'NUMBER_OR_ZERO' => 'number_or_zero',
     :'PMT3' => 'pmt',
     :'PMT4' => 'pmt_4',
     :'PMT5' => 'pmt_5',

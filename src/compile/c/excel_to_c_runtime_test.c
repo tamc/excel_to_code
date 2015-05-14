@@ -955,7 +955,17 @@ int test_functions() {
   assert(ensure_is_number(EXCEL_STRING("1.3")).number == 1.3);
   assert(ensure_is_number(EXCEL_STRING("BASDASD")).type == ExcelError);
   assert(ensure_is_number(DIV0).type == ExcelError);
-
+  
+  // Tests ther NUMBER_OR_ZERO function
+  assert_equal(ZERO, number_or_zero(ZERO), "number_or_zero 0");
+  assert_equal(ONE, number_or_zero(ONE), "number_or_zero 1");
+  assert_equal(VALUE, number_or_zero(VALUE), "number_or_zero :error");
+  assert_equal(ZERO, number_or_zero(TRUE), "number_or_zero true");
+  assert_equal(ZERO, number_or_zero(FALSE), "number_or_zero false");
+  assert_equal(ZERO, number_or_zero(BLANK), "number_or_zero blank");
+  assert_equal(ZERO, number_or_zero(EXCEL_STRING("1.3")), "number_or_zero '1.3'");
+  assert_equal(ZERO, number_or_zero(EXCEL_STRING("Aasdfadsf")), "number_or_zero 'Asdfad'");
+  
   // RIGHT(string,[characters])
   // ... should return the right n characters from a string
   assert(strcmp(right_1(EXCEL_STRING("ONE")).string,"E") == 0);

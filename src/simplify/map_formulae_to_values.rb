@@ -97,6 +97,11 @@ class MapFormulaeToValues
     return ast if ast[0] == :function && ast[1] == :ENSURE_IS_NUMBER
     [:function, :ENSURE_IS_NUMBER, ast]
   end
+  
+  def number_or_zero(ast)
+    return ast if ast[0] == :function && ast[1] == :NUMBER_OR_ZERO
+    [:function, :NUMBER_OR_ZERO, ast]
+  end
 
   def comparison(ast)
     left, operator, right = ast[1], ast[2], ast[3]
@@ -336,12 +341,12 @@ class MapFormulaeToValues
     # FIXME: Will I be haunted by this? What if doing a sum of something that isn't a number
     # and so what is expected is a VALUE error?. YES. This doesn't work well.
     elsif ast.length == 3 && [:cell, :sheet_reference].include?(ast[2].first)
-      new_ast = n(ast[2])
+      new_ast = number_or_zero(ast[2])
       if new_ast != ast
         @replacements_made_in_the_last_pass += 1
         ast.replace(new_ast)
       end
-    elsif ast.length == 3 && ast[2][0] == :function && ast[2][1] == :ENSURE_IS_NUMBER
+    elsif ast.length == 3 && ast[2][0] == :function && ast[2][1] == :NUMBER_OR_ZERO
       new_ast = ast[2]
       if new_ast != ast
         @replacements_made_in_the_last_pass += 1

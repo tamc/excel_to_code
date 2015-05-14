@@ -1,5 +1,7 @@
 # Head
 
+- Fix a bug when simplifying SUM("Not a number") and the like
+
 # 0.3.16 - 2015 May 12
 
 - Be more permissive of newlines in strings and formulae

@@ -121,3 +121,5 @@ require_relative 'excel_functions/iserror'
 require_relative 'excel_functions/char'
 
 require_relative 'excel_functions/address'
+
+require_relative 'excel_functions/number_or_zero'

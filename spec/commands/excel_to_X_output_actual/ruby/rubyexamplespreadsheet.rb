@@ -37,7 +37,7 @@ class RubyExampleSpreadsheet
   def ranges_c3; @ranges_c3 ||= sum(valuetypes_a1,valuetypes_a2,valuetypes_a3,valuetypes_a4,valuetypes_a5,valuetypes_a6); end
   def ranges_a4; @ranges_a4 ||= "Row"; end
   def ranges_b4; @ranges_b4 ||= sum([[0.0,0.0,0.0,0.0,ranges_e5,ranges_f5,ranges_g5]]); end
-  def ranges_c4; @ranges_c4 ||= ensure_is_number(valuetypes_a4); end
+  def ranges_c4; @ranges_c4 ||= number_or_zero(valuetypes_a4); end
   attr_accessor :ranges_f4 # Default: 1.0
   attr_accessor :ranges_e5 # Default: 1.0
   attr_accessor :ranges_f5 # Default: 2.0

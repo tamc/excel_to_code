@@ -92,8 +92,11 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue negative(ExcelValue a_v);
+static ExcelValue number_or_zero(ExcelValue maybe_number_v);
 static ExcelValue npv(ExcelValue rate, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
+static ExcelValue pmt_4(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v, ExcelValue final_value_v);
+static ExcelValue pmt_5(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v, ExcelValue final_value_v, ExcelValue type_v);
 static ExcelValue power(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue pv_3(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v);
 static ExcelValue pv_4(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v, ExcelValue d_v);
@@ -344,6 +347,16 @@ static ExcelValue ensure_is_number(ExcelValue maybe_number_v) {
   NUMBER(maybe_number_v, maybe_number)
 	CHECK_FOR_CONVERSION_ERROR
 	return EXCEL_NUMBER(maybe_number);
+}
+
+static ExcelValue number_or_zero(ExcelValue maybe_number_v) {
+  if(maybe_number_v.type == ExcelNumber) {
+    return maybe_number_v;
+  }
+  if(maybe_number_v.type == ExcelError) {
+    return maybe_number_v;
+  }
+  return ZERO;
 }
 
 static ExcelValue excel_log(ExcelValue number) {
@@ -1533,6 +1546,29 @@ static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelVa
 	if(rate == 0) return EXCEL_NUMBER(-(present_value / number_of_periods));
 	return EXCEL_NUMBER(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
 }
+
+static ExcelValue pmt_4(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v, ExcelValue final_value_v) {
+  CHECK_FOR_PASSED_ERROR(final_value_v)
+    
+    NUMBER(final_value_v, final_value)
+    CHECK_FOR_CONVERSION_ERROR
+      
+    if(final_value == 0) return pmt(rate_v, number_of_periods_v, present_value_v);
+    printf("PMT with non-zero final_value not implemented. halting.");
+    exit(-1);
+}
+
+static ExcelValue pmt_5(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v, ExcelValue final_value_v, ExcelValue type_v) {
+  CHECK_FOR_PASSED_ERROR(type_v)
+    
+    NUMBER(type_v, type)
+    CHECK_FOR_CONVERSION_ERROR
+      
+    if(type == 0) return pmt(rate_v, number_of_periods_v, present_value_v);
+    printf("PMT with non-zero type not implemented. halting.");
+    exit(-1);
+}
+
 
 static ExcelValue pv_3(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v) {
   return pv_4(rate_v, nper_v, pmt_v, ZERO);
@@ -2985,7 +3021,7 @@ ExcelValue ranges_b4() {
 ExcelValue ranges_c4() {
   static ExcelValue result;
   if(variable_set[32] == 1) { return result;}
-  result = ensure_is_number(valuetypes_a4());
+  result = number_or_zero(valuetypes_a4());
   variable_set[32] = 1;
   return result;
 }

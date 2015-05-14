@@ -21,7 +21,7 @@ module ExcelFunctions
     when Numeric
       return a
     when Array
-      return a[0][0]
+      return number_argument(a[0][0])
     else
       return :value
     end

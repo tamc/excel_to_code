@@ -1051,6 +1051,7 @@ class ExcelToX
           raise
         end
       end
+      
 
       @named_references.each do |ref, ast|
         inline_replacer.current_sheet_name = ref.is_a?(Array) ? [ref.first] : []
