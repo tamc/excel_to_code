@@ -10,6 +10,7 @@ A2\t[:function, :INDIRECT, [:cell, :"$A$5"]]
 A3\t[:function, :SUM, [:function, :INDIRECT, [:string, "$A$5:$B$10"]]]
 A4\t[:function, :IFERROR, [:function, :INDEX, [:function, :INDIRECT, [:error, "#VALUE!"]], [:constant, "C3545"]], [:number, "3"]]
 A5\t[:function, :INDIRECT, [:string,"$A$5"], [:boolean_true]]
+A6\t[:function, :INDIRECT, [:string,"X.a'![Vector]"]]
 END
 
 expected_output = <<END
@@ -18,6 +19,7 @@ A2\t[:function, :INDIRECT, [:cell, :"$A$5"]]
 A3\t[:function, :SUM, [:area, :"$A$5", :"$B$10"]]
 A4\t[:function, :IFERROR, [:function, :INDEX, [:error, "#VALUE!"], [:constant, "C3545"]], [:number, "3"]]
 A5\t[:cell, :"$A$5"]
+A6\t[:table_reference, "X.a.autoproducao.info", "Vector"]
 END
     
 input = StringIO.new(input)
