@@ -1,5 +1,7 @@
 # Head
 
+- Fix a bug in range checking in the C version of the LARGE function
+
 # 0.3.17 - 2015 May 14
 
 - Fix a bug when simplifying SUM("Not a number") and the like

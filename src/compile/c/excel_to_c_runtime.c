@@ -798,7 +798,7 @@ static ExcelValue large(ExcelValue range_v, ExcelValue k_v) {
   }
 
   // Otherwise grumble if not a range
-  if(!range_v.type == ExcelRange) { return VALUE; }
+  if(range_v.type != ExcelRange) { return VALUE; }
 
   // Check that our k is within bounds
   if(k < 1) { return NUM; }
