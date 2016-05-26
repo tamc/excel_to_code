@@ -1,0 +1,7 @@
+parser.c
+*.o
+test_excelspreadsheet.*
+*.dylib
+excelspreadsheet.c
+excelspreadsheet.rb
+example
