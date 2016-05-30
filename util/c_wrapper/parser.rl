@@ -49,10 +49,12 @@
 
 	error = valueError | nameError | div0Error | refError | naError | numError;
 
-	excelValue = (emptyValue | number | string | boolean | error);
+	excelValue = (emptyValue | number | string | boolean | error) >{ printf("v"); };
 
-  vector = ('[' . excelValue . (',' . excelValue )* . ']') >startVector @endVector;
-  matrix = ('[' . vector . (',' . vector)* . ']') >startMatrix @endMatrix;
+  vector = ('[' . excelValue . (',' . excelValue  )+ . ']') >startVector @endVector;
+	
+	row = ('[' . excelValue . (',' . excelValue )+ . ']') >{printf("Row start");} @{printf("Row end");};
+  matrix = ('[' . row . (',' . row)* . ']') >startMatrix @endMatrix;
 
 	cellReference = [A-Z]+ . [0-9]+;
 
