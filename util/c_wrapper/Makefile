@@ -1,7 +1,7 @@
 example: example.c
-	clang example.c -o example
+	clang -g example.c -o example
 
-example.c: parser.c excelspreadsheet.c
+example.c: parser.c excelspreadsheet.c manualparser.c
 	touch example.c
 
 parser.c: parser.rl
