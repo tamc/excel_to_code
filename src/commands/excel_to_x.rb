@@ -441,6 +441,10 @@ class ExcelToX
     # Named references_to_keep can be passed a block, in which case this loops
     # through offering up the named references. If the block returns true then
     # the named reference is kept
+    if named_references_to_keep == :all
+      @named_references_to_keep = @named_references.keys.concat(@table_areas.keys)
+    end
+
     if named_references_to_keep.is_a?(Proc)
       new_named_references_to_keep = @named_references.keys.select do |named_reference|
         named_references_to_keep.call(named_reference)
@@ -857,7 +861,7 @@ class ExcelToX
         sheet = ref[1]
         cell = Reference.for(ref[2][1]).unfix.to_sym
         s = cells_that_can_be_set[sheet]
-        if s && s.include?(cell)
+        if s && ( s == :all || s.include?(cell) )
           @named_references_that_can_be_set_at_runtime << name 
           cells_that_can_be_set_due_to_named_reference[sheet] << cell.to_sym
           cells_that_can_be_set_due_to_named_reference[sheet].uniq!
