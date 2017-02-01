@@ -40,7 +40,7 @@ There are some how to guides in the doc folder.
 # Limitations
 
 1. Not tested at all on Windows
-2. INDIRECT and OFFSET formula must be convertable at runtime into a standard formula
+2. It must be possible to replace INDIRECT and OFFSET formula with standard references at compile time (e.g., INDIRECT("A"&"1") is fine, INDIRECT(userInput&"3") is not.
 3. Doesn't implement all functions (see doc/Which_functions_are_implemented.md)
 4. Doesn't implement references that involve range unions and lists (but does implement standard ranges)
 5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
