@@ -31,6 +31,7 @@ require_relative 'excel_functions/negative'
 require_relative 'excel_functions/abs'
 require_relative 'excel_functions/and'
 require_relative 'excel_functions/mod'
+require_relative 'excel_functions/not'
 
 # Array arithmetic
 require_relative 'excel_functions/sum'

@@ -54,6 +54,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'MIN' => 'min',
     :'MMULT' => 'mmult',
     :'MOD' => 'mod',
+    :'NOT' => 'excel_not',
     :'NPV' => 'npv',
     :'NUMBER_OR_ZERO' => 'number_or_zero',
     :'PI' => 'pi',
