@@ -34,6 +34,16 @@ int test_functions() {
   // assert(excel_and(1,error_array1).type == ExcelError); // Not implemented
   assert(excel_and(2,error_array2).type == ExcelError);
 
+  // Test NOT
+  assert(excel_not(TRUE).number == false);
+  assert(excel_not(FALSE).number == true);
+  assert(excel_not(ZERO).number == true);
+  assert(excel_not(ONE).number == false);
+  assert(excel_not(TWO).number == false);
+  assert(excel_not(BLANK).number == true);
+  assert(excel_not(NA).type == ExcelError);
+  assert(excel_not(EXCEL_STRING("hello world")).type == ExcelError);
+
   // Test AVERAGE
   ExcelValue array1[] = { EXCEL_NUMBER(10), EXCEL_NUMBER(5), TRUE, FALSE};
   ExcelValue array1_v = EXCEL_RANGE(array1,2,2);
