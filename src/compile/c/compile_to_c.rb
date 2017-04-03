@@ -52,11 +52,17 @@ class CompileToC
             output.puts "#{static_or_not}ExcelValue #{name}() {"
             output.puts "  static ExcelValue result;"
             output.puts "  if(variable_set[#{@variable_set_counter}] == 1) { return result;}"
+            output.puts "  static int recursion_prevention;"
+            output.puts "  if(recursion_prevention == 1) { return result;}"
+            output.puts "  recursion_prevention = 1;"
+
             mapper.initializers.each do |i|
-              output.puts "  #{i}"
+              output.puts "  #{i}".gsub("#{worksheet_c_name}_#{cell.downcase}()", "ZERO")
             end
+
             output.puts "  result = #{calculation};"
             output.puts "  variable_set[#{@variable_set_counter}] = 1;"
+            output.puts "  recursion_prevention = 0;"
             output.puts "  return result;"
             output.puts "}"
             output.puts
