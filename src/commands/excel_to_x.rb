@@ -919,7 +919,7 @@ class ExcelToX
     @replace_arrays_with_single_cells_replacer ||= ReplaceArraysWithSingleCellsAst.new
     @replace_string_joins_on_ranges_replacer ||= ReplaceStringJoinOnRangesAST.new
     @sheetless_cell_reference_replacer ||= RewriteCellReferencesToIncludeSheetAst.new
-    @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision)
+    @replace_references_to_blanks_with_zeros ||= ReplaceReferencesToBlanksWithZeros.new(@formulae, nil, inline_ast_decision, @named_references)
     @fix_subtotal_of_subtotals ||= FixSubtotalOfSubtotals.new(@formulae)
     # FIXME: Bodge to put it here as well, but seems to be required
     column_and_row_function_replacement = ReplaceColumnAndRowFunctionsAST.new
