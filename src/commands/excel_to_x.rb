@@ -1006,6 +1006,7 @@ class ExcelToX
     inline_replacer = InlineFormulaeAst.new
     inline_replacer.references = @formulae
     inline_replacer.inline_ast = inline_ast_decision
+    inline_replacer.named_references = @named_references
 
     value_replacer = MapFormulaeToValues.new
     value_replacer.original_excel_filename = excel_file
