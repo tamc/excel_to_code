@@ -704,7 +704,7 @@ class ExcelToX
   # them so every cell has its own definition
   def rewrite_shared_formulae_into_normal_formulae
     log.info "Rewriting shared formulae"
-    @formulae_shared = RewriteSharedFormulae.rewrite( @formulae_shared, @formulae_shared_targets)
+    @formulae_shared = RewriteSharedFormulae.rewrite( @formulae_shared, @formulae_shared_targets, @named_references)
     @shared_formulae_targets = :no_longer_needed # Allow the targets to be garbage collected.
   end
 
