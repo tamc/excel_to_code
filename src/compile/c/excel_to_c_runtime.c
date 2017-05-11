@@ -10,6 +10,10 @@
   #define NUMBER_OF_REFS 0
 #endif
 
+
+
+
+
 #ifndef EXCEL_FILENAME
   #define EXCEL_FILENAME "NoExcelFilename" 
 #endif
@@ -146,11 +150,13 @@ static void free_all_allocated_memory() {
 }
 
 static int variable_set[NUMBER_OF_REFS];
+static int recursion_prevention[NUMBER_OF_RECURSION_PREVENT_VARS];
 
 // Resets all cached and malloc'd values
 void reset() {
   free_all_allocated_memory();
   memset(variable_set, 0, sizeof(variable_set));
+  memset(recursion_prevention, 0, sizeof(recursion_prevention));
 }
 
 // Handy macros

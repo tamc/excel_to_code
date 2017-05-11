@@ -43,6 +43,7 @@ class ExcelToC < ExcelToX
     o.puts "// #{excel_file} approximately translated into C"
     o.puts "// definitions"
     o.puts "#define NUMBER_OF_REFS #{number_of_refs}"
+    o.puts "#define NUMBER_OF_RECURSION_PREVENT_VARS #{number_of_refs}" # This is only known after creating CompileToC, number_of_refs overapproximate it
     o.puts "#define EXCEL_FILENAME  #{excel_file.inspect}"
     o.puts "// end of definitions"
     o.puts

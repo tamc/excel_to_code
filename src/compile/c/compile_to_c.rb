@@ -14,6 +14,7 @@ class CompileToC
     self.settable ||= lambda { |ref| false }
     self.gettable ||= lambda { |ref| true }
     @variable_set_counter ||= 0
+    @recursion_prevention_counter ||= 0
 
     mapper = MapFormulaeToC.new
     mapper.sheet_names = sheet_names
@@ -52,9 +53,8 @@ class CompileToC
             output.puts "#{static_or_not}ExcelValue #{name}() {"
             output.puts "  static ExcelValue result;"
             output.puts "  if(variable_set[#{@variable_set_counter}] == 1) { return result;}"
-            output.puts "  static int recursion_prevention;"
-            output.puts "  if(recursion_prevention == 1) { return result;}"
-            output.puts "  recursion_prevention = 1;"
+            output.puts "  if(recursion_prevention[#{@recursion_prevention_counter}] == 1) { return result;}"
+            output.puts "  recursion_prevention[#{@recursion_prevention_counter}] = 1;"
 
             mapper.initializers.each do |i|
               output.puts "  #{i}".gsub("#{worksheet_c_name}_#{cell.downcase}()", "ZERO")
@@ -62,13 +62,14 @@ class CompileToC
 
             output.puts "  result = #{calculation};"
             output.puts "  variable_set[#{@variable_set_counter}] = 1;"
-            output.puts "  recursion_prevention = 0;"
+            output.puts "  recursion_prevention[#{@recursion_prevention_counter}] = 0;"
             output.puts "  return result;"
             output.puts "}"
             output.puts
           end
         end
         @variable_set_counter += 1
+        @recursion_prevention_counter += 1
         mapper.reset
       rescue Exception => e
         puts "Exception at #{ref} #{ast}"
