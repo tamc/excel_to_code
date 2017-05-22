@@ -109,6 +109,11 @@ class ExcelToX
   attr_accessor :should_inline_formulae_that_are_only_used_once
   
   # Optional attribute, Boolean.
+  #   * true (default) - the compiler replaces references to blanks with zeros. This should increase performance
+  #   * false - the compiler leaves references to blanks. This make setable cells more predicatable and easing debugging.
+  attr_accessor :replace_reference_to_blanks_with_zeros
+  
+  # Optional attribute, Boolean.
   #   * true (default) - the compiler attempts to extract bits of calculation that appear in more than one formula into separate methods. This should increase performance
   #   * false - the compiler leaves calculations fully expanded. This may make debugging easier
   attr_accessor :extract_repeated_parts_of_formulae
@@ -247,6 +252,7 @@ class ExcelToX
     # Setting this to false may make it easier to figure out errors
     self.extract_repeated_parts_of_formulae = true if @extract_repeated_parts_of_formulae == nil
     self.should_inline_formulae_that_are_only_used_once = true if @should_inline_formulae_that_are_only_used_once == nil
+    self.replace_reference_to_blanks_with_zeros = true if @should_inline_formulae_that_are_only_used_once == nil
 
     # This setting is used for debugging, and makes the system only do the conversion on a subset of the worksheets
     if self.isolate
@@ -947,8 +953,10 @@ class ExcelToX
         @wrap_formulae_that_return_arrays_replacer.map(ast)
         column_and_row_function_replacement.current_reference = ref.last
         column_and_row_function_replacement.replace(ast)
-        @replace_references_to_blanks_with_zeros.current_sheet_name = ref.first
-        @replace_references_to_blanks_with_zeros.map(ast)
+        if replace_reference_to_blanks_with_zeros
+          @replace_references_to_blanks_with_zeros.current_sheet_name = ref.first
+          @replace_references_to_blanks_with_zeros.map(ast)
+        end
         @fix_subtotal_of_subtotals.map(ast)
       rescue  Exception => e
         log.fatal "Exception when simplifying #{ref}: #{ast}"
@@ -1041,9 +1049,11 @@ class ExcelToX
           if offset_replacement.replace(ast)
             references_that_need_updating[ref] = ast
           end
-          # FIXME: Shouldn't need to wrap ref.fist in an array
-          inline_replacer.current_sheet_name = [ref.first]
-          inline_replacer.map(ast)
+          if should_inline_formulae_that_are_only_used_once
+            # FIXME: Shouldn't need to wrap ref.fist in an array
+            inline_replacer.current_sheet_name = [ref.first]
+            inline_replacer.map(ast)
+          end
           # If a formula references a cell containing a value, the reference is replaced with the value (e.g., if A1 := 2 and A2 := A1 + 1 then becomes: A2 := 2 + 1)
           #require 'pry'; binding.pry if ref == [:"Outputs - Summary table", :E77]
           value_replacer.map(ast)
@@ -1058,9 +1068,11 @@ class ExcelToX
       end
       
 
-      @named_references.each do |ref, ast|
-        inline_replacer.current_sheet_name = ref.is_a?(Array) ? [ref.first] : []
-        inline_replacer.map(ast)
+      if should_inline_formulae_that_are_only_used_once
+        @named_references.each do |ref, ast|
+          inline_replacer.current_sheet_name = ref.is_a?(Array) ? [ref.first] : []
+          inline_replacer.map(ast)
+        end
       end
 
       simplify(references_that_need_updating)
@@ -1258,6 +1270,16 @@ class ExcelToX
     @cells_that_can_be_set_at_runtime = cells_with_settable_values
   end
 
+  def make_blank_referenced_cells_settable(ref, ast)
+    unless replace_reference_to_blanks_with_zeros
+      if ast == nil
+        ast = [:number, 0.0]
+        @formulae[ref] = ast
+      end
+    end
+    ast
+  end
+
   # Returns a list of cells that are:
   # 1. Simple values (e.g., a string or a number)
   # 2. That are referenced in other formulae
@@ -1267,13 +1289,13 @@ class ExcelToX
     log.info "Generating a good set of cells that should be settable"
 
     counter = CountFormulaReferences.new
-    count = counter.count(@formulae)
+    countList = counter.count(@formulae)
     settable_cells = {}
     settable_types = [:blank,:number,:null,:string,:shared_string,:constant,:percentage,:error,:boolean_true,:boolean_false]
 
-    count.each do |ref,count|
+    countList.each do |ref,count|
       next unless count >= 1 # No point making a cell that isn't reference settable
-      ast = @formulae[ref]
+      ast = make_blank_referenced_cells_settable(ref, @formulae[ref])
       next unless ast # Sometimes empty cells are referenced. 
       next unless settable_types.include?(ast.first)
       settable_cells[ref.first] ||= []
