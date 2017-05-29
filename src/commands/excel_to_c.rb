@@ -218,7 +218,7 @@ class #{ruby_module_name}
   end
 
   def get(name)
-    return 0 unless C.respond_to?(name)
+    return nil unless C.respond_to?(name)
     ruby_value_from_excel_value(C.send(name))
   end
 
