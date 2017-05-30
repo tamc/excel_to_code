@@ -6,6 +6,7 @@ gem 'rubypeg'
 
 group :test do
   gem 'rspec'
+  gem 'minitest'
 end
 
 group :development do

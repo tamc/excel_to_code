@@ -5,7 +5,7 @@ class RewriteSharedFormulae
     new.rewrite(*args)
   end
   
-  def rewrite(formula_shared, formula_shared_targets, named_references)
+  def rewrite(formula_shared, formula_shared_targets, named_references = {})
     @output = {}
     @formula_shared_targets = formula_shared_targets
 

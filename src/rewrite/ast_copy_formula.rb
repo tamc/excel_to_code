@@ -6,7 +6,7 @@ class AstCopyFormula
   attr_accessor :columns_to_move
   attr_accessor :named_references
   
-  def initialize(named_references)
+  def initialize(named_references = {})
     self.rows_to_move = 0
     self.columns_to_move = 0
     self.named_references = named_references

@@ -3,7 +3,7 @@ class ReplaceReferencesToBlanksWithZeros
   attr_accessor :references, :current_sheet_name, :inline_ast, :named_references
   attr_accessor :count_replaced
   
-  def initialize(references = nil, current_sheet_name = nil, inline_ast = nil, named_references)
+  def initialize(references = nil, current_sheet_name = nil, inline_ast = nil, named_references = {})
     @references, @current_sheet_name, @inline_ast, @named_references = references, [current_sheet_name], inline_ast, named_references
     @count_replaced = 0
     @inline_ast ||= lambda { |sheet, ref, references| true } # Default is to always inline
