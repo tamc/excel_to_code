@@ -276,7 +276,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * COUNT -- Counts how many numbers are in the list of arguments -- _R_ _C_
 * COUNTA -- Counts how many values are in the list of arguments -- _R_ _C_
 * COUNTBLANK -- Counts the number of blank cells within a range
-* COUNTIF -- Counts the number of nonblank cells within a range that meet the given criteria
+* COUNTIF -- Counts the number of nonblank cells within a range that meet the given criteria -- _R_
 * COVAR -- Returns covariance, the average of the products of paired deviations
 * CRITBINOM -- Returns the smallest value for which the cumulative binomial distribution is less than or equal to a criterion value
 * DEVSQ -- Returns the sum of squares of deviations

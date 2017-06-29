@@ -24,14 +24,9 @@ describe "ExcelFunctions: COUNTIF" do
     FunctionTest.countif([nil,nil],100).should == 0
   end
   
-  it "should return an error if an argument is an error" do
-    FunctionTest.countif([:error1,10],20).should == :error1
-    FunctionTest.countif([1,:error2],20).should == :error2
-    FunctionTest.countif([1,10],:error3).should == :error3
-  end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS['countif'].should == 'countif'
+    MapFormulaeToRuby::FUNCTIONS[:'COUNTIF'].should == 'countif'
   end
   
 end
