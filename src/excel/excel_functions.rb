@@ -72,7 +72,6 @@ require_relative 'excel_functions/int'
 
 # Other functions
 
-
 require_relative 'excel_functions/cell'
 
 require_relative 'excel_functions/trim'
@@ -124,3 +123,5 @@ require_relative 'excel_functions/char'
 require_relative 'excel_functions/address'
 
 require_relative 'excel_functions/number_or_zero'
+
+require_relative 'excel_functions/countif'

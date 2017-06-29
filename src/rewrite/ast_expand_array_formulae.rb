@@ -111,6 +111,10 @@ class AstExpandArrayFormulae
   def map_sumif(ast)
     array_map ast, true, false, true
   end
+
+  def map_countif(*args)
+    array_map args, 'COUNTIF', true, true
+  end
   
   def map_sumifs(ast)
     if ast.length > 5
