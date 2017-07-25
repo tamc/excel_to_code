@@ -5,6 +5,8 @@ This allows the excel spreadsheets to be run programatically, without excel.
 
 Its cannonical source is at http://github.com/tamc/excel_to_code
 
+[![Tests Passing](https://travis-ci.org/tamc/excel_to_code.svg?branch=master)](https://travis-ci.org/tamc/excel_to_code)
+
 # Running excel_to_code
 
 To just have a go:
