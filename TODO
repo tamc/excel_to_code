@@ -7,7 +7,7 @@ See doc/How_to_fix_parsing_bugs.md for help
 * Whitespace handling in table references
 * Whitespace handling between arguments in a list
 * Doesn't do range unions (e.g., 10:10 C:C == C:10)
-* Doesn't do ranges where both arts have a sheet reference, e.g.: 'G.20 (data)'!Q1149:'G.20 (data)'!Q1153
+* Doesn't do ranges where both parts have a sheet reference, e.g.: 'G.20 (data)'!Q1149:'G.20 (data)'!Q1153
 
 ## Missing functions
 
