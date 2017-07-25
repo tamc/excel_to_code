@@ -20,6 +20,7 @@ GEM
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
+    rake (12.0.0)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -46,6 +47,7 @@ DEPENDENCIES
   ox
   pry-rescue
   pry-stack_explorer
+  rake
   rspec
   rubypeg
 
