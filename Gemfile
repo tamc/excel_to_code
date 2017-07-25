@@ -5,6 +5,7 @@ gem 'ffi'
 gem 'rubypeg'
 
 group :test do
+  gem 'minitest'
   gem 'rspec'
   gem 'rake'
 end

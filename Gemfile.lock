@@ -9,6 +9,7 @@ GEM
     ffi (1.9.17)
     interception (0.5)
     method_source (0.8.2)
+    minitest (5.10.1)
     ox (2.4.9)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -44,6 +45,7 @@ PLATFORMS
 
 DEPENDENCIES
   ffi
+  minitest
   ox
   pry-rescue
   pry-stack_explorer
