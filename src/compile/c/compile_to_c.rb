@@ -1,20 +1,29 @@
 require_relative 'map_formulae_to_c'
+require 'set'
 
 class CompileToC
   
   attr_accessor :settable
   attr_accessor :gettable
   attr_accessor :variable_set_counter
+  attr_accessor :variable_set_sheet_hash
+  attr_accessor :recursion_prevention_sheet_hash
   
   def self.rewrite(*args)
     self.new.rewrite(*args)
   end
-  
+
+  def init_sheet_hash(sheet_names)
+    Hash[sheet_names.map {|sheet_name| [sheet_name, Set.new]}]
+  end
+
   def rewrite(formulae, sheet_names, output)
     self.settable ||= lambda { |ref| false }
     self.gettable ||= lambda { |ref| true }
     @variable_set_counter ||= 0
     @recursion_prevention_counter ||= 0
+    @variable_set_sheet_hash ||= init_sheet_hash(sheet_names.values.uniq)
+    @recursion_prevention_sheet_hash ||= init_sheet_hash(sheet_names.values.uniq)
 
     mapper = MapFormulaeToC.new
     mapper.sheet_names = sheet_names
@@ -68,6 +77,8 @@ class CompileToC
             output.puts
           end
         end
+        @variable_set_sheet_hash[worksheet.to_s.downcase].add(@variable_set_counter)
+        @recursion_prevention_sheet_hash[worksheet.to_s.downcase].add(@variable_set_counter)
         @variable_set_counter += 1
         @recursion_prevention_counter += 1
         mapper.reset
@@ -84,4 +95,20 @@ class CompileToC
     end
   end
   
+  def reset_sheets(sheet_names, output)
+    sheet_names = sheet_names.values.uniq
+    sheet_names.each do |sheet_name|
+      output.puts "void reset_#{sheet_name}()\n{"
+
+      @variable_set_sheet_hash[sheet_name].each do |variable|
+        output.puts "  variable_set[#{variable}] = 0;"
+      end
+
+      @recursion_prevention_sheet_hash[sheet_name].each do |variable|
+        output.puts "  recursion_prevention[#{variable}] = 0;"
+      end
+
+      output.puts "}\n"
+    end
+  end
 end

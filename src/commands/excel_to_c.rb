@@ -84,6 +84,7 @@ class ExcelToC < ExcelToX
     c.settable = settable
     c.gettable = gettable
     c.rewrite(@formulae, @worksheet_c_names, o)
+    c.reset_sheets(@worksheet_c_names, o)
 
     # Output the named references
 
@@ -191,7 +192,15 @@ class ExcelToC < ExcelToX
 
     name = output_name.downcase
     o = output("#{name}.rb")
-      
+
+    sheet_resets = []
+    worksheets do |sheet_name, _|
+      sheet_name = c_name_for_worksheet_name(sheet_name)
+      sheet_resets.push("def reset_#{sheet_name}")
+      sheet_resets.push("  C.reset_#{sheet_name}")
+      sheet_resets.push("end\n")
+    end
+
     code = <<END
 require 'ffi'
 require 'singleton'
@@ -206,6 +215,8 @@ class #{ruby_module_name}
   def reset
     C.reset
   end
+
+  #{sheet_resets.join("\n")}
 
   def method_missing(name, *arguments)
     if arguments.size == 0
@@ -312,6 +323,10 @@ END
     o.puts "    # use this function to reset all cell values"
     o.puts "    attach_function 'reset', [], :void"
 
+    worksheets do |sheet_name, _|
+      sheet_name = c_name_for_worksheet_name(sheet_name)
+      o.puts "    attach_function 'reset_#{sheet_name}', [], :void"
+    end
 
     worksheets do |name, xml_filename|
       c_name = c_name_for_worksheet_name(name)
