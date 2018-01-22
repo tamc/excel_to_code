@@ -13,13 +13,12 @@ To just have a go:
 
 	./bin/excel_to_c <excel_file_name>
 	
-NB:For small spreadsheets this will take a minute or so. For large spreadsheets it is best to run it overnight.
-	
-for more detail:
+
+For a more complex spreadsheet:
 	
 	./bin/excel_to_c --compile --run-tests --settable <name of input worksheet> --prune-except <name of output worksheet> <excel file name> 
 	
-this should work:
+See the full list of options:
 
 	./bin/excel_to_c --help
 
