@@ -92,7 +92,6 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue negative(ExcelValue a_v);
-static ExcelValue excel_not(ExcelValue a_v);
 static ExcelValue number_or_zero(ExcelValue maybe_number_v);
 static ExcelValue npv(ExcelValue rate, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v);
@@ -420,30 +419,6 @@ static ExcelValue excel_and(int array_size, ExcelValue *array) {
 		 }
 	 }
 	 return TRUE;
-}
-
-static ExcelValue excel_not(ExcelValue boolean_v) {
-  switch (boolean_v.type) {
-    case ExcelNumber: 
-      if(boolean_v.number == 0) return TRUE;
-      return FALSE;
-
-    case ExcelBoolean: 
-      if(boolean_v.number == false) return TRUE;
-      return FALSE;
-
-    case ExcelRange: 
-      return VALUE;
-
-    case ExcelString:
-      return VALUE;
-
-    case ExcelEmpty:
-      return TRUE;
-
-    case ExcelError:
-      return boolean_v;
-  }
 }
 
 struct average_result {
@@ -830,7 +805,7 @@ static ExcelValue large(ExcelValue range_v, ExcelValue k_v) {
   }
 
   // Otherwise grumble if not a range
-  if(range_v.type != ExcelRange) { return VALUE; }
+  if(!range_v.type == ExcelRange) { return VALUE; }
 
   // Check that our k is within bounds
   if(k < 1) { return NUM; }
