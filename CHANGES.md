@@ -7,6 +7,7 @@
 - Update dependencies
 - Refactor common command line options
 - Reformat command line help
+- Fix so that works when there are apostrophes in the path [#12](https://github.com/tamc/excel_to_code/issues/12)
 
 # 0.3.17 - 2015 May 14
 
