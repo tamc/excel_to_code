@@ -17,7 +17,7 @@ excelspreadsheet.c: example.xlsx
 	../../bin/excel_to_c -n -s 'Sheet! Two' --no-makefile --no-rakefile  example.xlsx
 
 clean:
-	rm example
-	rm parser.c
-	rm excelspreadsheet.o
-	rm libexcelspreadsheet.dylib
+	rm -f example
+	rm -f parser.c
+	rm -f excelspreadsheet.o
+	rm -f libexcelspreadsheet.dylib
