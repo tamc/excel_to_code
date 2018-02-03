@@ -1,4 +1,3 @@
----
-layout: default
----
-{% include_relative README.md %}
+# Excel To Code
+
+Source at https://github.com/tamc/excel_to_code
