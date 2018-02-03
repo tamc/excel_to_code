@@ -14,8 +14,10 @@ excelspreadsheet.o: excelspreadsheet.c
 	gcc -fPIC -c excelspreadsheet.c
 
 excelspreadsheet.c: example.xlsx
-	../../bin/excel_to_c -n -s 'Sheet! Two' --no-makefile  example.xlsx
+	../../bin/excel_to_c -n -s 'Sheet! Two' --no-makefile --no-rakefile  example.xlsx
 
 clean:
+	rm example
+	rm parser.c
 	rm excelspreadsheet.o
 	rm libexcelspreadsheet.dylib
