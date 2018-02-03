@@ -6,6 +6,7 @@ class XMLFileNotFoundException < Exception; end
 require 'fileutils'
 require 'logger'
 require 'tmpdir'
+require 'shellwords'
 require_relative '../excel_to_code'
 
 # FIXME: Correct case for all worksheet references
@@ -268,8 +269,20 @@ class ExcelToX
   
   # FIXME: Replace these with pure ruby versions?
   def unzip_excel
-    log.info "Removing any old xml #{`rm -fr '#{xml_directory}'`}" # Force delete
-    log.info "Unziping excel into xml #{`unzip -q '#{excel_file}' -d '#{xml_directory}'`}" # If don't force delete, make sure that force the zip to overwrite old files 
+    log.info "Removing old folders"
+    execute_system_command 'rm', '-fr', xml_directory
+    log.info "Unzipping the spreadsheet"
+    execute_system_command 'unzip', '-q', excel_file, '-d', xml_directory
+  end
+
+  def execute_system_command(*args) 
+    c = args.shelljoin
+    output = `#{c}`
+    unless $?.exitstatus == 0
+      log.error "Command failed: #{c}"
+      log.error output
+      exit 1
+    end
   end
   
   # The excel workbook.xml and allied relationship files knows about
