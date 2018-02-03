@@ -8,8 +8,8 @@ excel_to_ruby - roughly translate some Excel files into Ruby.
 
 This allows spreadsheets to be:
 
-1. Embedded in other programs (such as web servers, or optimisers)
-2. Without depending on any Microsoft library (the generated files are self contained)
+1. Embedded in other programs, such as web servers, or optimisers
+2. Without depending on any Microsoft code
 
 For example, running [these commands](examples/simple/compile.sh) turns [this spreadsheet](examples/simple/simple.xlsx) into [this Ruby code](examples/simple/ruby/simple.rb) or [this C code](examples/simple/c/simple.c).
 
