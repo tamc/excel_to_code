@@ -1,13 +1,23 @@
-# excel_to_code
-
-Converts some excel spreadsheets (.xlsx, not .xls) into some other programming languages (currently ruby or c).
-This allows the excel spreadsheets to be run programatically, without excel.
-
-Its cannonical source is at http://github.com/tamc/excel_to_code
+# Excel to Code
 
 [![Tests Passing](https://travis-ci.org/tamc/excel_to_code.svg?branch=master)](https://travis-ci.org/tamc/excel_to_code)
 
-# Running excel_to_code
+excel_to_c - roughly translates some Excel files into C.
+
+excel_to_ruby - roughly translates some Excel files into Ruby.
+
+The motivation is to allow spreadsheets to be:
+
+1. Embedded in other programs (such as web servers, or optimisers)
+2. Without depending on any Microsoft library (the generated files are self contained)
+
+# Install
+
+Requires Ruby. Install by:
+
+    gem install excel_to_code
+
+# Run
 
 To just have a go:
 
@@ -22,7 +32,18 @@ See the full list of options:
 
 	./bin/excel_to_c --help
 
-# Testing excel_to_code
+
+# Report bugs and fixes
+
+Source code: [https://github.com/tamc/excel_to_code]
+
+Report bugs: [https://github.com/tamc/excel_to_code/issues]
+
+# Hacking excel_to_code
+
+There are some how to guides in the doc folder. 
+
+## Test
 
 1. Make sure you have ruby 1.9.2 or later installed
 2. gem install bundler # May need to use sudo
@@ -33,10 +54,6 @@ To test the C runtime:
 1. cd src/compile/c
 2. cc excel_to_c_runtime
 3. ./a.out
-
-# Hacking excel_to_code
-
-There are some how to guides in the doc folder. 
 
 # Limitations
 
