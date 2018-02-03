@@ -5,36 +5,11 @@ require_relative '../src/excel_to_code'
 command = ExcelToRuby.new
 
 opts = OptionParser.new do |opts|
-  opts.banner = <<-END
-
-A command to approximately translate excel files into c code.
-
-Usage: excel_to_ruby [options] input_excel_file <output_directory>
-  input_excel_file    the name of a .xlsx excel file (i.e., produced by Excel 2007+, not a .xls file) 
-  output_directory    the name of a folder in which to place the generated code. If not specified will have the same name as the input_excel_file, without the .xlsx
-  
-Support: http://github.com/tamc/excel_to_code
-END
-  
-  opts.separator ""
-  opts.separator "Specific options:"
-
-  CommonCommandLineOptions.set(command: command, options: opts)
+  CommonCommandLineOptions.set(command: command, options: opts, generates: "Ruby", extension: "rb")
 end
 
-begin
-  opts.parse!(ARGV)
-rescue OptionParser::ParseError => e 
-  STDERR.puts e.message, "\n", opts 
+unless CommonCommandLineOptions.parse(options: opts, command: command, arguments: ARGV)
   exit(-1)
 end
-
-unless ARGV.size > 0
-  puts opts
-  exit(-1)
-end
-
-command.excel_file = ARGV[0]
-command.output_directory = ARGV[1] if ARGV[1]
 
 command.go!

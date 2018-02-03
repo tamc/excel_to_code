@@ -6,6 +6,7 @@
 - Added the NOT(true) function in ruby, and C
 - Update dependencies
 - Refactor common command line options
+- Reformat command line help
 
 # 0.3.17 - 2015 May 14
 

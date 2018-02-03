@@ -5,57 +5,28 @@ require_relative '../src/excel_to_code'
 command = ExcelToC.new
 
 opts = OptionParser.new do |opts|
-  opts.banner = <<-END
-
-A command to approximately translate excel files into c code.
-
-Usage: excel_to_c [options] input_excel_file <output_directory>
-  input_excel_file    the name of a .xlsx excel file (i.e., produced by Excel 2007+, not a .xls file) 
-  output_directory    the name of a folder in which to place the generated code. If not specified will have the same name as the input_excel_file, without the .xlsx
+  CommonCommandLineOptions.set(command: command, options: opts, generates: "C", extension: "c")
   
-Support: http://github.com/tamc/excel_to_code
-END
-  
-  CommonCommandLineOptions.set(command: command, options: opts)
-  
-  opts.on('-c','--compile',"Compile the generated code (where relevant)") do
+  opts.on('-c','--compile',"Compile the C") do
     command.actually_compile_code = true
   end
   
-  opts.on('--makefile', 'Generate a makefile') do
-    command.create_makefile = true
+  opts.on('--[no-]makefile', 'Generate a makefile. Default: no.') do |b|
+    command.create_makefile = b
   end
 
-  opts.on('--no-makefile', 'Do not generate a makefile (default)') do
-    command.create_makefile = false
-  end
   
-  opts.on('--rakefile', 'Generate a rakefile (default)') do
-    command.create_rakefile = true
+  opts.on('--[no-]rakefile', 'Generate a rakefile. Default: yes.') do |b|
+    command.create_rakefile = b
   end
 
-  opts.on('--no-rakefile', 'Do not generate a rakefile') do
-    command.create_rakefile = false
-  end
-
-  opts.on('--write-tests-in-c', "Write tests in pure C (normally written in ruby)") do
+  opts.on('--write-tests-in-c', "Write tests in C. Default: Ruby.") do
     command.write_tests_in_c = true
   end
 end
 
-begin
-  opts.parse!(ARGV)
-rescue OptionParser::ParseError => e 
-  STDERR.puts e.message, "\n", opts 
+unless CommonCommandLineOptions.parse(options: opts, command: command, arguments: ARGV)
   exit(-1)
 end
-
-unless ARGV.size > 0
-  puts opts
-  exit(-1)
-end
-
-command.excel_file = ARGV[0]
-command.output_directory = ARGV[1] if ARGV[1]
 
 command.go!
