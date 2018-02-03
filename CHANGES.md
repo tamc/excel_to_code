@@ -3,7 +3,7 @@
 - Fix a bug in range checking in the C version of the LARGE function
 - Fix bug in keeping of table references when setting to keep all named references
 - Experiment with ways of making it easier to wrap the C output in a command line interface
-- Added the NOT(true) function in ruby, and C
+- Added the NOT(true) function in Ruby, and C
 - Update dependencies
 - Refactor common command line options
 - Reformat command line help
@@ -16,9 +16,9 @@
 
 - Be more permissive of newlines in strings and formulae
 - Raise an Exception if fail to parse a formulae
-- Generated ruby tests now ignore differences in newlines in strings
+- Generated Ruby tests now ignore differences in newlines in strings
 - Implemented the ADDRESS function in Ruby
-- PMT now excepts 4 or 5 arguments in the ruby and C versions (though only the default zero arguments are supported)
+- PMT now accepts 3, 4 or 5 arguments. Arguments 4 or 5 must be zero at the moment.
 
 # 0.3.15 - 2015 March 10
 
@@ -26,10 +26,10 @@
 
 # 0.3.14 - 2015 March 10
 
-- Fixed bug in ruby version of power
+- Fixed bug in Ruby version of power
 - Now detects and reports more kinds of external references
 - Improved the way that the conversion treats newlines and other special characters in strings by dealing with excel unicode escaping of the form _x000D_
-- Added missing NUM conversion to ruby interface to C version
+- Added missing NUM conversion to Ruby interface to C version
 - Fixed PMT to return NUM error when number of periods is zero
 
 # 0.3.13 - 2015 March 2
@@ -83,7 +83,7 @@
 # 0.3.4 - 2014 December 1st
 
 - Fixed bug when output directory has been set and option set to compile and test C code
-- Implemented the NPV function in ruby and C
+- Implemented the NPV function in Ruby and C
 - Copes when named references contain table references
 
 # 0.3.3 - 2014 October 7th
@@ -100,13 +100,13 @@
 
 # 0.3.0 - 2014 July 24th
 
-- Shim extension not needed on generated Ruby to C interface code (BREAKING CHANGE), which means that excel_to_c generates a more-or-less drop in replacement for excel_to_ruby 
+- Shim extension not needed on generated Ruby to C interface code (BREAKING CHANGE), which means that excel_to_c generates a more-or-less drop in replacement for excel_to_Ruby 
 - Added --rakefile and ---makefile and --no-rakefile and --no-makefile switches to excel_to_c
 - By default, now generates a Rakefile (BREAKING CHANGE)
 
 # 0.2.30 - 2014 July 24th
 
-- Implemented 0.000 in C version of TEXT function (already works in ruby version)
+- Implemented 0.000 in C version of TEXT function (already works in Ruby version)
 
 # 0.2.29 - 2014 July 2nd
 
@@ -114,7 +114,7 @@
 - Implemented 0.0 and 0000 and #,## as formats in the TEXT function
 - RIGHT and LEFT can now be applied to an array
 - Fixed INDEX when passed zero as a row or column number when only one row or column wide
-- Implemented the ISERR() function in ruby and in C
+- Implemented the ISERR() function in Ruby and in C
 - Implmeneted the LOG10() function
 
 # 0.2.28 - 2014 June 16th
@@ -134,7 +134,7 @@
 
 # 0.2.25 - 2014 May 23rd
 
-- Implemented the LN function in ruby and C
+- Implemented the LN function in Ruby and C
 - Tweaks to the array formulae code to try and speed it up
 - Tightened dependency version numbers in gemspec to eliminate warnings when building gem
 
@@ -149,14 +149,14 @@
 
 # 0.2.22 - 2014 April 27th
 
-- Implemented a reset method in the ruby code so can perform repeated calculations on the same instance (already implemented in the generated C code)
-- Added named references to generated ruby code (already implemented in generated C code)
+- Implemented a reset method in the Ruby code so can perform repeated calculations on the same instance (already implemented in the generated C code)
+- Added named references to generated Ruby code (already implemented in generated C code)
 - Added settting to allow the inline_formulae_that_are_only_used_once method to be skipped
 
 # 0.2.21 - 2014 April 27th
 
-- Fix ruby version of SUMIFS to match number criteria against string check values (already fixed in C version)
-- bin/excel_to_c and bin/excel_to_ruby options changed and added -n option to keep named references
+- Fix Ruby version of SUMIFS to match number criteria against string check values (already fixed in C version)
+- bin/excel_to_c and bin/excel_to_Ruby options changed and added -n option to keep named references
 - default behaviour when named_references_to_keep = :all but no named references is then to keep all cells
 
 # 0.2.20 - 2014 March 31st
@@ -179,9 +179,9 @@
 - If INDEX is passed an errors in both arguments, returns the error in its first argument
 - Now simplifies SUM() with single arguments to the single argument
 - Now deals with arrays that should be converted to single cells inside of IF statements
-- Altered how SUMIFS deals with passed errors in ruby verison (need to check C version)
+- Altered how SUMIFS deals with passed errors in Ruby verison (need to check C version)
 - Can now partially replace SUMIFS in situations where it is being used as a form of lookup
-- Refactored AVERAGEIFS and SUMIFS in ruby to be more like C
+- Refactored AVERAGEIFS and SUMIFS in Ruby to be more like C
 - Better error message when named reference can't be parsed
 - Changed the default match_type in the MATCH function to be 1
 - Fixed a bug when a table has column names containing a # symbol
@@ -214,7 +214,7 @@
 - When simplifying arithmetic, ensures results are always numbers
 - Added an ENSURE_IS_NUMBER function to the runtime which turns anything that Excel thinks looks a bit like a number into a real number
 - Added an inlined_blank type, which is sometimes like a zero, and sometimes like an empty string
-- String join in the ruby compilation treates zeros that are blank differently from zeros
+- String join in the Ruby compilation treates zeros that are blank differently from zeros
 - Added an isolate attribute to excel_to_x to help debugging large worksheets: if set, only one sheet is translated
 - Now prints more informative error messages if fails to compile a 'common' element
 - Changed order of array replacement
@@ -223,7 +223,7 @@
 - Fix for SUMIF different sized ranges when fixed references are used
 - Parser now picks up external named references
 - Added a workaround for brackets not being removed in some cases
-- The ruby version of IF() now treats 0 as false and all other numbers as true 
+- The Ruby version of IF() now treats 0 as false and all other numbers as true 
 - SUMIF and SUMIFS can now cope with being passed ranges for the criteria
 - Fixed formula parser to cope with comparisons with string joins
 - Fixed bug in C compilation when specifying :all cells in a sheet are settable
@@ -269,11 +269,11 @@
 
 # 0.2.8 - 2014 January 31st
 
-- implemented the ISBLANK function in ruby and C
+- implemented the ISBLANK function in Ruby and C
 
 # 0.2.7 - 2014 January 30th
 
-- implemented the EXP function in ruby and C
+- implemented the EXP function in Ruby and C
 
 # 0.2.6 - 2014 January 30th
 
@@ -290,7 +290,7 @@
 
 # 0.2.3 - 2014 January 4th
 
-- Implemented the LOWER function in ruby
+- Implemented the LOWER function in Ruby
 - Removed the run_in_memory option, it no longer does anything.
 - Remmoved the intermediate_directory option, the code no longer needs to write intermediate files
 
@@ -310,17 +310,17 @@
 
 - A lot of changes: no longer generates intermediate files, hopefully faster, but perhaps not
 - Uses Ox instead of Nokogiri to parse worksheets, and does the parsing in one pass.
-- Fixed a bug in the ruby version of vlookup and hlookup that would downcase strings passed as arguments in certain situations
+- Fixed a bug in the Ruby version of vlookup and hlookup that would downcase strings passed as arguments in certain situations
 
 # 0.1.23 - 2013 December 4th
 
-- Implemented the RIGHT function in ruby
+- Implemented the RIGHT function in Ruby
 
 # 0.1.22 - 2013 December 4th
 
 - Fixed a bug in = and != when comparing a string with a non string
-- Implemented the LEN function in ruby
-- Implemented the SUBSTITUTE function in ruby
+- Implemented the LEN function in Ruby
+- Implemented the SUBSTITUTE function in Ruby
 
 # 0.1.21 - 2013 November 19th
 
@@ -358,11 +358,11 @@
 
 # 0.1.14 - 2013 August 20th
 
-- Implementing the MMULT function in ruby and C (note only works when entered as an array formula)
+- Implementing the MMULT function in Ruby and C (note only works when entered as an array formula)
 
 # 0.1.13 - 2013 August 19th
 
-- Implemented LOG function in ruby and C
+- Implemented LOG function in Ruby and C
 - Now converts the POWER(10,2) function as well as 10^2
 
 # 0.1.12
@@ -389,8 +389,8 @@
 - Partially implemented the TEXT() function (for '0%' format only at this stage)
 - Can now replace INDIRECT() functions where they argument is an error
 - Inlining now copes with references to missing worksheets
-- Implement the PV() function in ruby and C
-- Implemented TRIM(), MID() and partially implemented CELL() in ruby
+- Implement the PV() function in Ruby and C
+- Implemented TRIM(), MID() and partially implemented CELL() in Ruby
 - The negative prefix can now operate on ranges
 - Now attempts to simplify COLUMN() functions out of the spreadsheet at compile time (the function is not supported at runtime)
 - Fix bug in the treatment of array results when simplifying INDEX functions
@@ -422,7 +422,7 @@
 
 - map_formulae_to_values now caches its results, which dramatically speeds up some edge-case long formulae
 - Fixed an error in the way the C version of excel's IF function was implemented. It no longer returns an error if the unused argument is an error.
-- Fixed an error in the way that the ruby shim for the C version handled functions that return ranges (appears when trying to access named reference ranges)
+- Fixed an error in the way that the Ruby shim for the C version handled functions that return ranges (appears when trying to access named reference ranges)
 - Now transfer named references into cells to keep early in the process so that referenced but empty cells are kept in final results
 
 # 0.1.4
@@ -450,7 +450,7 @@
 
 - BACKWARDS INCOMPATIBLE CHANGE: The ExcelValue struct in the Ruby FFI interface that is generated when compiling excel to C now gives type 'pointer' to its 'string' attribute. This is so that string values can be written through the FFI interface as well as read.
 
-- C version now generates a Shim class that automatically translates between ruby values and excel values. This makes it closer to being drop in compatible with the Ruby version.
+- C version now generates a Shim class that automatically translates between Ruby values and excel values. This makes it closer to being drop in compatible with the Ruby version.
 
 # 0.0.14
 
@@ -498,7 +498,7 @@
 
 # 0.0.4
 
-- Specifing an output name in snake_case will now cause camel case ruby module names to be created (e.g., --output-name simple_model causes a class called SimpleModel to be created )
+- Specifing an output name in snake_case will now cause camel case Ruby module names to be created (e.g., --output-name simple_model causes a class called SimpleModel to be created )
 - Fixed bug where rubypeg dependency was not specified.
 
 # 0.0.3
