@@ -33,26 +33,27 @@ See the full list of options:
 
 	excel_to_c --help
 
-# Limitations and bugs
+# Gotchas, limitations and bugs
 
-1. It must be possible to replace INDIRECT and OFFSET formula with standard references at compile time (e.g., INDIRECT("A"&"1") is fine, INDIRECT(userInput&"3") is not.
-2. Doesn't implement all functions. [See which functions are implemented](docs/Which_functions_are_implemented.md).
-3. Doesn't implement references that involve range unions and lists (but does implement standard ranges)
-4. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
-5. The generated C version does not multithread and will give bad results if you try.
-6. The generated code uses floating point, rather than fully precise arithmetic, so results can differ slightly.
-7. The generated code uses the sprintf approach to rounding (even-odd) rather than excel's 0.5 rounds away from zero.
-8. Ranges like this: Sheet1!A10:Sheet1!B20 and 3D ranges don't work.
+1. Results are cached. So you must call reset(), then set values, then read values.
+2. It must be possible to replace INDIRECT and OFFSET formula with standard references at compile time (e.g., INDIRECT("A"&"1") is fine, INDIRECT(userInput&"3") is not.
+3. Doesn't implement all functions. [See which functions are implemented](docs/Which_functions_are_implemented.md).
+4. Doesn't implement references that involve range unions and lists (but does implement standard ranges)
+5. Sometimes gives cells as being empty, when excel would give the cell as having a numeric value of zero
+6. The generated C version does not multithread and will give bad results if you try.
+7. The generated code uses floating point, rather than fully precise arithmetic, so results can differ slightly.
+8. The generated code uses the sprintf approach to rounding (even-odd) rather than excel's 0.5 rounds away from zero.
+9. Ranges like this: Sheet1!A10:Sheet1!B20 and 3D ranges don't work.
 
 Report bugs: <https://github.com/tamc/excel_to_code/issues>
 
 # Changelog
 
-See <CHANGES.md>.
+See [Changes](CHANGES.md).
 
 # License
 
-See <LICENSE.md>
+See [License](LICENSE.md)
 
 # Hacking
 
