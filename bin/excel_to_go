@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require_relative '../src/excel_to_code'
+
+$stderr.puts
+$stderr.puts "WARNING: excel_to_go is unfinished"
+$stderr.puts
+
+command = ExcelToGo.new
+
+opts = OptionParser.new do |opts|
+  CommonCommandLineOptions.set(command: command, options: opts, generates: "Go", extension: "go")
+end
+
+unless CommonCommandLineOptions.parse(options: opts, command: command, arguments: ARGV)
+  exit(-1)
+end
+
+command.go!
