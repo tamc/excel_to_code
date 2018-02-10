@@ -6,6 +6,46 @@ import (
 	"strconv"
 )
 
+// CachedValue wraps the different possible Excel Values
+//
+// Later, we may have one for each Excel type
+// which is why we use wrappers.
+type CachedValue struct {
+	// v is the cached value, in this case of any type
+	v interface{}
+	// c is whether it is cached
+	c bool
+}
+
+func (c *CachedValue) IsCached() bool {
+	return c.c
+}
+
+func (c *CachedValue) Set(v interface{}) {
+	c.v = v
+	c.c = true
+}
+
+// get returns the cached value. If the cached
+// value is an Excel Error that is returned as
+// the second argument. If the item isn't cached
+// then will return a NotCachedError.
+func (c *CachedValue) Get() (interface{}, error) {
+	if !c.c {
+		return nil, NotCachedError{}
+	}
+	if err, ok := c.v.(error); ok {
+		return nil, err
+	}
+	return c.v, nil
+}
+
+type NotCachedError struct{}
+
+func (e NotCachedError) Error() string {
+	return "Get() called but nothing cached"
+}
+
 // Blank is an empty Excel cell.
 type Blank struct{}
 

@@ -23,17 +23,33 @@ class CompileToGoTest
     formulae.each do |ref, ast|
       next unless gettable.call(ref)
       n = getter_method_name(ref)
-      output.puts <<~END
-      func Test#{n}(t *testing.T) {
-        s := New()
-        e := #{m.map(ast)}
-        a := s.#{n}()
-        if a != e {
-            t.Errorf("#{n} = %v, want %v", a, e)
-        }
-       }
 
-      END
+      if ast.first == :error
+        output.puts <<~END
+        func Test#{n}(t *testing.T) {
+          s := New()
+          e := #{m.map(ast)}
+          a, err := s.#{n}()
+          if err != e {
+              t.Errorf("#{n} = (%v, %v), want (nil, %v)", a, err, e)
+          }
+        }
+
+        END
+
+      else 
+        output.puts <<~END
+        func Test#{n}(t *testing.T) {
+          s := New()
+          e := #{m.map(ast)}
+          a, err := s.#{n}()
+          if a != e || err != nil {
+              t.Errorf("#{n} = (%v, %v), want (%v, nil)", a, err, e)
+          }
+        }
+
+        END
+      end
     end
   end
 

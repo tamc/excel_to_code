@@ -4,210 +4,210 @@ package excelspreadsheet
 import "./excel"
 
 type spreadsheet struct {
-  valuesA1 interface{}
-  valuesB1 interface{}
-  valuesA2 interface{}
-  valuesB2 interface{}
-  valuesA3 interface{}
-  valuesB3 interface{}
-  valuesA4 interface{}
-  valuesB4 interface{}
-  valuesA5 interface{}
-  valuesB5 interface{}
-  valuesA6 interface{}
-  valuesB6 interface{}
-  valuesA7 interface{}
-  valuesB7 interface{}
-  valuesA8 interface{}
-  valuesB8 interface{}
-  valuesA9 interface{}
-  valuesB9 interface{}
-  valuesA10 interface{}
-  valuesB10 interface{}
-  valuesA11 interface{}
-  valuesB11 interface{}
-  valuesA12 interface{}
-  valuesB12 interface{}
-  valuesC1 interface{}
+  valuesA1 excel.CachedValue
+  valuesB1 excel.CachedValue
+  valuesA2 excel.CachedValue
+  valuesB2 excel.CachedValue
+  valuesA3 excel.CachedValue
+  valuesB3 excel.CachedValue
+  valuesA4 excel.CachedValue
+  valuesB4 excel.CachedValue
+  valuesA5 excel.CachedValue
+  valuesB5 excel.CachedValue
+  valuesA6 excel.CachedValue
+  valuesB6 excel.CachedValue
+  valuesA7 excel.CachedValue
+  valuesB7 excel.CachedValue
+  valuesA8 excel.CachedValue
+  valuesB8 excel.CachedValue
+  valuesA9 excel.CachedValue
+  valuesB9 excel.CachedValue
+  valuesA10 excel.CachedValue
+  valuesB10 excel.CachedValue
+  valuesA11 excel.CachedValue
+  valuesB11 excel.CachedValue
+  valuesA12 excel.CachedValue
+  valuesB12 excel.CachedValue
+  valuesC1 excel.CachedValue
 }
 
 func New() spreadsheet {
   return spreadsheet{}
 }
 
-func (s *spreadsheet) ValuesA1() interface{} {
-  if s.valuesA1 == nil {
-    s.valuesA1 = "String"
+func (s *spreadsheet) ValuesA1() (interface{}, error) {
+  if !s.valuesA1.IsCached() {
+    s.valuesA1.Set("String")
   }
-  return s.valuesA1
+  return s.valuesA1.Get()
 }
 
-func (s *spreadsheet) ValuesB1() interface{} {
-  if s.valuesB1 == nil {
-    s.valuesB1 = "String"
+func (s *spreadsheet) ValuesB1() (interface{}, error) {
+  if !s.valuesB1.IsCached() {
+    s.valuesB1.Set("String")
   }
-  return s.valuesB1
+  return s.valuesB1.Get()
 }
 
-func (s *spreadsheet) ValuesA2() interface{} {
-  if s.valuesA2 == nil {
-    s.valuesA2 = "String"
+func (s *spreadsheet) ValuesA2() (interface{}, error) {
+  if !s.valuesA2.IsCached() {
+    s.valuesA2.Set("String")
   }
-  return s.valuesA2
+  return s.valuesA2.Get()
 }
 
-func (s *spreadsheet) ValuesB2() interface{} {
-  if s.valuesB2 == nil {
-    s.valuesB2 = "String"
+func (s *spreadsheet) ValuesB2() (interface{}, error) {
+  if !s.valuesB2.IsCached() {
+    s.valuesB2.Set("String")
   }
-  return s.valuesB2
+  return s.valuesB2.Get()
 }
 
-func (s *spreadsheet) ValuesA3() interface{} {
-  if s.valuesA3 == nil {
-    s.valuesA3 = "Integer"
+func (s *spreadsheet) ValuesA3() (interface{}, error) {
+  if !s.valuesA3.IsCached() {
+    s.valuesA3.Set("Integer")
   }
-  return s.valuesA3
+  return s.valuesA3.Get()
 }
 
-func (s *spreadsheet) ValuesB3() interface{} {
-  if s.valuesB3 == nil {
-    s.valuesB3 = 1.0
+func (s *spreadsheet) ValuesB3() (interface{}, error) {
+  if !s.valuesB3.IsCached() {
+    s.valuesB3.Set(1.0)
   }
-  return s.valuesB3
+  return s.valuesB3.Get()
 }
 
-func (s *spreadsheet) ValuesA4() interface{} {
-  if s.valuesA4 == nil {
-    s.valuesA4 = "Float"
+func (s *spreadsheet) ValuesA4() (interface{}, error) {
+  if !s.valuesA4.IsCached() {
+    s.valuesA4.Set("Float")
   }
-  return s.valuesA4
+  return s.valuesA4.Get()
 }
 
-func (s *spreadsheet) ValuesB4() interface{} {
-  if s.valuesB4 == nil {
-    s.valuesB4 = 1.1
+func (s *spreadsheet) ValuesB4() (interface{}, error) {
+  if !s.valuesB4.IsCached() {
+    s.valuesB4.Set(1.1)
   }
-  return s.valuesB4
+  return s.valuesB4.Get()
 }
 
-func (s *spreadsheet) ValuesA5() interface{} {
-  if s.valuesA5 == nil {
-    s.valuesA5 = "Percent"
+func (s *spreadsheet) ValuesA5() (interface{}, error) {
+  if !s.valuesA5.IsCached() {
+    s.valuesA5.Set("Percent")
   }
-  return s.valuesA5
+  return s.valuesA5.Get()
 }
 
-func (s *spreadsheet) ValuesB5() interface{} {
-  if s.valuesB5 == nil {
-    s.valuesB5 = 0.999
+func (s *spreadsheet) ValuesB5() (interface{}, error) {
+  if !s.valuesB5.IsCached() {
+    s.valuesB5.Set(0.999)
   }
-  return s.valuesB5
+  return s.valuesB5.Get()
 }
 
-func (s *spreadsheet) ValuesA6() interface{} {
-  if s.valuesA6 == nil {
-    s.valuesA6 = "Boolean"
+func (s *spreadsheet) ValuesA6() (interface{}, error) {
+  if !s.valuesA6.IsCached() {
+    s.valuesA6.Set("Boolean")
   }
-  return s.valuesA6
+  return s.valuesA6.Get()
 }
 
-func (s *spreadsheet) ValuesB6() interface{} {
-  if s.valuesB6 == nil {
-    s.valuesB6 = true
+func (s *spreadsheet) ValuesB6() (interface{}, error) {
+  if !s.valuesB6.IsCached() {
+    s.valuesB6.Set(true)
   }
-  return s.valuesB6
+  return s.valuesB6.Get()
 }
 
-func (s *spreadsheet) ValuesA7() interface{} {
-  if s.valuesA7 == nil {
-    s.valuesA7 = "Boolean"
+func (s *spreadsheet) ValuesA7() (interface{}, error) {
+  if !s.valuesA7.IsCached() {
+    s.valuesA7.Set("Boolean")
   }
-  return s.valuesA7
+  return s.valuesA7.Get()
 }
 
-func (s *spreadsheet) ValuesB7() interface{} {
-  if s.valuesB7 == nil {
-    s.valuesB7 = false
+func (s *spreadsheet) ValuesB7() (interface{}, error) {
+  if !s.valuesB7.IsCached() {
+    s.valuesB7.Set(false)
   }
-  return s.valuesB7
+  return s.valuesB7.Get()
 }
 
-func (s *spreadsheet) ValuesA8() interface{} {
-  if s.valuesA8 == nil {
-    s.valuesA8 = "Error"
+func (s *spreadsheet) ValuesA8() (interface{}, error) {
+  if !s.valuesA8.IsCached() {
+    s.valuesA8.Set("Error")
   }
-  return s.valuesA8
+  return s.valuesA8.Get()
 }
 
-func (s *spreadsheet) ValuesB8() interface{} {
-  if s.valuesB8 == nil {
-    s.valuesB8 = excel.Div0Error{}
+func (s *spreadsheet) ValuesB8() (interface{}, error) {
+  if !s.valuesB8.IsCached() {
+    s.valuesB8.Set(excel.Div0Error{})
   }
-  return s.valuesB8
+  return s.valuesB8.Get()
 }
 
-func (s *spreadsheet) ValuesA9() interface{} {
-  if s.valuesA9 == nil {
-    s.valuesA9 = "Error"
+func (s *spreadsheet) ValuesA9() (interface{}, error) {
+  if !s.valuesA9.IsCached() {
+    s.valuesA9.Set("Error")
   }
-  return s.valuesA9
+  return s.valuesA9.Get()
 }
 
-func (s *spreadsheet) ValuesB9() interface{} {
-  if s.valuesB9 == nil {
-    s.valuesB9 = 0.0
+func (s *spreadsheet) ValuesB9() (interface{}, error) {
+  if !s.valuesB9.IsCached() {
+    s.valuesB9.Set(0.0)
   }
-  return s.valuesB9
+  return s.valuesB9.Get()
 }
 
-func (s *spreadsheet) ValuesA10() interface{} {
-  if s.valuesA10 == nil {
-    s.valuesA10 = "Error"
+func (s *spreadsheet) ValuesA10() (interface{}, error) {
+  if !s.valuesA10.IsCached() {
+    s.valuesA10.Set("Error")
   }
-  return s.valuesA10
+  return s.valuesA10.Get()
 }
 
-func (s *spreadsheet) ValuesB10() interface{} {
-  if s.valuesB10 == nil {
-    s.valuesB10 = excel.NAError{}
+func (s *spreadsheet) ValuesB10() (interface{}, error) {
+  if !s.valuesB10.IsCached() {
+    s.valuesB10.Set(excel.NAError{})
   }
-  return s.valuesB10
+  return s.valuesB10.Get()
 }
 
-func (s *spreadsheet) ValuesA11() interface{} {
-  if s.valuesA11 == nil {
-    s.valuesA11 = "Error"
+func (s *spreadsheet) ValuesA11() (interface{}, error) {
+  if !s.valuesA11.IsCached() {
+    s.valuesA11.Set("Error")
   }
-  return s.valuesA11
+  return s.valuesA11.Get()
 }
 
-func (s *spreadsheet) ValuesB11() interface{} {
-  if s.valuesB11 == nil {
-    s.valuesB11 = excel.NameError{}
+func (s *spreadsheet) ValuesB11() (interface{}, error) {
+  if !s.valuesB11.IsCached() {
+    s.valuesB11.Set(excel.NameError{})
   }
-  return s.valuesB11
+  return s.valuesB11.Get()
 }
 
-func (s *spreadsheet) ValuesA12() interface{} {
-  if s.valuesA12 == nil {
-    s.valuesA12 = "Error"
+func (s *spreadsheet) ValuesA12() (interface{}, error) {
+  if !s.valuesA12.IsCached() {
+    s.valuesA12.Set("Error")
   }
-  return s.valuesA12
+  return s.valuesA12.Get()
 }
 
-func (s *spreadsheet) ValuesB12() interface{} {
-  if s.valuesB12 == nil {
-    s.valuesB12 = excel.NameError{}
+func (s *spreadsheet) ValuesB12() (interface{}, error) {
+  if !s.valuesB12.IsCached() {
+    s.valuesB12.Set(excel.NameError{})
   }
-  return s.valuesB12
+  return s.valuesB12.Get()
 }
 
-func (s *spreadsheet) ValuesC1() interface{} {
-  if s.valuesC1 == nil {
-    s.valuesC1 = excel.Blank{}
+func (s *spreadsheet) ValuesC1() (interface{}, error) {
+  if !s.valuesC1.IsCached() {
+    s.valuesC1.Set(excel.Blank{})
   }
-  return s.valuesC1
+  return s.valuesC1.Get()
 }
 
 

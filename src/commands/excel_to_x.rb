@@ -1369,6 +1369,13 @@ class ExcelToX
     args.flatten!
     File.open(File.join(output_directory,*args),'w')
   end
+
+  def copy_to_output(source, destination)
+    s = File.join(File.dirname(__FILE__), '../..', source)
+    d = File.join(output_directory, destination)
+    FileUtils.mkdir_p(File.dirname(d))
+    FileUtils.cp_r(s, d)
+  end
   
   def close(*args)
     args.map do |f|

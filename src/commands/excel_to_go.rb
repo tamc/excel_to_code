@@ -20,7 +20,7 @@ class ExcelToGo < ExcelToX
     
   def write_out_excel_as_code
     log.info "Starting to write out code"
-    
+
     o = output("#{output_name.downcase}.go")
 
     o.puts "// Compiled version of #{excel_file}"
@@ -37,6 +37,8 @@ class ExcelToGo < ExcelToX
 
     close(o)
     log.info "Finished writing code"
+
+    copy_to_output 'src/compile/go/excel.go', 'excel/excel.go'
   end
 
   def write_out_test_as_code
@@ -69,8 +71,8 @@ class ExcelToGo < ExcelToX
   
   def run_tests
     return unless actually_run_tests
-    puts "Running the resulting tests"
-    puts `cd #{File.join(output_directory)}; go test #{output_name.downcase}`
+    log.info "Running the resulting tests"
+    log.info `cd #{File.join(output_directory)}; go test`
   end
   
 end
