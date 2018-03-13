@@ -2,7 +2,7 @@
 package excelspreadsheet
 
 import (
-    "./excel"
+    "https://github"
     "testing"
 )
 

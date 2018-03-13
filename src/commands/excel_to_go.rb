@@ -1,8 +1,11 @@
 # coding: utf-8
 
 require_relative 'excel_to_x'
+require 'pathname'
 
 class ExcelToGo < ExcelToX
+
+  attr_accessor :excel_go_lib
   
   def language
     'go'
@@ -26,7 +29,7 @@ class ExcelToGo < ExcelToX
     o.puts "// Compiled version of #{excel_file}"
     o.puts "package #{output_name.downcase}"
     o.puts
-    o.puts "import \"./excel\""
+    o.puts "import #{excel_go_lib.inspect}"
     o.puts
 
     c = CompileToGo.new
@@ -38,7 +41,7 @@ class ExcelToGo < ExcelToX
     close(o)
     log.info "Finished writing code"
 
-    copy_to_output 'src/compile/go/excel.go', 'excel/excel.go'
+    copy_to_output 'src/compile/go/excel.go', 'excel.go'
   end
 
   def write_out_test_as_code
@@ -50,7 +53,7 @@ class ExcelToGo < ExcelToX
     o.puts "package #{output_name.downcase}"
     o.puts
     o.puts "import ("
-    o.puts "    \"./excel\""
+    o.puts "    #{excel_go_lib.inspect}"
     o.puts "    \"testing\""
     o.puts ")"
     o.puts
@@ -74,5 +77,21 @@ class ExcelToGo < ExcelToX
     log.info "Running the resulting tests"
     log.info `cd #{File.join(output_directory)}; go test`
   end
-  
+
+  def excel_go_lib
+    @excel_go_lib || guess_excel_go_lib
+  end
+
+  def guess_excel_go_lib
+    log.info "Calculating --import-excel-go path"
+    gohome = `go env GOPATH`
+    if $?.exitstatus != 0
+      gohome = ENV['GOPATH']
+    end
+    if File.exists?(gohome)
+
+    end
+    log.info gohome
+    
+  end
 end

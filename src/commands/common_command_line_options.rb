@@ -6,9 +6,10 @@ class CommonCommandLineOptions
       Roughly translate some Excel files into plain #{generates}
 
       http://github.com/tamc/excel_to_code
-
-      Options:
     EOT
+
+    options.separator "Options:"
+
     options.banner = banner.split("\n").map(&:strip).join("\n")
 
     options.on_tail('-v', '--version', '') do
