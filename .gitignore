@@ -84,3 +84,4 @@ examples/Rakefile
 
 src/compile/c/a.out.dSYM/Contents/Info.plist
 .bundle
+.DS_Store
