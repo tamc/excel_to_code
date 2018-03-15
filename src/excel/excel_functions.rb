@@ -126,3 +126,5 @@ require_relative 'excel_functions/address'
 require_relative 'excel_functions/number_or_zero'
 
 require_relative 'excel_functions/countif'
+
+require_relative 'excel_functions/hyperlink'
