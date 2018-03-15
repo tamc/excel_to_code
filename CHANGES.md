@@ -1,5 +1,6 @@
 # Head
 
+- Indicate that rspec tests use both old and new syntax
 - Add the HYPERLINK() function in Ruby
 - Add a string_argument helper function in Ruby
 - Fix a bug in range checking in the C version of the LARGE function

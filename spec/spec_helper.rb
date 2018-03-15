@@ -2,6 +2,13 @@ require 'rspec'
 require 'stringio'
 require 'tmpdir'
 
+# Allow both old and new syntax
+RSpec.configure do |config|
+  config.expect_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+end
+
 require_relative '../src/excel_to_code'
 
 def excel_fragment(name)
