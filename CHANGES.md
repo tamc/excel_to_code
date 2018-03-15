@@ -1,5 +1,6 @@
 # Head
 
+- Add a string_argument helper function in Ruby
 - Fix a bug in range checking in the C version of the LARGE function
 - Fix bug in keeping of table references when setting to keep all named references
 - Experiment with ways of making it easier to wrap the C output in a command line interface
