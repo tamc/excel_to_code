@@ -1031,6 +1031,7 @@ class ExcelToX
     indirect_replacement = ReplaceIndirectsWithReferencesAst.new
     column_and_row_function_replacement = ReplaceColumnAndRowFunctionsAST.new
     offset_replacement = ReplaceOffsetsWithReferencesAst.new
+    cell_address_replacement = ReplaceCellAddressesWithReferencesAst.new
 
     begin 
       number_of_passes += 1
@@ -1041,6 +1042,7 @@ class ExcelToX
       value_replacer.replacements_made_in_the_last_pass = 0
       column_and_row_function_replacement.count_replaced = 0
       offset_replacement.count_replaced = 0
+      cell_address_replacement.count_replaced = 0
       indirect_replacement.count_replaced = 0
       references_that_need_updating = {}
 
@@ -1051,6 +1053,9 @@ class ExcelToX
             references_that_need_updating[ref] = ast
           end
           if offset_replacement.replace(ast)
+            references_that_need_updating[ref] = ast
+          end
+          if cell_address_replacement.replace(ast)
             references_that_need_updating[ref] = ast
           end
           # FIXME: Shouldn't need to wrap ref.fist in an array
@@ -1068,7 +1073,6 @@ class ExcelToX
           raise
         end
       end
-      
 
       @named_references.each do |ref, ast|
         inline_replacer.current_sheet_name = ref.is_a?(Array) ? [ref.first] : []
@@ -1081,6 +1085,7 @@ class ExcelToX
       replacements_made_in_the_last_pass += value_replacer.replacements_made_in_the_last_pass
       replacements_made_in_the_last_pass += column_and_row_function_replacement.count_replaced
       replacements_made_in_the_last_pass += offset_replacement.count_replaced
+      replacements_made_in_the_last_pass += cell_address_replacement.count_replaced
       replacements_made_in_the_last_pass += indirect_replacement.count_replaced
 
       log.info "Pass #{number_of_passes}: Made #{replacements_made_in_the_last_pass} replacements"

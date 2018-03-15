@@ -148,7 +148,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 
 ## Information functions
 
-* CELL -- Returns information about the formatting, location, or contents of a cell - filename info_source implemented in ruby
+* CELL -- Returns information about the formatting, location, or contents of a cell - filename info_source address implemented in ruby
 * ERROR.TYPE -- Returns a number corresponding to an error type
 * INFO -- Returns information about the current operating environment
 * ISBLANK -- Returns TRUE if the value is blank -- _R_ _C_

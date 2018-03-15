@@ -1,5 +1,6 @@
 # Head
 
+- Replace CELL("address", REF) at compile time
 - Indicate that rspec tests use both old and new syntax
 - Add the HYPERLINK() function in Ruby
 - Add a string_argument helper function in Ruby
