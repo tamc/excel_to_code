@@ -26,8 +26,15 @@ class ReplaceColumnAndRowFunctionsAST
   def function(ast)
     return unless (ast[1] == :COLUMN || ast[1] == :ROW)
     if ast[2]
-      if ast[2][0] == :cell
+      if ast[2][0] == :cell || ast[2][0] == :area
         reference = Reference.for(ast[2][1])
+      elsif ast[2][0] == :array && ast[2][1][0] == :row
+        r = ast[2][1][1]
+        if r[0] == :cell || r[0] == :area
+          reference = Reference.for(r[1])
+        elsif r[0] == :sheet_reference
+          reference = Reference.for(r[2][1])
+        end
       elsif ast[2][0] == :sheet_reference
         reference = Reference.for(ast[2][2][1])
       else

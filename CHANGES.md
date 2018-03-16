@@ -1,5 +1,6 @@
 # Head
 
+- Fix COLUMN() and ROW() to work on area, named and table references
 - Replace CELL("address", REF) at compile time
 - Indicate that rspec tests use both old and new syntax
 - Add the HYPERLINK() function in Ruby

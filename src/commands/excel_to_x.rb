@@ -949,6 +949,15 @@ class ExcelToX
         @table_reference_replacer.worksheet = ref.first
         @table_reference_replacer.referring_cell = ref.last
         @table_reference_replacer.map(ast)
+        column_and_row_function_replacement.current_reference = ref.last
+        column_and_row_function_replacement.replace(ast)
+      rescue  Exception => e
+        log.fatal "Exception when simplifying #{ref}: #{ast}"
+        raise
+      end
+    end
+    cells.each do |ref, ast|
+      begin
         @replace_ranges_with_array_literals_replacer.map(ast)
         @replace_arrays_with_single_cells_replacer.ref = ref
         a = @replace_arrays_with_single_cells_replacer.map(ast)
@@ -958,8 +967,6 @@ class ExcelToX
         @replace_arithmetic_on_ranges_replacer.map(ast)
         @replace_string_joins_on_ranges_replacer.map(ast)
         @wrap_formulae_that_return_arrays_replacer.map(ast)
-        column_and_row_function_replacement.current_reference = ref.last
-        column_and_row_function_replacement.replace(ast)
         @replace_references_to_blanks_with_zeros.current_sheet_name = ref.first
         @replace_references_to_blanks_with_zeros.map(ast)
         @fix_subtotal_of_subtotals.map(ast)
