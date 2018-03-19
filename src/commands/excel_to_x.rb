@@ -328,7 +328,10 @@ class ExcelToX
           $stderr.puts "Named reference #{name} #{reference} not parsed"
           exit
         end
-      rescue Exception
+      rescue Exception => e
+        if e.respond_to?(:'ref=')
+          e.ref = ['Named reference', name]
+        end
         $stderr.puts "Named reference #{name} #{reference} not parsed"
         raise
       end
