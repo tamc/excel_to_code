@@ -3,6 +3,7 @@ require 'ox'
 class ExtractDataFromWorksheet < ::Ox::Sax
 
   attr_accessor :only_extract_values
+  attr_accessor :persevere
 
   attr_accessor :table_rids
   attr_accessor :worksheets_dimensions
@@ -85,7 +86,13 @@ class ExtractDataFromWorksheet < ::Ox::Sax
           ast = @fp.parse(formula_text)
         rescue ExcelToCodeException => e
           e.ref = key if e.respond_to?(:ref) # Attach the sheet and reference to the exception
-          raise
+          if persevere
+            $stderr.puts e.message
+            $stderr.puts "--persevere true, so setting #{key} to '#NAME?'"
+            ast = [:error, '#NAME?']
+          else
+            raise
+          end
         end
         unless ast
           $stderr.puts "Could not parse #{@sheet_name} #{@ref} #{formula_text}"

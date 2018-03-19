@@ -48,6 +48,10 @@ class CommonCommandLineOptions
       command.extract_repeated_parts_of_formulae = false
     end
 
+    options.on('--persevere', "Continue through some errors in order to fully appreciate the scale of problems in the Excel.") do
+      command.persevere = true
+    end
+
     options.on_tail('-h', '--help', '') do
       puts options
       exit

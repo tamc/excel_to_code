@@ -122,6 +122,13 @@ class ExcelToX
   # cells on tha sheet and nothing else.
   attr_accessor :isolate
 
+  # Optional attribute, Boolean. Default false
+  # If set to true, will persevere through some errors where it can rather than aborting
+  # immediately. This can be helpful in getting to grips with conversion errors on a 
+  # really messy sheet, since it allows you to see all the errors at once and which are 
+  # really fatal.
+  attr_accessor :persevere
+
   # This is the main method. Once all the above attributes have been set, it should be called to actually do the work.
   def go!
     # This sorts out the settings
@@ -332,8 +339,13 @@ class ExcelToX
         if e.respond_to?(:'ref=')
           e.ref = ['Named reference', name]
         end
-        $stderr.puts "Named reference #{name} #{reference} not parsed"
-        raise
+        if persevere 
+          $stderr.puts e.message
+          $stderr.puts "--persevere true, so setting #{name} = #REF!"
+          @named_references[name] = [:error, "#REF!"]
+        else
+          raise
+        end
       end
     end
 
@@ -515,6 +527,7 @@ class ExcelToX
     # All are hashes of the format ["SheetName", "A1"] => [:number, "1"]
     # This one has a series of table references
     extractor = ExtractDataFromWorksheet.new
+    extractor.persevere = persevere
     
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?

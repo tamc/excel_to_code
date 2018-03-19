@@ -1,5 +1,6 @@
 # Head
 
+- Add --persevere switch which will mean will not abort on parse or external reference error so you can see the scale of the problem in a workbook.
 - Better error reporting on external references in named references
 - Fix COLUMN() and ROW() to work on area, named and table references
 - Replace CELL("address", REF) at compile time
