@@ -60,6 +60,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'NOT' => 'excel_not',
     :'NPV' => 'npv',
     :'NUMBER_OR_ZERO' => 'number_or_zero',
+    :'OR' => 'excel_or',
     :'PI' => 'pi',
     :'PMT' => 'pmt',
     :'POWER' => 'power',

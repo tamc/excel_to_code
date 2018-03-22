@@ -172,7 +172,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * FALSE -- Returns the logical value FALSE
 * IF -- Specifies a logical test to perform -- _R_ _C_
 * NOT -- Reverses the logic of its argument -- _R_ _C_ 
-* OR -- Returns TRUE if any argument is TRUE
+* OR -- Returns TRUE if any argument is TRUE -- _R_ _C_
 * TRUE -- Returns the logical value TRUE
 
 ## Lookup and reference functions

@@ -130,3 +130,5 @@ require_relative 'excel_functions/countif'
 require_relative 'excel_functions/hyperlink'
 
 require_relative 'excel_functions/na'
+
+require_relative 'excel_functions/or'

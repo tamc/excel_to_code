@@ -34,6 +34,13 @@ int test_functions() {
   // assert(excel_and(1,error_array1).type == ExcelError); // Not implemented
   assert(excel_and(2,error_array2).type == ExcelError);
 
+  // Test OR
+  assert(excel_or(2,true_array1).number == 1);
+  assert(excel_or(1,true_array2).number == 1);
+  assert(excel_or(2,false_array1).number == 0);
+  assert(excel_or(2,false_array2).number == 1);
+  //assert(excel_or(2,error_array2).type == ExcelError); // Not implemented
+
   // Test NOT
   assert(excel_not(TRUE).number == false);
   assert(excel_not(FALSE).number == true);

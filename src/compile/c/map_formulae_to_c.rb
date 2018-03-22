@@ -70,6 +70,7 @@ class MapFormulaeToC < MapValuesToC
     :'MOD' => 'mod',
     :'NA' => 'na',
     :'NOT' => 'excel_not',
+    :'OR' => 'excel_or',
     :'NPV' => 'npv',
     :'NUMBER_OR_ZERO' => 'number_or_zero',
     :'PMT3' => 'pmt',
