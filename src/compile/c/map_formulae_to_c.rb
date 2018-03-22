@@ -68,6 +68,7 @@ class MapFormulaeToC < MapValuesToC
     :'MIN' => 'min',
     :'MMULT' => 'mmult',
     :'MOD' => 'mod',
+    :'NA' => 'na',
     :'NOT' => 'excel_not',
     :'NPV' => 'npv',
     :'NUMBER_OR_ZERO' => 'number_or_zero',

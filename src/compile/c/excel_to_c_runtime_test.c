@@ -1044,6 +1044,9 @@ int test_functions() {
   assert_equal(EXCEL_STRING("a"), excel_char(EXCEL_NUMBER(97)), "excel_char(97) == 'a'");
   assert_equal(EXCEL_STRING("a"), excel_char(EXCEL_NUMBER(97.5)), "excel_char(97.5) == 'a'");
 
+  // NA()
+  assert_equal(NA, na(), "na() == NA");
+
   // Release memory
   free_all_allocated_memory();
 

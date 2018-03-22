@@ -163,7 +163,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * ISREF -- Returns TRUE if the value is a reference
 * ISTEXT -- Returns TRUE if the value is text
 * N -- Returns a value converted to a number
-* NA -- Returns the error value ##N/A
+* NA -- Returns the error value ##N/A -- _R_ _C_
 * TYPE -- Returns a number indicating the data type of a value
 
 ## Logical functions

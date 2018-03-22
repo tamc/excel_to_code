@@ -91,6 +91,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue na();
 static ExcelValue negative(ExcelValue a_v);
 static ExcelValue excel_not(ExcelValue a_v);
 static ExcelValue number_or_zero(ExcelValue maybe_number_v);
@@ -1549,6 +1550,10 @@ static ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_CONVERSION_ERROR
 	if(b == 0) return DIV0;
 	return EXCEL_NUMBER(fmod(a,b));
+}
+
+static ExcelValue na() {
+  return NA;
 }
 
 static ExcelValue negative(ExcelValue a_v) {
