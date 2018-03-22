@@ -54,6 +54,9 @@ describe ReplaceArraysWithSingleCellsAst do
   r.ref = [:sheet1, :B3]
   r.map(if_ast).should == [:function, :IF, [:boolean_true], [:sheet_reference, :sheet1, [:cell, :A3]], [:sheet_reference, :sheet1, [:cell, :A3]]]
 
+  index_ast = [:function, :INDEX, ast_vertical, ast_vertical, ast_vertical]
+  r.ref = [:sheet1, :B3]
+  r.map(index_ast).should == [:function, :INDEX, ast_vertical, [:sheet_reference, :sheet1, [:cell, :A3]], [:sheet_reference, :sheet1, [:cell, :A3]]]
 
   end
 

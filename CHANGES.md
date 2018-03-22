@@ -1,5 +1,6 @@
 # Head
 
+- INDEX can now work with ranges passed as its second and/or third arguments
 - Add the NA() function in Ruby and C
 - Add --persevere switch which will mean will not abort on parse or external reference error so you can see the scale of the problem in a workbook.
 - Better error reporting on external references in named references
