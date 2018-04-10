@@ -1,3 +1,19 @@
+class Array
+
+  def original
+    @original || self
+  end
+
+  alias_method :original_replace, :replace
+
+  def replace(new_array)
+    @original = self.dup
+    original_replace(new_array)
+  end
+end
+
+
+
 class InlineFormulaeAst
 
   attr_accessor :references, :current_sheet_name, :inline_ast

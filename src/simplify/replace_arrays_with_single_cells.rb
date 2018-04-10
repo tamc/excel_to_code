@@ -21,8 +21,6 @@ class ReplaceArraysWithSingleCellsAst
     # Special case, only change if at the top level
     elsif ast[0] == :function && ast[1] == :IF && check_if(ast)
       # Replacement made in check
-    elsif ast[0] == :function && ast[1] == :INDEX && check_index(ast)
-      # Replacement made in check
     else
       do_map(ast)
     end
@@ -58,6 +56,8 @@ class ReplaceArraysWithSingleCellsAst
         # Replacement made in check_match function
       elsif ast[1] == :INDIRECT && check_indirect(ast)
         # Replacement made in check function
+      elsif ast[0] == :function && ast[1] == :INDEX && check_index(ast)
+        # Replacement made in check
       else
         map_if_required(ast)
       end
@@ -164,7 +164,7 @@ class ReplaceArraysWithSingleCellsAst
   def all_references?(ast)
     ast[1..-1].all? do |row|
       row[1..-1].all? do |cell|
-        cell.first == :sheet_reference
+        cell.original.first == :sheet_reference
       end
     end
   end
@@ -177,8 +177,8 @@ class ReplaceArraysWithSingleCellsAst
 
     cells = ast[1][1..-1]
     match = cells.find do |cell|
-      s = cell[1]
-      c = cell[2][1][/([A-Za-z]{1,3})/,1]
+      s = cell.original[1]
+      c = cell.original[2][1][/([A-Za-z]{1,3})/,1]
       sheet == s && column == c
     end
 
@@ -193,8 +193,8 @@ class ReplaceArraysWithSingleCellsAst
 
     cells = ast[1..-1].map { |row| row.last }
     match = cells.find do |cell|
-      s = cell[1]
-      r = cell[2][1][/([A-Za-z]{1,3})(\d+)/,2]
+      s = cell.original[1]
+      r = cell.original[2][1][/([A-Za-z]{1,3})(\d+)/,2]
       sheet == s && row == r
     end
 

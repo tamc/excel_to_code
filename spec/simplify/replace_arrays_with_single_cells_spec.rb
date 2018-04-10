@@ -60,4 +60,16 @@ describe ReplaceArraysWithSingleCellsAst do
 
   end
 
+  it "should work even if the array contents has been replaced with literals" do
+    r = ReplaceArraysWithSingleCellsAst.new
+    c1 = [:sheet_reference, :"sheet1", [:cell, :"B1"]]
+    c2 = [:sheet_reference, :"sheet1", [:cell, :"C1"]]
+    ast = [:array, [:row, c1, c2 ]]
+    r.ref = [:sheet1, :C10]
+    r.map(ast).should == [:sheet_reference, :"sheet1", [:cell, :"C1"]] 
+    c1.replace([:inlined_blank])
+    c2.replace([:number, 12.0])
+    r.map(ast).should == [:number, 12.0]
+  end
+
 end

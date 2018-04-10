@@ -423,6 +423,33 @@ static ExcelValue excel_and(int array_size, ExcelValue *array) {
 	 return TRUE;
 }
 
+static ExcelValue excel_or(int array_size, ExcelValue *array) {
+	int i;
+	ExcelValue current_excel_value, array_result;
+	
+	for(i=0;i<array_size;i++) {
+		current_excel_value = array[i];
+		switch (current_excel_value.type) {
+	  	case ExcelNumber: 
+		  case ExcelBoolean: 
+			  if(current_excel_value.number == true) return TRUE;
+			  break;
+		  case ExcelRange: 
+		  	array_result = excel_or( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
+        if(array_result.type == ExcelError) return array_result;
+        if(array_result.type == ExcelBoolean && array_result.number == true) return TRUE;
+        break;
+		  case ExcelString:
+		  case ExcelEmpty:
+        break;
+		  case ExcelError:
+			 return current_excel_value;
+			 break;
+		 }
+	 }
+	 return FALSE;
+}
+
 static ExcelValue excel_not(ExcelValue boolean_v) {
   switch (boolean_v.type) {
     case ExcelNumber: 
