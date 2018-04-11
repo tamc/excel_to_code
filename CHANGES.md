@@ -1,5 +1,6 @@
 # Head
 
+- Fix bug in prefixes inside arithmetic applied to arrays
 - Improve conversion of prefixes applied to arrays
 - Improvements to the way translator converts range references that should be treated as cell references
 - Add the OR() function in Ruby and C

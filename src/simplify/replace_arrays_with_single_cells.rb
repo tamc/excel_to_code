@@ -81,7 +81,7 @@ class ReplaceArraysWithSingleCellsAst
     arguments.each do |a|
       next unless a.is_a?(Array)
       case a.first
-      when :error, :null, :space, :prefix, :boolean_true, :boolean_false, :number, :string
+      when :error, :null, :space, :boolean_true, :boolean_false, :number, :string
         next
       when :sheet_reference, :table_reference, :local_table_reference
         next
