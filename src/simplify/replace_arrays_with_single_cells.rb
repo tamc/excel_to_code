@@ -39,6 +39,14 @@ class ReplaceArraysWithSingleCellsAst
       else
         map_if_required(ast)
       end
+    when :prefix
+      op, left = ast[1], ast[2]
+      if left.first == :array
+        left = try_and_convert_array(left)
+        ast.replace([:prefix, op, left])
+      else
+        map_if_required(ast)
+      end
     when :string_join
       strings = ast[1..-1]
       if strings.any? { |s| s.first == :array }

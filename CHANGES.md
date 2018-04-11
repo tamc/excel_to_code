@@ -1,5 +1,6 @@
 # Head
 
+- Improve conversion of prefixes applied to arrays
 - Improvements to the way translator converts range references that should be treated as cell references
 - Add the OR() function in Ruby and C
 - INDEX can now work with ranges passed as its second and/or third arguments

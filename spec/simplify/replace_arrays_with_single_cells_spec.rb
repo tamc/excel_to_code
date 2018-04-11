@@ -72,4 +72,14 @@ describe ReplaceArraysWithSingleCellsAst do
     r.map(ast).should == [:number, 12.0]
   end
 
+  it "should work with arrays inside prefixes" do
+    r = ReplaceArraysWithSingleCellsAst.new
+    r.ref = [:sheet1, :B2]
+
+    array = [:array, [:row, [:sheet_reference, :"sheet1", [:cell, :"A2"]]], [:row, [:sheet_reference, :"sheet1", [:cell, :"A3"]]]]
+    input = [:prefix, :+, array] 
+    expected = [:prefix, :+, [:sheet_reference, :"sheet1", [:cell, :"A2"]]]
+    r.map(input).should == expected
+  end
+
 end
