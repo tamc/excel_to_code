@@ -1,5 +1,6 @@
 # Head
 
+- Add a debug_dump() function for de-bugging
 - Make replacement of arrays with single cells depth first
 - Fix bug in prefixes inside arithmetic applied to arrays
 - Improve conversion of prefixes applied to arrays

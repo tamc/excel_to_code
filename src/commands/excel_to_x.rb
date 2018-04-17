@@ -128,6 +128,11 @@ class ExcelToX
   # really messy sheet, since it allows you to see all the errors at once and which are 
   # really fatal.
   attr_accessor :persevere
+  
+  # This is a private method, default is a hash, keys are cell references.
+  # The code will dump debuging information about the given cells as they
+  # progress through the conversion
+  attr_accessor :dump_steps
 
   # This is the main method. Once all the above attributes have been set, it should be called to actually do the work.
   def go!
@@ -234,6 +239,9 @@ class ExcelToX
     # Make sure the relevant directories exist
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
+
+    # For debugging
+    self.dump_steps ||= {[:Sheet1, :C4] => true}
     
     # Set up our log file
     unless self.log
@@ -935,6 +943,11 @@ class ExcelToX
     end
 
   end
+
+  def debug_dump(ref, ast, location = "")
+    return unless dump_steps[ref]
+    puts "#{location}: #{ref} = #{ast}" 
+  end
     
   def simplify(cells = @formulae)
     log.info "Simplifying cells"
@@ -956,6 +969,7 @@ class ExcelToX
     #require 'pry'; binding.pry
 
     cells.each do |ref, ast|
+      debug_dump(ref, ast, "simplify 1 - start")
       begin
         @sheetless_cell_reference_replacer.worksheet = ref.first
         @sheetless_cell_reference_replacer.map(ast)
@@ -971,8 +985,10 @@ class ExcelToX
         log.fatal "Exception when simplifying #{ref}: #{ast}"
         raise
       end
+      debug_dump(ref, ast, "simplify 1 - finish")
     end
     cells.each do |ref, ast|
+      debug_dump(ref, ast, "simplify 2 - start")
       begin
         @replace_ranges_with_array_literals_replacer.map(ast)
         @replace_arrays_with_single_cells_replacer.ref = ref
@@ -990,6 +1006,7 @@ class ExcelToX
         log.fatal "Exception when simplifying #{ref}: #{ast}"
         raise
       end
+      debug_dump(ref, ast, "simplify 2 - finish")
     end
   end
 
