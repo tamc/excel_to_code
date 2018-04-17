@@ -2,7 +2,6 @@
 package excelspreadsheet
 
 import (
-    "https://github"
     "testing"
 )
 
@@ -143,7 +142,7 @@ func TestValuesA8(t *testing.T) {
 
 func TestValuesB8(t *testing.T) {
   s := New()
-  e := excel.Div0Error{}
+  e := Div0Error{}
   a, err := s.ValuesB8()
   if err != e {
       t.Errorf("ValuesB8 = (%v, %v), want (nil, %v)", a, err, e)
@@ -179,7 +178,7 @@ func TestValuesA10(t *testing.T) {
 
 func TestValuesB10(t *testing.T) {
   s := New()
-  e := excel.NAError{}
+  e := NAError{}
   a, err := s.ValuesB10()
   if err != e {
       t.Errorf("ValuesB10 = (%v, %v), want (nil, %v)", a, err, e)
@@ -197,7 +196,7 @@ func TestValuesA11(t *testing.T) {
 
 func TestValuesB11(t *testing.T) {
   s := New()
-  e := excel.NameError{}
+  e := NameError{}
   a, err := s.ValuesB11()
   if err != e {
       t.Errorf("ValuesB11 = (%v, %v), want (nil, %v)", a, err, e)
@@ -215,7 +214,7 @@ func TestValuesA12(t *testing.T) {
 
 func TestValuesB12(t *testing.T) {
   s := New()
-  e := excel.NameError{}
+  e := NameError{}
   a, err := s.ValuesB12()
   if err != e {
       t.Errorf("ValuesB12 = (%v, %v), want (nil, %v)", a, err, e)
@@ -224,7 +223,7 @@ func TestValuesB12(t *testing.T) {
 
 func TestValuesC1(t *testing.T) {
   s := New()
-  e := excel.Blank{}
+  e := Blank{}
   a, err := s.ValuesC1()
   if a != e || err != nil {
       t.Errorf("ValuesC1 = (%v, %v), want (%v, nil)", a, err, e)

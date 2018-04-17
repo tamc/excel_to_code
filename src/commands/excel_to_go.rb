@@ -5,8 +5,6 @@ require 'pathname'
 
 class ExcelToGo < ExcelToX
 
-  attr_accessor :excel_go_lib
-  
   def language
     'go'
   end  
@@ -29,7 +27,7 @@ class ExcelToGo < ExcelToX
     o.puts "// Compiled version of #{excel_file}"
     o.puts "package #{output_name.downcase}"
     o.puts
-    o.puts "import #{excel_go_lib.inspect}"
+    o.puts excel_lib_imports
     o.puts
 
     c = CompileToGo.new
@@ -38,10 +36,24 @@ class ExcelToGo < ExcelToX
     c.rewrite @formulae, @worksheet_c_names, o
     o.puts
 
+    o.puts excel_lib_functions
+    o.puts 
+
     close(o)
     log.info "Finished writing code"
 
-    copy_to_output 'src/compile/go/excel.go', 'excel.go'
+  end
+
+  def excel_lib
+    @excel_lib ||= IO.readlines(File.join(File.dirname(__FILE__),'..','compile','go','excel.go')).join
+  end
+
+  def excel_lib_imports
+    excel_lib[/import \(.*?\)/m]
+  end
+
+  def excel_lib_functions
+    excel_lib[/import \(.*?\)(.*)/m,1]
   end
 
   def write_out_test_as_code
@@ -53,7 +65,6 @@ class ExcelToGo < ExcelToX
     o.puts "package #{output_name.downcase}"
     o.puts
     o.puts "import ("
-    o.puts "    #{excel_go_lib.inspect}"
     o.puts "    \"testing\""
     o.puts ")"
     o.puts
@@ -76,22 +87,5 @@ class ExcelToGo < ExcelToX
     return unless actually_run_tests
     log.info "Running the resulting tests"
     log.info `cd #{File.join(output_directory)}; go test`
-  end
-
-  def excel_go_lib
-    @excel_go_lib || guess_excel_go_lib
-  end
-
-  def guess_excel_go_lib
-    log.info "Calculating --import-excel-go path"
-    gohome = `go env GOPATH`
-    if $?.exitstatus != 0
-      gohome = ENV['GOPATH']
-    end
-    if File.exists?(gohome)
-
-    end
-    log.info gohome
-    
   end
 end

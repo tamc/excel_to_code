@@ -16,11 +16,11 @@ class MapValuesToGo
   end
   
   def blank
-    "excel.Blank{}"
+    "Blank{}"
   end
 
   def inlined_blank
-    "excel.Blank{}"
+    "Blank{}"
   end
   
   def constant(name)
@@ -42,12 +42,12 @@ class MapValuesToGo
   end
   
   ERRORS = {
-    :"#NAME?" => "excel.NameError{}",
-    :"#VALUE!" => "excel.ValueError{}",
-    :"#DIV/0!" => "excel.Div0Error{}",
-    :"#REF!" => "excel.RefError{}",
-    :"#N/A" => "excel.NAError{}",
-    :"#NUM!" => "excel.NumError{}"
+    :"#NAME?" => "NameError{}",
+    :"#VALUE!" => "ValueError{}",
+    :"#DIV/0!" => "Div0Error{}",
+    :"#REF!" => "RefError{}",
+    :"#N/A" => "NAError{}",
+    :"#NUM!" => "NumError{}"
   }
   
   REVERSE_ERRORS = ERRORS.invert

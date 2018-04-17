@@ -23,7 +23,7 @@ class CompileToGo
     # The struct
     output.puts "type #{struct_type} struct {"
     formulae.each do |ref, _|
-      output.puts "  #{variable_name(ref)} excel.CachedValue"
+      output.puts "  #{variable_name(ref)} cachedValue"
     end
     output.puts "}"
 
@@ -40,10 +40,10 @@ class CompileToGo
       v = variable_name(ref)
       output.puts <<~END
         func (s *#{struct_type}) #{getter_method_name(ref)}() (interface{}, error) {
-          if !s.#{v}.IsCached() {
-            s.#{v}.Set(#{m.map(ast)})
+          if !s.#{v}.isCached() {
+            s.#{v}.set(#{m.map(ast)})
           }
-          return s.#{v}.Get()
+          return s.#{v}.get()
         }
 
       END
@@ -51,7 +51,7 @@ class CompileToGo
         output.puts <<~END
 
         func (s *#{struct_type}) #{setter_method_name(ref)}(v interface{}) {
-            s.#{v}.Set(v)
+            s.#{v}.set(v)
         }
 
         END

@@ -44,10 +44,11 @@ func (s *Spreadsheet) OutputA1() interface{} {
 
 func TestHelloWorld(t *testing.T) {
 	s := Spreadsheet{}
-	s.SetInputA1(0.0)
+	s.SetInputA1(1.0)
+	s.SetInputA2(1.0)
 	//inputA1 := s.InputA1()
 	outputA1 := s.OutputA1()
 	if outputA1 != 1 {
-		t.Errorf("%v = %v, want %v", s.OutputA1, outputA1, 1)
+		t.Errorf("%v = %v, want %v", "s.OutputA1()", outputA1, 1)
 	}
 }
