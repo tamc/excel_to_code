@@ -244,7 +244,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * SIGN -- Returns the sign of a number
 * SIN -- Returns the sine of the given angle
 * SINH -- Returns the hyperbolic sine of a number
-* SQRT -- Returns a positive square root
+* SQRT -- Returns a positive square root -- _R_
 * SQRTPI -- Returns the square root of (number * pi)
 * SUBTOTAL -- Returns a subtotal in a list or database  -- _R_ _C_
 * SUM -- Adds its arguments -- _R_ _C_

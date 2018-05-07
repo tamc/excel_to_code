@@ -134,3 +134,7 @@ require_relative 'excel_functions/na'
 require_relative 'excel_functions/or'
 
 require_relative 'excel_functions/scurve'
+
+require_relative 'excel_functions/floor'
+
+require_relative 'excel_functions/sqrt'

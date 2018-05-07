@@ -32,6 +32,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXP' => 'exp',
     :'FIND' => 'find',
+    :'FLOOR' => 'floor',
     :'FORECAST' => 'forecast',
     :'HLOOKUP' => 'hlookup',
     :'HYPERLINK' => 'hyperlink',
@@ -70,10 +71,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'ROUND' => 'round',
     :'ROUNDDOWN' => 'rounddown',
     :'ROUNDUP' => 'roundup',
-    :'curve' => 'curve',
-    :'scurve' => 'scurve',
-    :'lcurve' => 'lcurve',
-    :'halfscurve' => 'halfscurve',
+    :'SQRT' => 'sqrt',
     :'SUBSTITUTE' => 'substitute',
     :'SUBTOTAL' => 'subtotal',
     :'SUM' => 'sum',
@@ -84,7 +82,11 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'TRIM' => 'trim',
     :'VALUE' => 'value',
     :'VLOOKUP' => 'vlookup',
-    :'^' => 'power'
+    :'^' => 'power',
+    :'curve' => 'curve',
+    :'halfscurve' => 'halfscurve',
+    :'lcurve' => 'lcurve',
+    :'scurve' => 'scurve'
   }
   
   def prefix(symbol,ast)
