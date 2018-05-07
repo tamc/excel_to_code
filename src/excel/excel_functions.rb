@@ -142,3 +142,5 @@ require_relative 'excel_functions/sqrt'
 require_relative 'excel_functions/product'
 
 require_relative 'excel_functions/countifs'
+
+require_relative 'excel_functions/replace'

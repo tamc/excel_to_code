@@ -1,5 +1,6 @@
 # Head
 
+- Implement REPLACE in ruby
 - Implement COUNTIFS in ruby
 - Implement PRODUCT in ruby
 - Implement FLOOR in ruby

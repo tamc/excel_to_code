@@ -362,7 +362,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * MID, MIDB -- Returns a specific number of characters from a text string starting at the position you specify - _R_
 * PHONETIC -- Extracts the phonetic (furigana) characters from a text string
 * PROPER -- Capitalizes the first letter in each word of a text value
-* REPLACE, REPLACEB -- Replaces characters within text
+* REPLACE, REPLACEB -- Replaces characters within text -- _R_
 * REPT -- Repeats text a given number of times
 * RIGHT, RIGHTB -- Returns the rightmost characters from a text value -- _R_ _C_ 
 * SEARCH, SEARCHB -- Finds one text value within another (not case-sensitive)
