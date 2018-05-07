@@ -1,5 +1,6 @@
 # Head
 
+- Implement COUNTIFS in ruby
 - Implement PRODUCT in ruby
 - Implement FLOOR in ruby
 - Implement SQRT in ruby
