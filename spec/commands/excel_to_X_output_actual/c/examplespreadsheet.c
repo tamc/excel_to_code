@@ -1,7 +1,7 @@
-// /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx approximately translated into C
+// /home/tamc/Documents/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx approximately translated into C
 // definitions
 #define NUMBER_OF_REFS 349
-#define EXCEL_FILENAME  "/Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"
+#define EXCEL_FILENAME  "/home/tamc/Documents/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"
 // end of definitions
 
 // First we have c versions of all the excel functions that we know
@@ -121,6 +121,14 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v);
 static ExcelValue value(ExcelValue string_v);
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
 static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
+static ExcelValue scurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration);
+static ExcelValue scurve(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration, ExcelValue startYear);
+static ExcelValue halfscurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration);
+static ExcelValue halfscurve(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration, ExcelValue startYear);
+static ExcelValue lcurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration);
+static ExcelValue lcurve(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration, ExcelValue startYear);
+static ExcelValue curve_5(ExcelValue curveType, ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration);
+static ExcelValue curve(ExcelValue curveType, ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration, ExcelValue startYear);
 
 // My little heap for keeping pointers to memory that I need to reclaim
 void **memory_that_needs_to_be_freed;
@@ -2417,6 +2425,108 @@ static ExcelValue value(ExcelValue string_v) {
 	CHECK_FOR_CONVERSION_ERROR
 	return EXCEL_NUMBER(a);
 }
+
+static ExcelValue scurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration) {
+  ExcelValue startYear = EXCEL_NUMBER(2018);
+  return scurve(currentYear, startValue, endValue, duration, startYear);
+}
+
+static ExcelValue halfscurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration) {
+  ExcelValue startYear = EXCEL_NUMBER(2018);
+  return halfscurve(currentYear, startValue, endValue, duration, startYear);
+}
+
+static ExcelValue lcurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration) {
+  ExcelValue startYear = EXCEL_NUMBER(2018);
+  return lcurve(currentYear, startValue, endValue, duration, startYear);
+}
+
+static ExcelValue curve_5(ExcelValue curveType, ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration) {
+  ExcelValue startYear = EXCEL_NUMBER(2018);
+  return curve(curveType, currentYear, startValue, endValue, duration, startYear);
+}
+
+static ExcelValue scurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
+  
+	NUMBER(currentYear_v, currentYear)
+	NUMBER(startValue_v, startValue)
+	NUMBER(endValue_v, endValue)
+	NUMBER(duration_v, duration)
+	NUMBER(startYear_v, startYear)
+	CHECK_FOR_CONVERSION_ERROR
+		
+  if(currentYear < startYear) {
+    return startValue_v;
+  }
+  double x = (currentYear - startYear) / duration;
+  double x0 = 0.0;
+  double a = endValue - startValue;
+  double sc = 0.999;
+  double eps = 1.0 - sc;
+  double mu = 0.5;
+  double beta = (mu - 1.0) / log(1.0 / sc - 1);
+  double scurve = a * (pow((exp(-(x - mu) / beta) + 1),-1) - pow((exp(-(x0 - mu) / beta) + 1),-1)) + startValue;
+  return EXCEL_NUMBER(scurve);
+}
+
+static ExcelValue halfscurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
+  
+	NUMBER(currentYear_v, currentYear)
+	NUMBER(startValue_v, startValue)
+	NUMBER(endValue_v, endValue)
+	NUMBER(duration_v, duration)
+	NUMBER(startYear_v, startYear)
+	CHECK_FOR_CONVERSION_ERROR
+		
+  if(currentYear < startYear) {
+    return startValue_v;
+  }
+
+  ExcelValue newCurrentYear = EXCEL_NUMBER(currentYear + duration);
+  ExcelValue newDuration = EXCEL_NUMBER(duration *2);
+  ExcelValue result_v = scurve(newCurrentYear, startValue_v, endValue_v, newDuration, startYear_v);
+
+	NUMBER(result_v, result)
+	CHECK_FOR_CONVERSION_ERROR
+
+  return EXCEL_NUMBER(result -((endValue - startValue)/2.0));
+}
+
+static ExcelValue lcurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
+  
+	NUMBER(currentYear_v, currentYear)
+	NUMBER(startValue_v, startValue)
+	NUMBER(endValue_v, endValue)
+	NUMBER(duration_v, duration)
+	NUMBER(startYear_v, startYear)
+	CHECK_FOR_CONVERSION_ERROR
+		
+  if(currentYear > (startYear + duration)) {
+    return endValue_v;
+  }
+
+  if(currentYear < startYear) {
+    return startValue_v;
+  }
+
+  double result = startValue + (((endValue - startValue) / duration) * (currentYear - startYear));
+  return EXCEL_NUMBER(result);
+}
+
+static ExcelValue curve(ExcelValue type_v, ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
+
+  if(strcasecmp(type_v.string, "s") == 0 ) {
+    return scurve(currentYear_v, startValue_v, endValue_v, duration_v, startYear_v);
+  }
+
+  if(strcasecmp(type_v.string, "hs") == 0 ) {
+    return halfscurve(currentYear_v, startValue_v, endValue_v, duration_v, startYear_v);
+  }
+
+  return lcurve(currentYear_v, startValue_v, endValue_v, duration_v, startYear_v);
+}
+
+
 
 // Allows numbers to be 0.1% different
 static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
