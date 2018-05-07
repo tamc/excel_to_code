@@ -69,6 +69,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'PRODUCT' => 'product',
     :'PV' => 'pv',
     :'RANK' => 'rank',
+    :'RATE' => 'rate',
     :'REPLACE' => 'replace',
     :'RIGHT' => 'right',
     :'ROUND' => 'round',
