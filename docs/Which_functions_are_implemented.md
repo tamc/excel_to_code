@@ -215,7 +215,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * EXP -- Returns e raised to the power of a given number -- _R_ _C_
 * FACT -- Returns the factorial of a number
 * FACTDOUBLE -- Returns the double factorial of a number
-* FLOOR -- Rounds a number down, toward zero
+* FLOOR -- Rounds a number down, toward zero -- _R_
 * GCD -- Returns the greatest common divisor
 * INT -- Rounds a number down to the nearest integer -- _R_ _C_
 * LCM -- Returns the least common multiple

@@ -1,6 +1,7 @@
 # Head
 
-- Implement SQRT
+- Implement FLOOR in ruby
+- Implement SQRT in ruby
 - Add a debug_dump() function for de-bugging
 - Make replacement of arrays with single cells depth first
 - Fix bug in prefixes inside arithmetic applied to arrays
