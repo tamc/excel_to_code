@@ -138,3 +138,5 @@ require_relative 'excel_functions/scurve'
 require_relative 'excel_functions/floor'
 
 require_relative 'excel_functions/sqrt'
+
+require_relative 'excel_functions/product'

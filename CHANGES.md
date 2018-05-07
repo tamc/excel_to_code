@@ -1,5 +1,6 @@
 # Head
 
+- Implement PRODUCT in ruby
 - Implement FLOOR in ruby
 - Implement SQRT in ruby
 - Add a debug_dump() function for de-bugging

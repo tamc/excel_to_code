@@ -65,6 +65,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'PI' => 'pi',
     :'PMT' => 'pmt',
     :'POWER' => 'power',
+    :'PRODUCT' => 'product',
     :'PV' => 'pv',
     :'RANK' => 'rank',
     :'RIGHT' => 'right',

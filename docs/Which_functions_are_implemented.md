@@ -231,7 +231,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * ODD -- Rounds a number up to the nearest odd integer
 * PI -- Returns the value of pi
 * POWER -- Returns the result of a number raised to a power -- _R_ _C_
-* PRODUCT -- Multiplies its arguments
+* PRODUCT -- Multiplies its arguments -- _R_
 * QUOTIENT -- Returns the integer portion of a division
 * RADIANS -- Converts degrees to radians
 * RAND -- Returns a random number between 0 and 1
