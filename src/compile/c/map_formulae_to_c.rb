@@ -99,6 +99,14 @@ class MapFormulaeToC < MapValuesToC
     :'VLOOKUP4' => 'vlookup',
     :'^' => 'power',
     :'POWER' => 'power'
+    :'curve5' => 'curve_5',
+    :'curve' => 'curve',
+    :'scurve4' => 'scurve_4',
+    :'scurve' => 'scurve',
+    :'halfscurve4' => 'halfscurve_4',
+    :'halfscurve' => 'halfscurve',
+    :'lcurve4' => 'lcurve_4',
+    :'lcurve' => 'lcurve',
   }
   
   def prefix(symbol,ast)
