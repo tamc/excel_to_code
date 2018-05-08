@@ -1,5 +1,6 @@
 # Head
 
+- Add treat_external_references_as local helper
 - Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Implement REPLACE in ruby
 - Implement COUNTIFS in ruby

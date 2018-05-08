@@ -77,9 +77,11 @@ class CachingFormulaParser
     @comparator_cache = {}
     @sheet_reference_cache = {}
     @functions_used = {}
+    @treat_external_references_as_local = false
   end
 
-  def parse(text)
+  def parse(text, treat_external_references_as_local = false)
+    @treat_external_references_as_local = treat_external_references_as_local
     ast = Formula.parse(text)
     @text = text # Kept in case of Exception below
     if ast
@@ -117,14 +119,17 @@ class CachingFormulaParser
 
   # We can't deal with external references at the moment
   def external_reference(ast)
-    raise ExternalReferenceException.new(ast, @full_ast, @text)
+    raise ExternalReferenceException.new(ast, @full_ast, @text) unless @treat_external_references_as_local
+    # We sometimes treat the external reference as local in order to move on
+    return ast[2]
   end
 
   def sheet_reference(ast)
     # Sheet names shouldn't start with [1], because those are 
     # external references
     if ast[1] =~ /^\[\d+\]/
-       raise ExternalReferenceException.new(ast, @full_ast, @text)
+       raise ExternalReferenceException.new(ast, @full_ast, @text) unless @treat_external_references_as_local
+       ast[1] = ast[1].gsub(/^\[\d+\]/,'')
     end
     ast[1] = ast[1].to_sym
     ast[2] = map(ast[2])

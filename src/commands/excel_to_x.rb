@@ -134,6 +134,10 @@ class ExcelToX
   # progress through the conversion
   attr_accessor :dump_steps
 
+  # This is a method to use carefull, if true will not abort on external references, but instead
+  # treat them as local references.
+  attr_accessor :treat_external_references_as_local
+
   # This is the main method. Once all the above attributes have been set, it should be called to actually do the work.
   def go!
     # This sorts out the settings
@@ -336,7 +340,7 @@ class ExcelToX
     # Then we parse them
     @named_references.each do |name, reference|
       begin
-        parsed = CachingFormulaParser.parse(reference)
+        parsed = CachingFormulaParser.parse(reference, treat_external_references_as_local)
         if parsed
           @named_references[name] = parsed
         else
