@@ -92,17 +92,4 @@ describe ReplaceArraysWithSingleCellsAst do
     r.map(input).should == expected
   end
 
-  it "should work with functions inside arithmetic" do 
-    r = ReplaceArraysWithSingleCellsAst.new
-    r.ref = [:sheet1, :A1]
-    array1 = [:array, [:row, [:sheet_reference, :"sheet1", [:cell, :"A1"]], [:sheet_reference, :"sheet1", [:cell, :"B1"]]]]
-    array2 = [:array, [:row, [:sheet_reference, :"sheet1", [:cell, :"A2"]], [:sheet_reference, :"sheet1", [:cell, :"B2"]]]]
-    array3 = [:array, [:row, [:sheet_reference, :"sheet1", [:cell, :"A3"]], [:sheet_reference, :"sheet1", [:cell, :"B3"]]]]
-    input = [:arithmetic, [:function, :INDEX, array1, [:number, 0], array2], [:operator, :-], array3]
-    expected = [:arithmetic, [:function, :INDEX, array1, [:number, 0], [:sheet_reference, :"sheet1", [:cell, :"A2"]]], [:operator, :-], [:sheet_reference, :"sheet1", [:cell, :"A3"]]]
-    actual = r.map(input)
-    puts "actual = #{actual}"
-    actual.should == expected
-  end
-
 end
