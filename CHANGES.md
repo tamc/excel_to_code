@@ -1,5 +1,6 @@
 # Head
 
+- Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Implement REPLACE in ruby
 - Implement COUNTIFS in ruby
 - Implement PRODUCT in ruby

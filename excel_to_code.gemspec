@@ -1,4 +1,4 @@
-require_relative 'src/excel_to_code'
+require_relative 'src/version'
 
 Gem::Specification.new do |s|
   s.name = "excel_to_code"
