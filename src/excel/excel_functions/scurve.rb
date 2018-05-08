@@ -1,8 +1,21 @@
 module ExcelFunctions
   
   def scurve(currentYear, startValue, endValue, duration, startYear = 2018.0)
+    currentYear = number_argument(currentYear)
+    startValue = number_argument(startValue)
+    endValue = number_argument(endValue)
+    duration = number_argument(duration)
+    startYear = number_argument(startYear)
+
+    return currentYear if currentYear.is_a?(Symbol)
+    return startValue if startValue.is_a?(Symbol)
+    return endValue if endValue.is_a?(Symbol)
+    return duration if duration.is_a?(Symbol)
+    return startYear if startYear.is_a?(Symbol)
+    
     return startValue if currentYear < startYear 
-    x = (currentYear - startYear) / duration
+
+    x = (currentYear - startYear) / duration.to_f
     x0 = 0.0
     a = endValue - startValue
     sc = 0.999
@@ -13,11 +26,36 @@ module ExcelFunctions
   end
 
   def halfscurve(currentYear, startValue, endValue , duration, startYear = 2018)
+    currentYear = number_argument(currentYear)
+    startValue = number_argument(startValue)
+    endValue = number_argument(endValue)
+    duration = number_argument(duration)
+    startYear = number_argument(startYear)
+
+    return currentYear if currentYear.is_a?(Symbol)
+    return startValue if startValue.is_a?(Symbol)
+    return endValue if endValue.is_a?(Symbol)
+    return duration if duration.is_a?(Symbol)
+    return startYear if startYear.is_a?(Symbol)
     return startValue if currentYear < startYear 
-    scurve(currentYear + duration, startValue, endValue, duration * 2, startYear) - (endValue - startValue) / 2
+
+    scurve(currentYear + duration, startValue, endValue, duration * 2, startYear) - ((endValue - startValue) / 2.0)
   end
 
   def lcurve(currentYear, startValue, endValue , duration, startYear = 2018)
+    currentYear = number_argument(currentYear)
+    startValue = number_argument(startValue)
+    endValue = number_argument(endValue)
+    duration = number_argument(duration)
+    startYear = number_argument(startYear)
+
+    return currentYear if currentYear.is_a?(Symbol)
+    return startValue if startValue.is_a?(Symbol)
+    return endValue if endValue.is_a?(Symbol)
+    return duration if duration.is_a?(Symbol)
+    return startYear if startYear.is_a?(Symbol)
+
+    return startValue if currentYear < startYear 
     return endValue if currentYear > (startYear + duration)
     return startValue if currentYear < startYear 
     startValue + (endValue - startValue) / duration * (currentYear - startYear)
@@ -25,11 +63,11 @@ module ExcelFunctions
 
   def curve(curveType, currentYear, startValue, endValue, duration, startYear = 2018)
     if curveType == "s"
-      scurve(currentYear, startValue, endValue, duration, startYear)
+      return scurve(currentYear, startValue, endValue, duration, startYear)
     elsif curveType == "hs"
-      halfscurve(currentYear, startValue, endValue, duration, startYear)
+      return halfscurve(currentYear, startValue, endValue, duration, startYear)
     else
-      lcurve(currentYear, startValue, endValue, duration, startYear)
+      return lcurve(currentYear, startValue, endValue, duration, startYear)
     end
   end
 end
