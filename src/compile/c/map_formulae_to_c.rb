@@ -98,7 +98,7 @@ class MapFormulaeToC < MapValuesToC
     :'VLOOKUP3' => 'vlookup_3',
     :'VLOOKUP4' => 'vlookup',
     :'^' => 'power',
-    :'POWER' => 'power'
+    :'POWER' => 'power',
     :'curve5' => 'curve_5',
     :'curve' => 'curve',
     :'scurve4' => 'scurve_4',
