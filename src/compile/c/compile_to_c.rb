@@ -5,6 +5,7 @@ class CompileToC
   attr_accessor :settable
   attr_accessor :gettable
   attr_accessor :variable_set_counter
+  attr_accessor :allow_unknown_functions
   
   def self.rewrite(*args)
     self.new.rewrite(*args)
@@ -16,6 +17,7 @@ class CompileToC
     @variable_set_counter ||= 0
 
     mapper = MapFormulaeToC.new
+    mapper.allow_unknown_functions = self.allow_unknown_functions
     mapper.sheet_names = sheet_names
     formulae.each do |ref, ast|
       begin

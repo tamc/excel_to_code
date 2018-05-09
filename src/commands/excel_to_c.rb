@@ -10,6 +10,8 @@ class ExcelToC < ExcelToX
   attr_accessor :create_makefile
   # If true, writes tests in C rather than in ruby
   attr_accessor :write_tests_in_c
+  # If true, allows unknown Excel functions rather than aborting
+  attr_accessor :allow_unknown_functions
   
   def set_defaults
     super
@@ -78,6 +80,7 @@ class ExcelToC < ExcelToX
     variable_set_counter = 0
     
     c = CompileToC.new
+    c.allow_unknown_functions = self.allow_unknown_functions
     c.variable_set_counter = variable_set_counter
     # Output the elements from each worksheet in turn
     c.settable = settable

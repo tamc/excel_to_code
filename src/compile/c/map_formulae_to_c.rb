@@ -6,6 +6,7 @@ class MapFormulaeToC < MapValuesToC
   attr_accessor :worksheet
   attr_reader :initializers
   attr_reader :counter
+  attr_accessor :allow_unknown_functions
   
   def initialize
     reset
@@ -146,6 +147,11 @@ class MapFormulaeToC < MapValuesToC
     elsif FUNCTIONS.has_key?(function_name.to_sym)
       "#{FUNCTIONS[function_name.to_sym]}(#{arguments.map { |a| map(a) }.join(",")})"
 
+    # Optionally, can dump unknown functions
+  elsif self.allow_unknown_functions
+      "#{function_name.to_s.downcase}(#{arguments.map { |a| map(a) }.join(",")})"
+      
+    # But default is to raise an error
     else
       raise NotSupportedException.new("Function #{function_name} with #{arguments.size} arguments not supported")
     end
