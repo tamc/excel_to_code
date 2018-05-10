@@ -77,6 +77,7 @@ class MapFormulaeToC < MapValuesToC
     :'PMT3' => 'pmt',
     :'PMT4' => 'pmt_4',
     :'PMT5' => 'pmt_5',
+    :'PRODUCT' => 'product',
     :'PV3' => 'pv_3',
     :'PV4' => 'pv_4',
     :'PV5' => 'pv_5',
@@ -156,10 +157,10 @@ class MapFormulaeToC < MapValuesToC
       raise NotSupportedException.new("Function #{function_name} with #{arguments.size} arguments not supported")
     end
   end
-  
-  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM AND AVERAGE COUNT COUNTA MAX MIN SUMPRODUCT CONCATENATE}
-  
-  def function_pi() 
+
+  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM PRODUCT AND AVERAGE COUNT COUNTA MAX MIN SUMPRODUCT CONCATENATE}
+
+  def function_pi()
     "M_PI"
   end
   

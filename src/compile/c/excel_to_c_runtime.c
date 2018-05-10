@@ -11,7 +11,7 @@
 #endif
 
 #ifndef EXCEL_FILENAME
-  #define EXCEL_FILENAME "NoExcelFilename" 
+  #define EXCEL_FILENAME "NoExcelFilename"
 #endif
 
 // Need to retain malloc'd values for a while, so can return to functions that use this library
@@ -27,10 +27,10 @@ typedef enum {ExcelEmpty, ExcelNumber, ExcelString, ExcelBoolean, ExcelError, Ex
 
 struct excel_value {
 	ExcelType type;
-	
+
 	double number; // Used for numbers and for error types
 	char *string; // Used for strings
-	
+
 	// The following three are used for ranges
 	void *array;
 	int rows;
@@ -123,13 +123,18 @@ static ExcelValue lcurve(ExcelValue currentYear, ExcelValue startValue, ExcelVal
 static ExcelValue curve_5(ExcelValue curveType, ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration);
 static ExcelValue curve(ExcelValue curveType, ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration, ExcelValue startYear);
 
+static ExcelValue product(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue excel_floor(ExcelValue number_v, ExcelValue multiple_v);
+static ExcelValue rate(ExcelValue a1, ExcelValue a2, ExcelValue a3, ExcelValue a4);
+static ExcelValue excel_sqrt(ExcelValue number_v);
+
 // My little heap for keeping pointers to memory that I need to reclaim
 void **memory_that_needs_to_be_freed;
 int memory_that_needs_to_be_freed_counter = 0;
 int memory_that_needs_to_be_freed_size = -1;
 
 static void free_later(void *pointer) {
-	if(memory_that_needs_to_be_freed_counter >= memory_that_needs_to_be_freed_size) { 
+	if(memory_that_needs_to_be_freed_counter >= memory_that_needs_to_be_freed_size) {
     if(memory_that_needs_to_be_freed_size <= 0) {
       memory_that_needs_to_be_freed = malloc(MEMORY_TO_BE_FREED_LATER_HEAP_INCREMENT*sizeof(void*));
       memory_that_needs_to_be_freed_size = MEMORY_TO_BE_FREED_LATER_HEAP_INCREMENT;
@@ -231,7 +236,7 @@ static void inspect_excel_value(ExcelValue v) {
 	  	if(v.number == 0) {
 	  		printf("Empty\n");
 		} else {
-			printf("Empty with unexpected state %f\n",v.number);	
+			printf("Empty with unexpected state %f\n",v.number);
 		}
 		break;
 	  case ExcelRange:
@@ -274,18 +279,18 @@ static double number_from(ExcelValue v) {
 	ExcelValue *array;
 	switch (v.type) {
   	  case ExcelNumber:
-	  case ExcelBoolean: 
+	  case ExcelBoolean:
 	  	return v.number;
-	  case ExcelEmpty: 
+	  case ExcelEmpty:
 	  	return 0;
-	  case ExcelRange: 
+	  case ExcelRange:
 		 array = v.array;
 	     return number_from(array[0]);
 	  case ExcelString:
  	 	s = v.string;
 		if (s == NULL || *s == '\0' || isspace(*s)) {
 			return 0;
-		}	        
+		}
 		n = strtod (s, &p);
 		if(*p == '\0') {
 			return n;
@@ -301,12 +306,12 @@ static double number_from(ExcelValue v) {
 #define NUMBER(value_name, name) double name; if(value_name.type == ExcelError) { return value_name; }; name = number_from(value_name);
 #define CHECK_FOR_CONVERSION_ERROR 	if(conversion_error) { conversion_error = 0; return VALUE; };
 #define CHECK_FOR_PASSED_ERROR(name) 	if(name.type == ExcelError) return name;
-	
+
 static ExcelValue excel_abs(ExcelValue a_v) {
-	CHECK_FOR_PASSED_ERROR(a_v)	
+	CHECK_FOR_PASSED_ERROR(a_v)
 	NUMBER(a_v, a)
 	CHECK_FOR_CONVERSION_ERROR
-	
+
 	if(a >= 0.0 ) {
 		return a_v;
 	} else {
@@ -315,7 +320,7 @@ static ExcelValue excel_abs(ExcelValue a_v) {
 }
 
 static ExcelValue excel_char(ExcelValue a_v) {
-	CHECK_FOR_PASSED_ERROR(a_v)	
+	CHECK_FOR_PASSED_ERROR(a_v)
 	NUMBER(a_v, a)
 	CHECK_FOR_CONVERSION_ERROR
   if(a <= 0) { return VALUE; }
@@ -400,15 +405,15 @@ static ExcelValue excel_exp(ExcelValue number_v) {
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
 	int i;
 	ExcelValue current_excel_value, array_result;
-	
+
 	for(i=0;i<array_size;i++) {
 		current_excel_value = array[i];
 		switch (current_excel_value.type) {
-	  	  case ExcelNumber: 
-		  case ExcelBoolean: 
+	  	  case ExcelNumber:
+		  case ExcelBoolean:
 			  if(current_excel_value.number == false) return FALSE;
 			  break;
-		  case ExcelRange: 
+		  case ExcelRange:
 		  	array_result = excel_and( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
 			if(array_result.type == ExcelError) return array_result;
 			if(array_result.type == ExcelBoolean && array_result.number == false) return FALSE;
@@ -427,15 +432,15 @@ static ExcelValue excel_and(int array_size, ExcelValue *array) {
 static ExcelValue excel_or(int array_size, ExcelValue *array) {
 	int i;
 	ExcelValue current_excel_value, array_result;
-	
+
 	for(i=0;i<array_size;i++) {
 		current_excel_value = array[i];
 		switch (current_excel_value.type) {
-	  	case ExcelNumber: 
-		  case ExcelBoolean: 
+	  	case ExcelNumber:
+		  case ExcelBoolean:
 			  if(current_excel_value.number == true) return TRUE;
 			  break;
-		  case ExcelRange: 
+		  case ExcelRange:
 		  	array_result = excel_or( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
         if(array_result.type == ExcelError) return array_result;
         if(array_result.type == ExcelBoolean && array_result.number == true) return TRUE;
@@ -453,15 +458,15 @@ static ExcelValue excel_or(int array_size, ExcelValue *array) {
 
 static ExcelValue excel_not(ExcelValue boolean_v) {
   switch (boolean_v.type) {
-    case ExcelNumber: 
+    case ExcelNumber:
       if(boolean_v.number == 0) return TRUE;
       return FALSE;
 
-    case ExcelBoolean: 
+    case ExcelBoolean:
       if(boolean_v.number == false) return TRUE;
       return FALSE;
 
-    case ExcelRange: 
+    case ExcelRange:
       return VALUE;
 
     case ExcelString:
@@ -481,14 +486,14 @@ struct average_result {
 	int has_error;
 	ExcelValue error;
 };
-	
+
 static struct average_result calculate_average(int array_size, ExcelValue *array) {
 	double sum = 0;
 	double count = 0;
 	int i;
 	ExcelValue current_excel_value;
 	struct average_result array_result, r;
-		 
+
 	for(i=0;i<array_size;i++) {
 		current_excel_value = array[i];
 		switch (current_excel_value.type) {
@@ -496,13 +501,13 @@ static struct average_result calculate_average(int array_size, ExcelValue *array
 			  sum += current_excel_value.number;
 			  count++;
 			  break;
-		  case ExcelRange: 
+		  case ExcelRange:
 		  	array_result = calculate_average( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
 			if(array_result.has_error == true) return array_result;
 			sum += array_result.sum;
 			count += array_result.count;
 			break;
-		  case ExcelBoolean: 
+		  case ExcelBoolean:
 		  case ExcelString:
 		  case ExcelEmpty:
 			 break;
@@ -572,7 +577,7 @@ static ExcelValue forecast(ExcelValue required_x_v, ExcelValue known_y, ExcelVal
   float my = mean_y.number;
 
   float b_numerator, b_denominator, b, a;
-  
+
   b_denominator = 0;
   b_numerator = 0;
 
@@ -598,7 +603,7 @@ static ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) 
 	CHECK_FOR_PASSED_ERROR(index_v)
 
 	int index = (int) number_from(index_v);
-	CHECK_FOR_CONVERSION_ERROR	
+	CHECK_FOR_CONVERSION_ERROR
 	int i;
 	for(i=0;i<array_size;i++) {
 		if(array[i].type == ExcelError) return array[i];
@@ -606,23 +611,23 @@ static ExcelValue choose(ExcelValue index_v, int array_size, ExcelValue *array) 
 	if(index < 1) return VALUE;
 	if(index > array_size) return VALUE;
 	return array[index-1];
-}	
+}
 
 static ExcelValue count(int array_size, ExcelValue *array) {
 	int i;
 	int n = 0;
 	ExcelValue current_excel_value;
-	
+
 	for(i=0;i<array_size;i++) {
 		current_excel_value = array[i];
 		switch (current_excel_value.type) {
 	  	  case ExcelNumber:
 		  	n++;
 			break;
-		  case ExcelRange: 
+		  case ExcelRange:
 		  	n += count( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ).number;
 			break;
-  		  case ExcelBoolean: 			
+  		  case ExcelBoolean:
 		  case ExcelString:
 		  case ExcelEmpty:
 		  case ExcelError:
@@ -636,7 +641,7 @@ static ExcelValue counta(int array_size, ExcelValue *array) {
 	int i;
 	int n = 0;
 	ExcelValue current_excel_value;
-	
+
 	for(i=0;i<array_size;i++) {
 		current_excel_value = array[i];
     switch(current_excel_value.type) {
@@ -646,7 +651,7 @@ static ExcelValue counta(int array_size, ExcelValue *array) {
   	  case ExcelError:
         n++;
         break;
-      case ExcelRange: 
+      case ExcelRange:
 	  	  n += counta( current_excel_value.rows * current_excel_value.columns, current_excel_value.array ).number;
         break;
   	  case ExcelEmpty:
@@ -671,11 +676,11 @@ static ExcelValue excel_equal(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(b_v)
 
 	if(a_v.type != b_v.type) return FALSE;
-	
+
 	switch (a_v.type) {
   	case ExcelNumber:
-	  case ExcelBoolean: 
-	  case ExcelEmpty: 
+	  case ExcelBoolean:
+	  case ExcelEmpty:
 			if(a_v.number != b_v.number) return FALSE;
 			return TRUE;
 	  case ExcelString:
@@ -716,7 +721,7 @@ static ExcelValue excel_isblank(ExcelValue value) {
 
 static ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValue false_case ) {
 	CHECK_FOR_PASSED_ERROR(condition)
-	
+
 	switch (condition.type) {
   	  case ExcelBoolean:
   	  	if(condition.number == true) return true_case;
@@ -724,7 +729,7 @@ static ExcelValue excel_if(ExcelValue condition, ExcelValue true_case, ExcelValu
   	  case ExcelNumber:
 		if(condition.number == false) return false_case;
 		return true_case;
-	  case ExcelEmpty: 
+	  case ExcelEmpty:
 		return false_case;
 	  case ExcelString:
 	  	return VALUE;
@@ -744,15 +749,15 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 	CHECK_FOR_PASSED_ERROR(array_v)
 	CHECK_FOR_PASSED_ERROR(row_number_v)
 	CHECK_FOR_PASSED_ERROR(column_number_v)
-		
+
 	ExcelValue *array;
 	int rows;
 	int columns;
-	
+
 	NUMBER(row_number_v, row_number)
 	NUMBER(column_number_v, column_number)
 	CHECK_FOR_CONVERSION_ERROR
-	
+
 	if(array_v.type == ExcelRange) {
 		array = array_v.array;
 		rows = array_v.rows;
@@ -763,13 +768,13 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 		rows = 1;
 		columns = 1;
 	}
-	
+
 	if(row_number > rows) return REF;
 	if(column_number > columns) return REF;
 
   if(row_number == 0 && rows == 1) row_number = 1;
   if(column_number == 0 && columns == 1) column_number = 1;
-		
+
 	if(row_number == 0) { // We need the whole column
 		if(column_number < 1) return REF;
 		ExcelValue *result = (ExcelValue *) new_excel_value_array(rows);
@@ -784,7 +789,7 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 				result[result_index] = ZERO;
 			} else {
 				result[result_index] = r;
-			}			
+			}
 			result_index++;
 		}
 		return EXCEL_RANGE(result,rows,1);
@@ -814,7 +819,7 @@ static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, Excel
 		if(result.type == ExcelEmpty) return ZERO;
 		return result;
 	}
-	
+
 	return FALSE;
 };
 
@@ -871,7 +876,7 @@ static ExcelValue large(ExcelValue range_v, ExcelValue k_v) {
   int sorted_size = 0;
   ExcelValue *array_v = range_v.array;
   ExcelValue x_v;
-  int i; 
+  int i;
   for(i = 0; i < range_size; i++ ) {
     x_v = array_v[i];
     if(x_v.type == ExcelError) { free(sorted); return x_v; };
@@ -895,7 +900,7 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 	CHECK_FOR_PASSED_ERROR(lookup_value)
 	CHECK_FOR_PASSED_ERROR(lookup_array)
 	CHECK_FOR_PASSED_ERROR(match_type)
-		
+
 	// Blanks are treaked as zeros
 	if(lookup_value.type == ExcelEmpty) lookup_value = ZERO;
 
@@ -917,13 +922,13 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 		ExcelValue tmp_array[1] = {lookup_array};
 		array = tmp_array;
 	}
-    
+
 	int type = (int) number_from(match_type);
 	CHECK_FOR_CONVERSION_ERROR;
-	
+
 	int i;
 	ExcelValue x;
-	
+
 	switch(type) {
 		case 0:
 			for(i = 0; i < size; i++ ) {
@@ -968,14 +973,14 @@ static ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelVa
 	CHECK_FOR_PASSED_ERROR(within_text_v)
 	CHECK_FOR_PASSED_ERROR(start_number_v)
 
-	char *find_text;	
+	char *find_text;
 	char *within_text;
 	char *within_text_offset;
 	char *result;
 	int start_number = number_from(start_number_v);
 	CHECK_FOR_CONVERSION_ERROR
 
-	// Deal with blanks 
+	// Deal with blanks
 	if(within_text_v.type == ExcelString) {
 		within_text = within_text_v.string;
 	} else if( within_text_v.type == ExcelEmpty) {
@@ -987,11 +992,11 @@ static ExcelValue find(ExcelValue find_text_v, ExcelValue within_text_v, ExcelVa
 	} else if( find_text_v.type == ExcelEmpty) {
 		return start_number_v;
 	}
-	
+
 	// Check length
 	if(start_number < 1) return VALUE;
 	if(start_number > strlen(within_text)) return VALUE;
-	
+
 	// Offset our within_text pointer
 	// FIXME: No way this is utf-8 compatible
 	within_text_offset = within_text + (start_number - 1);
@@ -1011,7 +1016,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 	CHECK_FOR_PASSED_ERROR(number_of_characters_v)
 	if(string_v.type == ExcelEmpty) return BLANK;
 	if(number_of_characters_v.type == ExcelEmpty) return BLANK;
-	
+
 	int number_of_characters = (int) number_from(number_of_characters_v);
 	CHECK_FOR_CONVERSION_ERROR
 
@@ -1041,7 +1046,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
 			  string = "FALSE";
 		  }
 		  break;
-	  case ExcelEmpty:	  	 
+	  case ExcelEmpty:
   	case ExcelError:
   	case ExcelRange:
 		  return string_v;
@@ -1050,7 +1055,7 @@ static ExcelValue left(ExcelValue string_v, ExcelValue number_of_characters_v) {
   if(number_of_characters > strlen(string)) {
     number_of_characters = strlen(string);
   }
-	
+
 	char *left_string = malloc(number_of_characters+1); // Freed
 	if(left_string == 0) {
 	  printf("Out of memoryn in left");
@@ -1095,7 +1100,7 @@ static ExcelValue len(ExcelValue string_v) {
 			  string = "FALSE";
 		  }
 		  break;
-	  case ExcelEmpty:	  	 
+	  case ExcelEmpty:
   	case ExcelError:
   	case ExcelRange:
 		  return string_v;
@@ -1113,7 +1118,7 @@ static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) 
 	CHECK_FOR_PASSED_ERROR(number_of_characters_v)
 	if(string_v.type == ExcelEmpty) return BLANK;
 	if(number_of_characters_v.type == ExcelEmpty) return BLANK;
-	
+
 	int number_of_characters = (int) number_from(number_of_characters_v);
 	CHECK_FOR_CONVERSION_ERROR
 
@@ -1143,12 +1148,12 @@ static ExcelValue right(ExcelValue string_v, ExcelValue number_of_characters_v) 
 			  string = "FALSE";
 		  }
 		  break;
-	  case ExcelEmpty:	  	 
+	  case ExcelEmpty:
   	case ExcelError:
   	case ExcelRange:
 		  return string_v;
 	}
-	
+
 	char *right_string = malloc(number_of_characters+1); // Freed
 	if(right_string == 0) {
 	  printf("Out of memory in right");
@@ -1210,18 +1215,18 @@ static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
     case ExcelString:
       switch (b_v.type) {
         case ExcelString:
-          if(strcasecmp(a_v.string,b_v.string) <= 0 ) {return FALSE;} else {return TRUE;} 
-        case ExcelNumber: 
+          if(strcasecmp(a_v.string,b_v.string) <= 0 ) {return FALSE;} else {return TRUE;}
+        case ExcelNumber:
           return TRUE;
         case ExcelBoolean:
           return FALSE;
         // Following shouldn't happen
-        case ExcelEmpty: 
-        case ExcelError: 
+        case ExcelEmpty:
+        case ExcelError:
         case ExcelRange:
           return NA;
       }
-    case ExcelBoolean: 
+    case ExcelBoolean:
       switch (b_v.type) {
         case ExcelBoolean:
           if(a_v.number == true) {
@@ -1230,11 +1235,11 @@ static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
             return FALSE;
           }
         case ExcelString:
-        case ExcelNumber: 
+        case ExcelNumber:
           return TRUE;
         // Following shouldn't happen
-        case ExcelEmpty: 
-        case ExcelError: 
+        case ExcelEmpty:
+        case ExcelError:
         case ExcelRange:
           return NA;
       }
@@ -1246,17 +1251,17 @@ static ExcelValue more_than(ExcelValue a_v, ExcelValue b_v) {
         case ExcelBoolean:
           return FALSE;
         // Following shouldn't happen
-        case ExcelEmpty: 
-        case ExcelError: 
+        case ExcelEmpty:
+        case ExcelError:
         case ExcelRange:
           return NA;
       }
     // Following shouldn't happen
-    case ExcelEmpty: 
-    case ExcelError: 
+    case ExcelEmpty:
+    case ExcelError:
     case ExcelRange:
       return NA;
-  } 
+  }
   // Shouldn't reach here
   return NA;
 }
@@ -1325,7 +1330,7 @@ static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v) {
       }
     case ExcelBoolean:
       switch(b_v.type) {
-        case ExcelBoolean: 
+        case ExcelBoolean:
           if(a_v.number == true) {
             return FALSE;
           } else { // a_v.number == false
@@ -1456,7 +1461,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
 	int any_number_found = 0;
 	int i;
 	ExcelValue current_excel_value;
-	
+
 	for(i=0;i<number_of_arguments;i++) {
 		current_excel_value = arguments[i];
 		if(current_excel_value.type == ExcelNumber) {
@@ -1464,7 +1469,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
 				any_number_found = 1;
 				biggest_number_found = current_excel_value.number;
 			}
-			if(current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number; 				
+			if(current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number;
 		} else if(current_excel_value.type == ExcelRange) {
 			current_excel_value = max( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
 			if(current_excel_value.type == ExcelError) return current_excel_value;
@@ -1473,7 +1478,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
 					any_number_found = 1;
 					biggest_number_found = current_excel_value.number;
 				}
-				if(current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number; 				
+				if(current_excel_value.number > biggest_number_found) biggest_number_found = current_excel_value.number;
 		} else if(current_excel_value.type == ExcelError) {
 			return current_excel_value;
 		}
@@ -1482,7 +1487,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments) {
 		any_number_found = 1;
 		biggest_number_found = 0;
 	}
-	return EXCEL_NUMBER(biggest_number_found);	
+	return EXCEL_NUMBER(biggest_number_found);
 }
 
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
@@ -1490,7 +1495,7 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 	int any_number_found = 0;
 	int i;
 	ExcelValue current_excel_value;
-	
+
 	for(i=0;i<number_of_arguments;i++) {
 		current_excel_value = arguments[i];
 		if(current_excel_value.type == ExcelNumber) {
@@ -1498,7 +1503,7 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 				any_number_found = 1;
 				smallest_number_found = current_excel_value.number;
 			}
-			if(current_excel_value.number < smallest_number_found) smallest_number_found = current_excel_value.number; 				
+			if(current_excel_value.number < smallest_number_found) smallest_number_found = current_excel_value.number;
 		} else if(current_excel_value.type == ExcelRange) {
 			current_excel_value = min( current_excel_value.rows * current_excel_value.columns, current_excel_value.array );
 			if(current_excel_value.type == ExcelError) return current_excel_value;
@@ -1507,7 +1512,7 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 					any_number_found = 1;
 					smallest_number_found = current_excel_value.number;
 				}
-				if(current_excel_value.number < smallest_number_found) smallest_number_found = current_excel_value.number; 				
+				if(current_excel_value.number < smallest_number_found) smallest_number_found = current_excel_value.number;
 		} else if(current_excel_value.type == ExcelError) {
 			return current_excel_value;
 		}
@@ -1516,7 +1521,7 @@ static ExcelValue min(int number_of_arguments, ExcelValue *arguments) {
 		any_number_found = 1;
 		smallest_number_found = 0;
 	}
-	return EXCEL_NUMBER(smallest_number_found);	
+	return EXCEL_NUMBER(smallest_number_found);
 }
 
 static ExcelValue mmult_error(ExcelValue a_v, ExcelValue b_v) {
@@ -1546,13 +1551,13 @@ static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v) {
   int b_columns = b_v.columns;
   ExcelValue *result = (ExcelValue*) new_excel_value_array(a_rows*b_columns);
   int i, j, k;
-  double sum; 
+  double sum;
   ExcelValue *array_a = a_v.array;
   ExcelValue *array_b = b_v.array;
 
   ExcelValue a;
   ExcelValue b;
-  
+
   for(i=0; i<a_rows; i++) {
     for(j=0; j<b_columns; j++) {
       sum = 0;
@@ -1572,7 +1577,7 @@ static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v) {
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
-		
+
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
@@ -1595,22 +1600,22 @@ static ExcelValue pmt(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelVa
 	CHECK_FOR_PASSED_ERROR(rate_v)
 	CHECK_FOR_PASSED_ERROR(number_of_periods_v)
 	CHECK_FOR_PASSED_ERROR(present_value_v)
-		
+
 	NUMBER(rate_v,rate)
 	NUMBER(number_of_periods_v,number_of_periods)
 	NUMBER(present_value_v,present_value)
 	CHECK_FOR_CONVERSION_ERROR
-	
+
 	if(rate == 0) return EXCEL_NUMBER(-(present_value / number_of_periods));
 	return EXCEL_NUMBER(-present_value*(rate*(pow((1+rate),number_of_periods)))/((pow((1+rate),number_of_periods))-1));
 }
 
 static ExcelValue pmt_4(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v, ExcelValue final_value_v) {
   CHECK_FOR_PASSED_ERROR(final_value_v)
-    
+
     NUMBER(final_value_v, final_value)
     CHECK_FOR_CONVERSION_ERROR
-      
+
     if(final_value == 0) return pmt(rate_v, number_of_periods_v, present_value_v);
     printf("PMT with non-zero final_value not implemented. halting.");
     exit(-1);
@@ -1618,10 +1623,10 @@ static ExcelValue pmt_4(ExcelValue rate_v, ExcelValue number_of_periods_v, Excel
 
 static ExcelValue pmt_5(ExcelValue rate_v, ExcelValue number_of_periods_v, ExcelValue present_value_v, ExcelValue final_value_v, ExcelValue type_v) {
   CHECK_FOR_PASSED_ERROR(type_v)
-    
+
     NUMBER(type_v, type)
     CHECK_FOR_CONVERSION_ERROR
-      
+
     if(type == 0) return pmt(rate_v, number_of_periods_v, present_value_v);
     printf("PMT with non-zero type not implemented. halting.");
     exit(-1);
@@ -1670,11 +1675,11 @@ static ExcelValue pv_5(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v, E
    present_value = present_value * (1+rate);
   } else {
    return VALUE;
-  } 
+  }
 
   // Add on the final value
   present_value = present_value - (fv/pow(1+rate,nper));
-  
+
   return EXCEL_NUMBER(present_value);
 }
 
@@ -1682,7 +1687,7 @@ static ExcelValue pv_5(ExcelValue rate_v, ExcelValue nper_v, ExcelValue pmt_v, E
 static ExcelValue power(ExcelValue a_v, ExcelValue b_v) {
 	CHECK_FOR_PASSED_ERROR(a_v)
 	CHECK_FOR_PASSED_ERROR(b_v)
-		
+
 	NUMBER(a_v, a)
 	NUMBER(b_v, b)
 	CHECK_FOR_CONVERSION_ERROR
@@ -1741,48 +1746,48 @@ static ExcelValue rank_2(ExcelValue number_v, ExcelValue range_v) {
 static ExcelValue excel_round(ExcelValue number_v, ExcelValue decimal_places_v) {
 	CHECK_FOR_PASSED_ERROR(number_v)
 	CHECK_FOR_PASSED_ERROR(decimal_places_v)
-		
+
 	NUMBER(number_v, number)
 	NUMBER(decimal_places_v, decimal_places)
 	CHECK_FOR_CONVERSION_ERROR
-		
+
 	double multiple = pow(10,decimal_places);
-	
+
 	return EXCEL_NUMBER( round(number * multiple) / multiple );
 }
 
 static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v) {
 	CHECK_FOR_PASSED_ERROR(number_v)
 	CHECK_FOR_PASSED_ERROR(decimal_places_v)
-		
+
 	NUMBER(number_v, number)
 	NUMBER(decimal_places_v, decimal_places)
 	CHECK_FOR_CONVERSION_ERROR
-		
+
 	double multiple = pow(10,decimal_places);
-	
-	return EXCEL_NUMBER( trunc(number * multiple) / multiple );	
+
+	return EXCEL_NUMBER( trunc(number * multiple) / multiple );
 }
 
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v) {
 	CHECK_FOR_PASSED_ERROR(number_v)
 	CHECK_FOR_PASSED_ERROR(decimal_places_v)
-		
+
 	NUMBER(number_v, number)
 	NUMBER(decimal_places_v, decimal_places)
 	CHECK_FOR_CONVERSION_ERROR
-		
+
 	double multiple = pow(10,decimal_places);
 	if(number < 0) return EXCEL_NUMBER( floor(number * multiple) / multiple );
-	return EXCEL_NUMBER( ceil(number * multiple) / multiple );	
+	return EXCEL_NUMBER( ceil(number * multiple) / multiple );
 }
 
 static ExcelValue excel_int(ExcelValue number_v) {
 	CHECK_FOR_PASSED_ERROR(number_v)
-		
+
 	NUMBER(number_v, number)
 	CHECK_FOR_CONVERSION_ERROR
-		
+
 	return EXCEL_NUMBER(floor(number));
 }
 
@@ -1812,7 +1817,7 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 		  	  printf("Out of memory in string join");
 		  	  exit(-1);
 		  	}
-			  must_free_current_string = 1;				  
+			  must_free_current_string = 1;
 			  snprintf(current_string,20,"%g",current_v.number);
 			  break;
 		  case ExcelBoolean:
@@ -1861,7 +1866,7 @@ static ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, 
   CHECK_FOR_PASSED_ERROR(subtotal_type_v)
   NUMBER(subtotal_type_v,subtotal_type)
   CHECK_FOR_CONVERSION_ERROR
-      
+
   switch((int) subtotal_type) {
     case 1:
     case 101:
@@ -1894,7 +1899,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
   // Set up the sum range
   ExcelValue *original_range;
   int original_range_rows, original_range_columns;
-  
+
   if(original_range_v.type == ExcelRange) {
     original_range = original_range_v.array;
     original_range_rows = original_range_v.rows;
@@ -1908,8 +1913,8 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
 
   // This is the filtered range
   ExcelValue *filtered_range = new_excel_value_array(original_range_rows*original_range_columns);
-  int number_of_filtered_values = 0; 
-  
+  int number_of_filtered_values = 0;
+
   // Then go through and set up the check ranges
   if(number_of_arguments % 2 != 0) return VALUE;
   int number_of_criteria = number_of_arguments / 2;
@@ -1930,7 +1935,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
       criteria_range[i] =  EXCEL_RANGE(tmp_array2,1,1);
     }
   }
-  
+
   // Now go through and set up the criteria
   ExcelComparison *criteria =  malloc(sizeof(ExcelComparison)*number_of_criteria); // freed at end of function
   if(criteria == 0) {
@@ -1942,7 +1947,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
 
   for(i = 0; i < number_of_criteria; i++) {
     current_value = arguments[(i*2)+1];
-    
+
     if(current_value.type == ExcelString) {
       s = current_value.string;
       if(s[0] == '<') {
@@ -1981,14 +1986,14 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
         criteria[i].comparator = EXCEL_STRING(new_comparator);
       } else {
         criteria[i].type = Equal;
-        criteria[i].comparator = current_value;          
+        criteria[i].comparator = current_value;
       }
     } else {
       criteria[i].type = Equal;
       criteria[i].comparator = current_value;
     }
   }
-  
+
   int size = original_range_columns * original_range_rows;
   int j;
   int passed = 0;
@@ -2008,7 +2013,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
       if(comparator.type == ExcelEmpty) {
         comparator = ZERO;
       }
-      
+
       switch(value_to_be_checked.type) {
         case ExcelError: // Errors match only errors
           if(comparison.type != Equal) passed = 0;
@@ -2049,16 +2054,16 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
               break;
             case LessThan:
               if(value_to_be_checked.number >= number) passed = 0;
-              break;            
+              break;
             case LessThanOrEqual:
               if(value_to_be_checked.number > number) passed = 0;
-              break;                        
+              break;
             case NotEqual:
               if(value_to_be_checked.number == number) passed = 0;
-              break;            
+              break;
             case MoreThanOrEqual:
               if(value_to_be_checked.number < number) passed = 0;
-              break;            
+              break;
             case MoreThan:
               if(value_to_be_checked.number <= number) passed = 0;
               break;
@@ -2099,16 +2104,16 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
                 break;
               case LessThan:
                 if(less_than(value_to_be_checked,comparator).number == 0) passed = 0;
-                break;            
+                break;
               case LessThanOrEqual:
                 if(less_than_or_equal(value_to_be_checked,comparator).number == 0) passed = 0;
-                break;                        
+                break;
               case NotEqual:
                 if(not_equal(value_to_be_checked,comparator).number == 0) passed = 0;
-                break;            
+                break;
               case MoreThanOrEqual:
                 if(more_than_or_equal(value_to_be_checked,comparator).number == 0) passed = 0;
-                break;            
+                break;
               case MoreThan:
                 if(more_than(value_to_be_checked,comparator).number == 0) passed = 0;
                 break;
@@ -2120,7 +2125,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
           break;
         case ExcelRange:
           free(criteria);
-          return VALUE;            
+          return VALUE;
       }
       if(passed == 0) break;
     }
@@ -2162,7 +2167,7 @@ static ExcelValue sumif_2(ExcelValue check_range_v, ExcelValue criteria_v) {
 
 static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   if(number_of_arguments <1) return VALUE;
-  
+
   int a;
   int i;
   int j;
@@ -2176,7 +2181,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
   }
   double product = 1;
   double sum = 0;
-  
+
   // Find out dimensions of first argument
   if(arguments[0].type == ExcelRange) {
     rows = arguments[0].rows;
@@ -2208,7 +2213,7 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
         break;
     }
   }
-  	
+
 	for(i=0;i<rows;i++) {
 		for(j=0;j<columns;j++) {
 			product = 1;
@@ -2225,6 +2230,71 @@ static ExcelValue sumproduct(int number_of_arguments, ExcelValue *arguments) {
 	}
 	free(ranges);
   return EXCEL_NUMBER(sum);
+}
+
+static ExcelValue product(int number_of_arguments, ExcelValue *arguments) {
+  if(number_of_arguments <1) return VALUE;
+
+  int a,b;
+  ExcelValue sub_total;
+  ExcelValue current_value;
+  int sub_total_array_size;
+  ExcelValue *sub_total_array;
+  ExcelValue sub_total_value;
+  double total = 0;
+
+  // Extract arrays from each of the given ranges, checking for errors and bounds as we go
+  for(a=0;a<number_of_arguments;a++) {
+    current_value = arguments[a];
+    switch(current_value.type) {
+      case ExcelRange:
+        sub_total_array_size = current_value.rows * current_value.columns;
+        sub_total_array = current_value.array;
+        // We don't use recursion, because we need to check if
+        // the result is 0 becaues a zero, or zero because all blank.
+        for(b=0;b<sub_total_array_size;b++) {
+          sub_total_value = sub_total_array[b];
+          switch(sub_total_value.type) {
+            case ExcelError:
+              return sub_total_value;
+              break;
+
+            case ExcelNumber:
+              // We do this rather than starting with total = 1
+              // so that the product of all blanks is zero
+              if(total == 0) {
+                total = sub_total_value.number;
+              } else {
+                total *= sub_total_value.number;
+              }
+              break;
+
+            default:
+              // Skip
+              break;
+          }
+        }
+        break;
+
+      case ExcelError:
+        return current_value;
+        break;
+
+      case ExcelNumber:
+        if(total == 0) {
+          total = current_value.number;
+        } else {
+          total *= current_value.number;
+        }
+        break;
+
+      default:
+        // Skip
+        break;
+    }
+  }
+
+  return EXCEL_NUMBER(total);
 }
 
 // FIXME: This could do with being done properly, rather than
@@ -2254,7 +2324,7 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
  	 	s = number_v.string;
 		if (s == NULL || *s == '\0' || isspace(*s)) {
 			number_v = ZERO;
-		}	        
+		}
 		n = strtod (s, &p);
 		if(*p == '\0') {
 		  number_v = EXCEL_NUMBER(n);
@@ -2269,7 +2339,7 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     return format_v;
   }
 
-  // FIXME: Too little? 
+  // FIXME: Too little?
   s = malloc(100);
   setlocale(LC_ALL,"");
 
@@ -2324,17 +2394,17 @@ static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
     match_type_v.type = ExcelBoolean;
   }
   if(match_type_v.type != ExcelBoolean) return NA;
-    
+
   int i;
   int last_good_match = 0;
   int rows = lookup_table_v.rows;
   int columns = lookup_table_v.columns;
   ExcelValue *array = lookup_table_v.array;
   ExcelValue possible_match_v;
-  
+
   if(column_number_v.number > columns) return REF;
   if(column_number_v.number < 1) return VALUE;
-  
+
   if(match_type_v.number == false) { // Exact match required
     for(i=0; i< rows; i++) {
       possible_match_v = array[i*columns];
@@ -2354,7 +2424,7 @@ static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
         last_good_match = i;
       }
     }
-    return array[(last_good_match*columns)+(((int) column_number_v.number) - 1)];   
+    return array[(last_good_match*columns)+(((int) column_number_v.number) - 1)];
   }
   return NA;
 }
@@ -2376,17 +2446,17 @@ static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
     match_type_v.type = ExcelBoolean;
   }
   if(match_type_v.type != ExcelBoolean) return NA;
-    
+
   int i;
   int last_good_match = 0;
   int rows = lookup_table_v.rows;
   int columns = lookup_table_v.columns;
   ExcelValue *array = lookup_table_v.array;
   ExcelValue possible_match_v;
-  
+
   if(row_number_v.number > rows) return REF;
   if(row_number_v.number < 1) return VALUE;
-  
+
   if(match_type_v.number == false) { // Exact match required
     for(i=0; i< columns; i++) {
       possible_match_v = array[i];
@@ -2440,14 +2510,14 @@ static ExcelValue curve_5(ExcelValue curveType, ExcelValue currentYear, ExcelVal
 }
 
 static ExcelValue scurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
-  
+
 	NUMBER(currentYear_v, currentYear)
 	NUMBER(startValue_v, startValue)
 	NUMBER(endValue_v, endValue)
 	NUMBER(duration_v, duration)
 	NUMBER(startYear_v, startYear)
 	CHECK_FOR_CONVERSION_ERROR
-		
+
   if(currentYear < startYear) {
     return startValue_v;
   }
@@ -2463,14 +2533,14 @@ static ExcelValue scurve(ExcelValue currentYear_v, ExcelValue startValue_v, Exce
 }
 
 static ExcelValue halfscurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
-  
+
 	NUMBER(currentYear_v, currentYear)
 	NUMBER(startValue_v, startValue)
 	NUMBER(endValue_v, endValue)
 	NUMBER(duration_v, duration)
 	NUMBER(startYear_v, startYear)
 	CHECK_FOR_CONVERSION_ERROR
-		
+
   if(currentYear < startYear) {
     return startValue_v;
   }
@@ -2486,14 +2556,14 @@ static ExcelValue halfscurve(ExcelValue currentYear_v, ExcelValue startValue_v, 
 }
 
 static ExcelValue lcurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
-  
+
 	NUMBER(currentYear_v, currentYear)
 	NUMBER(startValue_v, startValue)
 	NUMBER(endValue_v, endValue)
 	NUMBER(duration_v, duration)
 	NUMBER(startYear_v, startYear)
 	CHECK_FOR_CONVERSION_ERROR
-		
+
   if(currentYear > (startYear + duration)) {
     return endValue_v;
   }
@@ -2526,9 +2596,9 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
 
   if(a_v.type == ExcelEmpty && b_v.type == ExcelNumber && b_v.number == 0) return TRUE;
   if(b_v.type == ExcelEmpty && a_v.type == ExcelNumber && a_v.number == 0) return TRUE;
-      
+
 	if(a_v.type != b_v.type) return FALSE;
-	
+
   float epsilon, difference;
 
 	switch (a_v.type) {
@@ -2545,8 +2615,8 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
       if(difference <= epsilon) return TRUE;
       // For debuging: printf("a: %e b:%e d: %e e: %e", a_v.number, b_v.number, difference, epsilon);
       return FALSE;
-	  case ExcelBoolean: 
-	  case ExcelEmpty: 
+	  case ExcelBoolean:
+	  case ExcelEmpty:
 			if(a_v.number != b_v.number) return FALSE;
 			return TRUE;
 	  case ExcelString:
@@ -2560,7 +2630,7 @@ static ExcelValue roughly_equal(ExcelValue a_v, ExcelValue b_v) {
   }
   return FALSE;
 }
-  
+
 
 static void assert_equal(ExcelValue expected, ExcelValue actual, char location[]) {
   ExcelValue comparison = roughly_equal(actual, expected);
@@ -2575,5 +2645,3 @@ static void assert_equal(ExcelValue expected, ExcelValue actual, char location[]
     putchar('\n');
   }
 }
-
-

@@ -65,7 +65,7 @@ int test_functions() {
   assert(choose(EXCEL_NUMBER(4),4,array1).type == ExcelBoolean);
   assert(choose(EXCEL_NUMBER(0),4,array1).type == ExcelError);
   assert(choose(EXCEL_NUMBER(5),4,array1).type == ExcelError);
-  assert(choose(ONE,4,array3).type == ExcelError);	
+  assert(choose(ONE,4,array3).type == ExcelError);
 
   // Test COUNT
   assert(count(4,array1).number == 2);
@@ -146,7 +146,7 @@ int test_functions() {
   assert(excel_match_2(EXCEL_NUMBER(110),excel_match_array_1_v).number == 2);
   assert(excel_match_2(EXCEL_NUMBER(-10),excel_match_array_1_v).type == ExcelError);
 
-  // Three argument version	
+  // Three argument version
   assert(excel_match(EXCEL_NUMBER(10.0), excel_match_array_1_v, EXCEL_NUMBER(0) ).number == 1);
   assert(excel_match(EXCEL_NUMBER(100.0), excel_match_array_1_v, EXCEL_NUMBER(0) ).number == 2);
   assert(excel_match(EXCEL_NUMBER(1000.0), excel_match_array_1_v, EXCEL_NUMBER(0) ).type == ExcelError);
@@ -173,7 +173,7 @@ int test_functions() {
   assert(more_than(TRUE,FALSE).number == true);
   assert(more_than(TRUE,TRUE).number == false);
   // ..strings
-  assert(more_than(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == true);		
+  assert(more_than(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == true);
   assert(more_than(EXCEL_STRING("HELLO"),EXCEL_STRING("world")).number == false);
   assert(more_than(EXCEL_STRING("HELLO"),EXCEL_STRING("hello")).number == false);
   // ..blanks
@@ -200,7 +200,7 @@ int test_functions() {
   assert(less_than(TRUE,FALSE).number == false);
   assert(less_than(TRUE,TRUE).number == false);
   // ..strings
-  assert(less_than(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == false);		
+  assert(less_than(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == false);
   assert(less_than(EXCEL_STRING("HELLO"),EXCEL_STRING("world")).number == true);
   assert(less_than(EXCEL_STRING("HELLO"),EXCEL_STRING("hello")).number == false);
   // ..blanks
@@ -246,7 +246,7 @@ int test_functions() {
 
   // Test the IFERROR function
   assert(iferror(EXCEL_STRING("ok"),ONE).type == ExcelString);
-  assert(iferror(VALUE,ONE).type == ExcelNumber);		
+  assert(iferror(VALUE,ONE).type == ExcelNumber);
 
   // Test the ISERR function
   assert(iserr(NA).type == ExcelBoolean);
@@ -269,7 +269,7 @@ int test_functions() {
   assert(iserr(ONE).number == 0);
   assert(iserr(EXCEL_STRING("Hello")).number == 0);
   assert(iserr(EXCEL_STRING("Hello")).number == 0);
-  
+
   // Test the ISERROR function
   assert_equal(iserror(NA), TRUE, "ISERROR(NA)");
   assert_equal(iserror(DIV0), TRUE, "ISERROR(DIV0)");
@@ -364,7 +364,7 @@ int test_functions() {
   assert(less_than_or_equal(TRUE,FALSE).number == false);
   assert(less_than_or_equal(TRUE,TRUE).number == true);
   // ..strings
-  assert(less_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == false);		
+  assert(less_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == false);
   assert(less_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("world")).number == true);
   assert(less_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("hello")).number == true);
   // ..blanks
@@ -394,7 +394,7 @@ int test_functions() {
   assert(mod(EXCEL_NUMBER(10),BLANK).type == ExcelError);
   assert(mod(BLANK,BLANK).type == ExcelError);
   // ... should treat true as 1 and FALSE as 0
-  assert((mod(EXCEL_NUMBER(1.1),TRUE).number - 0.1) < 0.001);	
+  assert((mod(EXCEL_NUMBER(1.1),TRUE).number - 0.1) < 0.001);
   assert(mod(EXCEL_NUMBER(1.1),FALSE).type == ExcelError);
   assert(mod(FALSE,EXCEL_NUMBER(10)).number == 0);
   // ... should return an error when given inappropriate arguments
@@ -415,7 +415,7 @@ int test_functions() {
   assert(more_than_or_equal(TRUE,FALSE).number == true);
   assert(more_than_or_equal(TRUE,TRUE).number == true);
   // ..strings
-  assert(more_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == true);		
+  assert(more_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("Ardvark")).number == true);
   assert(more_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("world")).number == false);
   assert(more_than_or_equal(EXCEL_STRING("HELLO"),EXCEL_STRING("hello")).number == true);
   // ..blanks
@@ -423,7 +423,7 @@ int test_functions() {
   assert(more_than_or_equal(BLANK,ONE).number == false);
   assert(more_than_or_equal(BLANK,EXCEL_NUMBER(-1)).number == true);
   assert(more_than_or_equal(ONE,BLANK).number == true);
-  assert(more_than_or_equal(EXCEL_NUMBER(-1),BLANK).number == false);	
+  assert(more_than_or_equal(EXCEL_NUMBER(-1),BLANK).number == false);
 
   // Test negative
   // ... should return the negative of its arguments
@@ -461,7 +461,7 @@ int test_functions() {
   assert(rounddown(EXCEL_NUMBER(1.1), EXCEL_NUMBER(0)).number == 1.0);
   assert(rounddown(EXCEL_NUMBER(1.5), EXCEL_NUMBER(0)).number == 1.0);
   assert(rounddown(EXCEL_NUMBER(1.56),EXCEL_NUMBER(1)).number == 1.5);
-  assert(rounddown(EXCEL_NUMBER(-1.56),EXCEL_NUMBER(1)).number == -1.5);	
+  assert(rounddown(EXCEL_NUMBER(-1.56),EXCEL_NUMBER(1)).number == -1.5);
 
   // Test int
   assert(excel_int(EXCEL_NUMBER(8.9)).number == 8.0);
@@ -471,14 +471,14 @@ int test_functions() {
   assert(roundup(EXCEL_NUMBER(1.1), EXCEL_NUMBER(0)).number == 2.0);
   assert(roundup(EXCEL_NUMBER(1.5), EXCEL_NUMBER(0)).number == 2.0);
   assert(roundup(EXCEL_NUMBER(1.56),EXCEL_NUMBER(1)).number == 1.6);
-  assert(roundup(EXCEL_NUMBER(-1.56),EXCEL_NUMBER(1)).number == -1.6);	
+  assert(roundup(EXCEL_NUMBER(-1.56),EXCEL_NUMBER(1)).number == -1.6);
 
   // Test string joining
   ExcelValue string_join_array_1[] = {EXCEL_STRING("Hello "), EXCEL_STRING("world")};
   ExcelValue string_join_array_2[] = {EXCEL_STRING("Hello "), EXCEL_STRING("world"), EXCEL_STRING("!")};
   ExcelValue string_join_array_3[] = {EXCEL_STRING("Top "), EXCEL_NUMBER(10.0)};
-  ExcelValue string_join_array_4[] = {EXCEL_STRING("Top "), EXCEL_NUMBER(10.5)};	
-  ExcelValue string_join_array_5[] = {EXCEL_STRING("Top "), TRUE, FALSE};	
+  ExcelValue string_join_array_4[] = {EXCEL_STRING("Top "), EXCEL_NUMBER(10.5)};
+  ExcelValue string_join_array_5[] = {EXCEL_STRING("Top "), TRUE, FALSE};
   // ... should return a string by combining its arguments
   // inspect_excel_value(string_join(2, string_join_array_1));
   assert(string_join(2, string_join_array_1).string[6] == 'w');
@@ -515,10 +515,10 @@ int test_functions() {
   ExcelValue subtotal_array_1_v = EXCEL_RANGE(subtotal_array_1,3,1);
   ExcelValue subtotal_array_2[] = {EXCEL_NUMBER(1),EXCEL_STRING("two"),subtotal_array_1_v};
 
-  // EXCEL_NUMBER(1.0); 
-  // inspect_excel_value(EXCEL_NUMBER(1.0)); 
-  // inspect_excel_value(EXCEL_RANGE(subtotal_array_2,3,1)); 
-  // inspect_excel_value(subtotal(EXCEL_NUMBER(1.0),3,subtotal_array_2)); 
+  // EXCEL_NUMBER(1.0);
+  // inspect_excel_value(EXCEL_NUMBER(1.0));
+  // inspect_excel_value(EXCEL_RANGE(subtotal_array_2,3,1));
+  // inspect_excel_value(subtotal(EXCEL_NUMBER(1.0),3,subtotal_array_2));
 
   assert(subtotal(EXCEL_NUMBER(1.0),3,subtotal_array_2).number == 111.0/3.0);
   assert(subtotal(EXCEL_NUMBER(2.0),3,subtotal_array_2).number == 3);
@@ -670,6 +670,61 @@ int test_functions() {
   // ... should return an error if an argument is an error
   ExcelValue sumproducta_8[] = {VALUE};
   assert(sumproduct(1,sumproducta_8).type == ExcelError);
+
+  // Test PRODUCT
+  ExcelValue product_1[] = { EXCEL_NUMBER(10), EXCEL_NUMBER(100), BLANK};
+  ExcelValue product_2[] = { BLANK, EXCEL_NUMBER(100), EXCEL_NUMBER(10), BLANK};
+  ExcelValue product_3[] = { BLANK };
+  ExcelValue product_4[] = { EXCEL_NUMBER(10), EXCEL_NUMBER(100), EXCEL_NUMBER(1000)};
+  ExcelValue product_5[] = { EXCEL_NUMBER(1), EXCEL_NUMBER(2), EXCEL_NUMBER(3)};
+  ExcelValue product_6[] = { EXCEL_NUMBER(1), EXCEL_NUMBER(2), EXCEL_NUMBER(4), EXCEL_NUMBER(5)};
+  ExcelValue product_7[] = { EXCEL_NUMBER(10), EXCEL_NUMBER(20), EXCEL_NUMBER(40), EXCEL_NUMBER(50)};
+  ExcelValue product_8[] = { EXCEL_NUMBER(11), EXCEL_NUMBER(21), EXCEL_NUMBER(41), EXCEL_NUMBER(51)};
+  ExcelValue product_9[] = { BLANK, BLANK };
+
+  ExcelValue product_1_v = EXCEL_RANGE( product_1, 3, 1);
+  ExcelValue product_2_v = EXCEL_RANGE( product_2, 3, 1);
+  ExcelValue product_3_v = EXCEL_RANGE( product_3, 1, 1);
+  // ExcelValue product_4_v = EXCEL_RANGE( product_4, 1, 3); // Unused
+  ExcelValue product_5_v = EXCEL_RANGE( product_5, 3, 1);
+  ExcelValue product_6_v = EXCEL_RANGE( product_6, 2, 2);
+  ExcelValue product_7_v = EXCEL_RANGE( product_7, 2, 2);
+  ExcelValue product_8_v = EXCEL_RANGE( product_8, 2, 2);
+  ExcelValue product_9_v = EXCEL_RANGE( product_9, 2, 1);
+
+  // ... should multiply together the elements in row or column areas given as arguments
+  ExcelValue producta_1[] = {product_1_v, product_2_v};
+  assert(product(2,producta_1).number == 10*100*100*10);
+
+  // ... should work when miss-matched array sizes
+  ExcelValue producta_2[] = {product_1_v, product_3_v};
+  assert(product(2,producta_2).number == 10 * 100);
+
+  // ... if all its arguments are single values, should multiply them together
+  // ExcelValue *producta_3 = product_4;
+  assert(product(3,product_4).number == 10*100*1000);
+
+  // ... if it only has one range as an argument, should multiply its elements together
+  ExcelValue producta_4[] = {product_5_v};
+  assert(product(1,producta_4).number == 1 * 2 * 3);
+
+  // ... if given multi row and column areas as arguments, should multipy the corresponding cell in each area
+  // NB: Repeating this test from SUMPRODUCT, doesn't matter really with multiplication
+  ExcelValue producta_5[] = {product_6_v, product_7_v, product_8_v};
+  // NB: The 1.0 at the start is important, otherwise RHS will be an int with does not equal the double
+  assert(product(3,producta_5).number == (1.0*2*4*5)*(10*20*40*50)*(11*21*41*51));
+
+  // ... should ignore BLANK values outside of an array
+  ExcelValue producta_6[] = {BLANK,EXCEL_NUMBER(1)};
+  assert(product(2,producta_6).type == 1);
+
+  // ... should ignore non-numeric values within an array
+  ExcelValue producta_7[] = {product_9_v, product_9_v};
+  assert(product(2,producta_7).number == 0);
+
+  // ... should return an error if an argument is an error
+  ExcelValue producta_8[] = {VALUE};
+  assert(product(1,producta_8).type == ExcelError);
 
   // Test VLOOKUP
   ExcelValue vlookup_a1[] = {EXCEL_NUMBER(1),EXCEL_NUMBER(10),EXCEL_NUMBER(2),EXCEL_NUMBER(20),EXCEL_NUMBER(3),EXCEL_NUMBER(30)};
@@ -972,7 +1027,7 @@ int test_functions() {
   assert(ensure_is_number(EXCEL_STRING("1.3")).number == 1.3);
   assert(ensure_is_number(EXCEL_STRING("BASDASD")).type == ExcelError);
   assert(ensure_is_number(DIV0).type == ExcelError);
-  
+
   // Tests ther NUMBER_OR_ZERO function
   assert_equal(ZERO, number_or_zero(ZERO), "number_or_zero 0");
   assert_equal(ONE, number_or_zero(ONE), "number_or_zero 1");
@@ -982,7 +1037,7 @@ int test_functions() {
   assert_equal(ZERO, number_or_zero(BLANK), "number_or_zero blank");
   assert_equal(ZERO, number_or_zero(EXCEL_STRING("1.3")), "number_or_zero '1.3'");
   assert_equal(ZERO, number_or_zero(EXCEL_STRING("Aasdfadsf")), "number_or_zero 'Asdfad'");
-  
+
   // RIGHT(string,[characters])
   // ... should return the right n characters from a string
   assert(strcmp(right_1(EXCEL_STRING("ONE")).string,"E") == 0);

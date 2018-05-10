@@ -5,7 +5,7 @@
 - Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Implement REPLACE in ruby
 - Implement COUNTIFS in ruby
-- Implement PRODUCT in ruby
+- Implement PRODUCT in ruby and C
 - Implement FLOOR in ruby
 - Implement SQRT in ruby
 - Add a debug_dump() function for de-bugging
