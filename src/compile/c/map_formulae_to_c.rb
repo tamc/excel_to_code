@@ -42,6 +42,7 @@ class MapFormulaeToC < MapValuesToC
     :'EXP' => 'excel_exp',
     :'FIND2' => 'find_2',
     :'FIND3' => 'find',
+    :'FLOOR' => 'excel_floor',
     :'FORECAST' => 'forecast',
     :'HLOOKUP3' => 'hlookup_3',
     :'HLOOKUP4' => 'hlookup',

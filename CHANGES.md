@@ -7,7 +7,7 @@
 - Partially implement RATE in ruby
 - Implement COUNTIFS in ruby
 - Implement PRODUCT in ruby and C
-- Implement FLOOR in ruby
+- Implement FLOOR in ruby and C
 - Implement SQRT in ruby and C
 - Add a debug_dump() function for de-bugging
 - Make replacement of arrays with single cells depth first

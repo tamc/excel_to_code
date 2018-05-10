@@ -412,6 +412,17 @@ static ExcelValue excel_sqrt(ExcelValue number_v) {
   return	EXCEL_NUMBER(sqrt(n));
 }
 
+static ExcelValue excel_floor(ExcelValue number_v, ExcelValue multiple_v) {
+  CHECK_FOR_PASSED_ERROR(number_v)
+  CHECK_FOR_PASSED_ERROR(multiple_v)
+	NUMBER(number_v, n)
+  NUMBER(multiple_v, m)
+	CHECK_FOR_CONVERSION_ERROR
+  if(m == 0) { return DIV0; }
+  if(m < 0) { return NUM; }
+  return EXCEL_NUMBER((n - fmod(n, m)));
+}
+
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
 	int i;
 	ExcelValue current_excel_value, array_result;
