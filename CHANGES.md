@@ -4,6 +4,7 @@
 - Add treat_external_references_as local helper
 - Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Implement REPLACE in ruby
+- Partially implement RATE in ruby
 - Implement COUNTIFS in ruby
 - Implement PRODUCT in ruby and C
 - Implement FLOOR in ruby
@@ -124,7 +125,7 @@
 
 # 0.3.0 - 2014 July 24th
 
-- Shim extension not needed on generated Ruby to C interface code (BREAKING CHANGE), which means that excel_to_c generates a more-or-less drop in replacement for excel_to_Ruby 
+- Shim extension not needed on generated Ruby to C interface code (BREAKING CHANGE), which means that excel_to_c generates a more-or-less drop in replacement for excel_to_Ruby
 - Added --rakefile and ---makefile and --no-rakefile and --no-makefile switches to excel_to_c
 - By default, now generates a Rakefile (BREAKING CHANGE)
 
@@ -199,7 +200,7 @@
 - Inlined blanks are now returned as blanks not at zeros.
 - When extracting constants, now uses the integer numbers from one to ten that are defined as constants in the C runtime
 - Improved the annoying emergency bodge on array formulae extraction to interpret INDIRECTs within array formulae in more cases
-- Can now parse some formulae with a trailing percentage suffix like ROUND(24.3,0)% 
+- Can now parse some formulae with a trailing percentage suffix like ROUND(24.3,0)%
 - If INDEX is passed an errors in both arguments, returns the error in its first argument
 - Now simplifies SUM() with single arguments to the single argument
 - Now deals with arrays that should be converted to single cells inside of IF statements
@@ -220,7 +221,7 @@
 # 0.2.17 - 2014 February 11th
 
 - Changed how SUMIF, SUMIFS, and AVERAGEIFS treat blanks in criteria (now consider them to be zeros)
-- Add missing cells if they are referenced 
+- Add missing cells if they are referenced
 - Adjust the way that ISBLANK() is replaced with a value at compile time
 
 # 0.2.16 - 2014 February 10th
@@ -247,7 +248,7 @@
 - Fix for SUMIF different sized ranges when fixed references are used
 - Parser now picks up external named references
 - Added a workaround for brackets not being removed in some cases
-- The Ruby version of IF() now treats 0 as false and all other numbers as true 
+- The Ruby version of IF() now treats 0 as false and all other numbers as true
 - SUMIF and SUMIFS can now cope with being passed ranges for the criteria
 - Fixed formula parser to cope with comparisons with string joins
 - Fixed bug in C compilation when specifying :all cells in a sheet are settable
@@ -451,7 +452,7 @@
 
 # 0.1.4
 
-- Changed from requiring Ruby 1.9 to requiring 1.9 or newer. 
+- Changed from requiring Ruby 1.9 to requiring 1.9 or newer.
 
 # 0.1.3
 
