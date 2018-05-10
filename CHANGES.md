@@ -4,7 +4,7 @@
 - Add treat_external_references_as local helper
 - Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Implement REPLACE in ruby (BUT NOT IN C)
-- Partially implement RATE in ruby
+- Partially implement RATE in ruby and C
 - Implement COUNTIFS in ruby (BUT NOT IN C)
 - Implement PRODUCT in ruby and C
 - Implement FLOOR in ruby and C

@@ -423,6 +423,25 @@ static ExcelValue excel_floor(ExcelValue number_v, ExcelValue multiple_v) {
   return EXCEL_NUMBER((n - fmod(n, m)));
 }
 
+static ExcelValue rate(ExcelValue periods_v, ExcelValue payment_v, ExcelValue presentValue_v, ExcelValue finalValue_v) {
+  CHECK_FOR_PASSED_ERROR(periods_v)
+  CHECK_FOR_PASSED_ERROR(payment_v)
+  CHECK_FOR_PASSED_ERROR(presentValue_v)
+  CHECK_FOR_PASSED_ERROR(finalValue_v)
+
+  NUMBER(periods_v, periods)
+  NUMBER(payment_v, payment)
+  NUMBER(presentValue_v, presentValue)
+  NUMBER(finalValue_v, finalValue)
+
+  // FIXME: Only implemented the case where payment is zero
+  if(payment != 0) {
+    return NA;
+  }
+
+  return EXCEL_NUMBER(pow((finalValue/(-presentValue)),(1.0/periods))-1.0);
+}
+
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
 	int i;
 	ExcelValue current_excel_value, array_result;

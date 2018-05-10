@@ -82,6 +82,7 @@ class MapFormulaeToC < MapValuesToC
     :'PV3' => 'pv_3',
     :'PV4' => 'pv_4',
     :'PV5' => 'pv_5',
+    :'RATE' => 'rate',
     :'RANK2' => 'rank_2',
     :'RANK3' => 'rank',
     :'RIGHT1' => 'right_1',

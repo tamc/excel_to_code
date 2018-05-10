@@ -852,6 +852,9 @@ int test_functions() {
   assert(excel_floor(NA, ONE).type == ExcelError);
   assert(excel_floor(ONE, NA).type == ExcelError);
 
+  // Test partial implementation of rate
+  assert(excel_round(multiply(rate(EXCEL_NUMBER(12), ZERO, EXCEL_NUMBER(-69999), EXCEL_NUMBER(64786)), EXCEL_NUMBER(1000)),ONE).number == -6.4);
+
   // Test MMULT (Matrix multiplication)
   ExcelValue mmult_1[] = { ONE, TWO, THREE, FOUR};
   ExcelValue mmult_2[] = { FOUR, THREE, TWO, ONE};
