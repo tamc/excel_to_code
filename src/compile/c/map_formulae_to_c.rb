@@ -101,6 +101,7 @@ class MapFormulaeToC < MapValuesToC
     :'VLOOKUP4' => 'vlookup',
     :'^' => 'power',
     :'POWER' => 'power',
+    :'SQRT' => 'excel_sqrt',
     :'curve5' => 'curve_5',
     :'curve' => 'curve',
     :'scurve4' => 'scurve_4',

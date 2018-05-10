@@ -833,6 +833,14 @@ int test_functions() {
   assert(ln(EXCEL_NUMBER(0)).type == ExcelError);
   assert(ln(EXCEL_NUMBER(-1)).type == ExcelError);
 
+  // Test excel_sqrt
+  assert(excel_sqrt(EXCEL_NUMBER(1)).number == 1.0);
+  assert(excel_sqrt(EXCEL_NUMBER(4)).number == 2.0);
+  assert(excel_sqrt(EXCEL_NUMBER(1.6)).number == 1.2649110640673518);
+  assert(excel_sqrt(BLANK).number == 0);
+  assert(excel_sqrt(EXCEL_STRING("Hello world")).type == ExcelError);
+  assert(excel_sqrt(EXCEL_NUMBER(-1)).type == ExcelError);
+
   // Test MMULT (Matrix multiplication)
   ExcelValue mmult_1[] = { ONE, TWO, THREE, FOUR};
   ExcelValue mmult_2[] = { FOUR, THREE, TWO, ONE};
