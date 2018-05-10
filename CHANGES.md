@@ -5,7 +5,7 @@
 - Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Implement REPLACE in ruby (BUT NOT IN C)
 - Partially implement RATE in ruby and C
-- Implement COUNTIFS in ruby (BUT NOT IN C)
+- Implement COUNTIFS in ruby and C
 - Implement PRODUCT in ruby and C
 - Implement FLOOR in ruby and C
 - Implement SQRT in ruby and C

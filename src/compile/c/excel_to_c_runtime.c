@@ -1946,7 +1946,7 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
     original_range_columns = original_range_v.columns;
   } else {
     original_range = (ExcelValue*) new_excel_value_array(1);
-	original_range[0] = original_range_v;
+	  original_range[0] = original_range_v;
     original_range_rows = 1;
     original_range_columns = 1;
   }
@@ -2188,6 +2188,245 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
 static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments) {
   ExcelValue filtered_range = filter_range(sum_range_v, number_of_arguments, arguments);
   return sum(1,&filtered_range);
+}
+
+static ExcelValue countifs(int number_of_arguments, ExcelValue *arguments) {
+  if(number_of_arguments < 2) { return NA;}
+  // Set up the sum range
+  ExcelValue range = arguments[0];
+  int rows, columns;
+
+  if(range.type == ExcelRange) {
+    rows = range.rows;
+    columns = range.columns;
+  } else {
+    rows = 1;
+    columns = 1;
+  }
+
+  int count = 0;
+
+  // Then go through and set up the check ranges
+  if(number_of_arguments % 2 != 0) return VALUE;
+  int number_of_criteria = number_of_arguments / 2;
+  ExcelValue *criteria_range =  (ExcelValue*) new_excel_value_array(number_of_criteria);
+  ExcelValue current_value;
+  int i;
+  for(i = 0; i < number_of_criteria; i++) {
+    current_value = arguments[i*2];
+    if(current_value.type == ExcelRange) {
+      criteria_range[i] = current_value;
+      if(current_value.rows != rows) return VALUE;
+      if(current_value.columns != columns) return VALUE;
+    } else {
+      if(rows != 1) return VALUE;
+      if(columns != 1) return VALUE;
+      ExcelValue *tmp_array2 =  (ExcelValue*) new_excel_value_array(1);
+      tmp_array2[0] = current_value;
+      criteria_range[i] = EXCEL_RANGE(tmp_array2,1,1);
+    }
+  }
+
+  // Now go through and set up the criteria
+  ExcelComparison *criteria =  malloc(sizeof(ExcelComparison)*number_of_criteria); // freed at end of function
+  if(criteria == 0) {
+	  printf("Out of memory in filter_range\n");
+	  exit(-1);
+  }
+  char *s;
+  char *new_comparator;
+
+  for(i = 0; i < number_of_criteria; i++) {
+    current_value = arguments[(i*2)+1];
+
+    if(current_value.type == ExcelString) {
+      s = current_value.string;
+      if(s[0] == '<') {
+        if( s[1] == '>') {
+          new_comparator = strndup(s+2,strlen(s)-2);
+          free_later(new_comparator);
+          criteria[i].type = NotEqual;
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
+        } else if(s[1] == '=') {
+          new_comparator = strndup(s+2,strlen(s)-2);
+          free_later(new_comparator);
+          criteria[i].type = LessThanOrEqual;
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
+        } else {
+          new_comparator = strndup(s+1,strlen(s)-1);
+          free_later(new_comparator);
+          criteria[i].type = LessThan;
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
+        }
+      } else if(s[0] == '>') {
+        if(s[1] == '=') {
+          new_comparator = strndup(s+2,strlen(s)-2);
+          free_later(new_comparator);
+          criteria[i].type = MoreThanOrEqual;
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
+        } else {
+          new_comparator = strndup(s+1,strlen(s)-1);
+          free_later(new_comparator);
+          criteria[i].type = MoreThan;
+          criteria[i].comparator = EXCEL_STRING(new_comparator);
+        }
+      } else if(s[0] == '=') {
+        new_comparator = strndup(s+1,strlen(s)-1);
+        free_later(new_comparator);
+        criteria[i].type = Equal;
+        criteria[i].comparator = EXCEL_STRING(new_comparator);
+      } else {
+        criteria[i].type = Equal;
+        criteria[i].comparator = current_value;
+      }
+    } else {
+      criteria[i].type = Equal;
+      criteria[i].comparator = current_value;
+    }
+  }
+
+  int size = columns * rows;
+  int j;
+  int passed = 0;
+  ExcelValue value_to_be_checked;
+  ExcelComparison comparison;
+  ExcelValue comparator;
+  double number;
+  // For each cell in the sum range
+  for(j=0; j < size; j++ ) {
+    passed = 1;
+    for(i=0; i < number_of_criteria; i++) {
+      value_to_be_checked = ((ExcelValue *) ((ExcelValue) criteria_range[i]).array)[j];
+      comparison = criteria[i];
+      comparator = comparison.comparator;
+
+      // For the purposes of comparison, treates a blank criteria as matching zeros.
+      if(comparator.type == ExcelEmpty) {
+        comparator = ZERO;
+      }
+
+      switch(value_to_be_checked.type) {
+        case ExcelError: // Errors match only errors
+          if(comparison.type != Equal) passed = 0;
+          if(comparator.type != ExcelError) passed = 0;
+          if(value_to_be_checked.number != comparator.number) passed = 0;
+          break;
+        case ExcelBoolean: // Booleans match only booleans (FIXME: I think?)
+          if(comparison.type != Equal) passed = 0;
+          if(comparator.type != ExcelBoolean ) passed = 0;
+          if(value_to_be_checked.number != comparator.number) passed = 0;
+          break;
+        case ExcelEmpty:
+          // if(comparator.type == ExcelEmpty) break; // FIXME: Huh? In excel blank doesn't match blank?!
+          if(comparator.type != ExcelString) {
+            passed = 0;
+            break;
+          } else {
+            if(strlen(comparator.string) != 0) passed = 0; // Empty strings match blanks.
+            break;
+          }
+        case ExcelNumber:
+          if(comparator.type == ExcelNumber) {
+            number = comparator.number;
+          } else if(comparator.type == ExcelString) {
+            number = number_from(comparator);
+            if(conversion_error == 1) {
+              conversion_error = 0;
+              passed = 0;
+              break;
+            }
+          } else {
+            passed = 0;
+            break;
+          }
+          switch(comparison.type) {
+            case Equal:
+              if(value_to_be_checked.number != number) passed = 0;
+              break;
+            case LessThan:
+              if(value_to_be_checked.number >= number) passed = 0;
+              break;
+            case LessThanOrEqual:
+              if(value_to_be_checked.number > number) passed = 0;
+              break;
+            case NotEqual:
+              if(value_to_be_checked.number == number) passed = 0;
+              break;
+            case MoreThanOrEqual:
+              if(value_to_be_checked.number < number) passed = 0;
+              break;
+            case MoreThan:
+              if(value_to_be_checked.number <= number) passed = 0;
+              break;
+          }
+          break;
+        case ExcelString:
+          // First case, the comparator is a number, simplification is that it can only be equal
+          if(comparator.type == ExcelNumber) {
+            if(comparison.type != Equal) {
+              printf("This shouldn't be possible?");
+              passed = 0;
+              break;
+            }
+
+            // Special case, empty strings don't match zeros here
+            if(strlen(value_to_be_checked.string) == 0) {
+              passed = 0;
+              break;
+            }
+
+            number = number_from(value_to_be_checked);
+            if(conversion_error == 1) {
+              conversion_error = 0;
+              passed = 0;
+              break;
+            }
+            if(number != comparator.number) {
+              passed = 0;
+              break;
+            } else {
+              break;
+            }
+          // Second case, the comparator is also a string, so need to be able to do full range of tests
+          } else if(comparator.type == ExcelString) {
+            switch(comparison.type) {
+              case Equal:
+                if(excel_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              case LessThan:
+                if(less_than(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              case LessThanOrEqual:
+                if(less_than_or_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              case NotEqual:
+                if(not_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              case MoreThanOrEqual:
+                if(more_than_or_equal(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              case MoreThan:
+                if(more_than(value_to_be_checked,comparator).number == 0) passed = 0;
+                break;
+              }
+          } else {
+            passed = 0;
+            break;
+          }
+          break;
+        case ExcelRange:
+          free(criteria);
+          return VALUE;
+      }
+      if(passed == 0) break;
+    }
+    if(passed == 1) {
+        count += 1;
+    }
+  }
+  // Tidy up
+  free(criteria);
+  return EXCEL_NUMBER(count);
 }
 
 static ExcelValue averageifs(ExcelValue average_range_v, int number_of_arguments, ExcelValue *arguments) {

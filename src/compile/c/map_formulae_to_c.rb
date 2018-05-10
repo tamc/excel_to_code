@@ -38,6 +38,7 @@ class MapFormulaeToC < MapValuesToC
     :'COSH' => 'cosh',
     :'COUNT' => 'count',
     :'COUNTA' => 'counta',
+    :'COUNTIFS' => 'countifs',
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXP' => 'excel_exp',
     :'FIND2' => 'find_2',
@@ -161,7 +162,7 @@ class MapFormulaeToC < MapValuesToC
     end
   end
 
-  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM PRODUCT AND AVERAGE COUNT COUNTA MAX MIN SUMPRODUCT CONCATENATE}
+  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM PRODUCT AND AVERAGE COUNT COUNTA MAX MIN SUMPRODUCT COUNTIFS CONCATENATE}
 
   def function_pi()
     "M_PI"
