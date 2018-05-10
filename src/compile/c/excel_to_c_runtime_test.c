@@ -1201,6 +1201,33 @@ int test_functions() {
   // NA()
   assert_equal(NA, na(), "na() == NA");
 
+  // curve (a custom climact function)
+  assert_equal(
+    EXCEL_NUMBER(4.99),
+    curve_5(
+      EXCEL_STRING("s"),
+      EXCEL_NUMBER(2023),
+      EXCEL_NUMBER(0),
+      EXCEL_NUMBER(10),
+      EXCEL_NUMBER(10)
+    ),
+    "curve_5('s', 2023, 0, 10, 10) == 4.99"
+  );
+
+  // If blank, defaults to lcurve
+  assert_equal(
+    EXCEL_NUMBER(5.0),
+    curve_5(
+      BLANK,
+      EXCEL_NUMBER(2023),
+      EXCEL_NUMBER(0),
+      EXCEL_NUMBER(10),
+      EXCEL_NUMBER(10)
+    ),
+    "curve_5(blank, 2023, 0, 10, 10) == 5"
+  );
+
+
   // Release memory
   free_all_allocated_memory();
 
