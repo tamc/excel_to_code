@@ -1,10 +1,10 @@
 require_relative 'map_values_to_ruby'
 
 class MapFormulaeToRuby < MapValuesToRuby
-  
+
   attr_accessor :sheet_names
   attr_accessor :worksheet
-  
+
   FUNCTIONS = {
     :'*' => 'multiply',
     :'+' => 'add',
@@ -35,6 +35,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'FIND' => 'find',
     :'FLOOR' => 'floor',
     :'FORECAST' => 'forecast',
+    :'FORECAST.LINEAR' => 'forecast',
     :'HLOOKUP' => 'hlookup',
     :'HYPERLINK' => 'hyperlink',
     :'IF' => 'excel_if',
@@ -92,16 +93,16 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'lcurve' => 'lcurve',
     :'scurve' => 'scurve'
   }
-  
+
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"
     return "negative(#{map(ast)})"
   end
-  
+
   def brackets(*contents)
     "(#{contents.map { |a| map(a) }.join(',')})"
   end
-  
+
   def arithmetic(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
@@ -118,7 +119,7 @@ class MapFormulaeToRuby < MapValuesToRuby
   def comparison(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
-  
+
   def function(function_name,*arguments)
     if FUNCTIONS.has_key?(function_name)
       "#{FUNCTIONS[function_name]}(#{arguments.map { |a| map(a) }.join(",")})"
@@ -126,21 +127,21 @@ class MapFormulaeToRuby < MapValuesToRuby
       raise NotSupportedException.new("Function #{function_name} not supported")
     end
   end
-  
+
   def cell(reference)
     reference.to_s.downcase.gsub('$','')
   end
-  
+
   def sheet_reference(sheet,reference)
     "#{sheet_names[sheet]}_#{map(reference)}"
   end
-  
+
   def array(*rows)
     "[#{rows.map {|r| map(r)}.join(",")}]"
   end
-  
+
   def row(*cells)
     "[#{cells.map {|r| map(r)}.join(",")}]"
   end
-  
+
 end
