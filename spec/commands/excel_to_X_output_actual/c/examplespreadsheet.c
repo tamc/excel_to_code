@@ -989,6 +989,8 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 			for(i = 0; i < size; i++ ) {
 				x = array[i];
 				if(x.type == ExcelEmpty) x = ZERO;
+				if(lookup_value.type == ExcelString && x.type != ExcelString) { continue; }
+				if(lookup_value.type == ExcelNumber && x.type != ExcelNumber) { continue; }
 				if(more_than(x,lookup_value).number == true) {
 					if(i==0) return NA;
 					return EXCEL_NUMBER(i);
@@ -1000,6 +1002,8 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 			for(i = 0; i < size; i++ ) {
 				x = array[i];
 				if(x.type == ExcelEmpty) x = ZERO;
+				if(lookup_value.type == ExcelString && x.type != ExcelString) { continue; }
+				if(lookup_value.type == ExcelNumber && x.type != ExcelNumber) { continue; }
 				if(less_than(x,lookup_value).number == true) {
 					if(i==0) return NA;
 					return EXCEL_NUMBER(i);
@@ -2864,11 +2868,11 @@ static ExcelValue lcurve(ExcelValue currentYear_v, ExcelValue startValue_v, Exce
 
 static ExcelValue curve(ExcelValue type_v, ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
 
-  if(strcasecmp(type_v.string, "s") == 0 ) {
+  if(type_v.type == ExcelString && strcasecmp(type_v.string, "s") == 0 ) {
     return scurve(currentYear_v, startValue_v, endValue_v, duration_v, startYear_v);
   }
 
-  if(strcasecmp(type_v.string, "hs") == 0 ) {
+  if(type_v.type == ExcelString && strcasecmp(type_v.string, "hs") == 0 ) {
     return halfscurve(currentYear_v, startValue_v, endValue_v, duration_v, startYear_v);
   }
 
