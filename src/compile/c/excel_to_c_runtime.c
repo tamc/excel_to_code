@@ -982,6 +982,8 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 			for(i = 0; i < size; i++ ) {
 				x = array[i];
 				if(x.type == ExcelEmpty) x = ZERO;
+				if(lookup_value.type == ExcelString && x.type != ExcelString) { continue; }
+				if(lookup_value.type == ExcelNumber && x.type != ExcelNumber) { continue; }
 				if(more_than(x,lookup_value).number == true) {
 					if(i==0) return NA;
 					return EXCEL_NUMBER(i);
@@ -993,6 +995,8 @@ static ExcelValue excel_match(ExcelValue lookup_value, ExcelValue lookup_array, 
 			for(i = 0; i < size; i++ ) {
 				x = array[i];
 				if(x.type == ExcelEmpty) x = ZERO;
+				if(lookup_value.type == ExcelString && x.type != ExcelString) { continue; }
+				if(lookup_value.type == ExcelNumber && x.type != ExcelNumber) { continue; }
 				if(less_than(x,lookup_value).number == true) {
 					if(i==0) return NA;
 					return EXCEL_NUMBER(i);

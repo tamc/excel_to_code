@@ -140,6 +140,8 @@ int test_functions() {
   ExcelValue excel_match_array_4_v = EXCEL_RANGE(excel_match_array_4,1,3);
   ExcelValue excel_match_array_5[] = { ONE, EXCEL_NUMBER(0), BLANK };
   ExcelValue excel_match_array_5_v = EXCEL_RANGE(excel_match_array_5,1,3);
+  ExcelValue excel_match_array_6[] = { EXCEL_STRING(""), ONE, TWO, THREE, FOUR };
+  ExcelValue excel_match_array_6_v = EXCEL_RANGE(excel_match_array_6,5,1);
 
   // Two argument version
   assert(excel_match_2(EXCEL_NUMBER(14),excel_match_array_1_v).number == 1);
@@ -156,6 +158,8 @@ int test_functions() {
   assert(excel_match(EXCEL_STRING("Care"), excel_match_array_2_v, EXCEL_NUMBER(-1) ).number == 1  );
   assert(excel_match(EXCEL_STRING("Zebra"), excel_match_array_2_v, EXCEL_NUMBER(-1) ).type == ExcelError);
   assert(excel_match(EXCEL_STRING("a"), excel_match_array_2_v, EXCEL_NUMBER(-1) ).number == 2);
+  // EMPTY STRINGS
+  assert(excel_match(EXCEL_NUMBER(1), excel_match_array_6_v, ONE).number == 2);
 
   // When not given a range
   assert(excel_match(EXCEL_NUMBER(10.0), EXCEL_NUMBER(10), EXCEL_NUMBER(0.0)).number == 1);
