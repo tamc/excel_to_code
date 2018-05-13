@@ -35,7 +35,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'FIND' => 'find',
     :'FLOOR' => 'floor',
     :'FORECAST' => 'forecast',
-    :'FORECAST.LINEAR' => 'forecast',
+    :'_xlfn.FORECAST.LINEAR' => 'forecast',
     :'HLOOKUP' => 'hlookup',
     :'HYPERLINK' => 'hyperlink',
     :'IF' => 'excel_if',

@@ -178,4 +178,4 @@ ROUND(24.35,0)%	[:percentage, [:function, "ROUND", [:number, "24.35"], [:number,
 LOG10(300)	[:function, "LOG10", [:number, "300"]]
 
 # Parses FORECAST.LINEAR functions
-FORECAST.LINEAR(10,A1,A2) [:function, "FORECAST.LINEAR", [:number, "10"], [:cell, "A1"], [:cell, "A2"]]
+_xlfn.FORECAST.LINEAR(10,A1,A2) [:function, "_xlfn.FORECAST.LINEAR", [:number, "10"], [:cell, "A1"], [:cell, "A2"]]

@@ -45,6 +45,7 @@ class MapFormulaeToC < MapValuesToC
     :'FIND3' => 'find',
     :'FLOOR' => 'excel_floor',
     :'FORECAST' => 'forecast',
+    :'_xlfn.FORECAST.LINEAR' => 'forecast',
     :'HLOOKUP3' => 'hlookup_3',
     :'HLOOKUP4' => 'hlookup',
     :'IF2' => 'excel_if_2',
