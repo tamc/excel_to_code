@@ -2,17 +2,17 @@ require_relative '../excel'
 require_relative '../util'
 
 class Table
-  
+
   attr_accessor :name
-  
+
   def initialize(name,worksheet,reference,number_of_total_rows,*column_name_array)
     @name, @worksheet, @area, @number_of_total_rows, @column_name_array = name, worksheet.to_sym, Area.for(reference), number_of_total_rows.to_i, column_name_array.map { |c| c.strip.downcase }
-    @area.calculate_excel_variables    
+    @area.calculate_excel_variables
     @data_area = Area.for("#{@area.excel_start.offset(1,0)}:#{@area.excel_finish.offset(-@number_of_total_rows,0)}")
     @data_area.calculate_excel_variables
   end
-  
-  def reference_for(table_name,structured_reference,calling_worksheet,calling_cell)
+
+  def reference_for(table_name,structured_reference,calling_worksheet,calling_cell, must_be_area = false)
     raise NotSupportedException.new("Local table reference not supported in #{structured_reference.inspect}") unless table_name
 
     case structured_reference
@@ -45,7 +45,7 @@ class Table
 
     when /\[#Headers\],\[(.*?)\]/io
       column_number = column_number_for($1)
-      return ref_error unless column_number      
+      return ref_error unless column_number
       ast_for_cell @area.excel_start.offset(0,column_number)
 
     when /\[#Totals\],\[(.*?)\]/io
@@ -59,7 +59,7 @@ class Table
       row = r.excel_row_number
       column_number = column_number_for($1)
       return ref_error unless column_number
-      ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)      
+      ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)
 
     when /#Headers/io
       if calling_worksheet == @worksheet && @data_area.includes?(calling_cell)
@@ -92,14 +92,14 @@ class Table
       ast_for_area "#{@area.excel_start.excel_column}#{row}", "#{@area.excel_finish.excel_column}#{row}"
 
     else
-      if calling_worksheet == @worksheet && @data_area.includes?(calling_cell)
+      if !must_be_area && (calling_worksheet == @worksheet) && @data_area.includes?(calling_cell)
         r = Reference.for(calling_cell)
         r.calculate_excel_variables
         row = r.excel_row_number
         column_number = column_number_for(structured_reference)
         return ref_error unless column_number
-        ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)      
-      else        
+        ast_for_cell @area.excel_start.offset(row - @area.excel_start.excel_row_number,column_number)
+      else
         column_number = column_number_for(structured_reference)
         return ref_error unless column_number
         ast_for_area @area.excel_start.offset(1,column_number), @area.excel_start.offset(@area.height - @number_of_total_rows,column_number)
@@ -114,15 +114,15 @@ class Table
   def data
     ast_for_area @data_area.excel_start, @data_area.excel_finish
   end
-  
+
   def ast_for_area(start,finish)
     [:sheet_reference,@worksheet,[:area,start.to_sym,finish.to_sym]]
   end
-  
+
   def ast_for_cell(ref)
     [:sheet_reference,@worksheet,[:cell,ref.to_sym]]
   end
-  
+
   def ref_error
     [:error,"#REF!"]
   end
@@ -131,10 +131,10 @@ class Table
     name = name.strip.downcase.gsub("'#","#")
     @column_name_array.find_index(name)
   end
-  
+
   def includes?(sheet,reference)
     return false unless @worksheet == sheet
     @area.includes?(reference)
   end
-  
+
 end
