@@ -39,6 +39,7 @@
 - Fix a bug in range checking in the C version of the LARGE function
 - Fix bug in keeping of table references when setting to keep all named references
 - Fix so that works when there are apostrophes in the path [#12](https://github.com/tamc/excel_to_code/issues/12)
+- Improve bracket elimination when simplifying arithmetic
 
 ## Refactors
 
