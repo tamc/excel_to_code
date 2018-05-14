@@ -21,8 +21,8 @@ class ExternalReferenceException < ExcelToCodeException
     The formula was #{formula_text}
     Which was parsed to #{full_ast}
     Which seemed to have an external reference at #{reference_ast}
-    Note, the [0], [1], [2] ...  are the way Excel stores the names of the external files. 
-    
+    Note, the [0], [1], [2] ...  are the way Excel stores the names of the external files.
+
     Please remove the external reference from the Excel and try again.
 
     END
@@ -81,6 +81,7 @@ class CachingFormulaParser
   end
 
   def parse(text, treat_external_references_as_local = false)
+    p text
     @treat_external_references_as_local = treat_external_references_as_local
     ast = Formula.parse(text)
     @text = text # Kept in case of Exception below
@@ -97,17 +98,17 @@ class CachingFormulaParser
   def map(ast)
     return ast unless ast.is_a?(Array)
     if ast[0] == :function
-      ast[1] = ast[1].to_sym 
+      ast[1] = ast[1].to_sym
       @functions_used[ast[1]] = true
     end
     if respond_to?(ast[0])
-      ast = send(ast[0], ast) 
+      ast = send(ast[0], ast)
     else
-      ast.each.with_index do |a,i| 
+      ast.each.with_index do |a,i|
         next unless a.is_a?(Array)
-        
+
         if a[0] == :function
-          a[1] = a[1].to_sym 
+          a[1] = a[1].to_sym
           @functions_used[a[1]] = true
         end
 
@@ -125,7 +126,7 @@ class CachingFormulaParser
   end
 
   def sheet_reference(ast)
-    # Sheet names shouldn't start with [1], because those are 
+    # Sheet names shouldn't start with [1], because those are
     # external references
     if ast[1] =~ /^\[\d+\]/
        raise ExternalReferenceException.new(ast, @full_ast, @text) unless @treat_external_references_as_local

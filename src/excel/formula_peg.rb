@@ -27,7 +27,7 @@ class Formula < RubyPeg
   
   def function
     node :function do
-      terminal(/(curve)|(scurve)|(lcurve)|(halfscurve)|(LOG10)|(_xlfn.FORECAST.LINEAR)|[A-Z][A-Z0-9.]+/) && ignore { terminal("(") } && space && optional { argument } && any_number_of { (space && ignore { terminal(",") } && space && argument) } && space && ignore { terminal(")") }
+      terminal(/[a-zA-Z_][a-zA-Z0-9.]+/) && ignore { terminal("(") } && space && optional { argument } && any_number_of { (space && ignore { terminal(",") } && space && argument) } && space && ignore { terminal(")") }
     end
   end
   
