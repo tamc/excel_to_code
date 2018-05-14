@@ -1,5 +1,6 @@
 # Head
 
+- Allow function names to have periods
 - Add FORECAST.LINEAR as an alias of the FORECAST function
 - Fix C version of MATCH to correctly skip strings when matching numbers and vice versa
 - Add allow_unknown_functions option
