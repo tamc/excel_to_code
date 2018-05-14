@@ -32,6 +32,9 @@ class MapFormulaeToC < MapValuesToC
     :'AND' => 'excel_and',
     :'AVERAGE' => 'average',
     :'AVERAGEIFS' => 'averageifs',
+    :'CEILING' => 'ceiling_2',
+    :'_xlfn.CEILING.MATH2' => 'excel_ceiling_math_2',
+    :'_xlfn.CEILING.MATH3' => 'excel_ceiling_math',
     :'CHAR' => 'excel_char',
     :'CHOOSE' => 'choose',
     :'CONCATENATE' => 'string_join',
@@ -163,7 +166,20 @@ class MapFormulaeToC < MapValuesToC
     end
   end
 
-  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM PRODUCT AND AVERAGE COUNT COUNTA MAX MIN SUMPRODUCT COUNTIFS CONCATENATE}
+  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{
+    SUM 
+    PRODUCT 
+    AND 
+    OR
+    AVERAGE 
+    COUNT 
+    COUNTA 
+    MAX 
+    MIN 
+    SUMPRODUCT 
+    COUNTIFS 
+    CONCATENATE
+  }
 
   def function_pi()
     "M_PI"

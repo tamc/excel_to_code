@@ -66,6 +66,8 @@ static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue average(int array_size, ExcelValue *array);
 static ExcelValue averageifs(ExcelValue average_range_v, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue excel_char(ExcelValue number_v);
+static ExcelValue excel_ceiling_math_2(ExcelValue number_v, ExcelValue multiple_v);
+static ExcelValue excel_ceiling_math(ExcelValue number_v, ExcelValue multiple_v, ExcelValue mode_v);
 static ExcelValue ensure_is_number(ExcelValue maybe_number_v);
 static ExcelValue find_2(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v);
 static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_look_in_v, ExcelValue position_to_start_at_v);
@@ -427,6 +429,36 @@ static ExcelValue excel_floor(ExcelValue number_v, ExcelValue multiple_v) {
 	CHECK_FOR_CONVERSION_ERROR
   if(m == 0) { return DIV0; }
   if(m < 0) { return NUM; }
+  return EXCEL_NUMBER((n - fmod(n, m)));
+}
+
+static ExcelValue excel_ceiling_math_2(ExcelValue number_v, ExcelValue multiple_v) {
+  return excel_ceiling_math(number_v, multiple_v, ZERO);
+}
+
+static ExcelValue excel_ceiling_math(ExcelValue number_v, ExcelValue multiple_v, ExcelValue mode_v) {
+  CHECK_FOR_PASSED_ERROR(number_v)
+  CHECK_FOR_PASSED_ERROR(multiple_v)
+  CHECK_FOR_PASSED_ERROR(mode_v)
+	NUMBER(number_v, n)
+  NUMBER(multiple_v, m)
+  NUMBER(mode_v, d)
+	CHECK_FOR_CONVERSION_ERROR
+  if(m == 0) { return ZERO; }
+    
+  if(d == 0 || n > 0 ) {
+    double remainder = fmod(n, m);
+    if(remainder == 0) {
+      return number_v;
+    } else {
+      return EXCEL_NUMBER(((double) ceil(n/m))*m);
+    }
+    
+    
+  } else { // Need to round negative away from zero
+    return negative(excel_ceiling_math(excel_abs(number_v), multiple_v, mode_v));
+  }
+  
   return EXCEL_NUMBER((n - fmod(n, m)));
 }
 

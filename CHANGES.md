@@ -2,7 +2,7 @@
 
 ## New / Changed Excel functions
 
-- Implement CEILING in ruby (but not yet in C)
+- Implement CEILING in ruby and C
 - Add FORECAST.LINEAR as an alias of the FORECAST function
 - Implement REPLACE in ruby (BUT NOT IN C)
 - Partially implement RATE in ruby and C

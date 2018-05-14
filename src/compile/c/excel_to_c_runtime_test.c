@@ -1204,6 +1204,14 @@ int test_functions() {
 
   // NA()
   assert_equal(NA, na(), "na() == NA");
+  
+  // CEILING.MATH
+  assert(excel_ceiling_math(EXCEL_NUMBER(0.1),EXCEL_NUMBER(0.1), ZERO).number == 0.1);
+  assert(excel_ceiling_math(EXCEL_NUMBER(-0.1), EXCEL_NUMBER(0.1), ZERO).number == -0.1);
+  assert(excel_ceiling_math(EXCEL_NUMBER(-0.1), EXCEL_NUMBER(0.1), ONE).number == -0.1);
+  assert(excel_ceiling_math(EXCEL_NUMBER(136), EXCEL_NUMBER(10), ZERO).number == 140);
+  assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ZERO).number == -130);
+  assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ONE).number == -140);
 
   // curve (a custom climact function)
   assert_equal(
