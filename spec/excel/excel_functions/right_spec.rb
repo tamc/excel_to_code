@@ -14,8 +14,8 @@ describe "ExcelFunctions: RIGHT(string,[characters])" do
   end
     
   it "should turn booleans into the words TRUE and FALSE before processing" do
-    FunctionTest.right(TRUE,3).should == "RUE"
-    FunctionTest.right(FALSE,3).should == "LSE"
+    FunctionTest.right(true,3).should == "RUE"
+    FunctionTest.right(false,3).should == "LSE"
   end
 
   it "should return an empty string if passed an empty string" do
