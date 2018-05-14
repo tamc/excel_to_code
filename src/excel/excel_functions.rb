@@ -146,3 +146,5 @@ require_relative 'excel_functions/countifs'
 require_relative 'excel_functions/replace'
 
 require_relative 'excel_functions/rate'
+
+require_relative 'excel_functions/ceiling'

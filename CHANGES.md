@@ -1,5 +1,6 @@
 # Head
 
+- Implement CEILING in ruby (but not yet in C)
 - Allow function names to have periods, be lowercase and have _
 - Add FORECAST.LINEAR as an alias of the FORECAST function
 - Fix C version of MATCH to correctly skip strings when matching numbers and vice versa
