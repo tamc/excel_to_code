@@ -1,41 +1,52 @@
 # Head
 
+## New / Changed Excel functions
+
 - Implement CEILING in ruby (but not yet in C)
-- Allow function names to have periods, be lowercase and have _
 - Add FORECAST.LINEAR as an alias of the FORECAST function
-- Fix C version of MATCH to correctly skip strings when matching numbers and vice versa
-- Add allow_unknown_functions option
-- Add treat_external_references_as local helper
-- Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Implement REPLACE in ruby (BUT NOT IN C)
 - Partially implement RATE in ruby and C
 - Implement COUNTIFS in ruby and C
 - Implement PRODUCT in ruby and C
 - Implement FLOOR in ruby and C
 - Implement SQRT in ruby and C
+- Add the OR() function in Ruby and C
+- INDEX can now work with ranges passed as its second and/or third arguments
+- Add the NA() function in Ruby and C
+- Fix COLUMN() and ROW() to work on area, named and table references
+- Replace CELL("address", REF) at compile time
+- Add the HYPERLINK() function in Ruby
+- Added the NOT(true) function in Ruby, and C
+
+## Other new features
+
+- Add allow_unknown_functions option
+- Add treat_external_references_as local helper
 - Add a debug_dump() function for de-bugging
+- Add --persevere switch which will mean will not abort on parse or external reference error so you can see the scale of the problem in a workbook.
+- Better error reporting on external references in named references
+
+## Bug fixes
+
+- Allow function names to have periods, be lowercase and have _
+- Fix C version of MATCH to correctly skip strings when matching numbers and vice versa
+- Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
 - Make replacement of arrays with single cells depth first
 - Fix bug in prefixes inside arithmetic applied to arrays
 - Improve conversion of prefixes applied to arrays
 - Improvements to the way translator converts range references that should be treated as cell references
-- Add the OR() function in Ruby and C
-- INDEX can now work with ranges passed as its second and/or third arguments
-- Add the NA() function in Ruby and C
-- Add --persevere switch which will mean will not abort on parse or external reference error so you can see the scale of the problem in a workbook.
-- Better error reporting on external references in named references
-- Fix COLUMN() and ROW() to work on area, named and table references
-- Replace CELL("address", REF) at compile time
 - Indicate that rspec tests use both old and new syntax
-- Add the HYPERLINK() function in Ruby
-- Add a string_argument helper function in Ruby
 - Fix a bug in range checking in the C version of the LARGE function
 - Fix bug in keeping of table references when setting to keep all named references
+- Fix so that works when there are apostrophes in the path [#12](https://github.com/tamc/excel_to_code/issues/12)
+
+## Refactors
+
+- Add a string_argument helper function in Ruby
 - Experiment with ways of making it easier to wrap the C output in a command line interface
-- Added the NOT(true) function in Ruby, and C
 - Update dependencies
 - Refactor common command line options
 - Reformat command line help
-- Fix so that works when there are apostrophes in the path [#12](https://github.com/tamc/excel_to_code/issues/12)
 
 # 0.3.17 - 2015 May 14
 
