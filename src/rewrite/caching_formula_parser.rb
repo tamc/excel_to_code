@@ -81,7 +81,6 @@ class CachingFormulaParser
   end
 
   def parse(text, treat_external_references_as_local = false)
-    p text
     @treat_external_references_as_local = treat_external_references_as_local
     ast = Formula.parse(text)
     @text = text # Kept in case of Exception below
