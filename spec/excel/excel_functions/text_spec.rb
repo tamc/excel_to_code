@@ -30,6 +30,13 @@ describe "ExcelFunctions: TEXT" do
     FunctionTest.text(12500.51, "0000").should == "12501"
   end
 
+  it "Should cope with international variants" do
+    FunctionTest.text("0.196", "0,0%").should == "19.6%"
+    FunctionTest.text(1.134, "0,0").should == "1.1"
+    FunctionTest.text(123456789.123456, "#.##").should == "123,456,789"
+    FunctionTest.text(123456789.123456, "#.##0,0").should == "123,456,789.1"
+  end
+
   it "should pass non-numbers through unchanged" do
     FunctionTest.text("Asdasddf","0%").should == "Asdasddf"
   end

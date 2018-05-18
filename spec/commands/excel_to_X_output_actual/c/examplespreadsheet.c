@@ -1,7 +1,7 @@
-// /Users/thomascounsell/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx approximately translated into C
+// /home/tamc/Documents/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx approximately translated into C
 // definitions
 #define NUMBER_OF_REFS 349
-#define EXCEL_FILENAME  "/Users/thomascounsell/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"
+#define EXCEL_FILENAME  "/home/tamc/Documents/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"
 // end of definitions
 
 // First we have c versions of all the excel functions that we know
