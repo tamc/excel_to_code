@@ -4,7 +4,7 @@ module ExcelFunctions
     # Sort out the sum range
     range = [range] unless range.is_a?(Array)
     range = range.flatten
-    
+
     indexes = _filtered_range_indexes(range, *criteria)
     return indexes if indexes.is_a?(Symbol)
     range.values_at(*indexes)
@@ -21,17 +21,26 @@ module ExcelFunctions
     end
 
     filtered = []
-    
+
     # Work through each part of the sum range
     range.each_with_index do |potential,index|
       #next unless potential.is_a?(Numeric)
-      
+
       # If a criteria fails, this is set to false and no further criteria are evaluated
       pass = true
-      
+
       0.step(criteria.length-1,2).each do |i|
         check_range = criteria[i]
         required_value = criteria[i+1] || 0
+        if required_value.is_a?(String)
+          any_start = required_value.start_with?('*')
+          any_end = required_value.end_with?('*')
+          if any_start || any_end
+            required_value = ".*"+required_value[1..-1] if any_start
+            required_value = required_value[0..-2]+".*" if any_end
+            required_value = /^#{required_value}$/i
+          end
+        end
         return :value if index >= check_range.length
         check_value = check_range[index]
 
@@ -40,6 +49,8 @@ module ExcelFunctions
           case required_value
           when String
             check_value.downcase == required_value.downcase
+          when Regexp
+            check_value =~ required_value
           when Numeric
             begin
               Float(check_value) == required_value.to_f
@@ -72,19 +83,19 @@ module ExcelFunctions
         when Symbol
           check_value == required_value
         end # case check_value
-                
+
         break unless pass
       end # criteria loop
-      
+
       filtered << index if pass
     end
 
     return filtered
   end
-  
+
   def sumifs(range,*criteria)
     filtered = _filtered_range(range,*criteria)
     sum(*filtered)
   end
-  
+
 end

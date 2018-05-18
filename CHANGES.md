@@ -20,6 +20,7 @@
 
 ## Other new features
 
+- Allow wildcards in ruby version of SUMIFS when string matching string
 - Add allow_unknown_functions option
 - Add treat_external_references_as local helper
 - Add a debug_dump() function for de-bugging
