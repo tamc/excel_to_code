@@ -30,6 +30,7 @@
 
 ## Bug fixes
 
+- Allow the use of , for periods and . for thousand separator in TEXT() without crashing
 - Allow function names to have periods, be lowercase and have _
 - Fix C version of MATCH to correctly skip strings when matching numbers and vice versa
 - Fix require_relative in gempsec that was causing 'Bundler cannot continue' errors
