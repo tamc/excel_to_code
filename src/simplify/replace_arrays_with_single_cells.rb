@@ -29,6 +29,7 @@ class ReplaceArraysWithSingleCellsAst
 
   def do_map(ast)
     return ast unless ast.is_a?(Array)
+    map_if_required(ast)
     case ast.first
     when :arithmetic
       left, op, right = ast[1], ast[2], ast[3]
@@ -36,24 +37,18 @@ class ReplaceArraysWithSingleCellsAst
         left = try_and_convert_array(left)
         right = try_and_convert_array(right)
         ast.replace([:arithmetic, left, op, right])
-      else
-        map_if_required(ast)
       end
     when :prefix
       op, left = ast[1], ast[2]
       if left.first == :array
         left = try_and_convert_array(left)
         ast.replace([:prefix, op, left])
-      else
-        map_if_required(ast)
       end
     when :string_join
       strings = ast[1..-1]
       if strings.any? { |s| s.first == :array }
         strings = strings.map { |s| try_and_convert_array(s) }
         ast.replace([:string_join, *strings])
-      else
-        map_if_required(strings)
       end
     when :function
       if ast[1] == :SUMIF && ast[3].first == :array
@@ -66,11 +61,7 @@ class ReplaceArraysWithSingleCellsAst
         # Replacement made in check function
       elsif ast[0] == :function && ast[1] == :INDEX && check_index(ast)
         # Replacement made in check
-      else
-        map_if_required(ast)
       end
-    else
-      map_if_required(ast)
     end
   end
 
