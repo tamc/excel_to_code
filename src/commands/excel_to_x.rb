@@ -245,7 +245,7 @@ class ExcelToX
     self.output_directory = File.expand_path(output_directory)
 
     # For debugging
-    self.dump_steps ||= {[:Sheet1, :C4] => true}
+    self.dump_steps ||= {}
     
     # Set up our log file
     unless self.log

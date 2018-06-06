@@ -10,6 +10,7 @@ class ReplaceArraysWithSingleCellsAst
   def map(ast)
     @need_to_replace = false
     return unless ast.is_a?(Array)
+    map_if_required(ast)
     if ast.first == :array
       @need_to_replace = true
       new_ast = try_and_convert_array(ast)
@@ -37,6 +38,13 @@ class ReplaceArraysWithSingleCellsAst
         left = try_and_convert_array(left)
         right = try_and_convert_array(right)
         ast.replace([:arithmetic, left, op, right])
+      end
+    when :comparison
+      left, op, right = ast[1], ast[2], ast[3]
+      if left.first == :array || right.first == :array
+        left = try_and_convert_array(left)
+        right = try_and_convert_array(right)
+        ast.replace([:comparison, left, op, right])
       end
     when :prefix
       op, left = ast[1], ast[2]
@@ -95,7 +103,7 @@ class ReplaceArraysWithSingleCellsAst
     replacement_made
   end
 
-  def check_if(ast)
+  def check_index(ast)
     replacement_made = false
     if ast[3] && ast[3].first == :array
       replacement_made = true
@@ -108,8 +116,12 @@ class ReplaceArraysWithSingleCellsAst
     replacement_made
   end
 
-  def check_index(ast)
+  def check_if(ast)
     replacement_made = false
+    if ast[2] && ast[2].first == :array
+      replacement_made = true
+      ast[2] = try_and_convert_array(ast[2])
+    end
     if ast[3] && ast[3].first == :array
       replacement_made = true
       ast[3] = try_and_convert_array(ast[3])
@@ -119,6 +131,7 @@ class ReplaceArraysWithSingleCellsAst
       ast[4] = try_and_convert_array(ast[4])
     end
     replacement_made
+
   end
 
   def check_match(ast)

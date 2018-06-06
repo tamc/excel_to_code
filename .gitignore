@@ -19,6 +19,8 @@ examples/stringexample.rb
 examples/test_stringexample.rb
 examples/getsetranges.rb
 examples/test_getsetranges.rb
+examples/ifonrange.rb
+examples/test_ifonrange.rb
 examples/getsetranges/
 examples/utf8-strings/
 examples/offsets/
