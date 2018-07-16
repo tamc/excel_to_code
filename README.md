@@ -37,6 +37,7 @@ See the full list of options:
 
 # Gotchas, limitations and bugs
 
+0. No custom functions, no macros for generating results
 1. Results are cached. So you must call reset(), then set values, then read values.
 2. It must be possible to replace INDIRECT and OFFSET formula with standard references at compile time (e.g., INDIRECT("A"&"1") is fine, INDIRECT(userInput&"3") is not.
 3. Doesn't implement all functions. [See which functions are implemented](docs/Which_functions_are_implemented.md).

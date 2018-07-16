@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.18 beta 1- 2018 July 16
+
 ## New / Changed Excel functions
 
 - Implement CEILING in ruby and C
