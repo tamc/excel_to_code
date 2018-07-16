@@ -26,6 +26,7 @@
 - Add a debug_dump() function for de-bugging
 - Add --persevere switch which will mean will not abort on parse or external reference error so you can see the scale of the problem in a workbook.
 - Better error reporting on external references in named references
+- Add a util/check.rb command to help trace translation errors
 
 ## Bug fixes
 
