@@ -1,6 +1,6 @@
 # Cells
 
-Within a worksheet xml, each cell is inidcated by a <c></c> tag:
+Within a worksheet xml, each cell is indicated by a <c></c> tag:
   <c r="A1" t="b">
   	<f>TRUE</f>
   	<v>1</v>

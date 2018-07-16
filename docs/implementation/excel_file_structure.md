@@ -15,15 +15,15 @@ Withn the top level of this folder will be:
 * docProps - Not much of interest
 * [Content Types].xml - Not sure what this is for
 
-## xl 
+## xl
 
 Contains:
 
-* _rels - Wihin this, workbook.xml.rels contians the mapping from sheet names (given in workbook.xml) to filenames
+* _rels - Within this, workbook.xml.rels contains the mapping from sheet names (given in workbook.xml) to filenames
 * calcChain.xml - Not relevant
 * sharedStrings.xml - Strings used in worksheets are stored here, and then referenced from the worksheet by number
 * styles.xml - Not relevant
-* tables - Contians descriptions of the structured tables, which are referenced from individual worksheets
+* tables - Contains descriptions of the structured tables, which are referenced from individual worksheets
 * theme - Not relevant
 * workbook.xml - Contains the names of worksheets and named references
 * worksheets - Contains the xml files describing individual worksheets
@@ -37,4 +37,3 @@ There appear to be three ways that worksheets are named:
 * A filename (e.g., sheet1.xml), given in _rels/workbook.xml.rels, that actually contains the formulae
 
 The index number and filename may change if a worksheet is added or deleted. Not sure if it changes if worksheets are reordered.
-
