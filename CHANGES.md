@@ -1,5 +1,10 @@
 # Head
 
+## Bug fixes
+
+- Fix replacement of range arguments passed to the OFFSET function
+- Make OFFSET cope with references that have been inlined
+
 # 0.3.18 beta 1- 2018 July 16
 
 ## New / Changed Excel functions

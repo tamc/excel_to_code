@@ -67,6 +67,8 @@ class ReplaceArraysWithSingleCellsAst
         # Replacement made in check_match function
       elsif ast[1] == :INDIRECT && check_indirect(ast)
         # Replacement made in check function
+      elsif ast[1] == :OFFSET && check_offset(ast)
+        # Replacement made in check function
       elsif ast[0] == :function && ast[1] == :INDEX && check_index(ast)
         # Replacement made in check
       end
@@ -145,6 +147,32 @@ class ReplaceArraysWithSingleCellsAst
     return false unless ast[2].first == :array
     ast[2] = try_and_convert_array(ast[2])
     true
+  end
+
+  def check_offset(ast)
+    replacement_made = false
+    #We ALWAYS leave the reference unchanged
+    #if ast[2] && ast[2].first == :array 
+    #  replacement_made = true
+    #  ast[2] = try_and_convert_array(ast[2])
+    #end
+    if ast[3] && ast[3].first == :array
+      replacement_made = true
+      ast[3] = try_and_convert_array(ast[3])
+    end
+    if ast[4] && ast[4].first == :array
+      replacement_made = true
+      ast[4] = try_and_convert_array(ast[4])
+    end
+    if ast[5] && ast[5].first == :array
+      replacement_made = true
+      ast[5] = try_and_convert_array(ast[5])
+    end
+    if ast[6] && ast[6].first == :array
+      replacement_made = true
+      ast[6] = try_and_convert_array(ast[6])
+    end
+    replacement_made
   end
 
   def check_sumifs(ast)

@@ -38,6 +38,8 @@ describe ReplaceArraysWithSingleCellsAst do
 
   r.map([:function, :INDIRECT, [:string_join, ast, ast_vertical]]).should == [:function, :INDIRECT, [:string_join, [:sheet_reference, :"sheet1", [:cell, :"B1"]], [:sheet_reference, :sheet1, [:cell, :A2]]]]
 
+  r.map([:function, :OFFSET,  ast_vertical, ast_vertical, ast_vertical, ast_vertical, ast_vertical]).should == [:function, :OFFSET, ast_vertical, [:sheet_reference, :sheet1, [:cell, :A2]], [:sheet_reference, :sheet1, [:cell, :A2]], [:sheet_reference, :sheet1, [:cell, :A2]], [:sheet_reference, :sheet1, [:cell, :A2]]]
+
   sumifast = [:function, :SUMIF, ast_vertical, ast_vertical ] 
   sumifast_result = [:function, :SUMIF, ast_vertical, [:sheet_reference, :sheet1, [:cell, :A3]]]
   r.ref = [:sheet1, :B3]
@@ -101,7 +103,6 @@ describe ReplaceArraysWithSingleCellsAst do
     input = [:arithmetic, [:function, :INDEX, array1, [:number, 0], array2], [:operator, :-], array3]
     expected = [:arithmetic, [:function, :INDEX, array1, [:number, 0], [:sheet_reference, :"sheet1", [:cell, :"A2"]]], [:operator, :-], [:sheet_reference, :"sheet1", [:cell, :"A3"]]]
     actual = r.map(input)
-    puts "actual = #{actual}"
     actual.should == expected
   end
 
