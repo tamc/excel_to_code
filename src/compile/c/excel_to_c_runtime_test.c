@@ -1239,6 +1239,20 @@ int test_functions() {
     "curve_5(blank, 2023, 0, 10, 10) == 5"
   );
 
+  // CONVERSION ERROR RESET
+  assert(conversion_error == 0);
+  assert_equal(
+    VALUE,
+    curve_5(
+      EXCEL_STRING("s"),
+      EXCEL_STRING("Should be a number"),
+      VALUE,
+      EXCEL_NUMBER(10),
+      EXCEL_NUMBER(10)
+    ),
+    "A messed up curve call"
+  );
+  assert(conversion_error == 0);
 
   // Release memory
   free_all_allocated_memory();
@@ -1248,6 +1262,8 @@ int test_functions() {
 
   return 0;
 }
+
+
 
 int main() {
   return test_functions();

@@ -305,7 +305,7 @@ static double number_from(ExcelValue v) {
   return 0;
 }
 
-#define NUMBER(value_name, name) double name; if(value_name.type == ExcelError) { return value_name; }; name = number_from(value_name);
+#define NUMBER(value_name, name) double name; if(value_name.type == ExcelError) { conversion_error = 0; return value_name; }; name = number_from(value_name);
 #define CHECK_FOR_CONVERSION_ERROR 	if(conversion_error) { conversion_error = 0; return VALUE; };
 #define CHECK_FOR_PASSED_ERROR(name) 	if(name.type == ExcelError) return name;
 
@@ -465,6 +465,7 @@ static ExcelValue rate(ExcelValue periods_v, ExcelValue payment_v, ExcelValue pr
   NUMBER(payment_v, payment)
   NUMBER(presentValue_v, presentValue)
   NUMBER(finalValue_v, finalValue)
+  CHECK_FOR_CONVERSION_ERROR;
 
   // FIXME: Only implemented the case where payment is zero
   if(payment != 0) {
@@ -1777,11 +1778,10 @@ static ExcelValue rank(ExcelValue number_v, ExcelValue range_v, ExcelValue order
 
   NUMBER(number_v, number)
   NUMBER(order_v, order)
+	CHECK_FOR_CONVERSION_ERROR
 
   ExcelValue *array;
   int size;
-
-	CHECK_FOR_CONVERSION_ERROR
 
   if(range_v.type != ExcelRange) {
     array = new_excel_value_array(1);
@@ -2821,6 +2821,11 @@ static ExcelValue curve_5(ExcelValue curveType, ExcelValue currentYear, ExcelVal
 }
 
 static ExcelValue scurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
+	CHECK_FOR_PASSED_ERROR(currentYear_v)
+	CHECK_FOR_PASSED_ERROR(startValue_v)
+	CHECK_FOR_PASSED_ERROR(endValue_v)
+	CHECK_FOR_PASSED_ERROR(duration_v)
+	CHECK_FOR_PASSED_ERROR(startYear_v)
 
 	NUMBER(currentYear_v, currentYear)
 	NUMBER(startValue_v, startValue)
@@ -2844,6 +2849,11 @@ static ExcelValue scurve(ExcelValue currentYear_v, ExcelValue startValue_v, Exce
 }
 
 static ExcelValue halfscurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
+	CHECK_FOR_PASSED_ERROR(currentYear_v)
+	CHECK_FOR_PASSED_ERROR(startValue_v)
+	CHECK_FOR_PASSED_ERROR(endValue_v)
+	CHECK_FOR_PASSED_ERROR(duration_v)
+	CHECK_FOR_PASSED_ERROR(startYear_v)
 
 	NUMBER(currentYear_v, currentYear)
 	NUMBER(startValue_v, startValue)
@@ -2867,6 +2877,11 @@ static ExcelValue halfscurve(ExcelValue currentYear_v, ExcelValue startValue_v, 
 }
 
 static ExcelValue lcurve(ExcelValue currentYear_v, ExcelValue startValue_v, ExcelValue endValue_v, ExcelValue duration_v, ExcelValue startYear_v) {
+	CHECK_FOR_PASSED_ERROR(currentYear_v)
+	CHECK_FOR_PASSED_ERROR(startValue_v)
+	CHECK_FOR_PASSED_ERROR(endValue_v)
+	CHECK_FOR_PASSED_ERROR(duration_v)
+	CHECK_FOR_PASSED_ERROR(startYear_v)
 
 	NUMBER(currentYear_v, currentYear)
 	NUMBER(startValue_v, startValue)
