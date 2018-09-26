@@ -6,6 +6,7 @@
 - Make OFFSET cope with references that have been inlined
 - Add some missing error checks to C versions of functions
 - Increase maximum number of simplifying passes from 20 to 50
+- Make it harder for simplifications to accidentally trample on named reference setters
 
 # 0.3.18 beta 1- 2018 July 16
 

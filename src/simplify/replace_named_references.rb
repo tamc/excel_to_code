@@ -5,16 +5,31 @@ class NamedReferences
   def initialize(refs, tables = {})
     @named_references = refs
     @table_data = tables
+    @deepCopyCache = {}
   end
   
   def reference_for(sheet,named_reference)
     sheet = sheet.downcase
     named_reference = named_reference.downcase.to_sym
-    @named_references[[sheet, named_reference]] ||
+    ref = @named_references[[sheet, named_reference]] ||
     @named_references[named_reference] ||
     @table_data[named_reference] ||
     [:error, :"#NAME?"]
+    return @deepCopyCache[ref] if @deepCopyCache.key?(ref)
+    copy = deep_copy(ref)
+    @deepCopyCache[ref] = copy
+    return copy
   end
+
+  def deep_copy(ast)
+    return ast if ast.is_a?(Symbol)
+    return ast if ast.is_a?(Numeric)
+    return ast.dup unless ast.is_a?(Array)
+    ast.map do |a|
+      deep_copy(a)
+    end
+  end
+
   
 end
 

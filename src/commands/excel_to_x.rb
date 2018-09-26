@@ -342,7 +342,7 @@ class ExcelToX
       begin
         parsed = CachingFormulaParser.parse(reference, treat_external_references_as_local)
         if parsed
-          @named_references[name] = parsed
+          @named_references[name] = deep_copy(parsed)
         else
           $stderr.puts "Named reference #{name} #{reference} not parsed"
           exit
@@ -363,6 +363,15 @@ class ExcelToX
 
   end
 
+	def deep_copy(ast)
+		return ast if ast.is_a?(Symbol)
+		return ast if ast.is_a?(Numeric)
+		return ast.dup unless ast.is_a?(Array)
+		ast.map do |a|
+			deep_copy(a)
+		end
+	end
+
   # Named references can be simple cell references, 
   # or they can be ranges, or errors, or table references
   # this function converts all the different types into
@@ -375,7 +384,7 @@ class ExcelToX
     @named_references.each do |name, reference|
       reference = table_reference_replacer.map(reference)
       reference = @replace_ranges_with_array_literals_replacer.map(reference)
-      @named_references[name] = reference
+      @named_references[name] = deep_copy(reference)
     end
 
   end
