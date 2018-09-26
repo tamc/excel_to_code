@@ -5,6 +5,7 @@
 - Fix replacement of range arguments passed to the OFFSET function
 - Make OFFSET cope with references that have been inlined
 - Add some missing error checks to C versions of functions
+- Increase maximum number of simplifying passes from 20 to 50
 
 # 0.3.18 beta 1- 2018 July 16
 

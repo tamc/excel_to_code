@@ -1133,7 +1133,7 @@ class ExcelToX
       replacements_made_in_the_last_pass += indirect_replacement.count_replaced
 
       log.info "Pass #{number_of_passes}: Made #{replacements_made_in_the_last_pass} replacements"
-    end while replacements_made_in_the_last_pass > 0 && number_of_passes < 20
+    end while replacements_made_in_the_last_pass > 0 && number_of_passes < 50
   end
 
   
