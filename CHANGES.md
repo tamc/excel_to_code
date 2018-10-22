@@ -2,6 +2,7 @@
 
 ## Bug fixes
 
+- Treat comparators as values when extracting common elements from formulae
 - Fix replacement of range arguments passed to the OFFSET function
 - Make OFFSET cope with references that have been inlined
 - Add some missing error checks to C versions of functions
