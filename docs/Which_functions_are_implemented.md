@@ -366,7 +366,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * REPT -- Repeats text a given number of times
 * RIGHT, RIGHTB -- Returns the rightmost characters from a text value -- _R_ _C_ 
 * SEARCH, SEARCHB -- Finds one text value within another (not case-sensitive)
-* SUBSTITUTE -- Substitutes new text for old text in a text string -- _R_
+* SUBSTITUTE -- Substitutes new text for old text in a text string -- _R_ _C_
 * T -- Converts its arguments to text
 * TEXT -- Formats a number and converts it to text
 * TRIM -- Removes spaces from text - _R_

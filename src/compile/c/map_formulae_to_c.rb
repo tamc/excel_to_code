@@ -97,6 +97,8 @@ class MapFormulaeToC < MapValuesToC
     :'ROUNDUP' => 'roundup',
     :'string_join' => 'string_join',
     :'SUBTOTAL' => 'subtotal',
+    :'SUBSTITUTE3' => 'substitute_3',
+    :'SUBSTITUTE4' => 'substitute_4',
     :'SUM' => 'sum',
     :'SUMIF2' => 'sumif_2',
     :'SUMIF3' => 'sumif',

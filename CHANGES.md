@@ -2,6 +2,7 @@
 
 ## Bug fixes
 
+- Implement SUBSTITUTE in C
 - Treat comparators as values when extracting common elements from formulae
 - Fix replacement of range arguments passed to the OFFSET function
 - Make OFFSET cope with references that have been inlined

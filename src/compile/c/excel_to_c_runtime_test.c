@@ -1213,6 +1213,12 @@ int test_functions() {
   assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ZERO).number == -130);
   assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ONE).number == -140);
 
+  // SUBSTITUTE 3
+  assert_equal(EXCEL_STRING("Hello Bob, Dear Bob"), substitute_3(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bill"), EXCEL_STRING("Frank")), "substitute('Hello Bob, Dear Bob', 'Bill', 'Frank') = 'Hello Bob, Dear Bob')");
+  assert_equal(EXCEL_STRING("Hello Frank, Dear Frank"), substitute_3(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bob"), EXCEL_STRING("Frank")), "substitute('Hello Bob, Dear Bob', 'Bob', 'Frank') = 'Hello Frank, Dear Frank')");
+  assert_equal(EXCEL_STRING("Hello Bob, Dear Frank"), substitute_4(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bob"), EXCEL_STRING("Frank"), TWO), "substitute('Hello Bob, Dear Bob', 'Bob', 'Frank', 2) = 'Hello Bob, Dear Frank')");
+  assert_equal(EXCEL_STRING("Hello Bob, Dear Bob"), substitute_4(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bob"), EXCEL_STRING("Frank"), THREE), "substitute('Hello Bob, Dear Bob', 'Bob', 'Frank', 3) = 'Hello Bob, Dear Bob')");
+
   // curve (a custom climact function)
   assert_equal(
     EXCEL_NUMBER(4.99),
