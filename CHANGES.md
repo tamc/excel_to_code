@@ -2,6 +2,7 @@
 
 ## Bug fixes
 
+- Make conditional criteria (e.g., ">10") in countif/sumif/countifs/sumifs robust to spaces (e.g., "> 10")
 - Implement SUBSTITUTE in C
 - Treat comparators as values when extracting common elements from formulae
 - Fix replacement of range arguments passed to the OFFSET function
