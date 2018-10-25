@@ -585,6 +585,8 @@ int test_functions() {
 
   ExcelValue sumifs_array_10f[] = { sumifs_array_3_v, EXCEL_STRING(">=3")};
   assert(sumifs(sumifs_array_3_v,2, sumifs_array_10f).number == 17);
+  ExcelValue sumifs_array_10g[] = { sumifs_array_3_v, EXCEL_STRING(" >= 3")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10g).number == 17);
 
   // ... BLANK in check range should match empty strings, BLANK in criteria should match zero
   ExcelValue sumifs_array_11[] = { BLANK, EXCEL_NUMBER(0)};
