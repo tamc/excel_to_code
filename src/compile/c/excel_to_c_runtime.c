@@ -2463,18 +2463,30 @@ static ExcelValue countifs(int number_of_arguments, ExcelValue *arguments) {
 
     if(current_value.type == ExcelString) {
       s = current_value.string;
+      while(s[0] == ' ') {
+        s = s + 1;
+      }
       if(s[0] == '<') {
         if( s[1] == '>') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = NotEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = LessThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = LessThan;
@@ -2482,17 +2494,26 @@ static ExcelValue countifs(int number_of_arguments, ExcelValue *arguments) {
         }
       } else if(s[0] == '>') {
         if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = MoreThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = MoreThan;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         }
       } else if(s[0] == '=') {
+        while(s[1] == ' ') {
+          s = s + 1;
+        }
         new_comparator = strndup(s+1,strlen(s)-1);
         free_later(new_comparator);
         criteria[i].type = Equal;

@@ -660,6 +660,9 @@ int test_functions() {
   ExcelValue countifs_array_10e[] = { countifs_array_3_v, EXCEL_STRING(">3")};
   assert(countifs(2, countifs_array_10e).number == 3.0);
 
+  ExcelValue countifs_array_10e2[] = { countifs_array_3_v, EXCEL_STRING("> 3")};
+  assert(countifs(2, countifs_array_10e2).number == 3.0);
+
   ExcelValue countifs_array_10f[] = { countifs_array_3_v, EXCEL_STRING(">=3")};
   assert(countifs(2, countifs_array_10f).number == 4.0);
 
