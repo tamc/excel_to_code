@@ -1,9 +1,13 @@
 # Head
 
+## New / Changed Excel functions
+
+- Implement MROUND in C and Ruby
+- Implement SUBSTITUTE in C
+
 ## Bug fixes
 
 - Make conditional criteria (e.g., ">10") in countif/sumif/countifs/sumifs robust to spaces (e.g., "> 10")
-- Implement SUBSTITUTE in C
 - Treat comparators as values when extracting common elements from formulae
 - Fix replacement of range arguments passed to the OFFSET function
 - Make OFFSET cope with references that have been inlined
@@ -11,7 +15,7 @@
 - Increase maximum number of simplifying passes from 20 to 50
 - Make it harder for simplifications to accidentally trample on named reference setters
 
-# 0.3.18 beta 1- 2018 July 16
+# 0.3.18 beta 1 - 2018 July 16
 
 ## New / Changed Excel functions
 

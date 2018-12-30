@@ -86,6 +86,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue mround(ExcelValue value_v, ExcelValue multiple_v);
 static ExcelValue na();
 static ExcelValue negative(ExcelValue a_v);
 static ExcelValue excel_not(ExcelValue a_v);
@@ -519,6 +520,29 @@ static ExcelValue rate(ExcelValue periods_v, ExcelValue payment_v, ExcelValue pr
   }
 
   return EXCEL_NUMBER(pow((finalValue/(-presentValue)),(1.0/periods))-1.0);
+}
+
+static ExcelValue mround(ExcelValue value_v, ExcelValue multiple_v) {
+  CHECK_FOR_PASSED_ERROR(value_v)
+  CHECK_FOR_PASSED_ERROR(multiple_v)
+
+  NUMBER(value_v, value)
+  NUMBER(multiple_v, multiple)
+  CHECK_FOR_CONVERSION_ERROR;
+
+  if( (value < 0) != (multiple < 0)) {
+    return NUM;
+  }
+
+  if(value == 0) {
+    return ZERO;
+  }
+
+  if(multiple == 0) {
+    return ZERO;
+  }
+
+  return EXCEL_NUMBER(round(value / multiple) * multiple);
 }
 
 static ExcelValue excel_and(int array_size, ExcelValue *array) {

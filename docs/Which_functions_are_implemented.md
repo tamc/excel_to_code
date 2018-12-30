@@ -226,7 +226,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * MINVERSE -- Returns the matrix inverse of an array
 * MMULT -- Returns the matrix product of two arrays -- _R_ _C_ but posibly only when as array formula
 * MOD -- Returns the remainder from division -- _R_ _C_
-* MROUND -- Returns a number rounded to the desired multiple
+* MROUND -- Returns a number rounded to the desired multiple -- _R_ _C_
 * MULTINOMIAL -- Returns the multinomial of a set of numbers
 * ODD -- Rounds a number up to the nearest odd integer
 * PI -- Returns the value of pi

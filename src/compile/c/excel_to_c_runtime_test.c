@@ -1217,6 +1217,15 @@ int test_functions() {
   assert(excel_ceiling_math(EXCEL_NUMBER(136), EXCEL_NUMBER(10), ZERO).number == 140);
   assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ZERO).number == -130);
   assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ONE).number == -140);
+  
+  // MROUND
+  assert(mround(EXCEL_NUMBER(1), ZERO).number == 0.0);
+  assert(mround(ZERO, EXCEL_NUMBER(1)).number == 0.0);
+  assert(mround(EXCEL_NUMBER(1), EXCEL_NUMBER(1)).number == 1.0);
+  assert(mround(EXCEL_NUMBER(105), EXCEL_NUMBER(10)).number == 110);
+  assert(mround(EXCEL_NUMBER(1.05), EXCEL_NUMBER(0.1)).number == 1.10);
+  assert(mround(EXCEL_NUMBER(-1.05), EXCEL_NUMBER(-0.1)).number == -1.10);
+  assert(mround(EXCEL_NUMBER(-1.05), EXCEL_NUMBER(0.1)).type == ExcelError);
 
   // SUBSTITUTE 3
   assert_equal(EXCEL_STRING("Hello Bob, Dear Bob"), substitute_3(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bill"), EXCEL_STRING("Frank")), "substitute('Hello Bob, Dear Bob', 'Bill', 'Frank') = 'Hello Bob, Dear Bob')");
