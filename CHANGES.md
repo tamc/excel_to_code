@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.18 beta 2 - 2018 December 30
+
 ## New / Changed Excel functions
 
 - Implement MROUND in C and Ruby
