@@ -1,7 +1,7 @@
-// /home/tamc/Documents/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx approximately translated into C
+// /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx approximately translated into C
 // definitions
 #define NUMBER_OF_REFS 349
-#define EXCEL_FILENAME  "/home/tamc/Documents/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"
+#define EXCEL_FILENAME  "/Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx"
 // end of definitions
 
 // First we have c versions of all the excel functions that we know
@@ -93,6 +93,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue mround(ExcelValue value_v, ExcelValue multiple_v);
 static ExcelValue na();
 static ExcelValue negative(ExcelValue a_v);
 static ExcelValue excel_not(ExcelValue a_v);
@@ -526,6 +527,29 @@ static ExcelValue rate(ExcelValue periods_v, ExcelValue payment_v, ExcelValue pr
   }
 
   return EXCEL_NUMBER(pow((finalValue/(-presentValue)),(1.0/periods))-1.0);
+}
+
+static ExcelValue mround(ExcelValue value_v, ExcelValue multiple_v) {
+  CHECK_FOR_PASSED_ERROR(value_v)
+  CHECK_FOR_PASSED_ERROR(multiple_v)
+
+  NUMBER(value_v, value)
+  NUMBER(multiple_v, multiple)
+  CHECK_FOR_CONVERSION_ERROR;
+
+  if( (value < 0) != (multiple < 0)) {
+    return NUM;
+  }
+
+  if(value == 0) {
+    return ZERO;
+  }
+
+  if(multiple == 0) {
+    return ZERO;
+  }
+
+  return EXCEL_NUMBER(round(value / multiple) * multiple);
 }
 
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
@@ -2198,18 +2222,30 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
 
     if(current_value.type == ExcelString) {
       s = current_value.string;
+      while(s[0] == ' ') {
+        s = s + 1;
+      }
       if(s[0] == '<') {
         if( s[1] == '>') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = NotEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = LessThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = LessThan;
@@ -2217,17 +2253,26 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
         }
       } else if(s[0] == '>') {
         if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = MoreThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = MoreThan;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         }
       } else if(s[0] == '=') {
+        while(s[1] == ' ') {
+          s = s + 1;
+        }
         new_comparator = strndup(s+1,strlen(s)-1);
         free_later(new_comparator);
         criteria[i].type = Equal;
@@ -2449,18 +2494,30 @@ static ExcelValue countifs(int number_of_arguments, ExcelValue *arguments) {
 
     if(current_value.type == ExcelString) {
       s = current_value.string;
+      while(s[0] == ' ') {
+        s = s + 1;
+      }
       if(s[0] == '<') {
         if( s[1] == '>') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = NotEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = LessThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = LessThan;
@@ -2468,17 +2525,26 @@ static ExcelValue countifs(int number_of_arguments, ExcelValue *arguments) {
         }
       } else if(s[0] == '>') {
         if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = MoreThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = MoreThan;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         }
       } else if(s[0] == '=') {
+        while(s[1] == ' ') {
+          s = s + 1;
+        }
         new_comparator = strndup(s+1,strlen(s)-1);
         free_later(new_comparator);
         criteria[i].type = Equal;
