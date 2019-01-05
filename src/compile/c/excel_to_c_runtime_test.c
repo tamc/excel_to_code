@@ -895,6 +895,8 @@ int test_functions() {
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("#,##")).string, "123,456,789") == 0);
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("#,##0")).string, "123,456,789") == 0);
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("#,##0.0")).string, "123,456,789.1") == 0);
+  assert(strcmp(text(EXCEL_NUMBER(3.1), EXCEL_STRING("#,000")).string, "003") == 0);
+  assert(strcmp(text(EXCEL_NUMBER(1000.3), EXCEL_STRING("#,000")).string, "1,000") == 0);
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("!#,##0.0")).string, "Text format not recognised") == 0);
 
   // Test LOG

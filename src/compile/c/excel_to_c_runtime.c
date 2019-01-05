@@ -2913,6 +2913,8 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     snprintf(s, 99, "%'0.3f",number_v.number);
   } else if(strcmp(format_v.string,"0000") == 0) {
     snprintf(s, 99, "%04.0f",number_v.number);
+  } else if(strcmp(format_v.string,"#,000") == 0) {
+    snprintf(s, 99, "%'03.0f",number_v.number);
   } else {
     snprintf(s, 99, "Text format not recognised");
   }

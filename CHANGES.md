@@ -1,5 +1,9 @@
 # Head
 
+## Bug fixes
+
+- Implement the '#,000' format in Ruby and C versions of the TEXT function
+
 # 0.3.18 beta 2 - 2018 December 30
 
 ## New / Changed Excel functions
