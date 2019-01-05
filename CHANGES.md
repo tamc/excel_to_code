@@ -1,5 +1,7 @@
 # Head
 
+# 0.3.18 - 2018 January 5 
+
 ## Bug fixes
 
 - Implement the '#,000' format in Ruby and C versions of the TEXT function
