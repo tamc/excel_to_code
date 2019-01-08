@@ -1,5 +1,11 @@
 # Head
 
+# 0.3.19 - 2018 January 8
+
+## Bug fixes
+
+- Remove unused Object#try (thank you slisser)
+
 # 0.3.18 - 2018 January 5 
 
 ## Bug fixes
