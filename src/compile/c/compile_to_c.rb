@@ -2,14 +2,14 @@ require_relative 'map_formulae_to_c'
 require 'set'
 
 class CompileToC
-  
+
   attr_accessor :settable
   attr_accessor :gettable
   attr_accessor :variable_set_counter
   attr_accessor :variable_set_sheet_hash
   attr_accessor :recursion_prevention_sheet_hash
   attr_accessor :allow_unknown_functions
-  
+
   def self.rewrite(*args)
     self.new.rewrite(*args)
   end
@@ -37,7 +37,7 @@ class CompileToC
         worksheet_c_name = mapper.sheet_names[worksheet.to_s] || worksheet.to_s
         calculation = mapper.map(ast)
         name = worksheet_c_name.length > 0 ? "#{worksheet_c_name}_#{cell.downcase}" : cell.downcase
-        
+
         # Declare function as static so it can be inlined where possible
         static_or_not = gettable.call(ref) ? "" : "static "
 
@@ -79,10 +79,12 @@ class CompileToC
             output.puts
           end
         end
-        @variable_set_sheet_hash[worksheet.to_s.downcase].add(@variable_set_counter)
-        @recursion_prevention_sheet_hash[worksheet.to_s.downcase].add(@variable_set_counter)
-        @variable_set_counter += 1
-        @recursion_prevention_counter += 1
+        unless worksheet_c_name.empty?
+          @variable_set_sheet_hash[worksheet_c_name].add(@variable_set_counter)
+          @recursion_prevention_sheet_hash[worksheet_c_name].add(@variable_set_counter)
+          @variable_set_counter += 1
+          @recursion_prevention_counter += 1
+        end
         mapper.reset
       rescue Exception => e
         puts "Exception at #{ref} #{ast}"
