@@ -10,10 +10,6 @@
   #define NUMBER_OF_REFS 0
 #endif
 
-
-
-
-
 #ifndef EXCEL_FILENAME
   #define EXCEL_FILENAME "NoExcelFilename"
 #endif
@@ -3027,7 +3023,7 @@ static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
       {
         if (strstr(possible_match_v.string, lookup_value_v.string) != NULL)
           last_good_match = i;
-      } else 
+      } else
       {
         if(more_than(possible_match_v,lookup_value_v).number == true) {
           if(i == 0) return NA;

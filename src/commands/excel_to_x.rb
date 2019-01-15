@@ -14,27 +14,27 @@ require_relative '../excel_to_code'
 # FIXME: Replacing with c compatible names everywhere
 
 class ExcelToX
-
+  
   # Required attribute. The source excel file. This must be .xlsx not .xls
   attr_accessor :excel_file
-
+  
   # Optional attribute. The output directory.
   #  If not specified, will be '#{excel_file_name}/c'
   attr_accessor :output_directory
-
+  
   # Optional attribute. The name of the resulting ruby or c file and ruby or ruby ffi module name. Defaults to excelspreadsheet
   attr_accessor :output_name
 
   # Optional attribute. The excel file will be translated to xml and stored here.
   # If not specified, will be '#{excel_file_name}/xml'
   attr_accessor :xml_directory
-
+  
   # Optional attribute. Specifies which cells have setters created in the c code so their values can be altered at runtime.
-  # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet
+  # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
   # should be setable, or an array of cell names on that sheet that should be settable (e.g., A1)
   attr_accessor :cells_that_can_be_set_at_runtime
 
-  # Optional attribute. Specifies which named references to be turned into setters.
+  # Optional attribute. Specifies which named references to be turned into setters. 
   #
   # NB: Named references are assumed to include table names.
   #
@@ -52,7 +52,7 @@ class ExcelToX
   #
   # By default no named references are output
   attr_accessor :named_references_that_can_be_set_at_runtime
-
+  
   # Optional attribute. Specifies which cells must appear in the final generated code.
   # The default is that all cells in the original spreadsheet appear in the final code.
   #
@@ -62,10 +62,10 @@ class ExcelToX
   #    * specified as a cell that can be set at runtime
   # may be excluded from the final generated code.
   #
-  # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet
+  # It is a hash. The keys are the sheet names. The values are either the symbol :all to specify that all cells on that sheet 
   # should be lept, or an array of cell names on that sheet that should be kept (e.g., A1)
   attr_accessor :cells_to_keep
-
+ 
   # Optional attribute. Specifies which named references should be included in the output
   #
   # NB: Named references are assumed to include table names.
@@ -85,17 +85,17 @@ class ExcelToX
   #
   # By default, no named references are output
   attr_accessor :named_references_to_keep
-
+  
   # Optional attribute. Boolean. Not relevant to all types of code output
   #   * true - the generated c code is compiled
   #   * false - the generated c code is not compiled (default, unless actuall_run_tests is specified as true)
   attr_accessor :actually_compile_code
 
-  # Optional attribute. Boolean.
+  # Optional attribute. Boolean. 
   #   * true - the generated tests are run
   #   * false (default) - the generated tests are not run
   attr_accessor :actually_run_tests
-
+  
   # This is the log file, if set it needs to respond to the same methods as the standard logger library
   attr_accessor :log
 
@@ -108,7 +108,7 @@ class ExcelToX
   #   * true (default) - the compiler attempts to inline any calculation that is done in another cell, but only referred to by this cell. This should increase performance
   #   * false - the compiler leaves calculations in their original cells expanded. This may make debugging easier
   attr_accessor :should_inline_formulae_that_are_only_used_once
-
+  
   # Optional attribute, Boolean.
   #   * true (default) - the compiler replaces references to blanks with zeros. This should increase performance
   #   * false - the compiler leaves references to blanks. This make setable cells more predicatable and easing debugging.
@@ -122,18 +122,18 @@ class ExcelToX
 
   # Optional attribute, Array. Default nil
   # This is used to help debug large spreadsheets that aren't working correctly.
-  # If set to the name of a worksheet then ONLY that worksheet will be run through the
+  # If set to the name of a worksheet then ONLY that worksheet will be run through the 
   # optimisation and simplification code. Will also override cells_to_keep to keep all
   # cells on tha sheet and nothing else.
   attr_accessor :isolate
 
   # Optional attribute, Boolean. Default false
   # If set to true, will persevere through some errors where it can rather than aborting
-  # immediately. This can be helpful in getting to grips with conversion errors on a
-  # really messy sheet, since it allows you to see all the errors at once and which are
+  # immediately. This can be helpful in getting to grips with conversion errors on a 
+  # really messy sheet, since it allows you to see all the errors at once and which are 
   # really fatal.
   attr_accessor :persevere
-
+  
   # This is a private method, default is a hash, keys are cell references.
   # The code will dump debuging information about the given cells as they
   # progress through the conversion
@@ -149,17 +149,17 @@ class ExcelToX
     set_defaults
 
     log.info "Excel to Code version #{ExcelToCode.version}\n\n"
-
+    
     # These turn the excel into xml on disk
     sort_out_output_directories
     unzip_excel
-
+    
     # These gets the named references, worksheet names and shared strings out of the excel
     extract_data_from_workbook
-
+    
     # This gets all the formulae, values and tables out of the worksheets
     extract_data_from_worksheets
-
+    
     # This checks that the user inputs of which cells to keep are in the right
     # format and refer to sheets and references that actually exist
     clean_cells_that_can_be_set_at_runtime
@@ -168,7 +168,7 @@ class ExcelToX
     clean_named_references_to_keep
     clean_named_references_that_can_be_set_at_runtime
 
-    # This is an early check that the functions in the extracted data have
+    # This is an early check that the functions in the extracted data have 
     # all got an implementation in, at least, the ruby code
     check_all_functions_implemented
 
@@ -176,7 +176,7 @@ class ExcelToX
     # into a series of required cell references
     transfer_named_references_to_keep_into_cells_to_keep
     transfer_named_references_that_can_be_set_at_runtime_into_cells_that_can_be_set_at_runtime
-
+    
     # These perform some translations to tsimplify the excel
     # Including:
     # * Turning row and column references (e.g., A:A) to areas, based on the size of the worksheet
@@ -189,14 +189,14 @@ class ExcelToX
     rewrite_shared_formulae_into_normal_formulae
     rewrite_array_formulae
     combine_formulae_types
-
+    
     # These perform a series of transformations to the information
     # with the intent of removing any redundant calculations that are in the excel.
     # Replacing shared strings and named references with their actual values, tidying arithmetic
     simplify_arithmetic
     simplify
 
-    # If nothing has been specified in named_references_that_can_be_set_at_runtime
+    # If nothing has been specified in named_references_that_can_be_set_at_runtime 
     # or in cells_that_can_be_set_at_runtime, then we assume that
     # all value cells should be settable if they are referenced by
     # any other forumla.
@@ -221,7 +221,7 @@ class ExcelToX
 
     # This actually creates the code (implemented in subclasses)
     write_code
-
+    
     # These compile and run the code version of the excel (implemented in subclasses)
     compile_code
     run_tests
@@ -230,28 +230,28 @@ class ExcelToX
 
     log.info "The generated code is available in #{File.join(output_directory)}"
   end
-
+  
   # If an attribute hasn't been specified, specifies a good default value here.
   def set_defaults
     raise ExcelToCodeException.new("No excel file has been specified") unless excel_file
-
+    
     self.output_directory ||= Dir.pwd
     unless self.xml_directory
       self.xml_directory ||= Dir.mktmpdir
       @delete_xml_directory_at_end = true
     end
-
+    
     self.output_name ||= "Excelspreadsheet"
-
+    
     self.cells_that_can_be_set_at_runtime ||= {}
-
+    
     # Make sure the relevant directories exist
     self.excel_file = File.expand_path(excel_file)
     self.output_directory = File.expand_path(output_directory)
 
     # For debugging
     self.dump_steps ||= {}
-
+    
     # Set up our log file
     unless self.log
       self.log = Logger.new(STDOUT)
@@ -287,11 +287,11 @@ class ExcelToX
   end
 
   # Creates any directories that are needed
-  def sort_out_output_directories
+  def sort_out_output_directories    
     FileUtils.mkdir_p(output_directory)
     FileUtils.mkdir_p(xml_directory)
   end
-
+  
   # FIXME: Replace these with pure ruby versions?
   def unzip_excel
     log.info "Removing old folders"
@@ -300,7 +300,7 @@ class ExcelToX
     execute_system_command 'unzip', '-q', excel_file, '-d', xml_directory
   end
 
-  def execute_system_command(*args)
+  def execute_system_command(*args) 
     c = args.shelljoin
     output = `#{c}`
     unless $?.exitstatus == 0
@@ -309,12 +309,12 @@ class ExcelToX
       exit 1
     end
   end
-
+  
   # The excel workbook.xml and allied relationship files knows about
   # shared strings, named references and the actual human readable
-  # names of each of the worksheets.
+  # names of each of the worksheets. 
   #
-  # In this method we also loop through each of the individual
+  # In this method we also loop through each of the individual 
   # worksheet files to work out their dimensions
   def extract_data_from_workbook
     extract_shared_strings
@@ -330,7 +330,7 @@ class ExcelToX
       @shared_strings = ExtractSharedStrings.extract(i)
     end
   end
-
+  
   # Excel keeps a central list of named references. This includes those
   # that are local to a specific worksheet.
   # They are put in a @named_references hash
@@ -357,7 +357,7 @@ class ExcelToX
         if e.respond_to?(:'ref=')
           e.ref = ['Named reference', name]
         end
-        if persevere
+        if persevere 
           $stderr.puts e.message
           $stderr.puts "--persevere true, so setting #{name} = #REF!"
           @named_references[name] = [:error, "#REF!"]
@@ -378,7 +378,7 @@ class ExcelToX
 		end
 	end
 
-  # Named references can be simple cell references,
+  # Named references can be simple cell references, 
   # or they can be ranges, or errors, or table references
   # this function converts all the different types into
   # arrays of cell references
@@ -396,18 +396,18 @@ class ExcelToX
   end
 
   # Excel keeps a list of worksheet names. To get the mapping between
-  # human and computer name  correct we have to look in the workbook
+  # human and computer name  correct we have to look in the workbook 
   # relationships files. We also need to mangle the name into something
   # that will work ok as a filesystem or program name
   def extract_worksheet_names
     log.info "Extracting worksheet names"
-
+    
     worksheet_rids = {}
 
     xml('workbook.xml') do |i|
       worksheet_rids = ExtractWorksheetNames.extract(i) # {'worksheet_name' => 'rId3' ...}
     end
-
+    
     xml_for_rids = {}
     xml('_rels','workbook.xml.rels') do |i|
       xml_for_rids = ExtractRelationships.extract(i) #{ 'rId3' => "worlsheets/sheet1.xml" }
@@ -460,7 +460,7 @@ class ExcelToX
     # Make sure references are of the form A1, not a1 or A$1
     cells_that_can_be_set_at_runtime.keys.each do |sheet|
       next unless cells_that_can_be_set_at_runtime[sheet].is_a?(Array)
-      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map do |reference|
+      cells_that_can_be_set_at_runtime[sheet] = cells_that_can_be_set_at_runtime[sheet].map do |reference| 
         reference.gsub('$','').upcase.to_sym
       end
     end
@@ -470,13 +470,13 @@ class ExcelToX
   # Make sure that all the cell names are upcase symbols and don't have any $ in them
   def clean_cells_to_keep
     return unless cells_to_keep
-
+    
     # Make sure sheet names are symbols
     cells_to_keep.keys.each do |sheet|
       next if sheet.is_a?(Symbol)
       cells_to_keep[sheet.to_sym] = cells_to_keep.delete(sheet)
     end
-
+    
     # Make sure the sheets actually exist
     cells_to_keep.keys.each do |sheet|
       next if @worksheet_xmls.has_key?(sheet)
@@ -489,7 +489,7 @@ class ExcelToX
       next unless cells_to_keep[sheet].is_a?(Array)
       cells_to_keep[sheet] = cells_to_keep[sheet].map { |reference| reference.gsub('$','').upcase.to_sym }
     end
-  end
+  end  
 
   # Make sure named_references_to_keep are lowercase symbols
   def clean_named_references_to_keep
@@ -548,19 +548,19 @@ class ExcelToX
     end
   end
 
-
+  
   # For each worksheet, extract the useful bits from the excel xml
   def extract_data_from_worksheets
     # All are hashes of the format ["SheetName", "A1"] => [:number, "1"]
     # This one has a series of table references
     extractor = ExtractDataFromWorksheet.new
     extractor.persevere = persevere
-
+    
     # Loop through the worksheets
     # FIXME: make xml_filename be the IO object?
     worksheets do |name, xml_filename|
 
-      # This is used in debugging large worksheets to limit
+      # This is used in debugging large worksheets to limit 
       # the optimisation to a particular worksheet
       if isolate
         log.info "Only extracting values from #{name}: #{!isolate.include?(name)}"
@@ -575,7 +575,7 @@ class ExcelToX
     @values = extractor.values
     @formulae_simple = extractor.formulae_simple
     @formulae_shared = extractor.formulae_shared
-    @formulae_shared_targets = extractor.formulae_shared_targets
+    @formulae_shared_targets = extractor.formulae_shared_targets 
     @formulae_array = extractor.formulae_array
     @worksheets_dimensions = extractor.worksheets_dimensions
     @table_rids = extractor.table_rids
@@ -584,7 +584,7 @@ class ExcelToX
     @table_data = {}
     extract_tables
   end
-
+  
   # To extract a table we need to look in the worksheet for table references
   # then we look in the relationships file for the filename that matches that
   # reference and contains the table data. Then we consolidate all the data
@@ -599,9 +599,9 @@ class ExcelToX
       xml(File.join('worksheets','_rels',"#{File.basename(xml_filename)}.rels")) do |i|
         xml_for_rids = ExtractRelationships.extract(i)
       end
-
+      
       # Then extract the individual tables
-      array_of_table_rids.each do |rid|
+      array_of_table_rids.each do |rid| 
         xml(File.join('worksheets', xml_for_rids[rid])) do |i|
           ExtractTable.extract(worksheet_name, i).each do |table_name, details|
             name = table_name.downcase
@@ -624,7 +624,7 @@ class ExcelToX
     @table_data.each do |name, reference|
       @table_data[name] = @replace_ranges_with_array_literals_replacer.map(reference)
     end
-
+    
   end
 
   def check_all_functions_implemented
@@ -638,25 +638,25 @@ class ExcelToX
     end
 
     unless functions_used.empty?
-
+      
       log.fatal "The following functions have not been implemented in excel_to_code #{ExcelToCode.version}:"
 
       functions_used.each do |f|
         log.fatal f.to_s
-      end
-
+      end 
+      
       log.fatal "Check for a new version of excel_to_code at https://github.com/tamc/excel_to_code"
       log.fatal "Or follow the instractions at https://github.com/tamc/excel_to_code/blob/master/doc/How_to_add_a_missing_function.md to implement the function yourself"
       exit
     end
   end
-
+  
   # This makes sure that cells_to_keep includes named_references_to_keep
   def transfer_named_references_to_keep_into_cells_to_keep
     log.info "Transfering named references to keep into cells to keep"
     return unless @named_references_to_keep
     if @named_references_to_keep == :all
-      @named_references_to_keep = @named_references.keys + @table_areas.keys
+      @named_references_to_keep = @named_references.keys + @table_areas.keys 
       # If the user has specified named_references_to_keep == :all, but there are none, fall back
       if @named_references_to_keep.empty?
         log.warn "named_references_to_keep == :all, but no named references found"
@@ -714,7 +714,7 @@ class ExcelToX
       log.error "Weird reference in named reference #{ref}"
     end
   end
-
+  
   # Excel can include references to strings rather than the strings
   # themselves. This harmonises so the strings themselves are always
   # used.
@@ -725,17 +725,17 @@ class ExcelToX
       r.map(ast)
     end
   end
-
-  # In Excel we can have references like A:Z and 5:20 which mean all cells in columns
+  
+  # In Excel we can have references like A:Z and 5:20 which mean all cells in columns 
   # A to Z and all cells in rows 5 to 20 respectively. This function translates these
-  # into more conventional references (e.g., A5:Z20) based on the maximum area that
+  # into more conventional references (e.g., A5:Z20) based on the maximum area that 
   # has been used on a worksheet
   def rewrite_row_and_column_references
     log.info "Rewriting row and column references"
     # FIXME: Refactor
     dimension_objects = {}
-    @worksheets_dimensions.map do |sheet_name, dimension|
-      dimension_objects[sheet_name] = WorksheetDimension.new(dimension)
+    @worksheets_dimensions.map do |sheet_name, dimension| 
+      dimension_objects[sheet_name] = WorksheetDimension.new(dimension) 
     end
     mapper = MapColumnAndRowRangeAst.new(nil, dimension_objects)
 
@@ -755,7 +755,7 @@ class ExcelToX
     end
     # FIXME: Could we now nil off the dimensions? Or do we need for indirects?
   end
-
+  
   # Excel can share formula definitions across cells. This function unshares
   # them so every cell has its own definition
   def rewrite_shared_formulae_into_normal_formulae
@@ -784,7 +784,7 @@ class ExcelToX
     emergency_indirect_replacement_bodge.references = @values
     emergency_indirect_replacement_bodge.tables = @tables
     emergency_indirect_replacement_bodge.named_references = @named_references
-
+    
     @formulae_array.each do |ref, details|
       begin
         @shared_string_replacer.map(details.last)
@@ -829,7 +829,7 @@ class ExcelToX
 
     log.info "Sheet contains #{@formulae.size} cells"
   end
-
+  
   # Turns aritmetic with many arguments (1+2+3+4) into arithmetic with only
   # two arguments (((1+2)+3)+4), taking into account operator precedence.
   def simplify_arithmetic
@@ -839,7 +839,7 @@ class ExcelToX
       simplify_arithmetic_replacer.map(ast)
     end
   end
-
+  
   # This ensures that all gettable and settable values appear in the output
   # even if they are blank in the underlying excel
   def required_references
@@ -866,7 +866,7 @@ class ExcelToX
       end
     end
 
-    # In some situations also need to add the named references
+    # In some situations also need to add the named references 
     if @named_references_to_keep
       @named_references_to_keep.each do |name|
         ref = @named_references[name] || @table_areas[name]
@@ -918,7 +918,7 @@ class ExcelToX
         cell = Reference.for(ref[2][1]).unfix.to_sym
         s = cells_that_can_be_set[sheet]
         if s && ( s == :all || s.include?(cell) )
-          @named_references_that_can_be_set_at_runtime << name
+          @named_references_that_can_be_set_at_runtime << name 
           cells_that_can_be_set_due_to_named_reference[sheet] << cell.to_sym
           cells_that_can_be_set_due_to_named_reference[sheet].uniq!
         end
@@ -932,8 +932,8 @@ class ExcelToX
           s && s.include?(cell)
         end
         if settable
-          @named_references_that_can_be_set_at_runtime << name
-          ref.each do |r|
+          @named_references_that_can_be_set_at_runtime << name 
+          ref.each do |r| 
             sheet = r[1]
             cell = r[2][1].gsub('$','')
             cells_that_can_be_set_due_to_named_reference[sheet] << cell.to_sym
@@ -965,16 +965,16 @@ class ExcelToX
 
   def debug_dump(ref, ast, location = "")
     return unless dump_steps[ref]
-    puts "#{location}: #{ref} = #{ast}"
+    puts "#{location}: #{ref} = #{ast}" 
   end
-
+    
   def simplify(cells = @formulae)
     log.info "Simplifying cells"
 
     @shared_string_replacer ||= ReplaceSharedStringAst.new(@shared_strings)
     @replace_arithmetic_on_ranges_replacer ||= ReplaceArithmeticOnRangesAst.new
     @wrap_formulae_that_return_arrays_replacer ||= WrapFormulaeThatReturnArraysAndAReNotInArraysAst.new
-    @named_reference_replacer ||= ReplaceNamedReferencesAst.new(@named_references, nil, @table_data)
+    @named_reference_replacer ||= ReplaceNamedReferencesAst.new(@named_references, nil, @table_data) 
     @table_reference_replacer ||= ReplaceTableReferenceAst.new(@tables)
     @replace_ranges_with_array_literals_replacer ||= ReplaceRangesWithArrayLiteralsAst.new
     @replace_arrays_with_single_cells_replacer ||= ReplaceArraysWithSingleCellsAst.new
@@ -1046,8 +1046,8 @@ class ExcelToX
     end
     must_keep_in_sheet.include?(ref.last)
   end
-
-  def inline_ast_decision
+  
+  def inline_ast_decision  
     @inline_ast_decision ||= lambda do |sheet, cell, references|
       ref = [sheet,cell]
       if must_keep?(ref)
@@ -1097,7 +1097,7 @@ class ExcelToX
     offset_replacement = ReplaceOffsetsWithReferencesAst.new
     cell_address_replacement = ReplaceCellAddressesWithReferencesAst.new
 
-    begin
+    begin 
       number_of_passes += 1
       log.info "Starting pass #{number_of_passes} on #{@cells_with_formulae.size} cells"
 
@@ -1160,8 +1160,8 @@ class ExcelToX
     end while replacements_made_in_the_last_pass > 0 && number_of_passes < 50
   end
 
-
-
+  
+  
   # If 'cells to keep' are specified, then other cells are removed, unless
   # they are required to calculate the value of a cell in 'cells to keep'.
   def remove_any_cells_not_needed_for_outputs
@@ -1169,8 +1169,8 @@ class ExcelToX
 
     # If 'cells to keep' isn't specified, then ALL cells are kept
     return unless cells_to_keep && !cells_to_keep.empty?
-
-    # Work out what cells the cells in 'cells to keep' need
+    
+    # Work out what cells the cells in 'cells to keep' need 
     # in order to be able to calculate their values
     identifier = IdentifyDependencies.new
     identifier.references = @formulae
@@ -1183,7 +1183,7 @@ class ExcelToX
         end
       end
     end
-
+        
     # On top of that, we don't want to remove any cells
     # that have been specified as 'settable'
     worksheets do |name,xml_filename|
@@ -1191,13 +1191,13 @@ class ExcelToX
       next unless s
       if s == :all
         identifier.add_depedencies_for(name)
-      else
+      else 
         s.each do |ref|
           identifier.add_depedencies_for(name,ref)
         end
       end
     end
-
+    
     # Now we actually go ahead and remove the cells
     r = RemoveCells.new
     r.cells_to_keep = identifier.dependencies
@@ -1206,7 +1206,7 @@ class ExcelToX
     r.rewrite(@values)
     r.rewrite(@cells_with_formulae)
   end
-
+  
   # If a cell is only referenced from one other cell, then it is inlined into that other cell
   # e.g., A1 := B3+B6 ; B1 := A1 + B3 becomes: B1 := (B3 + B6) + B3. A1 is removed.
   def inline_formulae_that_are_only_used_once
@@ -1215,7 +1215,7 @@ class ExcelToX
     # First step is to calculate how many times each cell is referenced by another cell
     counter = CountFormulaReferences.new
     count = counter.count(@formulae)
-
+    
     # This takes the decision:
     # 1. If a cell is in the list of cells to keep, then it is never inlined
     # 2. Otherwise, it is inlined if only one other cell refers to it.
@@ -1227,7 +1227,7 @@ class ExcelToX
         count[[sheet,cell]] == 1 # i.e., inline if used only once
       end
     end
-
+    
     r = InlineFormulaeAst.new
     r.references = @formulae
     r.inline_ast = inline_ast_decision
@@ -1241,11 +1241,11 @@ class ExcelToX
       end
     end
   end
-
+  
   # This comes up with a list of references to test, in the form of a file called 'References to test'.
   # It is structured to contain one reference per row:
   # worksheet_c_name \t ref \t value_ast
-  # These will be sorted so that later refs depend on earlier refs. This should mean that the first test that
+  # These will be sorted so that later refs depend on earlier refs. This should mean that the first test that 
   # fails will be the root cause of the problem
   def create_sorted_references_to_test
     log.info "Creating references to test"
@@ -1254,8 +1254,8 @@ class ExcelToX
 
     # First get the list of references we should test
     @values.each do |ref, value|
-      if !cells_to_keep ||
-          cells_to_keep.empty? ||
+      if !cells_to_keep || 
+          cells_to_keep.empty? || 
           (cells_to_keep[ref.first] && (
             cells_to_keep[ref.first] == :all ||
             cells_to_keep[ref.first].include?(ref.last)
@@ -1280,23 +1280,23 @@ class ExcelToX
   # e.g., A1 := (B1 + B3) + B10; A2 := (B1 + B3) + 3 gets transformed to: Common1 := B1 + B3 ; A1 := Common1 + B10 ; A2 := Common1 + 3
   def separate_formulae_elements
     log.info "Looking for repeated bits of formulae"
-
-
+    
+    
     identifier = IdentifyRepeatedFormulaElements.new
     repeated_elements = identifier.count(@cells_with_formulae)
-
-    # We apply a threshold that something needs to be used twice for us to bother separating it out.
+    
+    # We apply a threshold that something needs to be used twice for us to bother separating it out. 
     # FIXME: This threshold is arbitrary
     repeated_elements.delete_if do |element,count|
       count < 2
     end
-
+    
     # Translate the repeated elements into a code of the form [:cell, "common#{1}"]
     index = 0
     repeated_element_ast = {}
     repeated_elements.each do |ast, count|
       repeated_element_ast[ast.dup] = [:cell, "common#{index}"]
-      index +=1
+      index +=1 
     end
 
     r = ReplaceCommonElementsInFormulae.new
@@ -1313,12 +1313,12 @@ class ExcelToX
     end
 
   end
-
+  
   # This puts back in an optimisation that excel carries out by making sure that
   # two copies of the same value actually refer to the same underlying spot in memory
   def replace_values_with_constants
     log.info "Replacing values with constants"
-
+    
     # First do it in the formulae
     r = MapValuesToConstants.new
     @formulae.each do |ref, ast|
@@ -1331,13 +1331,13 @@ class ExcelToX
 
     @constants = r.constants.invert
   end
-
-  # If nothing has been specified in named_references_that_can_be_set_at_runtime
+  
+  # If nothing has been specified in named_references_that_can_be_set_at_runtime 
   # or in cells_that_can_be_set_at_runtime, then we assume that
   # all value cells should be settable if they are referenced by
   # any other forumla.
   def ensure_there_is_a_good_set_of_cells_that_can_be_set_at_runtime
-    # By this stage, if named_references were set, then cells_that_can_be_set_at_runtime will
+    # By this stage, if named_references were set, then cells_that_can_be_set_at_runtime will 
     # have been set to match
     return unless @cells_that_can_be_set_at_runtime.empty?
     @cells_that_can_be_set_at_runtime = cells_with_settable_values
@@ -1376,13 +1376,13 @@ class ExcelToX
     end
     return settable_cells
   end
-
+  
   # UTILITY FUNCTIONS
 
   def settable
     settable_refs = @cells_that_can_be_set_at_runtime
     if settable_refs
-      lambda { |ref|
+      lambda { |ref| 
         sheet = ref.first
         cell = ref.last
         if settable_refs[sheet]
@@ -1399,11 +1399,11 @@ class ExcelToX
       lambda { |ref| false }
     end
   end
-
+  
   def gettable
     if @cells_to_keep
       gettable_refs = @cells_to_keep
-      lambda { |ref|
+      lambda { |ref| 
         sheet = ref.first
         cell = ref.last
         if gettable_refs[sheet]
@@ -1420,17 +1420,17 @@ class ExcelToX
       lambda { |ref| true }
     end
   end
-
+    
   def c_name_for_worksheet_name(name)
     @worksheet_c_names[name.to_s]
   end
-
+    
   def worksheets
     @worksheet_xmls.each do |name, filename|
       yield name, filename
     end
   end
-
+  
   def xml(*args, &block)
     args.flatten!
     filename = File.join(xml_directory,'xl',*args)
@@ -1447,7 +1447,7 @@ class ExcelToX
       f
     end
   end
-
+  
   def output(*args)
     args.flatten!
     File.open(File.join(output_directory,*args),'w')
@@ -1460,7 +1460,7 @@ class ExcelToX
       f.close
     end
   end
-
+  
   def ruby_module_name
     @ruby_module_name = output_name.sub(/^[a-z\d]*/) { $&.capitalize }
     @ruby_module_name = @ruby_module_name.gsub(/(?:_|(\/))([a-z\d]*)/i) { "#{$1}#{$2.capitalize}" }.gsub('/', '::')

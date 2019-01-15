@@ -31,7 +31,7 @@ class CommonCommandLineOptions
     end
 
     options.on('-s', '--settable INPUT_WORKSHEET', "Translate value cells in INPUT_WORKSHEET as settable variables in the #{generates}.") do |sheet|
-
+       
       command.cells_that_can_be_set_at_runtime = { sheet => :all }
     end
 
@@ -57,16 +57,16 @@ class CommonCommandLineOptions
       puts options
       exit
     end
-
+    
     options.set_summary_width 35
 
   end
-
+  
   def self.parse(options:, command:, arguments:)
     begin
       options.parse!(arguments)
-    rescue OptionParser::ParseError => e
-      STDERR.puts e.message, "\n", options
+    rescue OptionParser::ParseError => e 
+      STDERR.puts e.message, "\n", options 
       return false
     end
 

@@ -18,7 +18,7 @@ class ReplaceReferencesToBlanksWithZeros
     case ast.first
     when :sheet_reference
       return ast unless ast[2][0] == :cell
-      if @named_references.key?(ast[2][1])  
+      if @named_references.key?(ast[2][1])
         sheet = named_references[ast[2][1]][1]
         ref = named_references[ast[2][1]][2].last
       else
