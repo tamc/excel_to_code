@@ -5,7 +5,7 @@ class ReplaceArithmeticOnRangesAst
     ast.each do |a| 
       next unless a.is_a?(Array)
       case ast.first
-      when :error, :null, :space, :prefix, :boolean_true, :boolean_false, :number, :string
+      when :error, :null, :space, :boolean_true, :boolean_false, :number, :string
         next
       when :sheet_reference, :table_reference, :local_table_reference
         next
@@ -15,6 +15,7 @@ class ReplaceArithmeticOnRangesAst
         map(a)
       end
     end
+    prefix(ast) if ast.first == :prefix
     arithmetic(ast) if ast.first == :arithmetic
     comparison(ast) if ast.first == :comparison
     ast
@@ -120,6 +121,18 @@ class ReplaceArithmeticOnRangesAst
         end
       )
     end
+  end
+  
+  # Format [:prefix, symbol, array] 
+  def prefix(ast)
+    symbol, array = ast[1], ast[2]
+    # array on the right next
+    return unless array.first == :array
+    ast.replace(
+      array_map(array) do |cell|
+        [:prefix, symbol, map(cell)]
+      end
+    )
   end
 
   def array_map(array)

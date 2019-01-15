@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require_relative '../src/excel_to_code'
+
+$stderr.puts
+$stderr.puts "WARNING: excel_to_go is unfinished"
+$stderr.puts
+
+command = ExcelToGo.new
+
+opts = OptionParser.new do |opts|
+  CommonCommandLineOptions.set(command: command, options: opts, generates: "Go", extension: "go")
+
+  opts.banner += <<~END
+  
+  \nA note on GOPATH: The generated go file has a dependency, excel.go, which has no further
+  dependencies outside of the core Go packages. This dependency is copied into the same destination 
+  as the generated go file. The tricky bit is how the generated go file can import excel.go
+  given that Go does not like relative references in import statements.
+
+  You can either:
+
+  1. Manually specify the import statement to use with the --import-excel-go [PATH] switch
+  2. Let excel_to_go guess the right path. It will do this by:
+     a. If [output_directory] is under GOPATH, calculating the path relative to GOPATH.
+     b. If [output_directory] has src/ somewhere in its path, calculating the path relative to that
+     c. Falling back to 'excel.go' which you will then have to manually fix.
+
+  END
+
+  opts.on('--import-excel-go [PATH]', 'Manually set the path to be used to import excel.go') do |p|
+    command.excel_go_lib = p
+  end
+
+end
+
+unless CommonCommandLineOptions.parse(options: opts, command: command, arguments: ARGV)
+  exit(-1)
+end
+
+command.go!

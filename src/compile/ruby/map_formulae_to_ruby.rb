@@ -1,10 +1,10 @@
 require_relative 'map_values_to_ruby'
 
 class MapFormulaeToRuby < MapValuesToRuby
-  
+
   attr_accessor :sheet_names
   attr_accessor :worksheet
-  
+
   FUNCTIONS = {
     :'*' => 'multiply',
     :'+' => 'add',
@@ -21,6 +21,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'AND' => 'excel_and',
     :'AVERAGE' => 'average',
     :'AVERAGEIFS' => 'averageifs',
+    :'CEILING' => 'ceiling',
     :'CELL' => 'cell',
     :'CHAR' => 'char',
     :'CHOOSE' => 'choose',
@@ -28,11 +29,15 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'COSH' => 'cosh',
     :'COUNT' => 'count',
     :'COUNTA' => 'counta',
+    :'COUNTIF' => 'countif',
+    :'COUNTIFS' => 'countifs',
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXP' => 'exp',
     :'FIND' => 'find',
+    :'FLOOR' => 'floor',
     :'FORECAST' => 'forecast',
     :'HLOOKUP' => 'hlookup',
+    :'HYPERLINK' => 'hyperlink',
     :'IF' => 'excel_if',
     :'IFERROR' => 'iferror',
     :'INDEX' => 'index',
@@ -54,18 +59,25 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'MIN' => 'min',
     :'MMULT' => 'mmult',
     :'MOD' => 'mod',
+    :'MROUND' => 'mround',
+    :'NA' => 'na',
     :'NOT' => 'excel_not',
     :'NPV' => 'npv',
     :'NUMBER_OR_ZERO' => 'number_or_zero',
+    :'OR' => 'excel_or',
     :'PI' => 'pi',
     :'PMT' => 'pmt',
     :'POWER' => 'power',
+    :'PRODUCT' => 'product',
     :'PV' => 'pv',
     :'RANK' => 'rank',
+    :'RATE' => 'rate',
+    :'REPLACE' => 'replace',
     :'RIGHT' => 'right',
     :'ROUND' => 'round',
     :'ROUNDDOWN' => 'rounddown',
     :'ROUNDUP' => 'roundup',
+    :'SQRT' => 'sqrt',
     :'SUBSTITUTE' => 'substitute',
     :'SUBTOTAL' => 'subtotal',
     :'SUM' => 'sum',
@@ -76,18 +88,24 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'TRIM' => 'trim',
     :'VALUE' => 'value',
     :'VLOOKUP' => 'vlookup',
-    :'^' => 'power'
+    :'^' => 'power',
+    :'_xlfn.CEILING.MATH' => 'ceiling',
+    :'_xlfn.FORECAST.LINEAR' => 'forecast',
+    :'curve' => 'curve',
+    :'halfscurve' => 'halfscurve',
+    :'lcurve' => 'lcurve',
+    :'scurve' => 'scurve'
   }
-  
+
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"
     return "negative(#{map(ast)})"
   end
-  
+
   def brackets(*contents)
     "(#{contents.map { |a| map(a) }.join(',')})"
   end
-  
+
   def arithmetic(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
@@ -104,7 +122,7 @@ class MapFormulaeToRuby < MapValuesToRuby
   def comparison(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
-  
+
   def function(function_name,*arguments)
     if FUNCTIONS.has_key?(function_name)
       "#{FUNCTIONS[function_name]}(#{arguments.map { |a| map(a) }.join(",")})"
@@ -112,21 +130,21 @@ class MapFormulaeToRuby < MapValuesToRuby
       raise NotSupportedException.new("Function #{function_name} not supported")
     end
   end
-  
+
   def cell(reference)
     reference.to_s.downcase.gsub('$','')
   end
-  
+
   def sheet_reference(sheet,reference)
     "#{sheet_names[sheet]}_#{map(reference)}"
   end
-  
+
   def array(*rows)
     "[#{rows.map {|r| map(r)}.join(",")}]"
   end
-  
+
   def row(*cells)
     "[#{cells.map {|r| map(r)}.join(",")}]"
   end
-  
+
 end

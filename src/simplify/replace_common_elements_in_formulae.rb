@@ -16,7 +16,7 @@ class ReplaceCommonElementsInFormulae
     input
   end
 
-  VALUES = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true, :row => true}
+  VALUES = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :sheet_reference => true, :cell => true, :row => true, :comparator => true}
   
   def replace_repeated_formulae(ast)
     return ast unless ast.is_a?(Array)

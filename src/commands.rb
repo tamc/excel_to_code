@@ -1,4 +1,6 @@
 require_relative "commands/excel_to_x"
 require_relative "commands/excel_to_ruby"
 require_relative "commands/excel_to_c"
+require_relative "commands/excel_to_go"
 require_relative "commands/excel_to_test"
+require_relative "commands/common_command_line_options"

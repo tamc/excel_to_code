@@ -19,6 +19,8 @@ examples/stringexample.rb
 examples/test_stringexample.rb
 examples/getsetranges.rb
 examples/test_getsetranges.rb
+examples/ifonrange.rb
+examples/test_ifonrange.rb
 examples/getsetranges/
 examples/utf8-strings/
 examples/offsets/
@@ -32,6 +34,7 @@ spec/commands/excel_to_ruby_output_actual
 spec/test_data/ExampleSpreadsheet
 *.o
 *.dylib
+*.dSYM
 
 examples/offsets.rb
 
@@ -82,3 +85,5 @@ examples/betterif
 examples/Rakefile
 
 src/compile/c/a.out.dSYM/Contents/Info.plist
+.bundle
+.DS_Store

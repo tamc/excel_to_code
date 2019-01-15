@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
 
 describe ReplaceTableReferences do
-  
+
 it "should replace table references with cell and array references" do
 
 input = <<END
@@ -30,7 +30,7 @@ C5\t[:sheet_reference, :Tables, [:area, :B3, :C4]]
 C6\t[:sheet_reference, :"Global assumptions", [:area, :D85, :N90]]
 C7\t[:sheet_reference, :Tables, [:area, :B3, :C4]]
 END
-    
+
 input = StringIO.new(input)
 tables = StringIO.new(tables)
 output = StringIO.new
@@ -39,7 +39,7 @@ r.sheet_name = :Tables
 r.replace(input,tables,output)
 output.string.should == expected_output
 end # /it
-  
+
 it "should replace local table references with cell and array references" do
 
 input = <<END
@@ -53,7 +53,7 @@ END
 expected_output = <<END
 D3	[:arithmetic, [:sheet_reference, :Tables, [:cell, :B3]], [:operator, "+"], [:sheet_reference, :Tables, [:cell, :C3]]]
 END
-    
+
 input = StringIO.new(input)
 tables = StringIO.new(tables)
 output = StringIO.new
@@ -78,7 +78,7 @@ expected_output = <<END
 A3\tA3:C3\t[:sheet_reference, :Tables, [:area, :B3, :C3]]
 A4\tA4:C4\t[:string_join, [:sheet_reference, :Tables, [:cell, :B4]], [:sheet_reference, :Tables, [:cell, :C4]]]
 END
-    
+
 input = StringIO.new(input)
 tables = StringIO.new(tables)
 output = StringIO.new
@@ -103,12 +103,35 @@ expected_output = <<END
 F15\t[:sheet_reference, :"I.a", [:cell, :F14]]
 F15\t[:function, "INDEX", [:function, "INDIRECT", [:string_join, [:string, "'"], [:sheet_reference, :"I.a", [:cell, :F14]], [:string, "'!Year.Matrix"]]], [:function, "MATCH", [:string_join, [:string, "Subtotal."], [:cell, :"$A$2"]], [:function, "INDIRECT", [:string_join, [:string, "'"], [:sheet_reference, :"I.a", [:cell, :F14]], [:string, "'!Year.Modules"]]], [:number, "0"]], [:function, "MATCH", [:sheet_reference, :"I.a", [:cell, :C15]], [:function, "INDIRECT", [:string_join, [:string, "'"], [:sheet_reference, :"I.a", [:cell, :F14]], [:string, "'!Year.Vectors"]]], [:number, "0"]]]
 END
-    
+
 input = StringIO.new(input)
 tables = StringIO.new(tables)
 output = StringIO.new
 r = ReplaceTableReferences.new
 r.sheet_name = :"I.a"
+r.replace(input,tables,output)
+output.string.should == expected_output
+end # /it
+
+it "should replace the first argument of a MATCH with the array form, not the cell form" do
+
+input = <<END
+C4\t[:function, :"MATCH", [:table_reference, "FirstTable", "ColA"], [:table_reference, "FirstTable", "ColA"], [:number, 0]]
+END
+
+tables = <<END
+FirstTable	Tables	B2:C5	0	ColA	ColB
+END
+
+expected_output = <<END
+C4\t[:function, :MATCH, [:sheet_reference, :Tables, [:cell, :B4]], [:sheet_reference, :Tables, [:area, :B3, :B5]], [:number, 0]]
+END
+
+input = StringIO.new(input)
+tables = StringIO.new(tables)
+output = StringIO.new
+r = ReplaceTableReferences.new
+r.sheet_name = :Tables
 r.replace(input,tables,output)
 output.string.should == expected_output
 end # /it

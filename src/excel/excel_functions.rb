@@ -3,6 +3,7 @@ end
 
 # Support functions
 require_relative 'excel_functions/number_argument'
+require_relative 'excel_functions/string_argument'
 require_relative 'excel_functions/reset'
 
 # Constants
@@ -72,7 +73,6 @@ require_relative 'excel_functions/int'
 
 # Other functions
 
-
 require_relative 'excel_functions/cell'
 
 require_relative 'excel_functions/trim'
@@ -124,3 +124,29 @@ require_relative 'excel_functions/char'
 require_relative 'excel_functions/address'
 
 require_relative 'excel_functions/number_or_zero'
+
+require_relative 'excel_functions/countif'
+
+require_relative 'excel_functions/hyperlink'
+
+require_relative 'excel_functions/na'
+
+require_relative 'excel_functions/or'
+
+require_relative 'excel_functions/scurve'
+
+require_relative 'excel_functions/floor'
+
+require_relative 'excel_functions/sqrt'
+
+require_relative 'excel_functions/product'
+
+require_relative 'excel_functions/countifs'
+
+require_relative 'excel_functions/replace'
+
+require_relative 'excel_functions/rate'
+
+require_relative 'excel_functions/ceiling'
+
+require_relative 'excel_functions/mround'

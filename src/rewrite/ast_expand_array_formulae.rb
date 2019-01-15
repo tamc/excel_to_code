@@ -99,6 +99,10 @@ class AstExpandArrayFormulae
   def map_match(ast)
     array_map(ast, false, true, false)
   end
+
+  def map_offset(ast)
+    array_map(ast, true, false, false, false, false)
+  end
   
   def map_subtotal(ast)
     array_map ast, false, *Array.new(ast.length-3,true)
@@ -110,6 +114,10 @@ class AstExpandArrayFormulae
   
   def map_sumif(ast)
     array_map ast, true, false, true
+  end
+
+  def map_countif(*args)
+    array_map args, 'COUNTIF', true, true
   end
   
   def map_sumifs(ast)

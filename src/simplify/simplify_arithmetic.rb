@@ -1,15 +1,15 @@
 class SimplifyArithmeticAst
-  
+
   def map(ast)
     @brackets_to_remove = []
     simplify_arithmetic(ast)
-    remove_brackets
+    remove_brackets(ast)
     ast
   end
 
   def simplify_arithmetic(ast)
     return ast unless ast.is_a?(Array)
-    ast.each do |a| 
+    ast.each do |a|
       simplify_arithmetic(a) if a.is_a?(Array)
     end
     case ast[0]
@@ -17,9 +17,14 @@ class SimplifyArithmeticAst
     when :brackets; @brackets_to_remove << ast
     end
   end
-  
-  def remove_brackets
-    @brackets_to_remove.uniq.each do |ast|
+
+  def remove_brackets(ast)
+    return ast unless ast.is_a?(Array)
+    ast.each do |a|
+      remove_brackets(a) if a.is_a?(Array)
+    end
+    case ast[0]
+    when :brackets
       raise NotSupportedException.new("Multiple arguments not supported in brackets #{ast.inspect}") if ast.size > 2
       ast.replace(ast[1])
     end
@@ -31,7 +36,7 @@ class SimplifyArithmeticAst
     {:'*' => 2,:'/' => 2},
     {:'+' => 3,:'-' => 3}
   ]
-  
+
   def arithmetic(ast)
     # If smaller than 4, will only be a simple operation (e.g., 1+1 or 2*4)
     # If more than 4, will be like 1+2*3 and so needs turning into 1+(2*3)
@@ -54,14 +59,14 @@ class SimplifyArithmeticAst
     end
   end
 end
-  
+
 
 class SimplifyArithmetic
-    
+
   def self.replace(*args)
     self.new.replace(*args)
   end
-  
+
   def replace(input,output)
     rewriter = SimplifyArithmeticAst.new
     input.each_line do |line|

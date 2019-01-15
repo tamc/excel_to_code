@@ -5,78 +5,11 @@ require_relative '../src/excel_to_code'
 command = ExcelToRuby.new
 
 opts = OptionParser.new do |opts|
-  opts.banner = <<-END
-
-A command to approximately translate excel files into c code.
-
-Usage: excel_to_ruby [options] input_excel_file <output_directory>
-  input_excel_file    the name of a .xlsx excel file (i.e., produced by Excel 2007+, not a .xls file) 
-  output_directory    the name of a folder in which to place the generated code. If not specified will have the same name as the input_excel_file, without the .xlsx
-  
-Support: http://github.com/tamc/excel_to_code
-END
-  
-  opts.separator ""
-  opts.separator "Specific options:"
-  
-  opts.on('-v','--version', 'Prints the version number of this code') do 
-    puts ExcelToCode.version
-    exit
-  end
-
-  opts.on('-o','--output-name NAME','Filename to give to c version of code (and associated ruby interface). Defaults to a folder with the same name as the excel file.') do |name|
-    command.output_name = name
-  end
-
-  opts.on('-c','--compile',"Compile the generated code (where relevant)") do
-    command.actually_compile_code = true
-  end
-  
-  opts.on('-r','--run-tests',"Compile the generated code and then run the tests") do
-    command.actually_run_tests = true
-  end
-
-  opts.on('-n','--named-references',"Transfer named references from spreadsheet to generated code") do
-    command.named_references_that_can_be_set_at_runtime = :where_possible
-    command.named_references_to_keep = :all
-  end
-
-  opts.on('-s','--settable WORKSHEET','Make it possible to set the values of cells in this worksheet at runtime. By default no values are settable.') do |sheet|
-    command.cells_that_can_be_set_at_runtime = { sheet => :all }
-  end
-
-  opts.on('-p','--prune-except WORKSHEET',"Remove all cells except those on this worksheet, or that are required to calculate values on that worksheet. By default keeps all cells.") do |sheet|
-    command.cells_to_keep = { sheet => :all }
-  end
-  
-  opts.on('--isolate WORKSHEET', "Only performs translation and optimiation of that one worksheet. Useful for debugging an incorrect translation of a large worksheet") do |sheet|
-    command.isolate = sheet
-  end
-
-  opts.on('-d','--debug', "Does not perform final optimisations of spreadsheet, leaving the resulting code more similar to the original worksheet, but potentially slower") do |sheet|
-    command.should_inline_formulae_that_are_only_used_once = false
-    command.extract_repeated_parts_of_formulae = false
-  end
-  
-  opts.on("-h", "--help", "Show this message") do
-    puts opts
-    exit
-  end
+  CommonCommandLineOptions.set(command: command, options: opts, generates: "Ruby", extension: "rb")
 end
 
-begin
-  opts.parse!(ARGV)
-rescue OptionParser::ParseError => e 
-  STDERR.puts e.message, "\n", opts 
+unless CommonCommandLineOptions.parse(options: opts, command: command, arguments: ARGV)
   exit(-1)
 end
-
-unless ARGV.size > 0
-  puts opts
-  exit(-1)
-end
-
-command.excel_file = ARGV[0]
-command.output_directory = ARGV[1] if ARGV[1]
 
 command.go!

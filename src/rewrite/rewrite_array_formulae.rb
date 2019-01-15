@@ -34,11 +34,11 @@ class ExtractArrayFormulaForCell
     ast[@row_offset+1][@column_offset+1] # plus ones to skip tthe [:array,[:row,"cell"]] symbols
   end
   
-  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = { INDEX: true,  MMULT: true}
+  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = { INDEX: true,  MMULT: true, OFFSET: true}
   
   def map_function(ast)
     return ast unless FUNCTIONS_THAT_CAN_RETURN_ARRAYS.has_key?(ast[1])
-    [:function, :INDEX, ast, @fc.map([:number, (@row_offset+1)]), @fc.map([:number, (column_offset+1)])]
+    [:function, :INDEX, ast.dup, @fc.map([:number, (@row_offset+1)]), @fc.map([:number, (column_offset+1)])]
   end
   
 end

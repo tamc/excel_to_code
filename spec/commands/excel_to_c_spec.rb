@@ -16,7 +16,8 @@ describe ExcelToC do
     #}
     command.actually_compile_code = true
     command.go!
-    require_relative File.join(actual,'c','test_examplespreadsheet')
-    Minitest.run.should == true
+    test_file = File.join(actual,'c','test_examplespreadsheet.rb')
+    expect(system("ruby \"#{test_file}\"")).to be true
+
   end
 end

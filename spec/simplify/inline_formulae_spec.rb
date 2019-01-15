@@ -13,6 +13,25 @@ describe InlineFormulaeAst do
     r.map([:function, :sum, [:sheet_reference, :sheet1, [:cell, :A2]]]).should == [:function, :sum, [:inlined_blank]]
   end
 
+  it "should retain the original reference as an argument of the new contents in case the reference is then needed" do
+    references = {
+      [:sheet1, :A2] => [:cell, :"A3"]
+    }
+    r = InlineFormulaeAst.new(references, :sheet1)
+    e1 = r.map([:cell, :A2])
+    e1.should == [:inlined_blank]
+    e1.original.should == [:cell, :A2]
+
+    e2 = r.map([:sheet_reference, :sheet1, [:cell, :A2]])
+    e2.should == [:inlined_blank]
+    e2.original.should == [:sheet_reference, :sheet1, [:cell, :A2]]
+  
+    e3 = r.map([:function, :sum, [:sheet_reference, :sheet1, [:cell, :A2]]])
+    e3.should == [:function, :sum, [:inlined_blank]]
+    e3.original == [:function, :sum, [:inlined_blank]]
+    e3[2].original.should == [:sheet_reference, :sheet1, [:cell, :A2]]
+  end
+
   it "should not replace references to other cells when they are used as arguments in OFFSET, ROW and COLUMN functions" do
     references = {
       [:sheet1, :A2] => [:cell, :"A3"]

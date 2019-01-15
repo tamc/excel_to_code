@@ -27,22 +27,49 @@ class ReplaceOffsetsWithReferencesAst
     reference = ast[2]
     row_offset = ast[3]
     column_offset = ast[4]
-    height = ast[5] || [:number, 1]
-    width = ast[6] || [:number, 1]
+    height = ast[5]
+    width = ast[6]
+
+    reference = reference.original unless %i{cell sheet_reference array}.include?(reference.first)
+    
+    unless height
+      if reference.first != :array
+        height = [:number, 1.0]
+      else
+        height = [:number, reference.length - 1]
+      end
+    end
+
+    unless width
+      if reference.first != :array
+        width = [:number, 1.0]
+      else
+        width = [:number, reference[1].length - 1]
+      end
+    end
+
+    if reference.first == :array
+      reference = reference[1][1].original
+    end
+
     [row_offset, column_offset, height, width].each do |arg|
        next unless arg.first == :error
        ast.replace(arg) 
        return
     end
+
     return unless [row_offset, column_offset, height, width].all? { |a| a.first == :number }
+
     if reference.first == :cell
-      ast.replace(offset_cell(reference, row_offset, column_offset, height, width))
+      ast.replace(offset_cell(reference, row_offset, column_offset, height, width, nil))
     elsif reference.first == :sheet_reference && reference[2].first == :cell
-      ast.replace([:sheet_reference, reference[1], offset_cell(reference[2], row_offset, column_offset, height, width)])
+      ast.replace(offset_cell(reference[2], row_offset, column_offset, height, width, reference[1]))
+    else
+      p "OFFSET reference is #{reference} from #{ast}, so not replacing"
     end
   end
 
-  def offset_cell(reference, row_offset, column_offset, height, width)
+  def offset_cell(reference, row_offset, column_offset, height, width, sheet)
 
     reference = reference[1]
     row_offset = row_offset[1].to_i
@@ -57,9 +84,14 @@ class ReplaceOffsetsWithReferencesAst
     start_reference = reference.offset(row_offset.to_i, column_offset.to_i)
     end_reference = reference.offset(row_offset.to_i + height.to_i - 1, column_offset.to_i + width.to_i - 1)
     if start_reference == end_reference
-      [:cell, start_reference]
+      if sheet 
+        return [:sheet_reference, sheet, [:cell, start_reference]]
+      else
+        return [:cell, start_reference]
+      end
     else
-      [:area, start_reference, end_reference]
+      area = Area.for("#{start_reference}:#{end_reference}")
+      return area.to_array_literal(sheet)
     end
   end
 

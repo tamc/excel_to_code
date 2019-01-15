@@ -5,7 +5,7 @@
 
 # parses booleans
 TRUE*FALSE	[:arithmetic, [:boolean_true], [:operator, "*"], [:boolean_false]]
-  
+
 # parses prefixes (+/-)
 -(3-1)"	[:prefix, "-", [:brackets, [:arithmetic, [:number, "3"], [:operator, "-"], [:number, "1"]]]]
 
@@ -44,7 +44,7 @@ sheet1!$A$1:$Z$1	[:sheet_reference, "sheet1", [:area, "$A$1", "$Z$1"]]
 sheet1!$1:$1000	[:sheet_reference, "sheet1", [:row_range, "$1", "$1000"]]
 sheet1!$C:$AZ	[:sheet_reference, "sheet1", [:column_range, "$C", "$AZ"]]
 Control!#REF!	[:sheet_reference, "Control", [:error, "#REF!"]]
-  
+
 # parses references to other sheets with extended names
 'sheet 1'!$A$1"	[:sheet_reference, "sheet 1", [:cell, "$A$1"]]
 'sheet 1'!$A$1:$Z$1"	[:sheet_reference, "sheet 1", [:area, "$A$1", "$Z$1"]]
@@ -97,14 +97,14 @@ $A$1<=$A$2	[:comparison, [:cell, "$A$1"], [:comparator, "<="], [:cell, "$A$2"]]
 $A$1<>$A$2	[:comparison, [:cell, "$A$1"], [:comparator, "<>"], [:cell, "$A$2"]]
 IF(1+2>0, 1, 0)"	[:function, "IF", [:comparison, [:arithmetic, [:number, "1"], [:operator, "+"], [:number, "2"]], [:comparator, ">"], [:number, "0"]], [:number, "1"], [:number, "0"]]
 IF(G431-F431+F450>0, G431-F431+F450, 0)"	[:function, "IF", [:comparison, [:arithmetic, [:cell, "G431"], [:operator, "-"], [:cell, "F431"], [:operator, "+"], [:cell, "F450"]], [:comparator, ">"], [:number, "0"]], [:arithmetic, [:cell, "G431"], [:operator, "-"], [:cell, "F431"], [:operator, "+"], [:cell, "F450"]], [:number, "0"]]
-  
+
 # parses functions
 PI()	[:function, "PI"]
 ERR($A$1)	[:function, "ERR", [:cell, "$A$1"]]
 SUM($A$1, sheet1!$1:$1000, 1)"	[:function, "SUM", [:cell, "$A$1"], [:sheet_reference, "sheet1", [:row_range, "$1", "$1000"]], [:number, "1"]]
 IF(A2="Hello", "hello", sheet1!B4)	[:function, "IF", [:comparison, [:cell, "A2"], [:comparator, "="], [:string, "Hello"]], [:string, "hello"], [:sheet_reference, "sheet1", [:cell, "B4"]]]
 IF(a23>=(1.0+b38), 1.0, 2.0)	[:function, "IF", [:comparison, [:cell, "a23"], [:comparator, ">="], [:brackets, [:arithmetic, [:number, "1.0"], [:operator, "+"], [:cell, "b38"]]]], [:number, "1.0"], [:number, "2.0"]]
-  
+
 # parses fully qualified structured references (i.e., Table[column])
 DeptSales[Sale Amount]	[:table_reference, "DeptSales", "Sale Amount"]
 DeptSales[[#Totals],[ColA]]	[:table_reference, "DeptSales", "[#Totals],[ColA]"]
@@ -114,12 +114,12 @@ INDEX(Global.Assumptions[Households], MATCH(F$321, Global.Assumptions[Year], 0))
 MAX(-SUM(I.a.Inputs[2007])-F$80, 0)"	[:function, "MAX", [:arithmetic, [:prefix, "-", [:function, "SUM", [:table_reference, "I.a.Inputs", "2007"]]], [:operator, "-"], [:cell, "F$80"]], [:number, "0"]]
 DeptSales_101[Sale Amount]"	[:table_reference, "DeptSales_101", "Sale Amount"]
 EF.I.a.PM10[2010]	[:table_reference, "EF.I.a.PM10", "2010"]
-G.40.levels.efficiency[[Description]:[Description]] [:table_reference, "G.40.levels.efficiency", "[Description]:[Description]"] 
+G.40.levels.efficiency[[Description]:[Description]] [:table_reference, "G.40.levels.efficiency", "[Description]:[Description]"]
 Sector.codes[[Description ]]  [:table_reference, "Sector.codes", "Description "]
 
 # parses local structured references (i.e., [column])
 [Sale Amount]"	[:local_table_reference, "Sale Amount"]
-   
+
 # parses infix modifiers in edge cases
 (-'DUKES 09 (2.5)'!$B$25)	[:brackets, [:prefix, "-", [:sheet_reference, "DUKES 09 (2.5)", [:cell, "$B$25"]]]]
 
@@ -127,20 +127,20 @@ Sector.codes[[Description ]]  [:table_reference, "Sector.codes", "Description "]
 MAX(MIN(F121, -F22), 0)"	[:function, "MAX", [:function, "MIN", [:cell, "F121"], [:prefix, "-", [:cell, "F22"]]], [:number, "0"]]
 IFERROR(INDEX(INDIRECT($C102&".Outputs["&this.Year&"]"), MATCH(Z$5, INDIRECT($C102&".Outputs[Vector]"), 0)), 0)'	[:function, "IFERROR", [:function, "INDEX", [:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs["], [:named_reference, "this.Year"], [:string, "]"]]], [:function, "MATCH", [:cell, "Z$5"], [:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs[Vector]"]]], [:number, "0"]]], [:number, "0"]]
 INDIRECT($C102&".Outputs["&this.Year&"]")	[:function, "INDIRECT", [:string_join, [:cell, "$C102"], [:string, ".Outputs["], [:named_reference, "this.Year"], [:string, "]"]]]
-  
+
 # parses formulas with spaces
 (13.56 / 96935) * EF.IndustrialCoal.CO2 * GWP.CH4	[:arithmetic, [:brackets, [:arithmetic, [:number, "13.56"], [:operator, "/"], [:number, "96935"]]], [:operator, "*"], [:named_reference, "EF.IndustrialCoal.CO2"], [:operator, "*"], [:named_reference, "GWP.CH4"]]
 "per " & Preferences.EnergyUnits	[:string_join, [:string, "per "], [:named_reference, "Preferences.EnergyUnits"]]
  0.00403/$F$76	[:arithmetic, [:number, "0.00403"], [:operator, "/"], [:cell, "$F$76"]]
 SUMIFS(INDEX($G$62:$J$73, , MATCH($E$11, $G$61:$J$61, 0)), $C$62:$C$73, $C195, $D$62:$D$73, $D195)	[:function, "SUMIFS", [:function, "INDEX", [:area, "$G$62", "$J$73"], [:null], [:function, "MATCH", [:cell, "$E$11"], [:area, "$G$61", "$J$61"], [:number, "0"]]], [:area, "$C$62", "$C$73"], [:cell, "$C195"], [:area, "$D$62", "$D$73"], [:cell, "$D195"]]
-  
+
 # parses formulas that use table range references
 SUM(EF[[#This Row],[CO2]:[N2O]])	[:function, "SUM", [:table_reference, "EF", "[#This Row],[CO2]:[N2O]"]]
 
 # parses buggy references
 'Calcs'!a17	[:sheet_reference, "Calcs", [:cell, "a17"]]
 'Calcs'!aone2	[:sheet_reference, "Calcs", [:named_reference, "aone2"]]
-  
+
 # parses tricky indirect match table combos
 INDEX(INDIRECT("'"&XVI.a.Inputs[#Headers]&"'!Year.Matrix"), MATCH("Subtotal."&$A$2, INDIRECT("'"&XVI.a.Inputs[#Headers]&"'!Year.Modules"), 0), MATCH([Vector], INDIRECT("'"&XVI.a.Inputs[#Headers]&"'!Year.Vectors"), 0))	[:function, "INDEX", [:function, "INDIRECT", [:string_join, [:string, "'"], [:table_reference, "XVI.a.Inputs", "#Headers"], [:string, "'!Year.Matrix"]]], [:function, "MATCH", [:string_join, [:string, "Subtotal."], [:cell, "$A$2"]], [:function, "INDIRECT", [:string_join, [:string, "'"], [:table_reference, "XVI.a.Inputs", "#Headers"], [:string, "'!Year.Modules"]]], [:number, "0"]], [:function, "MATCH", [:local_table_reference, "Vector"], [:function, "INDIRECT", [:string_join, [:string, "'"], [:table_reference, "XVI.a.Inputs", "#Headers"], [:string, "'!Year.Vectors"]]], [:number, "0"]]]
 
@@ -176,3 +176,18 @@ ROUND(24.35,0)%	[:percentage, [:function, "ROUND", [:number, "24.35"], [:number,
 
 # Parses LOG10 functions
 LOG10(300)	[:function, "LOG10", [:number, "300"]]
+
+# Parses _xlfn. prefixed functions
+_xlfn.FORECAST.LINEAR(10,A1,A2) [:function, "_xlfn.FORECAST.LINEAR", [:number, "10"], [:cell, "A1"], [:cell, "A2"]]
+_xlfn.CEILING.MATH() [:function, "_xlfn.CEILING.MATH"]
+# Parses named references with periods in
+named.reference [:named_reference, "named.reference"]
+
+# Parses function names with periods in
+NAMED.FUNCTION()  [:function, "NAMED.FUNCTION"]
+
+# Parses lower case function names (user defined, typically)
+curve()  [:function, "curve"]
+
+# But leaves identical names alone
+curve [:named_reference, "curve"]

@@ -150,6 +150,20 @@ describe ReplaceArithmeticOnRangesAst do
     r.map(input_ast).should == output_ast
   end
 
+  it "should work with prefixes" do
+    i = [:prefix, "+", [:array, [:row, [:sheet_referenence, 'Sheet1', [:cell, 'A1']]], [:row, [:sheet_reference, 'Sheet1', [:cell, 'A2']]]]]
+    e = [:array, [:row, [:prefix, '+', [:sheet_referenence, 'Sheet1', [:cell, 'A1']]]], [:row, [:prefix, '+', [:sheet_reference, 'Sheet1', [:cell, 'A2']]]]]
+    r = ReplaceArithmeticOnRangesAst.new
+    r.map(i).should == e
+  end
+
+  it "should work with prefixes inside operations" do
+    i = [:arithmetic, [:prefix, "+", [:array, [:row, [:sheet_referenence, 'Sheet1', [:cell, 'A1']]], [:row, [:sheet_reference, 'Sheet1', [:cell, 'A2']]]]], [:operator, :-], [:number, 1.0]]
+    e = [:array, [:row, [:arithmetic, [:prefix, '+', [:sheet_referenence, 'Sheet1', [:cell, 'A1']]], [:operator, :-], [:number, 1.0]]], [:row, [:arithmetic, [:prefix, '+', [:sheet_reference, 'Sheet1', [:cell, 'A2']]],[:operator, :-], [:number, 1.0]]]]
+    r = ReplaceArithmeticOnRangesAst.new
+    r.map(i).should == e
+  end
+
   it "should work with nested functions" do
     input_ast = [:function,
                  :SUMPRODUCT,

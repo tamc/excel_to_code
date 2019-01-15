@@ -15,7 +15,7 @@ describe ExcelToRuby do
     #  'Referencing' => ['A4']
     #}
     command.go!
-    require_relative File.join(actual,'ruby','test_rubyexamplespreadsheet')
-    Minitest.run.should == true
+    test_file = File.join(actual,'c','test_examplespreadsheet.rb')
+    expect(system("ruby \"#{test_file}\"")).to be true
   end
 end

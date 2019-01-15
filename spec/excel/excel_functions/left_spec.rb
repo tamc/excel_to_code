@@ -13,8 +13,8 @@ describe "ExcelFunctions: LEFT(string,[characters])" do
   end
     
   it "should turn booleans into the words TRUE and FALSE before processing" do
-    FunctionTest.left(TRUE,3).should == "TRU"
-    FunctionTest.left(FALSE,3).should == "FAL"
+    FunctionTest.left(true,3).should == "TRU"
+    FunctionTest.left(false,3).should == "FAL"
   end
 
   it "should return nil if given nil for either argument" do

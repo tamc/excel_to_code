@@ -14,7 +14,7 @@ A6\t[:function, :OFFSET, [:sheet_reference, :"RES.Tech", [:cell, :B84]], [:error
 END
 
 expected_output = <<END
-A1\t[:area, :B6, :D8]
+A1\t[:array, [:row, [:cell, :B6], [:cell, :C6], [:cell, :D6]], [:row, [:cell, :B7], [:cell, :C7], [:cell, :D7]], [:row, [:cell, :B8], [:cell, :C8], [:cell, :D8]]]
 A2\t[:cell, :B6]
 A3\t[:function, :OFFSET, [:cell, :"$A$5"], [:cell, :Z10], [:number, 1], [:number, 3], [:number, 3]]
 A4\t[:string_join, [:string, "Chosen language is"], [:string, " "], [:cell, :B18]]
@@ -29,6 +29,15 @@ r.replace(input,output)
 output.string.should == expected_output
 
 end # / it
+
+it "Should replace OFFSET() functions with the references taht they refer to, even if the reference has been inlined" do
+  reference = [:cell, :"A1"]
+  reference.replace([:number, 2016])
+  i = [:function, :OFFSET, reference, [:number, 0.0], [:number, 0.0]]
+  e = [:cell, :"A1"]
+  ReplaceOffsetsWithReferencesAst.new.replace(i)
+  i.should == e
+end
 
 
 end # / describe

@@ -116,6 +116,9 @@
 [:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "A"]], [:row, [:string, "B"]]], [:string, "B"]]	[:function, :SUM, [:cell, :A2]]
 [:function, :SUMIFS, [:function, :INDIRECT, "A1:A2"], [:array, [:row, [:string, "A"]], [:row, [:string, "B"]]], [:string, "B"]]	[:function, :SUMIFS, [:function, :INDIRECT, "A1:A2"], [:array, [:row, [:string, "A"]], [:row, [:string, "B"]]], [:string, "B"]]
 [:function, :IFERROR, [:function, :SUMIFS, [:sheet_reference, :"V.b", [:cell, :F119]], [:string, "CO2"], [:string, "CO2"], [:string, "X2"], [:string, "X2"]], [:number, 0.0]]	[:function, :IFERROR, [:function, :SUM, [:sheet_reference, :"V.b", [:cell, :F119]]], [:number, 0.0]]
+[:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "Apple"]], [:row, [:string, "Bear"]]], [:string, "Be*"]]	[:function, :SUM, [:cell, :A2]]
+[:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "Apple"]], [:row, [:string, "Bear"]]], [:string, "*e*"]]	[:function, :SUM, [:cell, :A1], [:cell, :A2]]
+[:function, :SUMIFS, [:array, [:row, [:cell, :A1]], [:row, [:cell, :A2]]], [:array, [:row, [:string, "Apple"]], [:row, [:string, "Bear"]]], [:string, "*le"]]	[:function, :SUM, [:cell, :A1]]
 
 # Combination of array and calcs
 [:function, :SUM, [:array, [:row, [:arithmetic, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string_join, [:string, "G.30.assumptions."], [:string, "Combustion"], [:string, "N2OEmissionsAfterEnergyEfficiency[Technology code]"]]]], [:operator, :*], [:sheet_reference, :"G.30 (data)", [:cell, :I3595]]]], [:row, [:arithmetic, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string_join, [:string, "G.30.assumptions."], [:string, "Combustion"], [:string, "N2OEmissionsAfterEnergyEfficiency[Technology code]"]]]], [:operator, :*], [:number, 1.0]]]]]	[:function, :SUM, [:array, [:row, [:arithmetic, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string, "G.30.assumptions.CombustionN2OEmissionsAfterEnergyEfficiency[Technology code]"]]], [:operator, :*], [:sheet_reference, :"G.30 (data)", [:cell, :I3595]]]], [:row, [:function, :ENSURE_IS_NUMBER, [:comparison, [:string, "Steel.Oxygen"], [:comparator, :"="], [:function, :INDIRECT, [:string, "G.30.assumptions.CombustionN2OEmissionsAfterEnergyEfficiency[Technology code]"]]]]]]]
@@ -135,4 +138,3 @@
 
 # Inlined blanks
 [:function, :VLOOKUP, [:inlined_blank], [:array, [:row, [:inlined_blank], [:inlined_blank]]], [:number, 2], [:boolean_false]]	[:error, :"#N/A"]
-

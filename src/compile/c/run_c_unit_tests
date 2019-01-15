@@ -1,0 +1,3 @@
+#!/bin/bash
+clang excel_to_c_runtime_test.c
+./a.out

@@ -1,21 +1,22 @@
 require_relative 'map_values_to_c'
 
 class MapFormulaeToC < MapValuesToC
-  
+
   attr_accessor :sheet_names
   attr_accessor :worksheet
   attr_reader :initializers
   attr_reader :counter
-  
+  attr_accessor :allow_unknown_functions
+
   def initialize
     reset
   end
-  
+
   def reset
     @initializers = []
     @counter = 0
   end
-  
+
   FUNCTIONS = {
     :'*' => 'multiply',
     :'+' => 'add',
@@ -31,17 +32,23 @@ class MapFormulaeToC < MapValuesToC
     :'AND' => 'excel_and',
     :'AVERAGE' => 'average',
     :'AVERAGEIFS' => 'averageifs',
+    :'CEILING' => 'ceiling_2',
+    :'_xlfn.CEILING.MATH2' => 'excel_ceiling_math_2',
+    :'_xlfn.CEILING.MATH3' => 'excel_ceiling_math',
     :'CHAR' => 'excel_char',
     :'CHOOSE' => 'choose',
     :'CONCATENATE' => 'string_join',
     :'COSH' => 'cosh',
     :'COUNT' => 'count',
     :'COUNTA' => 'counta',
+    :'COUNTIFS' => 'countifs',
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXP' => 'excel_exp',
     :'FIND2' => 'find_2',
     :'FIND3' => 'find',
+    :'FLOOR' => 'excel_floor',
     :'FORECAST' => 'forecast',
+    :'_xlfn.FORECAST.LINEAR' => 'forecast',
     :'HLOOKUP3' => 'hlookup_3',
     :'HLOOKUP4' => 'hlookup',
     :'IF2' => 'excel_if_2',
@@ -68,15 +75,20 @@ class MapFormulaeToC < MapValuesToC
     :'MIN' => 'min',
     :'MMULT' => 'mmult',
     :'MOD' => 'mod',
+    :'MROUND' => 'mround',
+    :'NA' => 'na',
     :'NOT' => 'excel_not',
+    :'OR' => 'excel_or',
     :'NPV' => 'npv',
     :'NUMBER_OR_ZERO' => 'number_or_zero',
     :'PMT3' => 'pmt',
     :'PMT4' => 'pmt_4',
     :'PMT5' => 'pmt_5',
+    :'PRODUCT' => 'product',
     :'PV3' => 'pv_3',
     :'PV4' => 'pv_4',
     :'PV5' => 'pv_5',
+    :'RATE' => 'rate',
     :'RANK2' => 'rank_2',
     :'RANK3' => 'rank',
     :'RIGHT1' => 'right_1',
@@ -86,6 +98,8 @@ class MapFormulaeToC < MapValuesToC
     :'ROUNDUP' => 'roundup',
     :'string_join' => 'string_join',
     :'SUBTOTAL' => 'subtotal',
+    :'SUBSTITUTE3' => 'substitute_3',
+    :'SUBSTITUTE4' => 'substitute_4',
     :'SUM' => 'sum',
     :'SUMIF2' => 'sumif_2',
     :'SUMIF3' => 'sumif',
@@ -96,30 +110,39 @@ class MapFormulaeToC < MapValuesToC
     :'VLOOKUP3' => 'vlookup_3',
     :'VLOOKUP4' => 'vlookup',
     :'^' => 'power',
-    :'POWER' => 'power'
+    :'POWER' => 'power',
+    :'SQRT' => 'excel_sqrt',
+    :'curve5' => 'curve_5',
+    :'curve' => 'curve',
+    :'scurve4' => 'scurve_4',
+    :'scurve' => 'scurve',
+    :'halfscurve4' => 'halfscurve_4',
+    :'halfscurve' => 'halfscurve',
+    :'lcurve4' => 'lcurve_4',
+    :'lcurve' => 'lcurve',
   }
-  
+
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"
     return "negative(#{map(ast)})"
   end
-  
+
   def brackets(*contents)
     "(#{contents.map { |a| map(a) }.join(',')})"
   end
-  
+
   def arithmetic(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
-  
+
   def string_join(*strings)
     any_number_of_argument_function('string_join',strings)
   end
-  
+
   def comparison(left,operator,right)
     "#{FUNCTIONS[operator.last]}(#{map(left)},#{map(right)})"
   end
-  
+
   def function(function_name,*arguments)
     # Some functions are special cases
     if self.respond_to?("function_#{function_name.to_s.downcase}")
@@ -136,21 +159,39 @@ class MapFormulaeToC < MapValuesToC
     elsif FUNCTIONS.has_key?(function_name.to_sym)
       "#{FUNCTIONS[function_name.to_sym]}(#{arguments.map { |a| map(a) }.join(",")})"
 
+    # Optionally, can dump unknown functions
+  elsif self.allow_unknown_functions
+      "#{function_name.to_s.downcase}(#{arguments.map { |a| map(a) }.join(",")})"
+
+    # But default is to raise an error
     else
       raise NotSupportedException.new("Function #{function_name} with #{arguments.size} arguments not supported")
     end
   end
-  
-  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{SUM AND AVERAGE COUNT COUNTA MAX MIN SUMPRODUCT CONCATENATE}
-  
-  def function_pi() 
+
+  FUNCTIONS_WITH_ANY_NUMBER_OF_ARGUMENTS = %w{
+    SUM 
+    PRODUCT 
+    AND 
+    OR
+    AVERAGE 
+    COUNT 
+    COUNTA 
+    MAX 
+    MIN 
+    SUMPRODUCT 
+    COUNTIFS 
+    CONCATENATE
+  }
+
+  def function_pi()
     "M_PI"
   end
-  
+
   def function_choose(index,*arguments)
     "#{FUNCTIONS[:CHOOSE]}(#{map(index)}, #{map_arguments_to_array(arguments)})"
   end
-  
+
   def function_subtotal(type,*arguments)
     "#{FUNCTIONS[:SUBTOTAL]}(#{map(type)}, #{map_arguments_to_array(arguments)})"
   end
@@ -206,11 +247,11 @@ class MapFormulaeToC < MapValuesToC
 
     return result_name
   end
-  
-  def any_number_of_argument_function(function_name,arguments)    
+
+  def any_number_of_argument_function(function_name,arguments)
     "#{FUNCTIONS[function_name.to_sym]}(#{map_arguments_to_array(arguments)})"
   end
-  
+
   def map_arguments_to_array(arguments)
     # First we have to create an excel array
     array_name = "array#{@counter}"
@@ -220,7 +261,7 @@ class MapFormulaeToC < MapValuesToC
     initializers << "ExcelValue #{array_name}[] = {#{arguments}};"
     "#{arguments_size}, #{array_name}"
   end
-  
+
   def cell(reference)
     # FIXME: What a cludge.
     if reference =~ /common\d+/
@@ -229,7 +270,7 @@ class MapFormulaeToC < MapValuesToC
       reference.to_s.downcase.gsub('$','')
     end
   end
-  
+
   def sheet_reference(sheet,reference)
     "#{sheet_names[sheet]}_#{map(reference).to_s.downcase}()"
   end
@@ -253,7 +294,7 @@ class MapFormulaeToC < MapValuesToC
         i += 1
       end
     end
-    
+
     # Then we need to assign it to an excel value
     range_name = array_name+"_ev"
     initializers << "ExcelValue #{range_name} = EXCEL_RANGE(#{array_name},#{number_of_rows},#{number_of_columns});"
