@@ -13,6 +13,7 @@ describe "ExcelFunctions: COUNTIF" do
     FunctionTest.countif([[10],[100],[nil]],">0").should == 2
     FunctionTest.countif([[10],[100],[nil]],">10").should == 1
     FunctionTest.countif([[10],[100],[nil]],"<100").should == 1
+    FunctionTest.countif([[10],[100],[nil]],"< 100").should == 1
   end
 
   it "should match numbers with strings that contain numbers" do

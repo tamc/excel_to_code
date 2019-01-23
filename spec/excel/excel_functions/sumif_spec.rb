@@ -14,6 +14,7 @@ describe "ExcelFunctions: SUMIF" do
     FunctionTest.sumif([[10],[100],[nil]],">0").should == 110.0
     FunctionTest.sumif([[10],[100],[nil]],">10").should == 100.0
     FunctionTest.sumif([[10],[100],[nil]],"<100").should == 10.0
+    FunctionTest.sumif([[10],[100],[nil]],"< 100").should == 10.0
   end
 
   it "should match numbers with strings that contain numbers" do

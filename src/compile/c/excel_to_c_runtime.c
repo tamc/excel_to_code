@@ -86,6 +86,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue mround(ExcelValue value_v, ExcelValue multiple_v);
 static ExcelValue na();
 static ExcelValue negative(ExcelValue a_v);
 static ExcelValue excel_not(ExcelValue a_v);
@@ -107,6 +108,9 @@ static ExcelValue rounddown(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue roundup(ExcelValue number_v, ExcelValue decimal_places_v);
 static ExcelValue excel_int(ExcelValue number_v);
 static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments);
+static ExcelValue substitute_3(ExcelValue string_v, ExcelValue old_string_v, ExcelValue new_string_v);
+static ExcelValue substitute_4(ExcelValue string_v, ExcelValue old_string_v, ExcelValue new_string_v, ExcelValue occurrence_number_v);
+static ExcelValue substitute(ExcelValue string_v, ExcelValue old_string_v, ExcelValue new_string_v, int occurrence);
 static ExcelValue subtotal(ExcelValue type, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue sumifs(ExcelValue sum_range_v, int number_of_arguments, ExcelValue *arguments);
 static ExcelValue sumif(ExcelValue check_range_v, ExcelValue criteria_v, ExcelValue sum_range_v );
@@ -305,7 +309,50 @@ static double number_from(ExcelValue v) {
   return 0;
 }
 
+static char* string_from(ExcelValue v) {
+		char *string;
+		switch (v.type) {
+  	  case ExcelString:
+	  		return v.string;
+	  		break;
+  	  case ExcelNumber:
+		    string = malloc(20);
+		  	if(string == 0) {
+		  	  printf("Out of memory in string_from");
+		  	  exit(-1);
+		  	}
+			  snprintf(string,20,"%g",v.number);
+        free_later(string);
+        return string;
+			  break;
+		  case ExcelBoolean:
+		  	if(v.number == true) {
+		  		string = "TRUE";
+          free_later(string);
+          return string;
+  			} else {
+		  		string = "FALSE";
+          free_later(string);
+          return string;
+  			}
+        break;
+		  case ExcelEmpty:
+		  	string = "";
+        free_later(string);
+        break;
+      case ExcelError:
+        conversion_error = 1;
+        return 0;
+	  	case ExcelRange:
+        conversion_error = 1;
+        return 0;
+		}
+    conversion_error = 1;
+    return 0;
+}
+
 #define NUMBER(value_name, name) double name; if(value_name.type == ExcelError) { conversion_error = 0; return value_name; }; name = number_from(value_name);
+#define STRING(value_name, name) char *name; if(value_name.type == ExcelError) { conversion_error = 0; return value_name; }; name = string_from(value_name);
 #define CHECK_FOR_CONVERSION_ERROR 	if(conversion_error) { conversion_error = 0; return VALUE; };
 #define CHECK_FOR_PASSED_ERROR(name) 	if(name.type == ExcelError) return name;
 
@@ -473,6 +520,29 @@ static ExcelValue rate(ExcelValue periods_v, ExcelValue payment_v, ExcelValue pr
   }
 
   return EXCEL_NUMBER(pow((finalValue/(-presentValue)),(1.0/periods))-1.0);
+}
+
+static ExcelValue mround(ExcelValue value_v, ExcelValue multiple_v) {
+  CHECK_FOR_PASSED_ERROR(value_v)
+  CHECK_FOR_PASSED_ERROR(multiple_v)
+
+  NUMBER(value_v, value)
+  NUMBER(multiple_v, multiple)
+  CHECK_FOR_CONVERSION_ERROR;
+
+  if( (value < 0) != (multiple < 0)) {
+    return NUM;
+  }
+
+  if(value == 0) {
+    return ZERO;
+  }
+
+  if(multiple == 0) {
+    return ZERO;
+  }
+
+  return EXCEL_NUMBER(round(value / multiple) * multiple);
 }
 
 static ExcelValue excel_and(int array_size, ExcelValue *array) {
@@ -1934,6 +2004,129 @@ static ExcelValue string_join(int number_of_arguments, ExcelValue *arguments) {
 	return EXCEL_STRING(string);
 }
 
+static ExcelValue substitute_3(ExcelValue string_v, ExcelValue old_string_v, ExcelValue new_string_v) {
+  // -1 means all occurrences
+  return substitute(string_v, old_string_v, new_string_v, -1);
+}
+
+static ExcelValue substitute_4(ExcelValue string_v, ExcelValue old_string_v, ExcelValue new_string_v, ExcelValue occurrence_number_v) {
+  CHECK_FOR_PASSED_ERROR(occurrence_number_v)
+  NUMBER(occurrence_number_v,occurrence_number)
+  CHECK_FOR_CONVERSION_ERROR
+  return substitute(string_v, old_string_v, new_string_v, occurrence_number);
+}
+
+// Pass < 0 to occurrence_n to replace all occurrences
+static ExcelValue substitute(ExcelValue string_v, ExcelValue old_string_v, ExcelValue new_string_v, int occurrence_n) {
+  STRING(string_v, original)
+  STRING(old_string_v, from_string)
+  STRING(new_string_v, to_string)
+  CHECK_FOR_CONVERSION_ERROR
+
+  char *new_string = 0; // Allocated below
+  int original_length = strlen(original);
+  int from_string_length = strlen(from_string);
+  int to_string_length = strlen(to_string);
+  int extra_space_per_replacement = (from_string_length < to_string_length) ? (to_string_length - from_string_length) : 0;
+
+  if(from_string_length == 0) {
+    return string_v;
+  }
+
+  int allocated_length = 0; // Adjusted below
+  int space_for_number_of_replacements = 0; // Adjusted below
+  int replacement_made = 0;
+  int number_of_matches = 0;
+  int insertion_point_offset = 0;
+  char *insertion_point = 0;
+  char *from_point = original;
+  char *match_point = 0;
+
+  if(extra_space_per_replacement > 0) {
+    space_for_number_of_replacements = 5;
+    // Arbitrarily assume 5 replacements as a starting point, plus one for terminator
+    allocated_length = original_length + (space_for_number_of_replacements * extra_space_per_replacement) + 1;
+  } else {
+    // Should be shorter or the same length
+    allocated_length = original_length + 1;
+  }
+
+  new_string = malloc(allocated_length);
+  insertion_point = new_string;
+
+	if(new_string == 0) {
+	  printf("Out of memory in substitute");
+	  exit(-1);
+	}
+
+  while((from_point-original) < original_length) {
+    match_point = strstr(from_point, from_string);
+
+    // No match found
+    if(match_point == NULL) {
+      // No match ever found? return the original
+      if(number_of_matches == 0) {
+        break; 
+      }
+      // Copy the remaining string into the target. We should always have space.
+      replacement_made = 1;
+      strcpy(insertion_point, from_point);
+      break;
+    }
+
+    number_of_matches = number_of_matches + 1;
+
+    // We may only want to replace a single occurrence
+    if(occurrence_n > 0 && occurrence_n != number_of_matches) {
+      // Copy the bit before
+      memcpy(insertion_point, from_point, match_point - from_point);
+      insertion_point = insertion_point + (match_point - from_point);
+
+      // Copy the original
+      memcpy(insertion_point, from_string, from_string_length);
+      insertion_point = insertion_point + from_string_length;
+
+      from_point = match_point + from_string_length;
+      continue;
+    }
+
+    // We want to replace this occurrence
+
+    // Check we hvae enough space for the replacement
+    if(extra_space_per_replacement > 0 && (number_of_matches > space_for_number_of_replacements)) {
+      space_for_number_of_replacements = space_for_number_of_replacements * 2;
+      allocated_length = original_length + (space_for_number_of_replacements * extra_space_per_replacement) + 1;
+      insertion_point_offset = insertion_point - new_string;
+      new_string = realloc(new_string,allocated_length);
+      insertion_point = new_string + insertion_point_offset;
+      if(!new_string) {
+        printf("Out of memory in string substitute realloc trying to increase length to %d", allocated_length);
+        exit(-1);
+      }
+    }
+
+    replacement_made = 1;
+
+    // Copy up to the match
+    memcpy(insertion_point, from_point, match_point - from_point);
+    insertion_point = insertion_point + (match_point - from_point);
+
+    // Copy the replacement
+    memcpy(insertion_point, to_string, to_string_length);
+    insertion_point = insertion_point + to_string_length;
+
+    from_point = match_point + from_string_length;
+  }
+
+  if(replacement_made == 1) {
+    free_later(new_string);
+    return EXCEL_STRING(new_string);
+  } else {
+    free(new_string);
+    return string_v;
+  }
+}
+
 static ExcelValue subtotal(ExcelValue subtotal_type_v, int number_of_arguments, ExcelValue *arguments) {
   CHECK_FOR_PASSED_ERROR(subtotal_type_v)
   NUMBER(subtotal_type_v,subtotal_type)
@@ -2022,18 +2215,30 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
 
     if(current_value.type == ExcelString) {
       s = current_value.string;
+      while(s[0] == ' ') {
+        s = s + 1;
+      }
       if(s[0] == '<') {
         if( s[1] == '>') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = NotEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = LessThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = LessThan;
@@ -2041,17 +2246,26 @@ static ExcelValue filter_range(ExcelValue original_range_v, int number_of_argume
         }
       } else if(s[0] == '>') {
         if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = MoreThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = MoreThan;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         }
       } else if(s[0] == '=') {
+        while(s[1] == ' ') {
+          s = s + 1;
+        }
         new_comparator = strndup(s+1,strlen(s)-1);
         free_later(new_comparator);
         criteria[i].type = Equal;
@@ -2273,18 +2487,30 @@ static ExcelValue countifs(int number_of_arguments, ExcelValue *arguments) {
 
     if(current_value.type == ExcelString) {
       s = current_value.string;
+      while(s[0] == ' ') {
+        s = s + 1;
+      }
       if(s[0] == '<') {
         if( s[1] == '>') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = NotEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = LessThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = LessThan;
@@ -2292,17 +2518,26 @@ static ExcelValue countifs(int number_of_arguments, ExcelValue *arguments) {
         }
       } else if(s[0] == '>') {
         if(s[1] == '=') {
+          while(s[2] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+2,strlen(s)-2);
           free_later(new_comparator);
           criteria[i].type = MoreThanOrEqual;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         } else {
+          while(s[1] == ' ') {
+            s = s + 1;
+          }
           new_comparator = strndup(s+1,strlen(s)-1);
           free_later(new_comparator);
           criteria[i].type = MoreThan;
           criteria[i].comparator = EXCEL_STRING(new_comparator);
         }
       } else if(s[0] == '=') {
+        while(s[1] == ' ') {
+          s = s + 1;
+        }
         new_comparator = strndup(s+1,strlen(s)-1);
         free_later(new_comparator);
         criteria[i].type = Equal;
@@ -2678,6 +2913,8 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v) {
     snprintf(s, 99, "%'0.3f",number_v.number);
   } else if(strcmp(format_v.string,"0000") == 0) {
     snprintf(s, 99, "%04.0f",number_v.number);
+  } else if(strcmp(format_v.string,"#,000") == 0) {
+    snprintf(s, 99, "%'03.0f",number_v.number);
   } else {
     snprintf(s, 99, "Text format not recognised");
   }

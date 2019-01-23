@@ -1,14 +1,35 @@
 # Head
 
+# 0.3.19 - 2018 January 8
+
 ## Bug fixes
 
+- Remove unused Object#try (thank you slisser)
+
+# 0.3.18 - 2018 January 5 
+
+## Bug fixes
+
+- Implement the '#,000' format in Ruby and C versions of the TEXT function
+
+# 0.3.18 beta 2 - 2018 December 30
+
+## New / Changed Excel functions
+
+- Implement MROUND in C and Ruby
+- Implement SUBSTITUTE in C
+
+## Bug fixes
+
+- Make conditional criteria (e.g., ">10") in countif/sumif/countifs/sumifs robust to spaces (e.g., "> 10")
+- Treat comparators as values when extracting common elements from formulae
 - Fix replacement of range arguments passed to the OFFSET function
 - Make OFFSET cope with references that have been inlined
 - Add some missing error checks to C versions of functions
 - Increase maximum number of simplifying passes from 20 to 50
 - Make it harder for simplifications to accidentally trample on named reference setters
 
-# 0.3.18 beta 1- 2018 July 16
+# 0.3.18 beta 1 - 2018 July 16
 
 ## New / Changed Excel functions
 

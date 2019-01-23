@@ -69,7 +69,7 @@ module ExcelFunctions
           when Numeric
             check_value == required_value
           when String
-            required_value =~ /^(<=|>=|<|>)?([-+]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?)$/
+            required_value =~ /^\s*(<=|>=|<|>)?\s*([-+]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?)\s*$/
             if $1 && $2
               check_value.send($1,$2.to_f)
             elsif $2

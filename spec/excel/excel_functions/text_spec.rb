@@ -37,6 +37,11 @@ describe "ExcelFunctions: TEXT" do
     FunctionTest.text(123456789.123456, "#.##0,0").should == "123,456,789.1"
   end
 
+  it "should cope with weird combinations" do
+    FunctionTest.text(3.1, "#,000").should == "003"
+    FunctionTest.text(1000.3, "#,000").should == "1,000"
+  end
+
   it "should pass non-numbers through unchanged" do
     FunctionTest.text("Asdasddf","0%").should == "Asdasddf"
   end

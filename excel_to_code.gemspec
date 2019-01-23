@@ -20,5 +20,4 @@ Gem::Specification.new do |s|
   s.files = ["LICENSE", "README.md","TODO","{src,bin}/**/*"].map{|p| Dir[p]}.flatten
   s.executables = ["excel_to_c","excel_to_ruby"]
   s.require_path = "src"
-  s.has_rdoc = false
 end

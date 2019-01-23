@@ -585,6 +585,8 @@ int test_functions() {
 
   ExcelValue sumifs_array_10f[] = { sumifs_array_3_v, EXCEL_STRING(">=3")};
   assert(sumifs(sumifs_array_3_v,2, sumifs_array_10f).number == 17);
+  ExcelValue sumifs_array_10g[] = { sumifs_array_3_v, EXCEL_STRING(" >= 3")};
+  assert(sumifs(sumifs_array_3_v,2, sumifs_array_10g).number == 17);
 
   // ... BLANK in check range should match empty strings, BLANK in criteria should match zero
   ExcelValue sumifs_array_11[] = { BLANK, EXCEL_NUMBER(0)};
@@ -657,6 +659,9 @@ int test_functions() {
 
   ExcelValue countifs_array_10e[] = { countifs_array_3_v, EXCEL_STRING(">3")};
   assert(countifs(2, countifs_array_10e).number == 3.0);
+
+  ExcelValue countifs_array_10e2[] = { countifs_array_3_v, EXCEL_STRING("> 3")};
+  assert(countifs(2, countifs_array_10e2).number == 3.0);
 
   ExcelValue countifs_array_10f[] = { countifs_array_3_v, EXCEL_STRING(">=3")};
   assert(countifs(2, countifs_array_10f).number == 4.0);
@@ -890,6 +895,8 @@ int test_functions() {
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("#,##")).string, "123,456,789") == 0);
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("#,##0")).string, "123,456,789") == 0);
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("#,##0.0")).string, "123,456,789.1") == 0);
+  assert(strcmp(text(EXCEL_NUMBER(3.1), EXCEL_STRING("#,000")).string, "003") == 0);
+  assert(strcmp(text(EXCEL_NUMBER(1000.3), EXCEL_STRING("#,000")).string, "1,000") == 0);
   assert(strcmp(text(EXCEL_NUMBER(123456789.123456), EXCEL_STRING("!#,##0.0")).string, "Text format not recognised") == 0);
 
   // Test LOG
@@ -1212,6 +1219,21 @@ int test_functions() {
   assert(excel_ceiling_math(EXCEL_NUMBER(136), EXCEL_NUMBER(10), ZERO).number == 140);
   assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ZERO).number == -130);
   assert(excel_ceiling_math(EXCEL_NUMBER(-136), EXCEL_NUMBER(10), ONE).number == -140);
+  
+  // MROUND
+  assert(mround(EXCEL_NUMBER(1), ZERO).number == 0.0);
+  assert(mround(ZERO, EXCEL_NUMBER(1)).number == 0.0);
+  assert(mround(EXCEL_NUMBER(1), EXCEL_NUMBER(1)).number == 1.0);
+  assert(mround(EXCEL_NUMBER(105), EXCEL_NUMBER(10)).number == 110);
+  assert(mround(EXCEL_NUMBER(1.05), EXCEL_NUMBER(0.1)).number == 1.10);
+  assert(mround(EXCEL_NUMBER(-1.05), EXCEL_NUMBER(-0.1)).number == -1.10);
+  assert(mround(EXCEL_NUMBER(-1.05), EXCEL_NUMBER(0.1)).type == ExcelError);
+
+  // SUBSTITUTE 3
+  assert_equal(EXCEL_STRING("Hello Bob, Dear Bob"), substitute_3(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bill"), EXCEL_STRING("Frank")), "substitute('Hello Bob, Dear Bob', 'Bill', 'Frank') = 'Hello Bob, Dear Bob')");
+  assert_equal(EXCEL_STRING("Hello Frank, Dear Frank"), substitute_3(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bob"), EXCEL_STRING("Frank")), "substitute('Hello Bob, Dear Bob', 'Bob', 'Frank') = 'Hello Frank, Dear Frank')");
+  assert_equal(EXCEL_STRING("Hello Bob, Dear Frank"), substitute_4(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bob"), EXCEL_STRING("Frank"), TWO), "substitute('Hello Bob, Dear Bob', 'Bob', 'Frank', 2) = 'Hello Bob, Dear Frank')");
+  assert_equal(EXCEL_STRING("Hello Bob, Dear Bob"), substitute_4(EXCEL_STRING("Hello Bob, Dear Bob"), EXCEL_STRING("Bob"), EXCEL_STRING("Frank"), THREE), "substitute('Hello Bob, Dear Bob', 'Bob', 'Frank', 3) = 'Hello Bob, Dear Bob')");
 
   // curve (a custom climact function)
   assert_equal(
