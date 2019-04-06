@@ -1,71 +1,84 @@
+# frozen_string_literal: true
 
+# Generates a go version of the passed data structure
 class CompileToGo
-  
   attr_accessor :settable
   attr_accessor :gettable
   attr_accessor :sheet_names
-  
+
   def struct_type
-    "spreadsheet"
+    'spreadsheet'
   end
 
   def self.rewrite(*args)
-    self.new.rewrite(*args)
+    new.rewrite(*args)
   end
-  
+
   def rewrite(formulae, sheet_names, output)
-    self.settable ||= lambda { |ref| false }
-    self.gettable ||= lambda { |ref| true }
-    self.sheet_names = sheet_names
+    setup_instance_vars(sheet_names: sheet_names)
 
-    m = MapValuesToGo.new
-
-    # The struct
-    output.puts "type #{struct_type} struct {"
-    formulae.each do |ref, _|
-      output.puts "  #{variable_name(ref)} cachedValue"
-    end
-    output.puts "}"
-
-    # The initializer
-    output.puts <<~END
-
-    func New() #{struct_type} {
-      return #{struct_type}{}
-    }
-
-    END
+    output.puts struct_definition(formulae: formulae)
+    output.puts struct_intializer
 
     formulae.each do |ref, ast|
-      v = variable_name(ref)
-      output.puts <<~END
-        func (s *#{struct_type}) #{getter_method_name(ref)}() (interface{}, error) {
-          if !s.#{v}.isCached() {
-            s.#{v}.set(#{m.map(ast)})
-          }
-          return s.#{v}.get()
-        }
-
-      END
-      if settable.call(ref)
-        output.puts <<~END
-
-        func (s *#{struct_type}) #{setter_method_name(ref)}(v interface{}) {
-            s.#{v}.set(v)
-        }
-
-        END
-      end
+      output.puts getter(ref: ref, ast: ast)
+      output.puts setter(ref: ref) if settable.call(ref)
     end
+  end
+
+  def setup_instance_vars(sheet_names:)
+    self.settable ||= ->(_ref) { false }
+    self.gettable ||= ->(_ref) { true }
+    self.sheet_names = sheet_names
+  end
+
+  def struct_definition(formulae:)
+    ["type #{struct_type} struct {",
+     formulae.map do |ref, _|
+       "#{variable_name(ref)} cachedValue"
+     end,
+     '}'].flatten.join("\n")
+  end
+
+  def struct_intializer
+    <<~ENDGO
+       func New() #{struct_type} {
+        return #{struct_type}{}
+      }
+    ENDGO
+  end
+
+  def getter(ref:, ast:)
+    v = variable_name(ref)
+    m = getter_method_name(ref)
+    value = MapValuesToGo.new.map(ast)
+    <<~ENDGO
+      func (s *#{struct_type}) #{m}() (interface{}, error) {
+        if !s.#{v}.isCached() {
+          s.#{v}.set(#{value})
+        }
+        return s.#{v}.get()
+      }
+    ENDGO
+  end
+
+  def setter(ref:)
+    v = variable_name(ref)
+    m = setter_method_name(ref)
+    <<~ENDGO
+       func (s *#{struct_type}) #{m}(v interface{}) {
+          s.#{v}.set(v)
+      }
+    ENDGO
   end
 
   def getter_method_name(ref)
-    v = variable_name(ref)
-    if gettable.call(ref)
-      v[0] = v[0].upcase!
-    else
-      v[0] = v[0].downcase!
-    end
+    v = variable_name(ref).dup
+    v[0] = if gettable.call(ref)
+             v[0].upcase!
+           else
+             v[0].downcase!
+           end
     v
   end
 
@@ -79,7 +92,10 @@ class CompileToGo
     worksheet = ref.first
     cell = ref.last
     worksheet_name = sheet_names[worksheet.to_s] || worksheet.to_s
-    return worksheet_name.length > 0 ? "#{worksheet_name.downcase}#{cell.upcase}" : cell.downcase
+    if worksheet_name.empty?
+      cell.downcase
+    else
+      "#{worksheet_name.downcase}#{cell.upcase}"
+    end
   end
-  
 end
