@@ -1,5 +1,9 @@
 # Head
 
+## Other new features
+
+- Add a .ruby-version file, specifying Ruby 2.4 or above, to aid linting
+
 # 0.3.19 - 2018 January 8
 
 ## Bug fixes
