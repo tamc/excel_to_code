@@ -22,7 +22,8 @@ class ExcelToGo < ExcelToX
   def write_out_excel_as_code
     log.info "Starting to write out code"
 
-    o = output("#{output_name.downcase}.go")
+    f = "#{output_name.downcase}.go"
+    o = output(f)
 
     o.puts "// Compiled version of #{excel_file}"
     o.puts "package #{output_name.downcase}"
@@ -41,7 +42,9 @@ class ExcelToGo < ExcelToX
 
     close(o)
     log.info "Finished writing code"
-
+    
+    log.info "Running gofmt"
+    log.info `gofmt -w -s #{f}`
   end
 
   def excel_lib
@@ -89,3 +92,4 @@ class ExcelToGo < ExcelToX
     log.info `cd #{File.join(output_directory)}; go test`
   end
 end
+

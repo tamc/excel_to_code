@@ -3,6 +3,7 @@
 ## Other new features
 
 - Add a .ruby-version file, specifying Ruby 2.4 or above, to aid linting
+- Run gofmt on generated go files (go generation is still work in progress)
 
 ## Other
 
