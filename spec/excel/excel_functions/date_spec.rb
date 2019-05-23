@@ -1,9 +1,11 @@
 require_relative '../../spec_helper.rb'
 
+require 'date'
+
 describe "ExcelFunctions: DATE" do
   
-  it "should return something when given appropriate arguments" do
-    FunctionTest.date(1).should == 1
+  it "should return a valid date when given a valid year, month, day" do
+    FunctionTest.date(1900,1,1).should === Date.new(1900,1,1)
   end
 
   it "should return an error when given inappropriate arguments" do
