@@ -31,6 +31,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'COUNTA' => 'counta',
     :'COUNTIF' => 'countif',
     :'COUNTIFS' => 'countifs',
+    :'DATE' => 'date',
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXP' => 'exp',
     :'FIND' => 'find',
