@@ -152,3 +152,9 @@ require_relative 'excel_functions/ceiling'
 require_relative 'excel_functions/mround'
 
 require_relative 'excel_functions/date'
+
+require_relative 'excel_functions/day'
+
+require_relative 'excel_functions/month'
+
+require_relative 'excel_functions/year'

@@ -1276,6 +1276,40 @@ int test_functions() {
   );
   assert(conversion_error == 0);
 
+  // TEST date, day, month, and year
+  ifstream input("./spec/test_data/dateinput.csv");
+
+  if (!input.is_open()) {
+    cout << "failed to open "  << endl;
+    assert(true == false, "Failed to open test file at ./spec/test_data/dateinput.csv")
+  }
+
+  for (std::string line; std::getline(input, line); ) {
+    size_t start = 0;
+
+    size_t end = line.find(",", start);
+    string seq = line.substr(start, end);
+
+    start = end+1;
+    end = line.find(",", start);
+    string theDay = line.substr(start, end - start);
+
+    start = end+1;
+    end = line.find(",", start);
+    string theMonth = line.substr(start, end - start);
+
+    start = end+1;
+    end = line.find(",", start);
+    string theYear = line.substr(start, end - start);
+
+    // TEST THE FUNCTIONS HERE
+    assert_equal(EXCEL_NUMBER(seq), date(EXCEL_NUMBER(year), EXCEL_NUMBER(month), EXCEL_NUMBER(day)));
+
+    assert_equal(EXCEL_NUMBER(theDay), day(EXCEL_NUMBER(seq)));
+    assert_equal(EXCEL_NUMBER(theMonth), month(EXCEL_NUMBER(seq)));
+    assert_equal(EXCEL_NUMBER(theYear), year(EXCEL_NUMBER(seq)));
+  }
+
   // Release memory
   free_all_allocated_memory();
 

@@ -1,31 +1,31 @@
 require_relative '../../spec_helper.rb'
 
 
-describe "ExcelFunctions: DATE" do
+describe "ExcelFunctions: DAY" do
   
-  it "should return a valid date when given a valid year, month, day" do
+  it "should return a valid DAY when given a sequence number" do
     File.open("../../test_data/dateinput.csv") do |file|
       file.each do |line|
         arr = line.split(",")
-        FunctionTest.date(arr[3].to_i, arr[2].to_i, arr[1].to_i).should == arr[0].to_i
+        FunctionTest.day(arr[0].to_i).should == arr[1].to_i
       end
     end
   end
 
   it "should return an error when given inappropriate arguments" do
-    FunctionTest.date("Asdasddf").should == :num
+    FunctionTest.day("Asdasddf").should == :value
   end
     
   it "should treat nil as an error" do
-    FunctionTest.date(nil).should == :num
+    FunctionTest.day(nil).should == 0
   end
   
   it "should return an error if an argument is an error" do
-    FunctionTest.date(:error).should == :error
+    FunctionTest.day(:error).should == :error
   end
   
   it "should be in the list of functions that can be mapped to ruby" do
-    MapFormulaeToRuby::FUNCTIONS[:'DATE'].should == 'date'
+    MapFormulaeToRuby::FUNCTIONS[:'DAY'].should == 'day'
   end
   
 end

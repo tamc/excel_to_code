@@ -1,3 +1,5 @@
+require 'date'
+
 module ExcelFunctions
   
   ## For now we are only going to accept valid dates for input.
@@ -30,7 +32,6 @@ module ExcelFunctions
   # representing September 2, 2007
   
   # DAY
-  
   # If day is greater than the number of days in the month specified, 
   # day adds that number of days to the first day in the month. 
   # For example, DATE(2008,1,35) returns the serial number 
@@ -42,27 +43,40 @@ module ExcelFunctions
   # For example, DATE(2008,1,-15) returns the serial number 
   # representing December 16, 2007.
   
-  def date(y, m, d)
-    raise NotSupportedException.new("date() function has not been implemented fully. Edit src/excel/excel_functions/date.rb")
-    # return a if a.is_a?(Symbol)
-    # a ||= 0
-    # implement function
-    # return result
-    y = number_argument(y)
-    m = number_argument(m)
-    d = number_argument(d)
+  def validateInput(y, m, d)
+    return :num if y < 1900
+    return :num if y > 9999
+  
+    return :num if m < 1
+    return :num if m > 12
     
-    return y if y.is_a?(Symbol)
-    return m if m.is_a?(Symbol)
-    return d if d.is_a?(Symbol)
-
-    return :error if !(y > 1899 && y <= 9999) 
-    return :error if !(m > 0 && m <= 12)
-    
-    daysInMonth = Date.new(year, month, -1).day
-    return :error if !(d > 0 && d <= daysInMonth)
-
-    return 
+    return :num if d < 1
+    daysInMonth = Date.new(y, m, -1, Date::JULIAN).day
+    return :num if d > daysInMonth
   end
+  
+  def date(y, m, d)
+    return :num if validateInput(y, m, d) == :num
+    
+    seq = 0
+    year = 1900
+    daysInYear = 366
+    while y > year
+      seq += daysInYear
+      year += 1
+      daysInYear = year % 4 == 0 ? 366 : 365
+    end
+
+    month = 1
+    daysInMonth = 31
+    while m > month
+      seq += daysInMonth
+      month += 1
+      daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+    end
+
+    return seq + d
+  end
+  
   
 end

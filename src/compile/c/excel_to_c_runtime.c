@@ -58,6 +58,8 @@ static ExcelValue less_than(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue less_than_or_equal(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue average(int array_size, ExcelValue *array);
 static ExcelValue averageifs(ExcelValue average_range_v, int number_of_arguments, ExcelValue *arguments);
+static ExcelValue date(ExcelValue a_v, ExcelValue b_v, ExcelValue c_v);
+static ExcelValue day(ExcelValue a_v);
 static ExcelValue excel_char(ExcelValue number_v);
 static ExcelValue excel_ceiling_math_2(ExcelValue number_v, ExcelValue multiple_v);
 static ExcelValue excel_ceiling_math(ExcelValue number_v, ExcelValue multiple_v, ExcelValue mode_v);
@@ -86,6 +88,7 @@ static ExcelValue max(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue min(int number_of_arguments, ExcelValue *arguments);
 static ExcelValue mmult(ExcelValue a_v, ExcelValue b_v);
 static ExcelValue mod(ExcelValue a_v, ExcelValue b_v);
+static ExcelValue month(ExcelValue a_v);
 static ExcelValue mround(ExcelValue value_v, ExcelValue multiple_v);
 static ExcelValue na();
 static ExcelValue negative(ExcelValue a_v);
@@ -120,6 +123,7 @@ static ExcelValue text(ExcelValue number_v, ExcelValue format_v);
 static ExcelValue value(ExcelValue string_v);
 static ExcelValue vlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v);
 static ExcelValue vlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue column_number_v, ExcelValue match_type_v);
+static ExcelValue year(ExcelValue a_v);
 static ExcelValue scurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration);
 static ExcelValue scurve(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration, ExcelValue startYear);
 static ExcelValue halfscurve_4(ExcelValue currentYear, ExcelValue startValue, ExcelValue endValue, ExcelValue duration);
@@ -196,7 +200,6 @@ const ExcelValue BLANK = {.type = ExcelEmpty, .number = 0};
 
 const ExcelValue ZERO = {.type = ExcelNumber, .number = 0};
 const ExcelValue ONE = {.type = ExcelNumber, .number = 1};
-const ExcelValue TWO = {.type = ExcelNumber, .number = 2};
 const ExcelValue THREE = {.type = ExcelNumber, .number = 3};
 const ExcelValue FOUR = {.type = ExcelNumber, .number = 4};
 const ExcelValue FIVE = {.type = ExcelNumber, .number = 5};
@@ -207,6 +210,7 @@ const ExcelValue NINE = {.type = ExcelNumber, .number = 9};
 const ExcelValue TEN = {.type = ExcelNumber, .number = 10};
 
 // Booleans
+const ExcelValue TWO = {.type = ExcelNumber, .number = 2};
 const ExcelValue TRUE = {.type = ExcelBoolean, .number = true };
 const ExcelValue FALSE = {.type = ExcelBoolean, .number = false };
 
@@ -802,6 +806,131 @@ static ExcelValue counta(int array_size, ExcelValue *array) {
     }
 	 }
 	 return EXCEL_NUMBER(n);
+}
+
+/*
+  def date(y, m, d)
+    return :num if validateInput(y, m, d) == :num
+
+    seq = 0
+    year = 1900
+    daysInYear = 366
+    while y > year
+      seq += daysInYear
+      year += 1
+      daysInYear = year % 4 == 0 ? 366 : 365
+    end
+
+    month = 1
+    daysInMonth = 31
+    while m > month
+      seq += daysInMonth
+      month += 1
+      daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+    end
+
+    return seq + d
+  end
+ */
+int calculateDaysInMonth(int year, int month) {
+  switch (month) {
+  // months with 31 days 1,3,5,7,8,10,12
+  case 1:
+  case 3:
+  case 5:
+  case 7:
+  case 8:
+  case 10:
+  case 12:
+    if (d < 1 || d > 31) {
+      return NUM;
+    }
+    break;
+  // months with 30 days 4,6,9,11
+  case 4:
+  case 6:
+  case 9:
+  case 11:
+    if (d < 1 || d > 30) {
+      return NUM;
+    }
+    break;
+  // days in Feb
+  case 2:
+    if (year % 4 == 0 || year == 1900) {
+      // leap year
+      return 29;
+    }
+    else {
+      // not a leap year
+      return 28;
+    }
+    break;
+  }
+}
+
+static ExcelValue date(ExcelValue y_v, ExcelValue m_v, ExcelValue d_v) {
+  CHECK_FOR_PASSED_ERROR(y_v)
+  CHECK_FOR_PASSED_ERROR(m_v)
+  CHECK_FOR_PASSED_ERROR(d_v)
+  NUMBER(y_v, y)
+  NUMBER(m_v, m)
+  NUMBER(d_v, d)
+  CHECK_FOR_CONVERSION_ERROR
+
+  if (y < 1900 || y > 9999
+      || m < 1 || m > 12) {
+    return NUM;
+  }
+
+  int daysInMonth = calculateDaysInMonth(y, m);
+  if (d < 1 || d > daysInMonth) {
+    return NUM;
+  }
+
+  int seq = 0;
+  int year = 0;
+  daysInYear = 366;
+
+  while (y > year) {
+    seq += daysInYear;
+    ++year;
+    daysInYear = year % 4 == 0 ? 366 : 365;
+  }
+
+  int month = 1;
+  int daysInMonth = 31;
+  while (m > month) {
+    seq += daysInMonth;
+    ++month;
+    daysInMonth = calculateDaysInMonth(year, month);
+  }
+  return seq + d;
+}
+
+static ExcelValue day(ExcelValue seq_v) {
+  CHECK_FOR_PASSED_ERROR(seq_v)
+  NUMBER(seq_v, seq)
+  CHECK_FOR_CONVERSION_ERROR
+
+  int year = 1900;
+  int daysInYear = 366;
+  int day = seq;
+  while (day > daysInYear) {
+    day -= daysInYear;
+    ++year;
+    daysInYear = year % 4 == ) ? 366 : 365;
+  }
+
+  int month = 1;
+  int daysInMonth = calculateDaysInMonth(year, month);
+  while (day > daysInMonth) {
+    ++month;
+    day -= daysInMonth;
+    daysInMonth = calculateDaysInMonth(year, month);
+  }
+
+  return day;
 }
 
 static ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
@@ -1727,6 +1856,50 @@ static ExcelValue mod(ExcelValue a_v, ExcelValue b_v) {
 	if(b == 0) return DIV0;
 	return EXCEL_NUMBER(fmod(a,b));
 }
+
+static ExcelValue month(ExcelValue seq_v) {
+  CHECK_FOR_PASSED_ERROR(seq_v)
+  NUMBER(seq_v, seq)
+  CHECK_FOR_CONVERSION_ERROR
+
+  int year = 1900;
+  int daysInYear = 366;
+  int day = seq;
+  while (day > daysInYear) {
+    day -= daysInYear;
+    ++year;
+    daysInYear = year % 4 == ) ? 366 : 365;
+  }
+
+  int month = 1;
+  int daysInMonth = calculateDaysInMonth(year, month);
+  while (day > daysInMonth) {
+    ++month;
+    day -= daysInMonth;
+    daysInMonth = calculateDaysInMonth(year, month);
+  }
+
+  return month;
+}
+
+
+static ExcelValue year(ExcelValue seq_v) {
+  CHECK_FOR_PASSED_ERROR(seq_v)
+  NUMBER(seq_v, seq)
+  CHECK_FOR_CONVERSION_ERROR
+
+  int year = 1900;
+  int daysInYear = 366;
+  int day = seq;
+  while (day > daysInYear) {
+    day -= daysInYear;
+    ++year;
+    daysInYear = year % 4 == ) ? 366 : 365;
+  }
+
+  return year;
+}
+
 
 static ExcelValue na() {
   return NA;
