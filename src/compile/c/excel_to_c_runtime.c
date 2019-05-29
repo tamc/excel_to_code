@@ -842,18 +842,14 @@ int calculateDaysInMonth(int year, int month) {
   case 8:
   case 10:
   case 12:
-    if (d < 1 || d > 31) {
-      return NUM;
-    }
+    return 31;
     break;
   // months with 30 days 4,6,9,11
   case 4:
   case 6:
   case 9:
   case 11:
-    if (d < 1 || d > 30) {
-      return NUM;
-    }
+    return 30;
     break;
   // days in Feb
   case 2:
@@ -866,6 +862,8 @@ int calculateDaysInMonth(int year, int month) {
       return 28;
     }
     break;
+  default:
+    return 0;
   }
 }
 
@@ -884,13 +882,17 @@ static ExcelValue date(ExcelValue y_v, ExcelValue m_v, ExcelValue d_v) {
   }
 
   int daysInMonth = calculateDaysInMonth(y, m);
+  if (daysInMonth == 0) {
+    return NUM;
+  }
+
   if (d < 1 || d > daysInMonth) {
     return NUM;
   }
 
   int seq = 0;
-  int year = 0;
-  daysInYear = 366;
+  int year = 1900;
+  int daysInYear = 366;
 
   while (y > year) {
     seq += daysInYear;
@@ -899,13 +901,16 @@ static ExcelValue date(ExcelValue y_v, ExcelValue m_v, ExcelValue d_v) {
   }
 
   int month = 1;
-  int daysInMonth = 31;
+  daysInMonth = 31;
   while (m > month) {
     seq += daysInMonth;
     ++month;
     daysInMonth = calculateDaysInMonth(year, month);
+    if (daysInMonth == 0) {
+      return NUM;
+    }
   }
-  return seq + d;
+  return EXCEL_NUMBER(seq + d);
 }
 
 static ExcelValue day(ExcelValue seq_v) {
@@ -919,18 +924,24 @@ static ExcelValue day(ExcelValue seq_v) {
   while (day > daysInYear) {
     day -= daysInYear;
     ++year;
-    daysInYear = year % 4 == ) ? 366 : 365;
+    daysInYear = year % 4 == 0 ? 366 : 365;
   }
 
   int month = 1;
   int daysInMonth = calculateDaysInMonth(year, month);
+  if (daysInMonth == 0) {
+    return NUM;
+  }
   while (day > daysInMonth) {
     ++month;
     day -= daysInMonth;
     daysInMonth = calculateDaysInMonth(year, month);
+    if (daysInMonth == 0) {
+      return NUM;
+    }
   }
 
-  return day;
+  return EXCEL_NUMBER((double)day);
 }
 
 static ExcelValue divide(ExcelValue a_v, ExcelValue b_v) {
@@ -1868,18 +1879,25 @@ static ExcelValue month(ExcelValue seq_v) {
   while (day > daysInYear) {
     day -= daysInYear;
     ++year;
-    daysInYear = year % 4 == ) ? 366 : 365;
+    daysInYear = year % 4 == 0 ? 366 : 365;
   }
 
   int month = 1;
   int daysInMonth = calculateDaysInMonth(year, month);
+  if (daysInMonth == 0) {
+    return NUM;
+  }
+
   while (day > daysInMonth) {
     ++month;
     day -= daysInMonth;
     daysInMonth = calculateDaysInMonth(year, month);
+    if (daysInMonth == 0) {
+      return NUM;
+    }
   }
 
-  return month;
+  return EXCEL_NUMBER((double)month);
 }
 
 
@@ -1894,10 +1912,10 @@ static ExcelValue year(ExcelValue seq_v) {
   while (day > daysInYear) {
     day -= daysInYear;
     ++year;
-    daysInYear = year % 4 == ) ? 366 : 365;
+    daysInYear = year % 4 == 0 ? 366 : 365;
   }
 
-  return year;
+  return EXCEL_NUMBER((double)year);
 }
 
 

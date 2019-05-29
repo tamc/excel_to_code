@@ -1,66 +1,220 @@
-#!/usr/bin/ruby -w
-
-# YEAR
-# If year is between 0 (zero) and 1899 (inclusive), 
-# Excel adds that value to 1900 to calculate the year. 
-# For example, DATE(108,1,2) returns January 2, 2008 (1900+108).
-
-# If year is between 1900 and 9999 (inclusive), Excel uses that value as the year. 
-# For example, DATE(2008,1,2) returns January 2, 2008.
-
-# If year is less than 0 or is 10000 or greater, 
-# Excel returns the #NUM! error value.
 
 
-# this is the DATE function given valid input
-def to_excel_seq_number(year, month, day)
-  totalYears = year - 1900
-  leapYears = totalYears / 4 + 1
-  nonLeapYears = totalYears - leapYears
-  seq = (leapYears * 366) + (nonLeapYears * 365)
+require 'date'
+
+
+def date(y, m, d)
+  return :num if validateInput(y, m, d) == :num
   
-  for a in [1..month-1] do
-    daysInMonth = Date.new(year, a, -1).day
-    seq = seq + daysInMonth
+  seq = 0
+  year = 1900
+  daysInYear = 366
+  while y > year
+    seq += daysInYear
+    year += 1
+    daysInYear = year % 4 == 0 ? 366 : 365
   end
-  seq = seq + d
+  
+  puts sprintf("year: %d, seq: %d", year, seq)
+  
+  month = 1
+  daysInMonth = 31
+  while m > month
+    seq += daysInMonth
+    month += 1
+    daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+  end
+  puts sprintf("year: %d, month: %d seq: %d", year, month, seq)
+  puts sprintf("returning: %d", seq + d)
+  return seq + d
 end
 
 # the is the DAY function
-def day_from_excel_seq_number(seq)
-  totalYears = seq / 365;
-  leapYears = (totalYears / 4) + 1
-  nonLeapYears = totalYears - leapYears
-  
-  year = 1900 + totalYears;
-  
-  currentMonth = 1
-  month = 0
-  totalDays = seq - ( (leapYears * 366) + (nonLeapYears * 365) )
-  remainingDays = seq - totalDays
-  daysInMonth = Date.new(year, currentMonth, -1).day
-  while remainingDays > daysInMonth
-    month += 1
-    currentMonth += 1
-    daysInMonth = Date.new(year, currentMonth, -1).day
-    remainingDays -= daysInMonth
-  end
-  # the date is month/remainingDays/year
-  return remainingDays  
+def day(seq)
+  arr = extract(seq)
+  return arr[2] 
 end
 
-# examples:
-# DATE(1900, 14, 29) is 3/1/1901
-# DATE(1900, 2, 29) is 2/29/1900
-# DATE(1901, -10, 29) is 2/29/1900
+# this is the MONTH function
+def month(seq)
+  arr = extract(seq)
+  return arr[1]
+end
 
-puts "1200"
-puts date(1200,1,1)
-#puts "1900"
+# this is the YEAR function
+def year(seq)
+  arr = extract(seq)
+  return arr[0]
+end
+
+
+def fixup_input(y, m, d)
+  
+  if y < 0 || y > 9999
+    return :error
+  end
+  
+  year = y + 1900 if y >= 0 && y <= 1899
+  year = y if y >= 1900 && y <= 9999
+  
+  month = m
+  if m > 12
+    month = m % 12
+    year += m/12
+    :error if year > 9999
+  elsif m < 1
+    year -= (m.abs/12 + 1)
+    if year < 1900
+      year += 1900
+    end
+    month = m % 12
+  end
+  
+  daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+  if d > daysInMonth
+    while d > daysInMonth
+      month += 1
+      if month > 12
+        month = 1
+        year += 1
+        :error if year > 9999
+        d -= daysInMonth
+        daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+      else
+        d -= daysInMonth
+        daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+      end
+    end
+  elsif d < 1
+    while d < 0
+      month -= 1
+      if month < 1
+        year -= 1
+        if year < 1900
+          return :error
+        end
+        month = 12
+      end
+      daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+      d += daysInMonth
+    end
+    if d == 0
+      month -= 1
+      if month < 1
+        year -= 1
+        if year < 1900
+          return :error
+        end
+        month = 12
+      end
+      d = Date.new(year, month, -1, Date::JULIAN).day
+    end
+  else # d == 0
+    # this is the last day of the prior month
+    month -= 1
+    if month < 1
+      year -= 1
+      sprintf("YEAR: %d: ", year)
+      if year < 1900
+        return :error
+      end
+      month = 12
+    end
+    d = Date.new(year, month, -1, Date::JULIAN).day
+  end
+  
+  return [year, month, d]
+end
+
+
+
+def printDate(d) 
+  sprintf("%d/%d/%d", d[1], d[2], d[0])
+end
+
+
+
+
+def validateInput(y, m, d)
+  return :num if y < 1900
+  return :num if y > 9999
+
+  return :num if m < 1
+  return :num if m > 12
+  
+  return :num if d < 1
+  daysInMonth = Date.new(y, m, -1, Date::JULIAN).day
+  return :num if d > daysInMonth
+end
+
+
+def extract(num)
+
+  year = 1900
+  daysInYear = 366;
+  
+  day = num
+  while day > daysInYear
+    day -= daysInYear
+    year += 1
+    daysInYear = year % 4 == 0 ? 366 : 365
+  end
+  
+  month = 1
+  puts "Year: ", year
+  
+  daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+  puts "Days in month ", daysInMonth
+  
+  while day > daysInMonth
+    month += 1
+    day -= daysInMonth
+    daysInMonth = Date.new(year, month, -1, Date::JULIAN).day
+    puts printf("There are %d days in the month %d", daysInMonth, month)
+  end
+  puts printf("year: %d, month %d, day %d", year, month, day)
+  return [year, month, day]
+end
+
+def runExtract
+  File.open("./dateinput.csv") do |file|
+    file.each do |line|
+      arr = line.split(",")
+
+      puts sprintf("seq: %d, day: %d, month: %d, year: %d", arr[0], arr[1], arr[2], arr[3])
+      theDate = extract(arr[0].to_i)
+      puts printDate(theDate)
+      if theDate[0] != arr[3].to_i || theDate[1] != arr[2].to_i  || theDate[2] != arr[1].to_i
+        puts "FAILED, sequence number ", arr[0]
+        exit 1
+      end
+    end
+  end
+end
+
+def runToDate
+  File.open("./dateinput.csv") do |file|
+    file.each do |line|
+      arr = line.split(",")
+
+      puts sprintf("seq: %d, day: %d, month: %d, year: %d", arr[0], arr[1], arr[2], arr[3])
+      
+      seq = date(arr[3].to_i, arr[2].to_i, arr[1].to_i)
+
+      puts sprintf("date returned seq %s", seq.to_s)
+      if seq != arr[0].to_i
+        puts "FAILED, sequence number ", arr[0]
+        exit 1
+      end
+    end
+  end
+end
+
+runToSeq
 #date(1900,1,1)
-#puts "-1"
-#date(-1,1,1)
-puts "10000"
-puts date(10000,1,1)
+#runExtract
+#extract(24830)
 
-
+#theDate = extract_from_excel_seq_number(37)
+#
+#theDate = extract_from_excel_seq_number(24890)
