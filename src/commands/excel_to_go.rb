@@ -62,7 +62,8 @@ class ExcelToGo < ExcelToX
   def write_out_test_as_code
     log.info "Starting to write out test"
     
-    o = output("#{output_name.downcase}_test.go")
+    f = "#{output_name.downcase}_test.go"
+    o = output(f)
 
     o.puts "// Test of compiled version of #{excel_file}"
     o.puts "package #{output_name.downcase}"
@@ -80,6 +81,8 @@ class ExcelToGo < ExcelToX
 
     close(o)
     log.info "Finished writing tests"
+    log.info "Running gofmt on tests"
+    log.info `gofmt -w -s #{f}`
   end
   
   def compile_code
