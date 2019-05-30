@@ -12,7 +12,11 @@ module ExcelFunctions
     return a if a.is_a?(Symbol)
     return b if b.is_a?(Symbol)
     
-    a - b
+    result = a - b
+
+    return :num if result.infinite?
+
+    result
   end
   
 end

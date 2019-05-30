@@ -102,11 +102,10 @@ func TestValuetypesA6(t *testing.T) {
 
 func TestValuetypesB6(t *testing.T) {
   s := New()
-  e := Infinity
+  e := NumError{}
   a, err := s.ValuetypesB6()
-  if a != e || err != nil {
-      t.Errorf("ValuetypesB6 = (%v, %v), want (%v, nil)", a, err, e)
+  if err != e {
+      t.Errorf("ValuetypesB6 = (%v, %v), want (nil, %v)", a, err, e)
   }
 }
-
 

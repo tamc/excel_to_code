@@ -13,7 +13,11 @@ module ExcelFunctions
     return 1 if b ==0 # Special case so can do the following negative number check
     return :num if a < 0 && b < 1
     
-    a**b
+    result = a**b
+
+    return :num if result.infinite?
+
+    result
   end
   
 end

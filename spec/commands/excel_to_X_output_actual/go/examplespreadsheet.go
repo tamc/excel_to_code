@@ -91,7 +91,7 @@ func (s *spreadsheet) ValuetypesA6() (interface{}, error) {
 }
 func (s *spreadsheet) ValuetypesB6() (interface{}, error) {
   if !s.valuetypesB6.isCached() {
-    s.valuetypesB6.set(Infinity)
+    s.valuetypesB6.set(NumError{})
   }
   return s.valuetypesB6.get()
 }

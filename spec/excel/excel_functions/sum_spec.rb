@@ -23,5 +23,10 @@ describe "ExcelFunctions: SUM()" do
   it "should return an error if any arguments are errors" do
     FunctionTest.sum([[1]],[[[[1,:name]]]]).should == :name
   end
+
+  it 'should return num if result is infinite' do
+    FunctionTest.sum(1e999,1e999).should == :num
+  end
+
   
 end

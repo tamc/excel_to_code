@@ -28,6 +28,10 @@ describe "ExcelFunctions: add(number,number)" do
     FunctionTest.add(1,:error).should == :error
     FunctionTest.add(:error1,:error2).should == :error1
   end
+
+  it "should return num error if result is infinite" do
+    FunctionTest.add(1e999, 1e999).should == :num
+  end
   
   it "should be in the list of functions that can be mapped to ruby" do
     MapFormulaeToRuby::FUNCTIONS[:'+'].should == 'add'

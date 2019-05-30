@@ -5,9 +5,14 @@
 - Add a .ruby-version file, specifying Ruby 2.4 or above, to aid linting
 - Run gofmt on generated go files (go generation is still work in progress)
 
+# Bug fixes
+
+- Return #NUM! instead of inifnity in more situations (but not yet all cases in C version)
+
 ## Other
 
 - Linting and style changes
+- Integration testing for GO output (still work in progress)
 
 # 0.3.19 - 2018 January 8
 

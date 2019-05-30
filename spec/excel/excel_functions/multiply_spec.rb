@@ -28,5 +28,9 @@ describe "ExcelFunctions: multiply(number,number)" do
     FunctionTest.multiply(1,:error).should == :error
     FunctionTest.multiply(:error1,:error2).should == :error1
   end
+
+  it "should return num error if result is infinite" do
+    FunctionTest.multiply(1e999, 1e999).should == :num
+  end
   
 end

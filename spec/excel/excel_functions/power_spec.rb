@@ -36,5 +36,10 @@ describe "ExcelFunctions: power(number,number)" do
     FunctionTest.power(1,:error).should == :error
     FunctionTest.power(:error1,:error2).should == :error1
   end
+
+  it "should return num error if result is infinite" do
+    FunctionTest.power(1e999, 1e999).should == :num
+  end
+  
   
 end

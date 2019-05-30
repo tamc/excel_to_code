@@ -28,5 +28,10 @@ describe "ExcelFunctions: subtract(number,number)" do
     FunctionTest.subtract(1,:error).should == :error
     FunctionTest.subtract(:error1,:error2).should == :error1
   end
+
+  it "should return num error if result is infinite" do
+    FunctionTest.subtract(-1e999, 1e999).should == :num
+  end
+  
   
 end
