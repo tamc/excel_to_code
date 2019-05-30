@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
-# Generates a go version of the passed data structure
-class CompileToGo
-  attr_accessor :settable
-  attr_accessor :gettable
-  attr_accessor :sheet_names
-
+module CompileToGoCommon
   def struct_type
     'spreadsheet'
   end
@@ -13,6 +8,48 @@ class CompileToGo
   def self.rewrite(*args)
     new.rewrite(*args)
   end
+
+  def setup_instance_vars(sheet_names:)
+    self.settable ||= ->(_ref) { false }
+    self.gettable ||= ->(_ref) { true }
+    self.sheet_names = sheet_names
+  end
+
+  def getter_method_name(ref)
+    v = variable_name(ref).dup
+    v[0] = if gettable.call(ref)
+             v[0].upcase!
+           else
+             v[0].downcase!
+           end
+    v
+  end
+
+  def setter_method_name(ref)
+    v = variable_name(ref)
+    v[0].upcase!
+    "Set#{v}"
+  end
+
+  def variable_name(ref)
+    worksheet = ref.first
+    cell = ref.last
+    worksheet_name = sheet_names[worksheet.to_s] || worksheet.to_s
+    if worksheet_name.empty?
+      cell.downcase
+    else
+      "#{worksheet_name.downcase}#{cell.upcase}"
+    end
+  end
+end
+
+# Generates a go version of the passed data structure
+class CompileToGo
+  include CompileToGoCommon
+
+  attr_accessor :settable
+  attr_accessor :gettable
+  attr_accessor :sheet_names
 
   def rewrite(formulae, sheet_names, output)
     setup_instance_vars(sheet_names: sheet_names)
@@ -24,12 +61,6 @@ class CompileToGo
       output.puts getter(ref: ref, ast: ast)
       output.puts setter(ref: ref) if settable.call(ref)
     end
-  end
-
-  def setup_instance_vars(sheet_names:)
-    self.settable ||= ->(_ref) { false }
-    self.gettable ||= ->(_ref) { true }
-    self.sheet_names = sheet_names
   end
 
   def struct_definition(formulae:)
@@ -70,32 +101,5 @@ class CompileToGo
           s.#{v}.set(v)
       }
     ENDGO
-  end
-
-  def getter_method_name(ref)
-    v = variable_name(ref).dup
-    v[0] = if gettable.call(ref)
-             v[0].upcase!
-           else
-             v[0].downcase!
-           end
-    v
-  end
-
-  def setter_method_name(ref)
-    v = variable_name(ref)
-    v[0].upcase!
-    "Set#{v}"
-  end
-
-  def variable_name(ref)
-    worksheet = ref.first
-    cell = ref.last
-    worksheet_name = sheet_names[worksheet.to_s] || worksheet.to_s
-    if worksheet_name.empty?
-      cell.downcase
-    else
-      "#{worksheet_name.downcase}#{cell.upcase}"
-    end
   end
 end

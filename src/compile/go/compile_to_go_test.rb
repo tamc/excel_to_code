@@ -1,73 +1,59 @@
+# frozen_string_literal: true
 
+# Turns the data structure into a series of tests written in golang
 class CompileToGoTest
-  
+  include CompileToGoCommon
+
   attr_accessor :settable
   attr_accessor :gettable
   attr_accessor :sheet_names
-  
-  def struct_type
-    "spreadsheet"
-  end
 
-  def self.rewrite(*args)
-    self.new.rewrite(*args)
-  end
-  
   def rewrite(formulae, sheet_names, output)
-    self.settable ||= lambda { |ref| false }
-    self.gettable ||= lambda { |ref| true }
-    self.sheet_names = sheet_names
+    setup_instance_vars(sheet_names: sheet_names)
 
-    m = MapValuesToGo.new
-
-    formulae.each do |ref, ast|
-      next unless gettable.call(ref)
-      n = getter_method_name(ref)
-
-      if ast.first == :error
-        output.puts <<~END
-        func Test#{n}(t *testing.T) {
-          s := New()
-          e := #{m.map(ast)}
-          a, err := s.#{n}()
-          if err != e {
-              t.Errorf("#{n} = (%v, %v), want (nil, %v)", a, err, e)
-          }
-        }
-
-        END
-
-      else 
-        output.puts <<~END
-        func Test#{n}(t *testing.T) {
-          s := New()
-          e := #{m.map(ast)}
-          a, err := s.#{n}()
-          if a != e || err != nil {
-              t.Errorf("#{n} = (%v, %v), want (%v, nil)", a, err, e)
-          }
-        }
-
-        END
+    formulae
+      .select { |ref, _| gettable.call(ref) }
+      .each do |ref, ast|
+      if error?(ast: ast)
+        output.puts test_for_error(ref: ref, ast: ast)
+      else
+        output.puts test_for_value(ref: ref, ast: ast)
       end
     end
   end
 
-  def getter_method_name(ref)
-    v = variable_name(ref)
-    if gettable.call(ref)
-      v[0] = v[0].upcase!
-    else
-      v[0] = v[0].downcase!
-    end
-    v
+  def test_for_error(ref:, ast:)
+    n = getter_method_name(ref)
+    m = MapValuesToGo.new
+    <<~ENDGO
+      func Test#{n}(t *testing.T) {
+        s := New()
+        e := #{m.map(ast)}
+        a, err := s.#{n}()
+        if err != e {
+            t.Errorf("#{n} = (%v, %v), want (nil, %v)", a, err, e)
+        }
+      }
+    ENDGO
   end
 
-  def variable_name(ref)
-    worksheet = ref.first
-    cell = ref.last
-    worksheet_name = sheet_names[worksheet.to_s] || worksheet.to_s
-    return worksheet_name.length > 0 ? "#{worksheet_name.downcase}#{cell.upcase}" : cell.downcase
+  def test_for_value(ref:, ast:)
+    n = getter_method_name(ref)
+    m = MapValuesToGo.new
+    <<~ENDGO
+      func Test#{n}(t *testing.T) {
+        s := New()
+        e := #{m.map(ast)}
+        a, err := s.#{n}()
+        if a != e || err != nil {
+            t.Errorf("#{n} = (%v, %v), want (%v, nil)", a, err, e)
+        }
+      }
+
+    ENDGO
   end
-  
+
+  def error?(ast:)
+    ast.first == :error
+  end
 end
