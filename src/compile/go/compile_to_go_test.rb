@@ -8,17 +8,21 @@ class CompileToGoTest
   attr_accessor :gettable
   attr_accessor :sheet_names
 
-  def rewrite(formulae, sheet_names, output)
+  def rewrite(formulae, values, sheet_names, output)
     setup_instance_vars(sheet_names: sheet_names)
 
     formulae
       .select { |ref, _| gettable.call(ref) }
-      .each do |ref, ast|
-      if error?(ast: ast)
-        output.puts test_for_error(ref: ref, ast: ast)
-      else
-        output.puts test_for_value(ref: ref, ast: ast)
-      end
+      .each { |ref, _| output.puts test_for_ast(ref: ref, ast: values[ref]) }
+  end
+
+  private
+
+  def test_for_ast(ref:, ast:)
+    if error?(ast: ast)
+      test_for_error(ref: ref, ast: ast)
+    else
+      test_for_value(ref: ref, ast: ast)
     end
   end
 

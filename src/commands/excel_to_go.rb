@@ -74,7 +74,7 @@ class ExcelToGo < ExcelToX
     c = CompileToGoTest.new
     c.settable = settable
     c.gettable = gettable
-    c.rewrite @formulae, @worksheet_c_names, o
+    c.rewrite @formulae, @values, @worksheet_c_names, o
     o.puts
 
     close(o)
