@@ -51,7 +51,7 @@ class MapValuesToGo
   REVERSE_ERRORS = ERRORS.invert
 
   def error(text)
-    @result_type = :error_value
+    @result&.body_type = :error_value
     ERRORS[text.to_sym] || (raise NotSupportedException, "#{text.inspect} error not recognised")
   end
 

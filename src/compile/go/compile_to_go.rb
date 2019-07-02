@@ -83,7 +83,8 @@ class CompileToGo
   def getter(ref:, ast:)
     v = variable_name(ref)
     m = getter_method_name(ref)
-    c = code_to_create_value(v, ast)
+    r = mapper.convert(ast)
+    c = code_to_create_value(v, r)
     <<~ENDGO
       func (s *#{struct_type}) #{m}() (interface{}, error) {
         if !s.#{v}.isCached() {
@@ -94,16 +95,14 @@ class CompileToGo
     ENDGO
   end
 
-  def code_to_create_value(variable_name, ast)
-    result = mapper.convert(ast)
-    definitions = mapper.get_definitions
-    case mapper.result_type
+  def code_to_create_value(variable_name, result)
+    case result.body_type
     when :value
-      "s.#{variable_name}.set(#{result}, nil)"
+      "s.#{variable_name}.set(#{result.body}, nil)"
     when :error_value
-      "s.#{variable_name}.set(nil, #{result})"
+      "s.#{variable_name}.set(nil, #{result.body})"
     when :function_no_error
-      "#{definitions}s.#{variable_name}.set(#{result}, nil)"
+      "#{result.definitions}s.#{variable_name}.set(#{result.body}, nil)"
     end
   end
 

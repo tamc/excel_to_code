@@ -2,36 +2,50 @@
 
 require_relative 'map_values_to_go'
 
+# The return type when converting
+class MapFormulaeToGoResult
+  attr_accessor :body
+  attr_accessor :body_type
+
+  def initialize
+    @body_type = :value
+    @counter = 0
+    @definitions = []
+  end
+
+  def define_variable_with_error(variable_definition)
+    result = "v#{@counter += 1}"
+    @definitions << "#{result}, err := #{variable_definition}"
+    @definitions << 'if err != nil {'
+    @definitions << '  return nil, err'
+    @definitions << '}'
+    result
+  end
+
+  def definitions
+    return '' if @definitions.empty?
+
+    @definitions.join("\n    ") + "\n    "
+  end
+end
+
 class MapFormulaeToGo < MapValuesToGo
   attr_accessor :sheet_names
   attr_accessor :getter_method_name
-  attr_accessor :definitions
-  attr_accessor :result_type
+  attr_accessor :result
 
   FUNCTIONS = {
     :'+' => 'add'
   }.freeze
 
   def convert(ast)
-    @result_type = :value
-    @counter = 0
-    @definitions = []
-    map(ast)
-  end
-
-  def get_definitions
-    return "" if @definitions.empty?
-    @definitions.join("\n    ") + "\n    "
+    @result = MapFormulaeToGoResult.new
+    @result.body = map(ast)
+    @result
   end
 
   def number_parameter(ast)
-    value = map(ast)
-    variable = "v#{@counter += 1}"
-    @definitions << "#{variable}, err := number(#{value})"
-    @definitions << 'if err != nil {'
-    @definitions << '  return nil, err'
-    @definitions << '}'
-    variable
+    @result.define_variable_with_error("number(#{map(ast)})")
   end
 
   def prefix(symbol, ast)
@@ -48,7 +62,7 @@ class MapFormulaeToGo < MapValuesToGo
     l = number_parameter(left)
     r = number_parameter(right)
     o = operator.last
-    @result_type = :function_no_error
+    @result.body_type = :function_no_error
     "#{l}#{o}#{r}"
   end
 
