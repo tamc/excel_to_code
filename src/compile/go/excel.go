@@ -13,6 +13,8 @@ import (
 type cachedValue struct {
 	// v is the cached value, in this case of any type
 	v interface{}
+	// err is the cached error
+	err error
 	// c is whether it is cached
 	c bool
 }
@@ -21,8 +23,9 @@ func (c *cachedValue) isCached() bool {
 	return c.c
 }
 
-func (c *cachedValue) set(v interface{}) {
+func (c *cachedValue) set(v interface{}, err error) {
 	c.v = v
+	c.err = err
 	c.c = true
 }
 
@@ -34,10 +37,7 @@ func (c *cachedValue) get() (interface{}, error) {
 	if !c.c {
 		return nil, notCachedError{}
 	}
-	if err, ok := c.v.(error); ok {
-		return nil, err
-	}
-	return c.v, nil
+	return c.v, c.err
 }
 
 type notCachedError struct{}
@@ -95,7 +95,7 @@ func (e NumError) Error() string {
 }
 
 func excel_if(c interface{}, t, f func() interface{}) interface{} {
-	b, err := boolean(c)
+	b, err := boolean(c, nil)
 	if err != nil {
 		return err
 	}
@@ -114,19 +114,22 @@ func excel_if(c interface{}, t, f func() interface{}) interface{} {
 	}
 }
 
-func add(a, b interface{}) interface{} {
-	n1, err := number(a)
+func add(a, b interface{}) (float64, error) {
+	n1, err := number(a, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	n2, err := number(b)
+	n2, err := number(b, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return n1 + n2
+	return (n1 + n2), nil
 }
 
-func number(a interface{}) (float64, error) {
+func number(a interface{}, err error) (float64, error) {
+	if err != nil {
+		return 0, err
+	}
 	switch a := a.(type) {
 	case Blank:
 		return 0, nil
@@ -138,8 +141,6 @@ func number(a interface{}) (float64, error) {
 		} else {
 			return 0, nil
 		}
-	case error:
-		return 0, a
 	case string:
 		i, err := strconv.ParseFloat(a, 64)
 		if err != nil {
@@ -151,7 +152,10 @@ func number(a interface{}) (float64, error) {
 	}
 }
 
-func boolean(a interface{}) (bool, error) {
+func boolean(a interface{}, err error) (bool, error) {
+	if err != nil {
+		return false, err
+	}
 	switch a := a.(type) {
 	case Blank:
 		return false, nil
@@ -163,8 +167,6 @@ func boolean(a interface{}) (bool, error) {
 		}
 	case bool:
 		return a, nil
-	case error:
-		return false, a
 	default:
 		return false, ValueError{a, "bool"}
 	}

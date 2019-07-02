@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# CombileToGoCommon includes coe shared between CompileToGo and CompileToGoTest
 module CompileToGoCommon
   def struct_type
     'spreadsheet'
@@ -43,7 +44,7 @@ module CompileToGoCommon
   end
 end
 
-# Generates a go version of the passed data structure
+# CompileToGo generates a go version of the passed data structure
 class CompileToGo
   include CompileToGoCommon
 
@@ -82,15 +83,28 @@ class CompileToGo
   def getter(ref:, ast:)
     v = variable_name(ref)
     m = getter_method_name(ref)
-    value = MapValuesToGo.new.map(ast)
+    c = code_to_create_value(v, ast)
     <<~ENDGO
       func (s *#{struct_type}) #{m}() (interface{}, error) {
         if !s.#{v}.isCached() {
-          s.#{v}.set(#{value})
+          #{c}
         }
         return s.#{v}.get()
       }
     ENDGO
+  end
+
+  def code_to_create_value(variable_name, ast)
+    result = mapper.convert(ast)
+    definitions = mapper.get_definitions
+    case mapper.result_type
+    when :value
+      "s.#{variable_name}.set(#{result}, nil)"
+    when :error_value
+      "s.#{variable_name}.set(nil, #{result})"
+    when :function_no_error
+      "#{definitions}s.#{variable_name}.set(#{result}, nil)"
+    end
   end
 
   def setter(ref:)
@@ -98,8 +112,23 @@ class CompileToGo
     m = setter_method_name(ref)
     <<~ENDGO
        func (s *#{struct_type}) #{m}(v interface{}) {
-          s.#{v}.set(v)
+        if err, ok := v.(error); ok {
+          s.#{v}.set(nil, err)
+        } else {
+          s.#{v}.set(v, nil)
+        }
       }
     ENDGO
+  end
+
+  private
+
+  def mapper
+    return @mapper if @mapper
+
+    @mapper = MapFormulaeToGo.new
+    @mapper.sheet_names = sheet_names
+    @mapper.getter_method_name = method(:getter_method_name)
+    @mapper
   end
 end

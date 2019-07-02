@@ -1,5 +1,5 @@
 # coding: utf-8
-# All tests for /Users/tamc/Documents/github/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx
+# All tests for /Users/tamc/Documents/excel_to_code/spec/test_data/ExampleSpreadsheet.xlsx
 require 'minitest/autorun'
 require_relative 'rubyexamplespreadsheet'
 
