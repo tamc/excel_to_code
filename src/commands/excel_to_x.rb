@@ -1424,9 +1424,12 @@ class ExcelToX
   end
   
   def output(*args)
-    args.flatten!
-    File.open(File.join(output_directory,*args),'w')
+    File.open(output_path(*args), 'w')
   end
+
+  def output_path(*args)
+    File.join(output_directory, *args.flatten)
+  end 
 
   def close(*args)
     args.map do |f|
