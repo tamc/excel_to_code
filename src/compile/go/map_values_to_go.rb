@@ -14,10 +14,12 @@ class MapValuesToGo
   end
 
   def blank
+    @result&.blank!
     'Blank{}'
   end
 
   def inlined_blank
+    @result&.blank!
     'Blank{}'
   end
 
@@ -28,14 +30,17 @@ class MapValuesToGo
   alias null blank
 
   def number(text)
+    @result&.number!
     text.to_s
   end
 
   def percentage(text)
+    @result&.number!
     (text.to_f / 100.0).to_s
   end
 
   def string(text)
+    @result&.string!
     text.inspect
   end
 
@@ -51,15 +56,17 @@ class MapValuesToGo
   REVERSE_ERRORS = ERRORS.invert
 
   def error(text)
-    @result&.body_type = :error_value
+    @result&.error!
     ERRORS[text.to_sym] || (raise NotSupportedException, "#{text.inspect} error not recognised")
   end
 
   def boolean_true
+    @result&.boolean!
     'true'
   end
 
   def boolean_false
+    @result&.boolean!
     'false'
   end
 end

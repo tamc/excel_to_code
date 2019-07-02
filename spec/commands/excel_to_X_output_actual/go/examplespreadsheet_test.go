@@ -119,7 +119,7 @@ func TestValuetypesA8(t *testing.T) {
 
 func TestValuetypesA9(t *testing.T) {
 	s := New()
-	e := 2.0
+	e := 5.0
 	a, err := s.ValuetypesA9()
 	if a != e || err != nil {
 		t.Errorf("ValuetypesA9 = (%v, %v), want (%v, nil)", a, err, e)

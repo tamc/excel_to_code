@@ -6,9 +6,11 @@ require_relative 'map_values_to_go'
 class MapFormulaeToGoResult
   attr_accessor :body
   attr_accessor :body_type
+  attr_accessor :return_type
 
   def initialize
     @body_type = :value
+    @return_type = :interface
     @counter = 0
     @definitions = []
   end
@@ -26,6 +28,45 @@ class MapFormulaeToGoResult
     return '' if @definitions.empty?
 
     @definitions.join("\n    ") + "\n    "
+  end
+
+  def error!
+    @return_type = :error
+    @body_type = :error_value
+  end
+
+  def number!
+    @return_type = :number
+    @body_type = :value
+  end
+
+  def boolean!
+    @return_type = :boolean
+    @body_type = :value
+  end
+
+  def string!
+    @return_type = :string
+    @body_type = :value
+  end
+
+  def blank!
+    @return_type = :blank
+    @body_type = :value
+  end
+
+  def interface!
+    @return_type = :interface
+    @body_type = :value
+  end
+
+  def function_no_error!(returns_type:)
+    @return_type = returns_type
+    @body_type = :function_no_error
+  end
+
+  def number?
+    @return_type == :number
   end
 end
 
@@ -45,7 +86,10 @@ class MapFormulaeToGo < MapValuesToGo
   end
 
   def number_parameter(ast)
-    @result.define_variable_with_error("number(#{map(ast)})")
+    v = map(ast)
+    return v if @result.number?
+
+    @result.define_variable_with_error("number(#{v})")
   end
 
   def prefix(symbol, ast)
@@ -62,8 +106,8 @@ class MapFormulaeToGo < MapValuesToGo
     l = number_parameter(left)
     r = number_parameter(right)
     o = operator.last
-    @result.body_type = :function_no_error
-    "#{l}#{o}#{r}"
+    @result.function_no_error!(returns_type: :number)
+    "(#{l}#{o}#{r})"
   end
 
   def comparison(left, operator, right)
@@ -77,6 +121,7 @@ class MapFormulaeToGo < MapValuesToGo
   end
 
   def sheet_reference(sheet, reference)
+    @result.interface!
     ref = [sheet, reference.last]
     m = getter_method_name.call(ref)
     "s.#{m}()"

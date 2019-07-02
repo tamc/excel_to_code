@@ -116,7 +116,7 @@ func (s *spreadsheet) ValuetypesA9() (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		s.valuetypesA9.set(v1+v2, nil)
+		s.valuetypesA9.set(((v1 + v2) + 3.0), nil)
 	}
 	return s.valuetypesA9.get()
 }
