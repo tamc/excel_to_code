@@ -3,6 +3,7 @@
 require_relative 'excel_to_x'
 require 'pathname'
 
+# ExcelToGo turns a spreadsheet into code in the Go language
 class ExcelToGo < ExcelToX
   def language
     'go'
@@ -41,20 +42,7 @@ class ExcelToGo < ExcelToX
     close(o)
     log.info 'Finished writing code'
 
-    log.info 'Running gofmt'
-    log.info `gofmt -w -s #{f}`
-  end
-
-  def excel_lib
-    @excel_lib ||= IO.readlines(File.join(File.dirname(__FILE__), '..', 'compile', 'go', 'excel.go')).join
-  end
-
-  def excel_lib_imports
-    excel_lib[/import \(.*?\)/m]
-  end
-
-  def excel_lib_functions
-    excel_lib[/import \(.*?\)(.*)/m, 1]
+    format_code(f)
   end
 
   def write_out_test_as_code
@@ -79,8 +67,8 @@ class ExcelToGo < ExcelToX
 
     close(o)
     log.info 'Finished writing tests'
-    log.info 'Running gofmt on tests'
-    log.info `gofmt -w -s #{f}`
+
+    format_code(f)
   end
 
   def compile_code
@@ -92,5 +80,26 @@ class ExcelToGo < ExcelToX
 
     log.info 'Running the resulting tests'
     log.info `cd #{File.join(output_directory)}; go test`
+  end
+
+  def format_code(filename)
+    log.info 'Running gofmt'
+    log.info `gofmt -w -s #{output_path(filename)}`
+  end
+
+  def excel_lib
+    @excel_lib ||= IO.readlines(path_to_excel_go).join
+  end
+
+  def excel_lib_imports
+    excel_lib[/import \(.*?\)/m]
+  end
+
+  def excel_lib_functions
+    excel_lib[/import \(.*?\)(.*)/m, 1]
+  end
+
+  def path_to_excel_go
+    File.join(File.dirname(__FILE__), '..', 'compile', 'go', 'excel.go')
   end
 end
