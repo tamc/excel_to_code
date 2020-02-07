@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
 
 describe ExcelToGo do
-  it 'Should transform ExampleSpreadsheet.xlsx into the desired ruby code' do
+  skip 'Should transform ExampleSpreadsheet.xlsx into the desired ruby code' do
     excel = File.join(File.dirname(__FILE__), '..', 'test_data', 'GoTestSpreadsheet.xlsx')
     actual = File.join(File.dirname(__FILE__), 'excel_to_X_output_actual')
     puts "Writing to #{actual}"
