@@ -55,6 +55,7 @@ class MapFormulaeToC < MapValuesToC
     :'IF3' => 'excel_if',
     :'IFERROR' => 'iferror',
     :'IFNA' => 'ifna',
+    :'__xlfn.IFNA' => 'ifna',
     :'ISERR' => 'iserr',
     :'ISERROR' => 'iserror',
     :'INDEX2' => 'excel_index_2',
