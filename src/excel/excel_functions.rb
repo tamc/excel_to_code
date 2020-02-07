@@ -156,3 +156,5 @@ require_relative 'excel_functions/exact'
 require_relative 'excel_functions/ifna'
 
 require_relative 'excel_functions/unicode'
+
+require_relative 'excel_functions/lookup'

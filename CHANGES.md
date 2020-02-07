@@ -5,6 +5,7 @@
 - Implement EXACT in Ruby
 - Implement IFNA in Ruby and in C
 - Implement UNICODE in Ruby
+- Implement LOOKUP in Ruby
 
 ## Other new features
 

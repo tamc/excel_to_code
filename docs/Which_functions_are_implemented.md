@@ -189,7 +189,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * HYPERLINK -- Creates a shortcut or jump that opens a document stored on a network server, an intranet, or the Internet -- _R_
 * INDEX -- Uses an index to choose a value from a reference or array -- _R_ _C_ 
 * INDIRECT -- Returns a reference indicated by a text value -- _R_ _C_ only implemented for indirects that can be converted to formula at compile time
-* LOOKUP -- Looks up values in a vector or array
+* LOOKUP -- Looks up values in a vector or array -- _R_
 * MATCH -- Looks up values in a reference or array -- _R_ _C_
 * OFFSET -- Returns a reference offset from a given reference
 * ROW -- Returns the row number of a reference -- _Only if the answer can be calculated at compile time_
