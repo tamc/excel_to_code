@@ -352,7 +352,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * CODE -- Returns a numeric code for the first character in a text string
 * CONCATENATE -- Joins several text items into one text item -- _R_ _C_
 * DOLLAR -- Converts a number to text, using the $ (dollar) currency format
-* EXACT -- Checks to see if two text values are identical
+* EXACT -- Checks to see if two text values are identical -- _R_
 * FIND, FINDB -- Finds one text value within another (case-sensitive) -- _R_ _C_ (not FINDB)
 * FIXED -- Formats a number as text with a fixed number of decimals
 * JIS -- Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters

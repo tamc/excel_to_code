@@ -32,6 +32,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'COUNTIF' => 'countif',
     :'COUNTIFS' => 'countifs',
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
+    :'EXACT' => 'exact',
     :'EXP' => 'exp',
     :'FIND' => 'find',
     :'FLOOR' => 'floor',

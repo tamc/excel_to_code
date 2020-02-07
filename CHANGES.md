@@ -1,5 +1,9 @@
 # Head
 
+## New / Changed Excel functions
+
+- Implement EXACT in Ruby
+
 ## Other new features
 
 - Add a .ruby-version file, specifying Ruby 2.4 or above, to aid linting
