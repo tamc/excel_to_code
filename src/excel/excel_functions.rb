@@ -154,3 +154,5 @@ require_relative 'excel_functions/mround'
 require_relative 'excel_functions/exact'
 
 require_relative 'excel_functions/ifna'
+
+require_relative 'excel_functions/unicode'

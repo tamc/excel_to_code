@@ -374,6 +374,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * TRIM -- Removes spaces from text - _R_
 * UPPER -- Converts text to uppercase
 * VALUE -- Converts a text argument to a number - _R_ _C_
+* UNICODE -- Return the codepoint of the first character of a string -- _R_
 
 ## External functions
 

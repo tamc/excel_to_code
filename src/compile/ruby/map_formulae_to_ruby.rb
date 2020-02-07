@@ -88,6 +88,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'SUMPRODUCT' => 'sumproduct',
     :'TEXT' => 'text',
     :'TRIM' => 'trim',
+    :'UNICODE' => 'unicode',
     :'VALUE' => 'value',
     :'VLOOKUP' => 'vlookup',
     :'^' => 'power',
