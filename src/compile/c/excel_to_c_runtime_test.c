@@ -252,6 +252,11 @@ int test_functions() {
   assert(iferror(EXCEL_STRING("ok"),ONE).type == ExcelString);
   assert(iferror(VALUE,ONE).type == ExcelNumber);
 
+  // Test the IFNA function 
+  assert(ifna(EXCEL_STRING("ok"),ONE).type == ExcelString);
+  assert(ifna(NA,ONE).type == ExcelNumber);
+  assert(ifna(DIV0,ONE).type == ExcelError);
+
   // Test the ISERR function
   assert(iserr(NA).type == ExcelBoolean);
   assert(iserr(NA).number == 0);

@@ -67,6 +67,7 @@ static ExcelValue find(ExcelValue string_to_look_for_v, ExcelValue string_to_loo
 static ExcelValue hlookup_3(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v);
 static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, ExcelValue row_number_v, ExcelValue match_type_v);
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error);
+static ExcelValue ifna(ExcelValue value, ExcelValue value_if_error);
 static ExcelValue iserr(ExcelValue value);
 static ExcelValue iserror(ExcelValue value);
 static ExcelValue excel_index(ExcelValue array_v, ExcelValue row_number_v, ExcelValue column_number_v);
@@ -1322,6 +1323,12 @@ static ExcelValue right_1(ExcelValue string_v) {
 static ExcelValue iferror(ExcelValue value, ExcelValue value_if_error) {
 	if(value.type == ExcelError) return value_if_error;
 	return value;
+}
+
+static ExcelValue ifna(ExcelValue value, ExcelValue value_if_error) {
+	if(value.type != ExcelError) return value;
+  if(value.number != NA.number) return value;
+  return value_if_error;
 }
 
 static ExcelValue iserr(ExcelValue value) {

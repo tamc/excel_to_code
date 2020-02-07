@@ -3,6 +3,7 @@
 ## New / Changed Excel functions
 
 - Implement EXACT in Ruby
+- Implement IFNA in Ruby and in C
 
 ## Other new features
 

@@ -41,6 +41,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'HYPERLINK' => 'hyperlink',
     :'IF' => 'excel_if',
     :'IFERROR' => 'iferror',
+    :'IFNA' => 'ifna',
     :'INDEX' => 'index',
     :'INT' => 'int',
     :'ISBLANK' => 'isblank',

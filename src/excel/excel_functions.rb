@@ -152,3 +152,5 @@ require_relative 'excel_functions/ceiling'
 require_relative 'excel_functions/mround'
 
 require_relative 'excel_functions/exact'
+
+require_relative 'excel_functions/ifna'

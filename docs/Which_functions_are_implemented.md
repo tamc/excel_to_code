@@ -175,6 +175,7 @@ To add a missing function, read: doc/How_to_add_a_missing_function.md
 * OR -- Returns TRUE if any argument is TRUE -- _R_ _C_
 * TRUE -- Returns the logical value TRUE
 * IFERROR -- Returns a different value if there is an error -- _R_ _C_
+* IFNA -- Returns a different value if there is a NA error -- _R_ _C_
 
 ## Lookup and reference functions
 
