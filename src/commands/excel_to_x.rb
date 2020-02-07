@@ -641,7 +641,7 @@ class ExcelToX
       
       log.fatal "Check for a new version of excel_to_code at https://github.com/tamc/excel_to_code"
       log.fatal "Or follow the instructions at https://github.com/tamc/excel_to_code/blob/master/doc/How_to_add_a_missing_function.md to implement the function yourself"
-      exit
+      exit unless persevere
     end
   end
   
