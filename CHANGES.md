@@ -18,6 +18,7 @@
 
 - Linting and style changes
 - Integration testing for GO output (still work in progress)
+- Rspec can now be run with the --next-failure option
 
 # 0.3.19 - 2018 January 8
 

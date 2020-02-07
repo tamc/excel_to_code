@@ -4,6 +4,9 @@ require 'tmpdir'
 
 # Allow both old and new syntax
 RSpec.configure do |config|
+  config.example_status_persistence_file_path = File.join(File.dirname(__FILE__), "results.txt")
+  config.run_all_when_everything_filtered = true
+
   config.expect_with :rspec do |c|
     c.syntax = [:should, :expect]
   end
