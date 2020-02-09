@@ -6,6 +6,7 @@
 - Implement IFNA in Ruby and in C
 - Implement UNICODE in Ruby
 - Implement LOOKUP in Ruby
+- Bodge in Climact's IMPORT function. This is not an Excel function and not yet in the right place. But it works.
 
 ## Other new features
 

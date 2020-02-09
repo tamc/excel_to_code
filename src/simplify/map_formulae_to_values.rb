@@ -132,6 +132,7 @@ class MapFormulaeToValues
     return if name == :OFFSET
     return if name == :COLUMN
     return if name == :ROW
+    return if name == :IMPORT
     if respond_to?("map_#{name.to_s.downcase}")
       send("map_#{name.to_s.downcase}",ast)
     else

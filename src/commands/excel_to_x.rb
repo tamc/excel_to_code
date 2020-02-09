@@ -622,7 +622,7 @@ class ExcelToX
   end
 
   def check_all_functions_implemented
-    functions_that_are_removed_during_compilation = [:INDIRECT, :OFFSET, :ROW, :COLUMN, :TRANSPOSE]
+    functions_that_are_removed_during_compilation = [:INDIRECT, :OFFSET, :ROW, :COLUMN, :TRANSPOSE, :IMPORT]
     functions_used = CachingFormulaParser.instance.functions_used.keys
     functions_used.delete_if do |f|
       MapFormulaeToRuby::FUNCTIONS[f]
@@ -1082,6 +1082,7 @@ class ExcelToX
     # First of all we replace any indirects where their values can be calculated at compile time with those
     # calculated values (e.g., INDIRECT("A"&1) can be turned into A1 and OFFSET(A1,1,1,2,2) can be turned into B2:C3)
     indirect_replacement = ReplaceIndirectsWithReferencesAst.new
+    import_replacement = ReplaceImportWithReference.new
     column_and_row_function_replacement = ReplaceColumnAndRowFunctionsAST.new
     offset_replacement = ReplaceOffsetsWithReferencesAst.new
     cell_address_replacement = ReplaceCellAddressesWithReferencesAst.new
@@ -1097,6 +1098,7 @@ class ExcelToX
       offset_replacement.count_replaced = 0
       cell_address_replacement.count_replaced = 0
       indirect_replacement.count_replaced = 0
+      import_replacement.count_replaced = 0
       references_that_need_updating = {}
 
       @cells_with_formulae.each do |ref, ast|
@@ -1120,6 +1122,9 @@ class ExcelToX
           if indirect_replacement.replace(ast)
             references_that_need_updating[ref] = ast
           end
+          if import_replacement.replace(ast)
+            references_that_need_updating[ref] = ast
+          end
           @cells_with_formulae.delete(ref) if VALUE_TYPE[ast[0]]
         rescue  Exception => e
           log.fatal "Exception when replacing formulae with results in #{ref}: #{ast}"
@@ -1140,6 +1145,7 @@ class ExcelToX
       replacements_made_in_the_last_pass += offset_replacement.count_replaced
       replacements_made_in_the_last_pass += cell_address_replacement.count_replaced
       replacements_made_in_the_last_pass += indirect_replacement.count_replaced
+      replacements_made_in_the_last_pass += import_replacement.count_replaced
 
       log.info "Pass #{number_of_passes}: Made #{replacements_made_in_the_last_pass} replacements"
     end while replacements_made_in_the_last_pass > 0 && number_of_passes < 50

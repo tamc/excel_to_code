@@ -9,6 +9,7 @@ class EmergencyArrayFormulaReplaceIndirectBodge
   attr_accessor :referring_cell
 
   def initialize
+    @import_replacer = ReplaceImportWithReference.new
     @indirect_replacer = ReplaceIndirectsWithReferencesAst.new
     @formulae_to_value_replacer = MapFormulaeToValues.new
     @inline_formulae_replacer = InlineFormulaeAst.new
@@ -23,7 +24,7 @@ class EmergencyArrayFormulaReplaceIndirectBodge
    
   def map(ast)
     return ast unless ast.is_a?(Array)
-    function(ast) if ast[0] == :function && ast[1] == :INDIRECT
+    function(ast) if ast[0] == :function && (ast[1] == :INDIRECT || ast[1] == :IMPORT)
     ast.each { |a| map(a) }
     ast
   end
@@ -51,6 +52,7 @@ class EmergencyArrayFormulaReplaceIndirectBodge
     @inline_formulae_replacer.map(new_ast)
     @formulae_to_value_replacer.map(new_ast)
     
+    @import_replacer.replace(new_ast)
     @indirect_replacer.replace(new_ast)
     
     ast.replace(new_ast)
