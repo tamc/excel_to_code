@@ -102,4 +102,13 @@ describe RewriteArrayFormulae do
     }
   end
 
+  it "should deal with Climact's FILLGAPS function" do
+    # This both returns an array AND needs an argument telling it what size the array it is filling is
+    input = { [:Sheet, :B6] => ["B6:B8", [:function, :FILLGAPS, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010]]] }
+    RewriteArrayFormulae.rewrite(input).should == {
+    [:Sheet, :B6] => [:function, :INDEX, [:function, :FILLGAPS_IN_ARRAY, 1, 3, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010]], [:number, 1], [:number, 1]],
+    [:Sheet, :B7] => [:function, :INDEX, [:function, :FILLGAPS_IN_ARRAY, 1, 3, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010]], [:number, 2], [:number, 1]],
+    [:Sheet, :B8] => [:function, :INDEX, [:function, :FILLGAPS_IN_ARRAY, 1, 3, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010]], [:number, 3], [:number, 1]],
+    }
+  end
 end
