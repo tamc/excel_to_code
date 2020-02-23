@@ -158,3 +158,5 @@ require_relative 'excel_functions/ifna'
 require_relative 'excel_functions/unicode'
 
 require_relative 'excel_functions/lookup'
+
+require_relative 'excel_functions/fillgaps_in_array'

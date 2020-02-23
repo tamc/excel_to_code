@@ -34,6 +34,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXACT' => 'exact',
     :'EXP' => 'exp',
+    :'FILLGAPS_IN_ARRAY' => 'fillgaps_in_array',
     :'FIND' => 'find',
     :'FLOOR' => 'floor',
     :'FORECAST' => 'forecast',

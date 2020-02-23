@@ -6,8 +6,8 @@ module ExcelFunctions
     fit = linest(known_y, known_x)
     return fit if fit.is_a?(Symbol)
     fit = fit.first
-    intercept = fit.first
-    slope = fit.last
+    slope = fit.first
+    intercept = fit.last
     return intercept + (slope*required_x)
   end
 
@@ -43,10 +43,16 @@ module ExcelFunctions
       b_numerator = b_numerator + ((x-mean_x)*(y-mean_y))
     end
 
-    b = b_numerator / b_denominator
-    a = mean_y - (b * mean_x)
+    slope = b_numerator / b_denominator
+    intercept = mean_y - (slope* mean_x)
 
-    return [[a, b]]
+    return [[slope, intercept]]
+  end
+
+  def slope(known_y, known_x)
+    fit = linest(known_y, known_x)
+    return fit if fit.is_a?(Symbol)
+    return fit.first.first
   end
   
 end
