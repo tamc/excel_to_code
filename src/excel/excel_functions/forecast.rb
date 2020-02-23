@@ -3,6 +3,15 @@ module ExcelFunctions
   def forecast(required_x, known_y, known_x)
     required_x = number_argument(required_x)
     return required_x if required_x.is_a?(Symbol)
+    fit = linest(known_y, known_x)
+    return fit if fit.is_a?(Symbol)
+    fit = fit.first
+    intercept = fit.first
+    slope = fit.last
+    return intercept + (slope*required_x)
+  end
+
+  def linest(known_y, known_x)
     return :na unless known_y.is_a?(Array)
     return :na unless known_x.is_a?(Array)
     known_y = known_y.flatten
@@ -35,10 +44,9 @@ module ExcelFunctions
     end
 
     b = b_numerator / b_denominator
-
     a = mean_y - (b * mean_x)
 
-    return a + (b*required_x)
+    return [[a, b]]
   end
   
 end
