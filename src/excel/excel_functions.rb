@@ -160,3 +160,7 @@ require_relative 'excel_functions/unicode'
 require_relative 'excel_functions/lookup'
 
 require_relative 'excel_functions/fillgaps_in_array'
+
+require_relative 'excel_functions/project_in_array'
+
+require_relative 'excel_functions/fillgaps'

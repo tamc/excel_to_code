@@ -6,6 +6,10 @@ describe "ExcelFunctions: FILLGAPS_IN_ARRAY" do
     FunctionTest.fillgaps_in_array(4,1,[[1,nil,nil,4]], [[2001, 2002, 2003, 2004]], 2004).should ==[[1,2,3,4]] 
   end
 
+  it "Should cope with being in just a single cell" do
+    FunctionTest.fillgaps_in_array(1,1,[[1]], [[2001]], 2001).should ==[[1]] 
+  end
+
   it "Should extrapolate blank values at the end of the array" do
     FunctionTest.fillgaps_in_array(4,1,[[2,3,4,nil]], [[2001, 2002, 2003, 2004]], 2004).should ==[[2,3,4,5]] 
 

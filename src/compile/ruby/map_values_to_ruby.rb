@@ -3,6 +3,7 @@ require_relative '../../util/not_supported_exception'
 class MapValuesToRuby
 
   attr_accessor :constants
+  attr_accessor :leave_inline_blank_as_nil # otherwise will turn into 0.0
 
   def map(ast)
     if ast.is_a?(Array)
@@ -22,7 +23,7 @@ class MapValuesToRuby
   end
 
   def inlined_blank
-    "0.0"
+    @leave_inline_blank_as_nil ? "nil" : "0.0"
   end
   
   def constant(constant)

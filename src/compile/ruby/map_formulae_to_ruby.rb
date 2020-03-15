@@ -34,6 +34,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'ENSURE_IS_NUMBER' => 'ensure_is_number',
     :'EXACT' => 'exact',
     :'EXP' => 'exp',
+    :'FILLGAPS' => 'fillgaps',
     :'FILLGAPS_IN_ARRAY' => 'fillgaps_in_array',
     :'FIND' => 'find',
     :'FLOOR' => 'floor',
@@ -73,6 +74,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'PMT' => 'pmt',
     :'POWER' => 'power',
     :'PRODUCT' => 'product',
+    :'PROJECT_IN_ARRAY' => 'project_in_array',
     :'PV' => 'pv',
     :'RANK' => 'rank',
     :'RATE' => 'rate',
@@ -104,6 +106,10 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'scurve' => 'scurve'
   }
 
+  FUNCTIONS_THAT_CARE_ABOUT_BLANKS = {
+    :'FILLGAPS_IN_ARRAY' => true,
+  }
+
   def prefix(symbol,ast)
     return map(ast) if symbol == "+"
     return "negative(#{map(ast)})"
@@ -132,7 +138,11 @@ class MapFormulaeToRuby < MapValuesToRuby
 
   def function(function_name,*arguments)
     if FUNCTIONS.has_key?(function_name)
-      "#{FUNCTIONS[function_name]}(#{arguments.map { |a| map(a) }.join(",")})"
+      previous_thing_to_do_with_inline_blanks = @leave_inline_blank_as_nil
+      @leave_inline_blank_as_nil = FUNCTIONS_THAT_CARE_ABOUT_BLANKS[function_name]
+      result = "#{FUNCTIONS[function_name]}(#{arguments.map { |a| map(a) }.join(",")})"
+      @leave_inline_blank_as_nil = previous_thing_to_do_with_inline_blanks
+      result
     else
       raise NotSupportedException.new("Function #{function_name} not supported")
     end

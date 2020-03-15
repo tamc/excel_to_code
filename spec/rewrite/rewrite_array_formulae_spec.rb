@@ -111,4 +111,14 @@ describe RewriteArrayFormulae do
     [:Sheet, :B8] => [:function, :INDEX, [:function, :FILLGAPS_IN_ARRAY, 1, 3, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010]], [:number, 3], [:number, 1]],
     }
   end
+
+  it "should deal with Climact's PROJECT function" do
+    # This both returns an array AND needs an argument telling it what size the array it is filling is
+    input = { [:Sheet, :B6] => ["B6:B8", [:function, :PROJECT, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010], [:number, 2] , [:string, "S"], [:number, 0], [:string, "LS"], [:boolean, false]]] }
+    RewriteArrayFormulae.rewrite(input).should == {
+    [:Sheet, :B6] => [:function, :INDEX, [:function, :PROJECT_IN_ARRAY, 1, 3, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010], [:number, 2] , [:string, "S"], [:number, 0], [:string, "LS"], [:boolean, false]], [:number, 1], [:number, 1]],
+    [:Sheet, :B7] => [:function, :INDEX, [:function, :PROJECT_IN_ARRAY, 1, 3, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010], [:number, 2] , [:string, "S"], [:number, 0], [:string, "LS"], [:boolean, false]], [:number, 2], [:number, 1]],
+    [:Sheet, :B8] => [:function, :INDEX, [:function, :PROJECT_IN_ARRAY, 1, 3, [:array, [:row, [:number, 1]]], [:array, [:row, [:number, 1]]], [:number, 2010], [:number, 2] , [:string, "S"], [:number, 0], [:string, "LS"], [:boolean, false]], [:number, 3], [:number, 1]],
+    }
+  end
 end

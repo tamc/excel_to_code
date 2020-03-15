@@ -5,7 +5,6 @@ module ExcelFunctions
     return years if years.is_a?(Symbol)
     return endYear if endYear.is_a?(Symbol)
 
-    return :ref if columns == 1 && rows == 1
     return :ref unless columns == 1 || rows == 1
     size = max(columns, rows)
 
@@ -36,9 +35,8 @@ module ExcelFunctions
         if nextIndexes[i] == nil
           linEst ||= linearEquation(variable.dup, years.dup, extrapolateCurveType)
           result[i] = linEst if linEst.is_a?(Symbol)
-          linEst = linEst.first
-          p(linEst)
-          result[i] = linEst.last + (years[i] * linEst.first)
+          linEstParts = linEst.first
+          result[i] = linEstParts.last + (years[i] * linEstParts.first)
 
           # Linear equation
         elsif previousIndexes[i] == nil

@@ -34,7 +34,7 @@ class ExtractArrayFormulaForCell
     ast[@row_offset+1][@column_offset+1] # plus ones to skip tthe [:array,[:row,"cell"]] symbols
   end
   
-  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = { INDEX: true,  MMULT: true, OFFSET: true, FILLGAPS: true}
+  FUNCTIONS_THAT_CAN_RETURN_ARRAYS = { INDEX: true,  MMULT: true, OFFSET: true, FILLGAPS: true, PROJECT: true}
   
   def map_function(ast)
     return ast unless FUNCTIONS_THAT_CAN_RETURN_ARRAYS.has_key?(ast[1])
@@ -42,9 +42,16 @@ class ExtractArrayFormulaForCell
   end
 
   def rewrite_function(ast)
-    return ast.dup unless ast[1] == :FILLGAPS
-    # FILLGAPS needs to know the size of the array it is filling
-    return [:function, :FILLGAPS_IN_ARRAY, array_range.width + 1, array_range.height + 1, *ast[2..-1]]
+    case ast[1]
+    when :FILLGAPS
+      # FILLGAPS needs to know the size of the array it is filling
+      return [:function, :FILLGAPS_IN_ARRAY, array_range.width + 1, array_range.height + 1, *ast[2..-1]]
+    when :PROJECT
+      # PROJECT needs to know the size of the array it is filling
+      return [:function, :PROJECT_IN_ARRAY, array_range.width + 1, array_range.height + 1, *ast[2..-1]]
+    else
+      return ast.dup
+    end
   end
   
 end

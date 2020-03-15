@@ -2,6 +2,8 @@ require_relative '../excel'
 
 class AstExpandArrayFormulae
     
+  attr_accessor :array_range
+
   def map(ast)
     return ast unless ast.is_a?(Array)
     operator = ast[0]
@@ -130,6 +132,24 @@ class AstExpandArrayFormulae
   
   def map_vlookup(ast)
     array_map ast, false, true, false, false
+  end
+
+  def map_project(ast)
+    ast[1] = :PROJECT_IN_ARRAY
+    ast.insert(2, [:number, array_range.width + 1])
+    ast.insert(3, [:number, array_range.height + 1])
+    array_map(ast, false, false, true, true, false, false, false, false, false, false)
+    r = 0.upto(array_range.height).map { |r| [:row, *(0.upto(array_range.width).map { |c| [:function, :INDEX, ast.dup, [:number, r], [:number, c]] }) ] }
+    ast.replace([:array, *r])
+  end
+
+  def map_fillgaps(ast)
+    ast[1] = :FILLGAPS_IN_ARRAY
+    ast.insert(2, [:number, array_range.width + 1])
+    ast.insert(3, [:number, array_range.height + 1])
+    array_map(ast, false, false, true, true, false)
+    r = 0.upto(array_range.height).map { |r| [:row, *(0.upto(array_range.width).map { |c| [:function, :INDEX, ast.dup, [:number, r+1], [:number, c+1]] }) ] }
+    ast.replace([:array, *r])
   end
   
   private

@@ -796,6 +796,7 @@ class ExcelToX
         simplify_arithmetic_replacer.map(details.last)
         # FIXME: Seem to need to do this twice, second time to eliminate brackets?!
         simplify_arithmetic_replacer.map(details.last)
+        expand_array_formulae_replacer.array_range = Area.for(details.first)
         expand_array_formulae_replacer.map(details.last)
       rescue  Exception => e
         log.fatal "Exception when expanding array formulae #{ref}: #{details}"
