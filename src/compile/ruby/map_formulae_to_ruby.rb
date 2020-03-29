@@ -74,6 +74,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'PMT' => 'pmt',
     :'POWER' => 'power',
     :'PRODUCT' => 'product',
+    :'PROJECT' => 'project',
     :'PROJECT_IN_ARRAY' => 'project_in_array',
     :'PV' => 'pv',
     :'RANK' => 'rank',

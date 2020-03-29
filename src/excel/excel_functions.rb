@@ -164,3 +164,5 @@ require_relative 'excel_functions/fillgaps_in_array'
 require_relative 'excel_functions/project_in_array'
 
 require_relative 'excel_functions/fillgaps'
+
+require_relative 'excel_functions/project'

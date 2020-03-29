@@ -139,7 +139,7 @@ class AstExpandArrayFormulae
     ast.insert(2, [:number, array_range.width + 1])
     ast.insert(3, [:number, array_range.height + 1])
     array_map(ast, false, false, true, true, false, false, false, false, false, false)
-    r = 0.upto(array_range.height).map { |r| [:row, *(0.upto(array_range.width).map { |c| [:function, :INDEX, ast.dup, [:number, r], [:number, c]] }) ] }
+    r = 0.upto(array_range.height).map { |r| [:row, *(0.upto(array_range.width).map { |c| [:function, :INDEX, ast.dup, [:number, r+1], [:number, c+1]] }) ] }
     ast.replace([:array, *r])
   end
 
