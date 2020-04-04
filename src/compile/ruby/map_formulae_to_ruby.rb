@@ -46,6 +46,7 @@ class MapFormulaeToRuby < MapValuesToRuby
     :'IFNA' => 'ifna',
     :'INDEX' => 'index',
     :'INT' => 'int',
+    :'INTERPOLATE' => 'interpolate',
     :'ISBLANK' => 'isblank',
     :'ISERR' => 'iserr',
     :'ISERROR' => 'iserror',
