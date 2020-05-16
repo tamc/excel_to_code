@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'ffi', '~> 1.9', '>= 1.9.18'
   s.add_runtime_dependency 'ox', '~> 2.8', '>= 2.8.2'
   s.add_runtime_dependency 'minitest', '~> 5.11', '>= 5.11.1'
-  s.add_development_dependency 'rake', '~> 12'
+  s.add_development_dependency 'rake', '~> 13'
   s.required_ruby_version = ">= 2.3.0"
   s.author = "Thomas Counsell, Green on Black Ltd"
   s.email = "tamc@greenonblack.com"
