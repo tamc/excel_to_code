@@ -5,7 +5,7 @@ class RewriteSharedFormulae
     new.rewrite(*args)
   end
   
-  def rewrite(formula_shared, formula_shared_targets)
+  def rewrite(formula_shared, formula_shared_targets, named_references = {})
     @output = {}
     @formula_shared_targets = formula_shared_targets
 
@@ -13,13 +13,13 @@ class RewriteSharedFormulae
       copy_range = a[0]
       shared_formula_identifier = a[1]
       shared_ast = a[2]
-      share_formula(ref, shared_ast, copy_range, shared_formula_identifier)
+      share_formula(ref, shared_ast, copy_range, shared_formula_identifier, named_references)
     end
     @output
   end
   
-  def share_formula(ref, shared_ast, copy_range, shared_formula_identifier)
-    copier = AstCopyFormula.new
+  def share_formula(ref, shared_ast, copy_range, shared_formula_identifier, named_references)
+    copier = AstCopyFormula.new(named_references)
     copy_range = Area.for(copy_range)
     copy_range.calculate_excel_variables
     

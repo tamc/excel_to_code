@@ -1,20 +1,30 @@
 require_relative 'map_formulae_to_c'
+require 'set'
 
 class CompileToC
-  
+
   attr_accessor :settable
   attr_accessor :gettable
   attr_accessor :variable_set_counter
+  attr_accessor :variable_set_sheet_hash
+  attr_accessor :recursion_prevention_sheet_hash
   attr_accessor :allow_unknown_functions
-  
+
   def self.rewrite(*args)
     self.new.rewrite(*args)
   end
-  
+
+  def init_sheet_hash(sheet_names)
+    Hash[sheet_names.map {|sheet_name| [sheet_name, Set.new]}]
+  end
+
   def rewrite(formulae, sheet_names, output)
     self.settable ||= lambda { |ref| false }
     self.gettable ||= lambda { |ref| true }
     @variable_set_counter ||= 0
+    @recursion_prevention_counter ||= 0
+    @variable_set_sheet_hash ||= init_sheet_hash(sheet_names.values.uniq)
+    @recursion_prevention_sheet_hash ||= init_sheet_hash(sheet_names.values.uniq)
 
     mapper = MapFormulaeToC.new
     mapper.allow_unknown_functions = self.allow_unknown_functions
@@ -27,7 +37,7 @@ class CompileToC
         worksheet_c_name = mapper.sheet_names[worksheet.to_s] || worksheet.to_s
         calculation = mapper.map(ast)
         name = worksheet_c_name.length > 0 ? "#{worksheet_c_name}_#{cell.downcase}" : cell.downcase
-        
+
         # Declare function as static so it can be inlined where possible
         static_or_not = gettable.call(ref) ? "" : "static "
 
@@ -54,17 +64,27 @@ class CompileToC
             output.puts "#{static_or_not}ExcelValue #{name}() {"
             output.puts "  static ExcelValue result;"
             output.puts "  if(variable_set[#{@variable_set_counter}] == 1) { return result;}"
+            output.puts "  if(recursion_prevention[#{@recursion_prevention_counter}] == 1) { return result;}"
+            output.puts "  recursion_prevention[#{@recursion_prevention_counter}] = 1;"
+
             mapper.initializers.each do |i|
-              output.puts "  #{i}"
+              output.puts "  #{i}".gsub("#{worksheet_c_name}_#{cell.downcase}()", "ZERO")
             end
+
             output.puts "  result = #{calculation};"
             output.puts "  variable_set[#{@variable_set_counter}] = 1;"
+            output.puts "  recursion_prevention[#{@recursion_prevention_counter}] = 0;"
             output.puts "  return result;"
             output.puts "}"
             output.puts
           end
         end
-        @variable_set_counter += 1
+        unless worksheet_c_name.empty?
+          @variable_set_sheet_hash[worksheet_c_name].add(@variable_set_counter)
+          @recursion_prevention_sheet_hash[worksheet_c_name].add(@variable_set_counter)
+          @variable_set_counter += 1
+          @recursion_prevention_counter += 1
+        end
         mapper.reset
       rescue Exception => e
         puts "Exception at #{ref} #{ast}"
@@ -75,8 +95,24 @@ class CompileToC
           end
         end
         raise
-      end      
+      end
     end
   end
-  
+
+  def reset_sheets(sheet_names, output)
+    sheet_names = sheet_names.values.uniq
+    sheet_names.each do |sheet_name|
+      output.puts "void reset_#{sheet_name}()\n{"
+
+      @variable_set_sheet_hash[sheet_name].each do |variable|
+        output.puts "  variable_set[#{variable}] = 0;"
+      end
+
+      @recursion_prevention_sheet_hash[sheet_name].each do |variable|
+        output.puts "  recursion_prevention[#{variable}] = 0;"
+      end
+
+      output.puts "}\n"
+    end
+  end
 end

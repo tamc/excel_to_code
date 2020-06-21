@@ -6,16 +6,16 @@ command = ExcelToC.new
 
 opts = OptionParser.new do |opts|
   CommonCommandLineOptions.set(command: command, options: opts, generates: "C", extension: "c")
-  
+
   opts.on('-c','--compile',"Compile the C") do
     command.actually_compile_code = true
   end
-  
+
   opts.on('--[no-]makefile', 'Generate a makefile. Default: no.') do |b|
     command.create_makefile = b
   end
 
-  
+
   opts.on('--[no-]rakefile', 'Generate a rakefile. Default: yes.') do |b|
     command.create_rakefile = b
   end

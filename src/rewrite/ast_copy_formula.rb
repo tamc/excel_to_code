@@ -4,10 +4,12 @@ require_relative '../util/not_supported_exception'
 class AstCopyFormula
   attr_accessor :rows_to_move
   attr_accessor :columns_to_move
+  attr_accessor :named_references
   
-  def initialize
+  def initialize(named_references = {})
     self.rows_to_move = 0
     self.columns_to_move = 0
+    self.named_references = named_references
   end
   
   DO_NOT_MAP = {:number => true, :string => true, :blank => true, :null => true, :error => true, :boolean_true => true, :boolean_false => true, :operator => true, :comparator => true}
@@ -26,6 +28,9 @@ class AstCopyFormula
   
   def cell(reference)
     r = Reference.for(reference)
+    if self.named_references.key?(reference)
+      return [:cell, reference]
+    end
     [:cell,r.offset(rows_to_move,columns_to_move)]
   end
   

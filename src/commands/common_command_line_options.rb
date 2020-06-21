@@ -45,6 +45,7 @@ class CommonCommandLineOptions
 
     options.on('-d', '--debug', "Fewer optimisations; the #{generates} should be more similar to the original Excel.") do
       command.should_inline_formulae_that_are_only_used_once = false
+      command.replace_reference_to_blanks_with_zeros = false
       command.extract_repeated_parts_of_formulae = false
     end
 

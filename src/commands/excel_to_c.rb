@@ -45,6 +45,7 @@ class ExcelToC < ExcelToX
     o.puts "// #{excel_file} approximately translated into C"
     o.puts "// definitions"
     o.puts "#define NUMBER_OF_REFS #{number_of_refs}"
+    o.puts "#define NUMBER_OF_RECURSION_PREVENT_VARS #{number_of_refs}" # This is only known after creating CompileToC, number_of_refs overapproximate it
     o.puts "#define EXCEL_FILENAME  #{excel_file.inspect}"
     o.puts "// end of definitions"
     o.puts
@@ -86,6 +87,7 @@ class ExcelToC < ExcelToX
     c.settable = settable
     c.gettable = gettable
     c.rewrite(@formulae, @worksheet_c_names, o)
+    c.reset_sheets(@worksheet_c_names, o)
 
     # Output the named references
 
@@ -193,7 +195,15 @@ class ExcelToC < ExcelToX
 
     name = output_name.downcase
     o = output("#{name}.rb")
-      
+
+    sheet_resets = []
+    worksheets do |sheet_name, _|
+      sheet_name = c_name_for_worksheet_name(sheet_name)
+      sheet_resets.push("def reset_#{sheet_name}")
+      sheet_resets.push("  C.reset_#{sheet_name}")
+      sheet_resets.push("end\n")
+    end
+
     code = <<END
 require 'ffi'
 require 'singleton'
@@ -209,6 +219,8 @@ class #{ruby_module_name}
     C.reset
   end
 
+  #{sheet_resets.join("\n")}
+
   def method_missing(name, *arguments)
     if arguments.size == 0
       get(name)
@@ -220,7 +232,7 @@ class #{ruby_module_name}
   end
 
   def get(name)
-    return 0 unless C.respond_to?(name)
+    return nil unless C.respond_to?(name)
     ruby_value_from_excel_value(C.send(name))
   end
 
@@ -314,6 +326,10 @@ END
     o.puts "    # use this function to reset all cell values"
     o.puts "    attach_function 'reset', [], :void"
 
+    worksheets do |sheet_name, _|
+      sheet_name = c_name_for_worksheet_name(sheet_name)
+      o.puts "    attach_function 'reset_#{sheet_name}', [], :void"
+    end
 
     worksheets do |name, xml_filename|
       c_name = c_name_for_worksheet_name(name)

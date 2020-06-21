@@ -167,11 +167,13 @@ static void free_all_allocated_memory() {
 }
 
 static int variable_set[NUMBER_OF_REFS];
+static int recursion_prevention[NUMBER_OF_RECURSION_PREVENT_VARS];
 
 // Resets all cached and malloc'd values
 void reset() {
   free_all_allocated_memory();
   memset(variable_set, 0, sizeof(variable_set));
+  memset(recursion_prevention, 0, sizeof(recursion_prevention));
 }
 
 // Handy macros
@@ -3024,11 +3026,18 @@ static ExcelValue hlookup(ExcelValue lookup_value_v,ExcelValue lookup_table_v, E
     for(i=0; i< columns; i++) {
       possible_match_v = array[i];
       if(lookup_value_v.type != possible_match_v.type) continue;
-      if(more_than(possible_match_v,lookup_value_v).number == true) {
-        if(i == 0) return NA;
-        return array[((((int) row_number_v.number)-1)*columns)+(i-1)];
-      } else {
-        last_good_match = i;
+      if(lookup_value_v.type == ExcelString && possible_match_v.type == ExcelString)
+      {
+        if (strstr(possible_match_v.string, lookup_value_v.string) != NULL)
+          last_good_match = i;
+      } else
+      {
+        if(more_than(possible_match_v,lookup_value_v).number == true) {
+          if(i == 0) return NA;
+          return array[((((int) row_number_v.number)-1)*columns)+(i-1)];
+        } else {
+          last_good_match = i;
+        }
       }
     }
     return array[((((int) row_number_v.number)-1)*columns)+(last_good_match)];

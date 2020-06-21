@@ -16,11 +16,11 @@ end
 
 class InlineFormulaeAst
 
-  attr_accessor :references, :current_sheet_name, :inline_ast
+  attr_accessor :references, :current_sheet_name, :inline_ast, :named_references
   attr_accessor :count_replaced
   
-  def initialize(references = nil, current_sheet_name = nil, inline_ast = nil)
-    @references, @current_sheet_name, @inline_ast = references, [current_sheet_name], inline_ast
+  def initialize(references = nil, current_sheet_name = nil, inline_ast = nil, named_references = {})
+    @references, @current_sheet_name, @inline_ast, @named_references = references, [current_sheet_name], inline_ast, named_references
     @count_replaced = 0
     @inline_ast ||= lambda { |sheet, ref, references| true } # Default is to always inline
   end
@@ -66,9 +66,17 @@ class InlineFormulaeAst
     return unless ast[2][0] == :cell
     sheet = ast[1].to_sym
     ref = ast[2][1].to_s.upcase.gsub('$','').to_sym
-    # FIXME: Need to check if valid worksheet and return [:error, "#REF!"] if not
-    # Now check user preference on this
-    return unless inline_ast.call(sheet,ref, references)
+    ref_org = ast[2][1].to_s.gsub('$','').to_sym
+
+    if named_references[ref_org] # Fix issue for named_reference that is mapped to blank
+      sheet = named_references[ref_org][1]
+      ref = named_references[ref_org][2][1]
+    else
+      # FIXME: Need to check if valid worksheet and return [:error, "#REF!"] if not
+      # Now check user preference on this
+      return unless inline_ast.call(sheet,ref, references)
+    end
+
     ast_to_inline = ast_or_blank(sheet, ref)
     @count_replaced += 1
     current_sheet_name.push(sheet)
@@ -95,6 +103,11 @@ class InlineFormulaeAst
   def ast_or_blank(sheet, ref)
     ast_to_inline = references[[sheet, ref]]
     return ast_to_inline if ast_to_inline
+
+    if named_references.key?(ref.downcase)
+      return named_references[ref.downcase]
+    end
+
     # Need to add a new blank cell and return ast for an inlined blank
     references[[sheet, ref]] = [:blank]
     [:inlined_blank]
